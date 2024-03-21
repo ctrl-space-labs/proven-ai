@@ -1,6 +1,7 @@
 package dev.ctrlspace.provenai.ssi;
 
 import dev.ctrlspace.provenai.utils.ContinuationObjectUtils;
+import id.walt.crypto.keys.Key;
 import id.walt.crypto.keys.KeyType;
 import id.walt.crypto.keys.LocalKey;
 import id.walt.crypto.keys.LocalKeyMetadata;
@@ -23,19 +24,17 @@ public class DidIssuer {
                 this.continuationSuper = ContinuationObjectUtils.createSuperContinuation();
                 this.continuationPlain = ContinuationObjectUtils.createPlainContinuation();
                 WaltidServices.INSTANCE.minimalInit(continuationPlain);
-                WaltidServices.INSTANCE.init(continuationPlain);
+//                WaltidServices.INSTANCE.init(continuationPlain);
 
         }
 
         // Method to create a DID using the did:key method
-        public DidResult createDidFromKey(KeyType keyType) {
-                LocalKey localKey = KeyCreation.generateKey(keyType);
+        public DidResult createDidFromKey(KeyType keyType, LocalKey localKey) {
                 DidKeyCreateOptions options = new DidKeyCreateOptions();
                 DidResult didResult = (DidResult) DidService.INSTANCE.registerByKey("key", localKey,options, continuationSuper);
                 return  didResult;
 
         }
-
 
 
         // Method to create a DID using the did:web method
@@ -46,7 +45,7 @@ public class DidIssuer {
 
 
         public LocalKey generateKey(KeyType keyType) {
-                return (LocalKey) LocalKey.Companion.generate(keyType, new LocalKeyMetadata(),null);
+                return (LocalKey) LocalKey.Companion.generate(keyType, new LocalKeyMetadata(),continuationSuper);
         }
 
 
