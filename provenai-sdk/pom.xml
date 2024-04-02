@@ -48,6 +48,12 @@
         </dependency>
 
 
+        <!-- https://mvnrepository.com/artifact/org.jetbrains.kotlinx/kotlinx-serialization-json-jvm -->
+        <dependency>
+            <groupId>org.jetbrains.kotlinx</groupId>
+            <artifactId>kotlinx-serialization-json-jvm</artifactId>
+            <version>1.4.1</version>
+        </dependency>
 
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
@@ -72,11 +78,12 @@
             <scope>compile</scope>
         </dependency>
 
-
-
-
-
-
+        <!-- https://mvnrepository.com/artifact/org.jetbrains.kotlinx/kotlinx-datetime -->
+        <dependency>
+            <groupId>org.jetbrains.kotlinx</groupId>
+            <artifactId>kotlinx-datetime-jvm</artifactId>
+            <version>0.5.0</version>
+        </dependency>
 
 
     </dependencies>
