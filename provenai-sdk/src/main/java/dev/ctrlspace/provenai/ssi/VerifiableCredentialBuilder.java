@@ -8,21 +8,16 @@ import id.walt.credentials.CredentialBuilderType;
 import id.walt.credentials.vc.vcs.W3CVC;
 import id.walt.crypto.keys.Key;
 import id.walt.did.helpers.WaltidServices;
-import kotlin.Pair;
 import kotlin.Unit;
 import kotlin.coroutines.Continuation;
-import kotlin.coroutines.CoroutineContext;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.time.temporal.TemporalAmount;
 import java.util.HashMap;
 import java.util.Map;
 
 import kotlinx.serialization.json.JsonElement;
 import kotlinx.serialization.json.JsonObject;
-import kotlinx.serialization.json.JsonPrimitive;
-import org.jetbrains.annotations.NotNull;
 
 public class VerifiableCredentialBuilder {
 
@@ -95,7 +90,7 @@ public class VerifiableCredentialBuilder {
             Key issuerKey,
             String issuerDid,
             String subjectDid,
-            Continuation<Object> continuation,
+            Continuation<? super Object> continuation,
             Map<String, String> additionalJwtHeaders,
             Map<String, JsonElement> additionalJwtOptions
     ) {
