@@ -1,4 +1,4 @@
-package dev.ctrlspace.provenai.ssi;
+package dev.ctrlspace.provenai.ssi.issuer;
 
 import dev.ctrlspace.provenai.utils.ContinuationObjectUtils;
 import id.walt.credentials.PresentationBuilder;
