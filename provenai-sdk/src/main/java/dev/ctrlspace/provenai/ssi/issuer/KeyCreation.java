@@ -18,4 +18,5 @@ public class KeyCreation {
         // Generate a key using the generate function from the companion object
         return (LocalKey) LocalKey.Companion.generate(keyType, metadata, continuation);
     }
+
 }
