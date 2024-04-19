@@ -1,92 +1,28 @@
 CREATE SCHEMA IF NOT EXISTS proven_ai;
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+ALTER EXTENSION "uuid-ossp" SET SCHEMA public;
 
-
-
--------------- Create table for Gendox ----------------
-
--- Table to store registered AI Agent SSI did:key
-CREATE TABLE IF NOT EXISTS gendox_core.wallet_keys
-(
-    id          UUID                 DEFAULT uuid_generate_v4(),
-    organization_id     UUID        NOT NULL, --this is the external system id, eg, the Gendox's Agent User id (UUID)
-    private_key TEXT        NOT NULL,
-    key_type_id TEXT        NOT NULL, -- EdDSA_Ed25519, ECDSA_Secp256k1, ECDSA_Secp256r1, RSA
-    created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    updated_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    created_by  UUID        NOT NULL,
-    updated_by  UUID        NOT NULL,
-
-    PRIMARY KEY (id),
-    FOREIGN KEY (organization_id) REFERENCES gendox_core.organizations (id),
-    FOREIGN KEY (key_type_id) REFERENCES gendox_core.types (id)
-);
-
-
--- Table to store user's DID (a user can be both human and AI Agent)
-CREATE TABLE IF NOT EXISTS gendox_core.organization_dids
-(
-    id         UUID                 DEFAULT uuid_generate_v4(),
-    organization_id UUID        NOT NULL,
-    key_id     UUID        NULL,     --this is the id of the key in the wallet_keys table, if null, then ProvenAI will not be able to sign credentials on behalf of the user
-    did        TEXT        NOT NULL,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-
-    PRIMARY KEY (id),
-    FOREIGN KEY (organization_id) REFERENCES gendox_core.organizations (id),
-);
-
-
-
-INSERT INTO gendox_core.types (type_category, name, description)
-SELECT 'KEY_TYPE', 'RSA', 'RSA Key Type'
-WHERE NOT EXISTS (SELECT 1
-                  FROM gendox_core.types
-                  WHERE type_category = 'KEY_TYPE'
-                    AND name = 'RSA');
-
-INSERT INTO gendox_core.types (type_category, name, description)
-SELECT 'KEY_TYPE', 'ECDSA_SECP256K1', 'ECDSA secp256k1 Key Type'
-WHERE NOT EXISTS (SELECT 1
-                  FROM gendox_core.types
-                  WHERE type_category = 'KEY_TYPE'
-                    AND name = 'ECDSA_SECP256K1');
-
-INSERT INTO gendox_core.types (type_category, name, description)
-SELECT 'KEY_TYPE', 'ECDSA_SECP256R1', 'ECDSA secp256r1 Key Type'
-WHERE NOT EXISTS (SELECT 1
-                  FROM gendox_core.types
-                  WHERE type_category = 'KEY_TYPE'
-                    AND name = 'ECDSA_SECP256R1');
-
-INSERT INTO gendox_core.types (type_category, name, description)
-SELECT 'KEY_TYPE', 'EDDSA_ED25519', 'EdDSA Ed25519 Key Type'
-WHERE NOT EXISTS (SELECT 1
-                  FROM gendox_core.types
-                  WHERE type_category = 'KEY_TYPE'
-                    AND name = 'EDDSA_ED25519');
-
-
--------------------------------------------------------
 
 -----------------------------------------------------------
 ------------------    ProvenAI ACL   ----------------------
 
 -- Table to store registered organizations
 -- columns are: id, organization id, created/updated by & at
-create table if not exists proven_ai.registered_organizations
+create table if not exists proven_ai.organizations
 (
-    id         UUID                 DEFAULT uuid_generate_v4(),
-    org_id     UUID        NOT NULL,
+    id         UUID        NOT NULL,
+    name       TEXT,
+    country    TEXT,
+    VAT_number TEXT,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    created_by UUID        NOT NULL,
-    updated_by UUID        NOT NULL,
+    created_by UUID,
+    updated_by UUID,
 
-    PRIMARY KEY (id),
-    CONSTRAINT registered_organizations_org_id_key UNIQUE (org_id)
+    PRIMARY KEY (id)
 );
+
+comment on column proven_ai.organizations.id is 'The external organization id from the external system (like Gendox org id)';
 
 create table if not exists proven_ai.types
 (
@@ -118,7 +54,7 @@ CREATE INDEX IF NOT EXISTS types_name_idx ON proven_ai.types (name);
 -- create separate table for policies
 CREATE TABLE IF NOT EXISTS proven_ai.policy_types
 (
-    id          UUID DEFAULT uuid_generate_v4(),
+    id          UUID DEFAULT public.uuid_generate_v4(),
     name        TEXT NOT NULL,
     description TEXT NOT NULL,
 
@@ -145,20 +81,34 @@ WHERE NOT EXISTS (SELECT 1
                   FROM proven_ai.policy_types
                   WHERE name = 'COMPENSATION_POLICY');
 
+-- insert ALLOW_LIST policy
+INSERT INTO proven_ai.policy_types (name, description)
+SELECT 'ALLOW_LIST', 'Allow List Policy, indicate the list of allowed entities'
+WHERE NOT EXISTS (SELECT 1
+                  FROM proven_ai.policy_types
+                  WHERE name = 'ALLOW_LIST');
+
+-- insert DENY_LIST policy
+INSERT INTO proven_ai.policy_types (name, description)
+SELECT 'DENY_LIST', 'Deny List Policy, indicate the list of denied entities'
+WHERE NOT EXISTS (SELECT 1
+                  FROM proven_ai.policy_types
+                  WHERE name = 'DENY_LIST');
+
 -- table to store user's access control policy options
 CREATE TABLE IF NOT EXISTS proven_ai.policy_options
 (
-    id          UUID DEFAULT uuid_generate_v4(),
-    policy_id   UUID NOT NULL,
-    name        TEXT NOT NULL,
-    description TEXT NOT NULL,
+    id             UUID DEFAULT public.uuid_generate_v4(),
+    policy_type_id UUID NOT NULL,
+    name           TEXT NOT NULL,
+    description    TEXT NOT NULL,
 
     PRIMARY KEY (id),
-    CONSTRAINT policy_options_policy_id_name_key UNIQUE (policy_id, name),
-    FOREIGN KEY (policy_id) REFERENCES proven_ai.policy_types (id)
+    CONSTRAINT policy_options_policy_type_id_name_key UNIQUE (policy_type_id, name),
+    FOREIGN KEY (policy_type_id) REFERENCES proven_ai.policy_types (id)
 );
 
-INSERT INTO proven_ai.policy_options (policy_id, name, description)
+INSERT INTO proven_ai.policy_options (policy_type_id, name, description)
 SELECT (SELECT id
         FROM proven_ai.policy_types
         WHERE name = 'USAGE_POLICY'),
@@ -166,12 +116,12 @@ SELECT (SELECT id
        'Allow the content to be used from an AI educator assistant'
 WHERE NOT EXISTS (SELECT 1
                   FROM proven_ai.policy_options
-                  WHERE policy_id = (SELECT id
+                  WHERE policy_type_id = (SELECT id
                                      FROM proven_ai.policy_types
                                      WHERE name = 'USAGE_POLICY')
                     AND name = 'SCHOOL_ASSISTANT');
 
-INSERT INTO proven_ai.policy_options (policy_id, name, description)
+INSERT INTO proven_ai.policy_options (policy_type_id, name, description)
 SELECT (SELECT id
         FROM proven_ai.policy_types
         WHERE name = 'USAGE_POLICY'),
@@ -179,12 +129,12 @@ SELECT (SELECT id
        'Allow the content to be used from an AI educator assistant'
 WHERE NOT EXISTS (SELECT 1
                   FROM proven_ai.policy_options
-                  WHERE policy_id = (SELECT id
+                  WHERE policy_type_id = (SELECT id
                                      FROM proven_ai.policy_types
                                      WHERE name = 'USAGE_POLICY')
                     AND name = 'CORPORATE_ASSISTANT');
 
-INSERT INTO proven_ai.policy_options (policy_id, name, description)
+INSERT INTO proven_ai.policy_options (policy_type_id, name, description)
 SELECT (SELECT id
         FROM proven_ai.policy_types
         WHERE name = 'USAGE_POLICY'),
@@ -192,12 +142,12 @@ SELECT (SELECT id
        'Allow the content to be in an online course'
 WHERE NOT EXISTS (SELECT 1
                   FROM proven_ai.policy_options
-                  WHERE policy_id = (SELECT id
+                  WHERE policy_type_id = (SELECT id
                                      FROM proven_ai.policy_types
                                      WHERE name = 'USAGE_POLICY')
                     AND name = 'ONLINE_COURSE');
 
-INSERT INTO proven_ai.policy_options (policy_id, name, description)
+INSERT INTO proven_ai.policy_options (policy_type_id, name, description)
 SELECT (SELECT id
         FROM proven_ai.policy_types
         WHERE name = 'USAGE_POLICY'),
@@ -205,13 +155,13 @@ SELECT (SELECT id
        'Allow the content to be use in general assistant AIs'
 WHERE NOT EXISTS (SELECT 1
                   FROM proven_ai.policy_options
-                  WHERE policy_id = (SELECT id
+                  WHERE policy_type_id = (SELECT id
                                      FROM proven_ai.policy_types
                                      WHERE name = 'USAGE_POLICY')
-                    AND name = 'ASSISTANT_GPT');
+                    AND name = 'GENERAL_ASSISTANT');
 
 
-INSERT INTO proven_ai.policy_options (policy_id, name, description)
+INSERT INTO proven_ai.policy_options (policy_type_id, name, description)
 SELECT (SELECT id
         FROM proven_ai.policy_types
         WHERE name = 'ATTRIBUTION_POLICY'),
@@ -219,12 +169,12 @@ SELECT (SELECT id
        'The content will be attributed to the owner profile'
 WHERE NOT EXISTS (SELECT 1
                   FROM proven_ai.policy_options
-                  WHERE policy_id = (SELECT id
+                  WHERE policy_type_id = (SELECT id
                                      FROM proven_ai.policy_types
                                      WHERE name = 'ATTRIBUTION_POLICY')
                     AND name = 'OWNER_PROFILE');
 
-INSERT INTO proven_ai.policy_options (policy_id, name, description)
+INSERT INTO proven_ai.policy_options (policy_type_id, name, description)
 SELECT (SELECT id
         FROM proven_ai.policy_types
         WHERE name = 'ATTRIBUTION_POLICY'),
@@ -232,12 +182,12 @@ SELECT (SELECT id
        'The content will be attributed to the original document'
 WHERE NOT EXISTS (SELECT 1
                   FROM proven_ai.policy_options
-                  WHERE policy_id = (SELECT id
+                  WHERE policy_type_id = (SELECT id
                                      FROM proven_ai.policy_types
                                      WHERE name = 'ATTRIBUTION_POLICY')
                     AND name = 'ORIGINAL_DOCUMENT');
 
-INSERT INTO proven_ai.policy_options (policy_id, name, description)
+INSERT INTO proven_ai.policy_options (policy_type_id, name, description)
 SELECT (SELECT id
         FROM proven_ai.policy_types
         WHERE name = 'COMPENSATION_POLICY'),
@@ -245,12 +195,12 @@ SELECT (SELECT id
        'The content will be compensated proportionally'
 WHERE NOT EXISTS (SELECT 1
                   FROM proven_ai.policy_options
-                  WHERE policy_id = (SELECT id
+                  WHERE policy_type_id = (SELECT id
                                      FROM proven_ai.policy_types
                                      WHERE name = 'COMPENSATION_POLICY')
                     AND name = 'PROPORTIONAL');
 
-INSERT INTO proven_ai.policy_options (policy_id, name, description)
+INSERT INTO proven_ai.policy_options (policy_type_id, name, description)
 SELECT (SELECT id
         FROM proven_ai.policy_types
         WHERE name = 'COMPENSATION_POLICY'),
@@ -258,12 +208,12 @@ SELECT (SELECT id
        'The content will be compensated with a fixed amount per word token'
 WHERE NOT EXISTS (SELECT 1
                   FROM proven_ai.policy_options
-                  WHERE policy_id = (SELECT id
+                  WHERE policy_type_id = (SELECT id
                                      FROM proven_ai.policy_types
                                      WHERE name = 'COMPENSATION_POLICY')
                     AND name = 'FIXED');
 
-INSERT INTO proven_ai.policy_options (policy_id, name, description)
+INSERT INTO proven_ai.policy_options (policy_type_id, name, description)
 SELECT (SELECT id
         FROM proven_ai.policy_types
         WHERE name = 'COMPENSATION_POLICY'),
@@ -271,47 +221,48 @@ SELECT (SELECT id
        'The content will be compensated with a blockchain token (Not implemented yet)'
 WHERE NOT EXISTS (SELECT 1
                   FROM proven_ai.policy_options
-                  WHERE policy_id = (SELECT id
+                  WHERE policy_type_id = (SELECT id
                                      FROM proven_ai.policy_types
                                      WHERE name = 'COMPENSATION_POLICY')
-                    AND name = 'PER_TOKEN');
+                    AND name = 'BLOCKCHAIN_TOKEN');
 
 
 -- The root table of ProvenAI to store access control list
 
-CREATE TABLE IF NOT EXISTS proven_ai.acl_groups
+CREATE TABLE IF NOT EXISTS proven_ai.data_pod
 (
-    id                         UUID                 DEFAULT uuid_generate_v4(),
-    registered_organization_id UUID        NOT NULL,
-    repository_id              UUID        NOT NULL, --this is the external system id, eg, the Gendox's project id (UUID)
-    repository_unique_name     TEXT        NOT NULL, --unique name for the repository, eg, [organization_name]/[project_name]
-    created_at                 TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    updated_at                 TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    created_by                 UUID        NOT NULL,
-    updated_by                 UUID        NOT NULL,
+    id              UUID        NOT NULL,
+    organization_id UUID        NOT NULL,
+    pod_unique_name TEXT, --unique name for the pod, eg, [organization_name]/[project_name]
+    created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    created_by      UUID,
+    updated_by      UUID,
 
     PRIMARY KEY (id),
-    FOREIGN KEY (registered_organization_id) REFERENCES proven_ai.registered_organizations (id),
-    CONSTRAINT acl_groups_repository_id_key UNIQUE (repository_id)
+    FOREIGN KEY (organization_id) REFERENCES proven_ai.organizations (id)
 );
 
--- Table to store user's access control policies for a acl_group
+-- database comments for columns
+COMMENT ON COLUMN proven_ai.data_pod.id IS 'The unique id of the data pod. It is an ID provided by the external system (eg. Gendox project id)';
+COMMENT ON COLUMN proven_ai.data_pod.organization_id IS 'The registered organization id';
+
+-- Table to store user's access control policies for a data pod
 CREATE TABLE IF NOT EXISTS proven_ai.acl_policies
 (
-    id               UUID                 DEFAULT uuid_generate_v4(),
-    acl_group_id     UUID        NOT NULL,
-    policy_id        UUID        NOT NULL,
-    policy_option_id UUID        NOT NULL,
-    value            TEXT        NOT NULL, -- an arbitrary field to store the policy value
+    id               UUID                 DEFAULT public.uuid_generate_v4(),
+    data_pod_id      UUID        NOT NULL,
+    policy_type_id   UUID        NOT NULL,
+    policy_option_id UUID,
+    value            TEXT, -- an arbitrary field to store the policy value
     created_at       TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at       TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    created_by       UUID        NOT NULL,
-    updated_by       UUID        NOT NULL,
+    created_by       UUID,
+    updated_by       UUID,
 
     PRIMARY KEY (id),
-    CONSTRAINT acl_policies_acl_group_id_policy_id_policy_option_id_key UNIQUE (acl_group_id, policy_id),
-    FOREIGN KEY (acl_group_id) REFERENCES proven_ai.acl_groups (id),
-    FOREIGN KEY (policy_id) REFERENCES proven_ai.policy_types (id),
+    FOREIGN KEY (data_pod_id) REFERENCES proven_ai.data_pod (id),
+    FOREIGN KEY (policy_type_id) REFERENCES proven_ai.policy_types (id),
     FOREIGN KEY (policy_option_id) REFERENCES proven_ai.policy_options (id)
 );
 
@@ -322,15 +273,63 @@ CREATE TABLE IF NOT EXISTS proven_ai.acl_policies
 -----------    ProvenAI Registered Agents   ---------------
 
 
-.....
+-- table for registered agent
+CREATE TABLE IF NOT EXISTS proven_ai.agents
+(
+    id              UUID        NOT NULL,
+    organization_id UUID        NOT NULL,
+    agent_vc_id     TEXT        NOT NULL,
+    created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    created_by      UUID,
+    updated_by      UUID,
 
+    PRIMARY KEY (id),
+    FOREIGN KEY (organization_id) REFERENCES proven_ai.organizations (id)
+);
+
+COMMENT ON COLUMN proven_ai.agents.id IS 'The external agent id from the external system (like Gendox agent id)';
+
+-- table for agent's purpose of use policies, also includes in the Actual VC
+CREATE TABLE IF NOT EXISTS proven_ai.agent_purpose_of_use_policies
+(
+    id               UUID        NOT NULL,
+    agent_id         UUID        NOT NULL,
+    policy_type_id   UUID        NOT NULL,
+    policy_option_id UUID        NOT NULL,
+    value            TEXT        NOT NULL,
+    created_at       TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at       TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    created_by       UUID,
+    updated_by       UUID,
+
+    PRIMARY KEY (id),
+    FOREIGN KEY (agent_id) REFERENCES proven_ai.agents (id),
+    FOREIGN KEY (policy_type_id) REFERENCES proven_ai.policy_types (id),
+    FOREIGN KEY (policy_option_id) REFERENCES proven_ai.policy_options (id)
+);
 
 -----------    ProvenAI Registered Agents   ---------------
 -----------------------------------------------------------
 -----------------------------------------------------------
 ----------------    ProvenAI Auditing   -------------------
 
-    ......
+
+-- table for permission of use VCs (section response for a question) created for a search
+CREATE TABLE IF NOT EXISTS proven_ai.audit_permission_of_use_vc
+(
+    permission_of_use_vc_id   UUID        NOT NULL,
+    search_id                 UUID        NOT NULL,
+    section_iscc              TEXT        NOT NULL,
+    owner_organization_id     UUID        NOT NULL,
+    processor_organization_id UUID        NOT NULL,
+    tokens                    integer     NOT NULL, -- number of tokens in the section
+    created_at                TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at                TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+
+    PRIMARY KEY (permission_of_use_vc_id)
+);
+
 
 ----------------    ProvenAI Auditing   -------------------
 -----------------------------------------------------------
