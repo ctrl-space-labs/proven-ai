@@ -48,6 +48,7 @@ public class DataPodPredicates {
         BooleanExpression subQueryExpression = aclPoliciesSubQuery.value.eq(allowAgentId).and(aclPoliciesSubQuery.policyType.name.eq("ALLOW_LIST"));
 
         // Use the subquery in the main query
+        // TODO - Performance Test for more than 1 million Agents and Pods
         return qDataPod.aclPolicies.any()
                 .in(JPAExpressions.selectFrom(aclPoliciesSubQuery).where(subQueryExpression));
     }
