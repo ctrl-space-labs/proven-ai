@@ -12,6 +12,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.UUID;
+
 @Tag(name = "Data Pods", description = "Endpoints for managing data pods")
 public interface DataPodControllerSpec {
 
@@ -28,4 +30,12 @@ public interface DataPodControllerSpec {
             DataPodCriteria criteria,
             @Parameter(description = "Pagination information", required = false, schema = @Schema(implementation = Pageable.class))
             Pageable pageable) throws ProvenAiException;
+
+    @Operation(summary = "Get a data pod by id")
+    public DataPod getById(UUID id) throws ProvenAiException;
+
+    @Operation(summary = "Create a new data pod")
+    public DataPod create(DataPod dataPod);
+
+
 }

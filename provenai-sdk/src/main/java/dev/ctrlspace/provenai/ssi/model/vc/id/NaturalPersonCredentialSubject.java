@@ -20,7 +20,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder(toBuilder = true)
-class NaturalPersonCredentialSubject extends CredentialSubject {
+public class NaturalPersonCredentialSubject implements CredentialSubject {
     private String id;
     private String familyName;
     private String firstName;

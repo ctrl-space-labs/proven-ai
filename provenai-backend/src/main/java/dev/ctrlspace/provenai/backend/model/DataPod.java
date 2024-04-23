@@ -22,6 +22,10 @@ public class DataPod {
     @Column(name = "pod_unique_name")
     private String podUniqueName;
 
+    @Basic
+    @Column(name = "host_url")
+    private String hostUrl;
+
     @OneToMany(mappedBy = "dataPod")
     private List<AclPolicies> aclPolicies = new ArrayList<>();
 
@@ -62,6 +66,14 @@ public class DataPod {
         this.podUniqueName = podUniqueName;
     }
 
+    public String getHostUrl() {
+        return hostUrl;
+    }
+
+    public void setHostUrl(String hostUrl) {
+        this.hostUrl = hostUrl;
+    }
+
     public Instant getCreatedAt() {
         return createdAt;
     }
@@ -99,11 +111,11 @@ public class DataPod {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         DataPod dataPod = (DataPod) o;
-        return Objects.equals(id, dataPod.id) && Objects.equals(organizationId, dataPod.organizationId) && Objects.equals(podUniqueName, dataPod.podUniqueName) && Objects.equals(createdAt, dataPod.createdAt) && Objects.equals(updatedAt, dataPod.updatedAt) && Objects.equals(createdBy, dataPod.createdBy) && Objects.equals(updatedBy, dataPod.updatedBy);
+        return Objects.equals(id, dataPod.id) && Objects.equals(organizationId, dataPod.organizationId) && Objects.equals(podUniqueName, dataPod.podUniqueName) && Objects.equals(hostUrl, dataPod.hostUrl) && Objects.equals(aclPolicies, dataPod.aclPolicies) && Objects.equals(createdAt, dataPod.createdAt) && Objects.equals(updatedAt, dataPod.updatedAt) && Objects.equals(createdBy, dataPod.createdBy) && Objects.equals(updatedBy, dataPod.updatedBy);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, organizationId, podUniqueName, createdAt, updatedAt, createdBy, updatedBy);
+        return Objects.hash(id, organizationId, podUniqueName, hostUrl, aclPolicies, createdAt, updatedAt, createdBy, updatedBy);
     }
 }

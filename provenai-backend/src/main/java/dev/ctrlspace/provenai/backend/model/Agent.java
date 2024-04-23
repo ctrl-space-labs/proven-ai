@@ -1,13 +1,16 @@
 package dev.ctrlspace.provenai.backend.model;
 
+import com.fasterxml.jackson.databind.util.JSONPObject;
+import io.hypersistence.utils.hibernate.type.json.JsonBinaryType;
 import jakarta.persistence.*;
+import org.hibernate.annotations.Type;
 
 import java.util.Objects;
 import java.util.UUID;
 
 @Entity
 @Table(name = "agents", schema = "proven_ai")
-public class Agents {
+public class Agent {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "id")
@@ -15,9 +18,9 @@ public class Agents {
     @Basic
     @Column(name = "organization_id")
     private UUID organizationId;
-    @Basic
-    @Column(name = "agent_vc_id")
-    private String agentVcId;
+    @Column(columnDefinition = "jsonb", name = "agent_verifiable_id")
+    @Type(JsonBinaryType.class)
+    private JSONPObject agentVcId;
     @Basic
     @Column(name = "created_at")
     private Object createdAt;
@@ -47,11 +50,11 @@ public class Agents {
         this.organizationId = organizationId;
     }
 
-    public String getAgentVcId() {
+    public JSONPObject getAgentVcId() {
         return agentVcId;
     }
 
-    public void setAgentVcId(String agentVcId) {
+    public void setAgentVcId(JSONPObject agentVcId) {
         this.agentVcId = agentVcId;
     }
 
@@ -91,7 +94,7 @@ public class Agents {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Agents that = (Agents) o;
+        Agent that = (Agent) o;
         return Objects.equals(id, that.id) && Objects.equals(organizationId, that.organizationId) && Objects.equals(agentVcId, that.agentVcId) && Objects.equals(createdAt, that.createdAt) && Objects.equals(updatedAt, that.updatedAt) && Objects.equals(createdBy, that.createdBy) && Objects.equals(updatedBy, that.updatedBy);
     }
 

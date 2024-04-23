@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder(toBuilder = true)
-class LegalEntityCredentialSubject extends CredentialSubject {
+public class LegalEntityCredentialSubject implements CredentialSubject {
     private String id;
     private String legalPersonIdentifier;
     private String legalName;
