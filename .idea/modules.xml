@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/proven-ai.iml" filepath="$PROJECT_DIR$/.idea/proven-ai.iml" />
       <module fileurl="file://$PROJECT_DIR$/provenai-backend/provenai-backend.iml" filepath="$PROJECT_DIR$/provenai-backend/provenai-backend.iml" />
+      <module fileurl="file://$PROJECT_DIR$/provenai-documentation.iml" filepath="$PROJECT_DIR$/provenai-documentation.iml" />
       <module fileurl="file://$PROJECT_DIR$/provenai-frontend.iml" filepath="$PROJECT_DIR$/provenai-frontend.iml" />
     </modules>
   </component>
