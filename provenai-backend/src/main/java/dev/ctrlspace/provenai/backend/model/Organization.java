@@ -1,12 +1,21 @@
 package dev.ctrlspace.provenai.backend.model;
 
+import com.fasterxml.jackson.databind.util.JSONPObject;
+import io.hypersistence.utils.hibernate.type.json.JsonBinaryType;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Type;
 
 import java.util.Objects;
 import java.util.UUID;
 
 @Entity
 @Table(name = "organizations", schema = "proven_ai")
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class Organization {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
@@ -21,6 +30,10 @@ public class Organization {
     @Basic
     @Column(name = "vat_number")
     private String vatNumber;
+
+    @Column(columnDefinition = "jsonb", name = "verifiable_id_vp")
+    @Type(JsonBinaryType.class)
+    private JSONPObject verifiablePresentation;
     @Basic
     @Column(name = "created_at")
     private Object createdAt;
@@ -66,6 +79,14 @@ public class Organization {
         this.vatNumber = vatNumber;
     }
 
+    public JSONPObject getVerifiablePresentation() {
+        return verifiablePresentation;
+    }
+
+    public void setVerifiablePresentation(JSONPObject verifiablePresentation) {
+        this.verifiablePresentation = verifiablePresentation;
+    }
+
     public Object getCreatedAt() {
         return createdAt;
     }
@@ -103,11 +124,11 @@ public class Organization {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Organization that = (Organization) o;
-        return Objects.equals(id, that.id) && Objects.equals(name, that.name) && Objects.equals(country, that.country) && Objects.equals(vatNumber, that.vatNumber) && Objects.equals(createdAt, that.createdAt) && Objects.equals(updatedAt, that.updatedAt) && Objects.equals(createdBy, that.createdBy) && Objects.equals(updatedBy, that.updatedBy);
+        return Objects.equals(id, that.id) && Objects.equals(name, that.name) && Objects.equals(country, that.country) && Objects.equals(vatNumber, that.vatNumber) && Objects.equals(verifiablePresentation, that.verifiablePresentation) && Objects.equals(createdAt, that.createdAt) && Objects.equals(updatedAt, that.updatedAt) && Objects.equals(createdBy, that.createdBy) && Objects.equals(updatedBy, that.updatedBy);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, country, vatNumber, createdAt, updatedAt, createdBy, updatedBy);
+        return Objects.hash(id, name, country, vatNumber, verifiablePresentation, createdAt, updatedAt, createdBy, updatedBy);
     }
 }

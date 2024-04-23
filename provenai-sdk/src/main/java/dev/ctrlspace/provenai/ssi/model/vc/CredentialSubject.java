@@ -7,7 +7,7 @@ package dev.ctrlspace.provenai.ssi.model.vc;
  * Specific types of Verifiable Credentials should extend this class and add their own properties.
  * e.g. a Legal Entity Verifiable Credential should extend this class and add properties like legalName, VAT Number, etc.
  */
-public abstract class CredentialSubject {
+public interface CredentialSubject {
     public abstract String getId();
 }
 

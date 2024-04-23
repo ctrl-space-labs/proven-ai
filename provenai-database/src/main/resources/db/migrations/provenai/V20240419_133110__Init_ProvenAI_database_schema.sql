@@ -10,14 +10,15 @@ ALTER EXTENSION "uuid-ossp" SET SCHEMA public;
 -- columns are: id, organization id, created/updated by & at
 create table if not exists proven_ai.organizations
 (
-    id         UUID        NOT NULL,
-    name       TEXT,
-    country    TEXT,
-    VAT_number TEXT,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    created_by UUID,
-    updated_by UUID,
+    id                      UUID        NOT NULL,
+    name                    TEXT,
+    country                 TEXT,
+    VAT_number              TEXT,
+    verifiable_id_vp JSONB,
+    created_at              TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at              TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    created_by              UUID,
+    updated_by              UUID,
 
     PRIMARY KEY (id)
 );
@@ -117,8 +118,8 @@ SELECT (SELECT id
 WHERE NOT EXISTS (SELECT 1
                   FROM proven_ai.policy_options
                   WHERE policy_type_id = (SELECT id
-                                     FROM proven_ai.policy_types
-                                     WHERE name = 'USAGE_POLICY')
+                                          FROM proven_ai.policy_types
+                                          WHERE name = 'USAGE_POLICY')
                     AND name = 'SCHOOL_ASSISTANT');
 
 INSERT INTO proven_ai.policy_options (policy_type_id, name, description)
@@ -130,8 +131,8 @@ SELECT (SELECT id
 WHERE NOT EXISTS (SELECT 1
                   FROM proven_ai.policy_options
                   WHERE policy_type_id = (SELECT id
-                                     FROM proven_ai.policy_types
-                                     WHERE name = 'USAGE_POLICY')
+                                          FROM proven_ai.policy_types
+                                          WHERE name = 'USAGE_POLICY')
                     AND name = 'CORPORATE_ASSISTANT');
 
 INSERT INTO proven_ai.policy_options (policy_type_id, name, description)
@@ -143,8 +144,8 @@ SELECT (SELECT id
 WHERE NOT EXISTS (SELECT 1
                   FROM proven_ai.policy_options
                   WHERE policy_type_id = (SELECT id
-                                     FROM proven_ai.policy_types
-                                     WHERE name = 'USAGE_POLICY')
+                                          FROM proven_ai.policy_types
+                                          WHERE name = 'USAGE_POLICY')
                     AND name = 'ONLINE_COURSE');
 
 INSERT INTO proven_ai.policy_options (policy_type_id, name, description)
@@ -156,8 +157,8 @@ SELECT (SELECT id
 WHERE NOT EXISTS (SELECT 1
                   FROM proven_ai.policy_options
                   WHERE policy_type_id = (SELECT id
-                                     FROM proven_ai.policy_types
-                                     WHERE name = 'USAGE_POLICY')
+                                          FROM proven_ai.policy_types
+                                          WHERE name = 'USAGE_POLICY')
                     AND name = 'GENERAL_ASSISTANT');
 
 
@@ -170,8 +171,8 @@ SELECT (SELECT id
 WHERE NOT EXISTS (SELECT 1
                   FROM proven_ai.policy_options
                   WHERE policy_type_id = (SELECT id
-                                     FROM proven_ai.policy_types
-                                     WHERE name = 'ATTRIBUTION_POLICY')
+                                          FROM proven_ai.policy_types
+                                          WHERE name = 'ATTRIBUTION_POLICY')
                     AND name = 'OWNER_PROFILE');
 
 INSERT INTO proven_ai.policy_options (policy_type_id, name, description)
@@ -183,8 +184,8 @@ SELECT (SELECT id
 WHERE NOT EXISTS (SELECT 1
                   FROM proven_ai.policy_options
                   WHERE policy_type_id = (SELECT id
-                                     FROM proven_ai.policy_types
-                                     WHERE name = 'ATTRIBUTION_POLICY')
+                                          FROM proven_ai.policy_types
+                                          WHERE name = 'ATTRIBUTION_POLICY')
                     AND name = 'ORIGINAL_DOCUMENT');
 
 INSERT INTO proven_ai.policy_options (policy_type_id, name, description)
@@ -196,8 +197,8 @@ SELECT (SELECT id
 WHERE NOT EXISTS (SELECT 1
                   FROM proven_ai.policy_options
                   WHERE policy_type_id = (SELECT id
-                                     FROM proven_ai.policy_types
-                                     WHERE name = 'COMPENSATION_POLICY')
+                                          FROM proven_ai.policy_types
+                                          WHERE name = 'COMPENSATION_POLICY')
                     AND name = 'PROPORTIONAL');
 
 INSERT INTO proven_ai.policy_options (policy_type_id, name, description)
@@ -209,8 +210,8 @@ SELECT (SELECT id
 WHERE NOT EXISTS (SELECT 1
                   FROM proven_ai.policy_options
                   WHERE policy_type_id = (SELECT id
-                                     FROM proven_ai.policy_types
-                                     WHERE name = 'COMPENSATION_POLICY')
+                                          FROM proven_ai.policy_types
+                                          WHERE name = 'COMPENSATION_POLICY')
                     AND name = 'FIXED');
 
 INSERT INTO proven_ai.policy_options (policy_type_id, name, description)
@@ -222,8 +223,8 @@ SELECT (SELECT id
 WHERE NOT EXISTS (SELECT 1
                   FROM proven_ai.policy_options
                   WHERE policy_type_id = (SELECT id
-                                     FROM proven_ai.policy_types
-                                     WHERE name = 'COMPENSATION_POLICY')
+                                          FROM proven_ai.policy_types
+                                          WHERE name = 'COMPENSATION_POLICY')
                     AND name = 'BLOCKCHAIN_TOKEN');
 
 
@@ -234,6 +235,7 @@ CREATE TABLE IF NOT EXISTS proven_ai.data_pod
     id              UUID        NOT NULL,
     organization_id UUID        NOT NULL,
     pod_unique_name TEXT, --unique name for the pod, eg, [organization_name]/[project_name]
+    host_url       TEXT, -- the host url of the data pod
     created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     created_by      UUID,
@@ -278,7 +280,7 @@ CREATE TABLE IF NOT EXISTS proven_ai.agents
 (
     id              UUID        NOT NULL,
     organization_id UUID        NOT NULL,
-    agent_vc_id     TEXT        NOT NULL,
+    agent_verifiable_id        JSONB,
     created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     created_by      UUID,

@@ -23,7 +23,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder(toBuilder = true)
-public class VerifiableCredential {
+public class VerifiableCredential<T extends CredentialSubject> {
     public static Set<String> supportedTypes = Set.of("VerifiableCredential",
             "VerifiableAttestation",
             "VerifiablePID",
@@ -36,7 +36,7 @@ public class VerifiableCredential {
     private String issuer;
     private Date validFrom;
     private Date validUntil;
-    private CredentialSubject credentialSubject;
+    private T credentialSubject;
     private CredentialSchema credentialSchema;
 
 }

@@ -1,5 +1,6 @@
 package dev.ctrlspace.provenai.ssi;
 
+import dev.ctrlspace.provenai.ssi.issuer.KeyCreation;
 import id.walt.crypto.keys.KeyType;
 import id.walt.crypto.keys.LocalKey;
 import org.junit.jupiter.api.Test;
