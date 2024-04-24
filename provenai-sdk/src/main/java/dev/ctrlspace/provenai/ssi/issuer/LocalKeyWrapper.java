@@ -4,61 +4,42 @@ package dev.ctrlspace.provenai.ssi.issuer;
 import dev.ctrlspace.provenai.utils.ContinuationObjectUtils;
 import id.walt.crypto.keys.KeyType;
 import id.walt.crypto.keys.LocalKey;
+import kotlin.Result;
 import kotlin.coroutines.Continuation;
 
 public class LocalKeyWrapper {
-    Continuation<? super Object> continuation = ContinuationObjectUtils.createSuperContinuation();
-
-    public String exportJWK(LocalKey localKey) {
-        return (String) localKey.exportJWK(continuation);
+    private Continuation<? super Object> continuation;
+    public LocalKeyWrapper() {
+        this.continuation = ContinuationObjectUtils.createSuperContinuation();
     }
 
-    public String exportJWKObject(LocalKey localKey) {
-        String jwk = (String) localKey.exportJWK(continuation);
-        return jwk;
+    public Object exportJWK(LocalKey localKey) {
+        return  localKey.exportJWK(continuation);
     }
 
-//        I WANT OT USE THE OTHER METHODS OF KEY ALSO
+    public Object exportJWKObject(LocalKey localKey) {return localKey.exportJWK(continuation);}
 
 
-    public String getPublicKey(LocalKey localKey) {
-        String publicKey = (String) localKey.getPublicKey(continuation);
-        return publicKey;
+
+    public LocalKey getPublicKey(LocalKey localKey) {
+        return (LocalKey) localKey.getPublicKey(continuation);
     }
+    public Object getKeyId(LocalKey localKey) { return  localKey.getKeyId(continuation);}
 
-    public String getKeyId(LocalKey localKey) {
-        String keyId = (String) localKey.getKeyId(continuation);
-        return keyId;
+    public KeyType getKeyType(LocalKey localKey) {return localKey.getKeyType();}
+
+    public String getJwk(LocalKey localKey) {return localKey.getJwk();}
+
+    public Object exportPem(LocalKey localKey) {return  localKey.exportPEM(continuation);}
+
+    public Object getPublicKeyRepresentation(LocalKey localKey) {return localKey.getPublicKeyRepresentation(continuation);}
+
+
+    public Object getThumbprint(LocalKey localKey) {return localKey.getThumbprint(continuation);}
+
+    public Object Boolean (LocalKey localKey) {return localKey.getHasPrivateKey();}
+
+    public LocalKey getLocalKey(LocalKey localKey) {
+        return localKey;
     }
-
-    public KeyType getKeyType(LocalKey localKey) {
-        KeyType keyType = localKey.getKeyType();
-        return keyType;
-    }
-
-    public String getJwk(LocalKey localKey) {
-        String jwk = localKey.getJwk();
-        return jwk;
-    }
-
-    public Object exportPem(LocalKey localKey) {
-        Object pem = localKey.exportPEM(continuation);
-        return pem;
-    }
-
-    public Object getPublicKeyRepresentation(LocalKey localKey) {
-        Object publicKeyRepresentation = localKey.getPublicKeyRepresentation(continuation);
-        return publicKeyRepresentation;
-    }
-
-    public Object getThumbprint(LocalKey localKey) {
-        Object keyThumbprint = localKey.getThumbprint(continuation);
-        return keyThumbprint;
-    }
-
-    public Object Boolean (LocalKey localKey) {
-        Boolean HasPrivateKey = localKey.getHasPrivateKey();
-        return HasPrivateKey;
-    }
-
 }

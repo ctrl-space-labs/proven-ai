@@ -1,6 +1,7 @@
 package dev.ctrlspace.provenai.utils;
 
 import id.walt.credentials.verification.models.PolicyResult;
+import id.walt.crypto.keys.LocalKey;
 import kotlin.Unit;
 import kotlin.coroutines.Continuation;
 import kotlin.coroutines.CoroutineContext;
@@ -25,6 +26,9 @@ public class ContinuationObjectUtils {
             }
         };
     }
+
+    // Method to create a continuation with a wildcard super type for LocalKey
+    // Method to create a continuation with a wildcard super type for LocalKey
 
     // Method to create a plain continuation without type parameter
     public static Continuation<Unit> createPlainContinuation() {
