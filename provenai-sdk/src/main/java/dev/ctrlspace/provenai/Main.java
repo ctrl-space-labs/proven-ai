@@ -2,6 +2,10 @@ package dev.ctrlspace.provenai;
 
 
 import dev.ctrlspace.provenai.ssi.*;
+import dev.ctrlspace.provenai.ssi.issuer.DidIssuer;
+import dev.ctrlspace.provenai.ssi.issuer.KeyCreation;
+import dev.ctrlspace.provenai.ssi.issuer.VerifiableCredentialBuilder;
+import dev.ctrlspace.provenai.ssi.issuer.VerifiablePresentationBuilder;
 import dev.ctrlspace.provenai.utils.ContinuationObjectUtils;
 import id.walt.credentials.vc.vcs.W3CVC;
 import id.walt.credentials.verification.VerificationPolicy;
