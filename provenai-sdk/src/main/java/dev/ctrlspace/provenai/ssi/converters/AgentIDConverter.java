@@ -1,0 +1,68 @@
+package dev.ctrlspace.provenai.ssi.converters;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import dev.ctrlspace.provenai.ssi.issuer.VerifiableCredentialBuilder;
+import dev.ctrlspace.provenai.ssi.model.vc.VerifiableCredential;
+import dev.ctrlspace.provenai.ssi.model.vc.attestation.AIAgentCredentialSubject;
+import dev.ctrlspace.provenai.ssi.model.vc.attestation.W3CCredentialSubject;
+import id.walt.credentials.vc.vcs.W3CVC;
+import kotlinx.serialization.json.Json;
+import kotlinx.serialization.json.JsonElement;
+import kotlinx.serialization.json.JsonObject;
+import org.json.JSONException;
+
+
+import java.time.Duration;
+import java.util.Map;
+import java.util.UUID;
+
+
+public class AgentIDConverter {
+
+    public W3CVC convertToW3CVC(VerifiableCredential<AIAgentCredentialSubject> agentIdCredential) throws JsonProcessingException, JSONException {
+        VerifiableCredentialBuilder credentialBuilder = new VerifiableCredentialBuilder();
+
+        // Add context and type
+        credentialBuilder.addContext("https://www.w3.org/2018/credentials/v1");
+        credentialBuilder.addType("VerifiableAIAgent");
+
+        // Set credential ID, issuer DID, and subject DID
+        credentialBuilder.setCredentialId("urn:uuid:"+ agentIdCredential.getId());
+        credentialBuilder.setIssuerDid("did:key:_proven-ai-issuer_");
+        credentialBuilder.setSubjectDid(agentIdCredential.getCredentialSubject().getId());
+
+        Json json = Json.Default;
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String jsonObjectString = objectMapper.writeValueAsString(agentIdCredential.getCredentialSubject());
+        JsonElement jsonElement = json.parseToJsonElement(jsonObjectString);
+        Map<String, JsonElement> map = Map.of("agent", jsonElement);
+        JsonObject jsonObject = new JsonObject(map);
+
+        credentialBuilder.credentialSubject(jsonObject);
+
+        // Set validity duration
+        Duration duration = Duration.ofDays(30); // Example: 30 days validity period
+        credentialBuilder.validFor(duration);
+
+        // Build the credential
+        W3CVC credential = credentialBuilder.buildCredential();
+        return credential;
+    }
+
+
+
+
+//    I want a method to convert w3cvc to aiagentcredentials
+
+//    public VerifiableCredential<AIAgentCredentialSubject> convertToAgentIdVC(W3CCredentialSubject w3CCredentialSubject){
+//        VerifiableCredential<AIAgentCredentialSubject> agentIdVC = new VerifiableCredential<>();
+//        agentIdVC.setId(w3CCredentialSubject.getId());
+//        agentIdVC.setCredentialSubject(w3CCredentialSubject.getCredentialSubject());
+//        agentIdVC.getCredentialSubject().setId(w3CCredentialSubject.getSubjectDid());
+//        agentIdVC.getCredentialSubject().setAgentName(w3CCredentialSubject.getSubjectDid());
+//        return agentIdVC;
+//    }
+
+}

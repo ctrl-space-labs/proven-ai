@@ -6,6 +6,7 @@ import id.walt.crypto.keys.KeyType;
 import id.walt.crypto.keys.LocalKey;
 import id.walt.crypto.keys.LocalKeyMetadata;
 import id.walt.did.dids.DidService;
+import id.walt.did.dids.document.DidDocument;
 import id.walt.did.dids.registrar.DidResult;
 import id.walt.did.dids.registrar.LocalRegistrar;
 import id.walt.did.dids.registrar.dids.DidKeyCreateOptions;
@@ -65,12 +66,11 @@ public class DidIssuer {
                 return (DidResult) localRegistrar.createByKey(localKey, webDidOptions,continuationSuper);
         }
 
+//        i want a method to exort the did document
 
 
         public LocalKey generateKey(KeyType keyType) {
                 return (LocalKey) LocalKey.Companion.generate(keyType, new LocalKeyMetadata(),continuationSuper);
         }
-
-
 
 }

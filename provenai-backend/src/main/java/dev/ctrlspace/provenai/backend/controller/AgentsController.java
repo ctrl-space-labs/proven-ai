@@ -1,13 +1,20 @@
 package dev.ctrlspace.provenai.backend.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import dev.ctrlspace.provenai.backend.controller.specs.AgentsControllerSpec;
 import dev.ctrlspace.provenai.backend.model.Agent;
 import dev.ctrlspace.provenai.backend.model.dtos.AgentAuthorizationRequestDTO;
 import dev.ctrlspace.provenai.backend.model.dtos.AgentIdCredential;
 import dev.ctrlspace.provenai.backend.model.dtos.criteria.AgentCriteria;
+import dev.ctrlspace.provenai.ssi.issuer.ProveAIIssuer;
+import dev.ctrlspace.provenai.ssi.model.vc.VerifiableCredential;
+import dev.ctrlspace.provenai.ssi.model.vc.attestation.AIAgentCredentialSubject;
+//import kotlinx.serialization.json.internal.JsonException;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Date;
 
 
 @RestController
@@ -26,13 +33,36 @@ public class AgentsController implements AgentsControllerSpec {
     }
 
     @PostMapping("/agents/{id}/credential-offer")
-    public AgentIdCredential createAgentVerifiableId(@PathVariable String id) {
-        return AgentIdCredential
-                .builder()
-                .agentId(id)
-                .credentialOfferUrl("openid-credential-offer://issuer.portal.walt.id/?credential_offer_uri=https%3A%2F%2Fissuer.portal.walt.id%2Fopenid4vc%2FcredentialOffer%3Fid%3D99d79908-32e6-4bd7-9873-562d2d262e12")
-                .credentialJwt("eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsIm5hbWUiOiJKb2huIERvZSIsImVtYWlsIjoiam9obkBkb2UuY29tIn0.7J1Gzv")
-                .build();
+    public AgentIdCredential createAgentVerifiableId(@PathVariable String id) throws Exception, JsonProcessingException {
+//        VerifiableCredential<AIAgentCredentialSubject> agentIdVC = VerifiableCredential.<AIAgentCredentialSubject>builder()
+//                .type("VerifiableAIAgent")
+//                .validFrom(new Date())
+//                .credentialSubject(AIAgentCredentialSubject.builder()
+//                        .id("agentId")
+//                        .organizationName("Ctrl+Space Labs")
+//                        .agentName("John Doe")
+//                        .creationDate(new Date().toInstant())
+//                        .purpose("AI Agent")
+//                        .build())
+//                .build();
+//
+//        ProveAIIssuer provenAISDK = new ProveAIIssuer();
+//        String agentIdVCJwt = provenAISDK.generateUnsignedVC(agentIdVC);
+
+        //String url = ProvenAIIssueService.getOfferFor(agentIdVCJwt)
+        //String signedjwt = provenAISDK.generateSignedVC(agentIdVCJwt)
+
+
+
+
+//
+//        return AgentIdCredential
+//                .builder()
+//                .agentId(id)
+//                .credentialOfferUrl(url)
+//                .credentialJwt(signedjwt)
+//                .build();
+        return null;
     }
 
 

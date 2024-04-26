@@ -8,6 +8,7 @@ import id.walt.credentials.CredentialBuilderType;
 import id.walt.credentials.vc.vcs.W3CVC;
 import id.walt.crypto.keys.Key;
 import id.walt.did.helpers.WaltidServices;
+import kotlin.Pair;
 import kotlin.Unit;
 import kotlin.coroutines.Continuation;
 
@@ -24,8 +25,12 @@ public class VerifiableCredentialBuilder {
     private CredentialBuilder credentialBuilder;
     private Continuation<Unit> continuationPlain;
 
+    private Continuation<? super Object> continuationSuper;
+
+
     public VerifiableCredentialBuilder() {
         this.continuationPlain = ContinuationObjectUtils.createPlainContinuation();
+        this.continuationSuper = ContinuationObjectUtils.createSuperContinuation();
         WaltidServices.INSTANCE.minimalInit(continuationPlain);
         // Initialize the credential builder with default settings
         credentialBuilder = new CredentialBuilder(CredentialBuilderType.W3CV11CredentialBuilder);
@@ -67,9 +72,10 @@ public class VerifiableCredentialBuilder {
     }
 
 
-    public void useData(String key, JsonElement value) {
-        credentialBuilder.useData(key, value);
-    }
+
+public void useData(Pair<String, JsonElement> keyValue) {
+    credentialBuilder.useData(keyValue);
+}
 
 
     public void credentialSubject(JsonObject data) {
@@ -86,20 +92,22 @@ public class VerifiableCredentialBuilder {
         return credentialBuilder.buildW3C();
     }
 
-    public String signCredential(
+    public Object signCredential(
+            W3CVC vc,
             Key issuerKey,
             String issuerDid,
             String subjectDid,
-            Continuation<? super Object> continuation,
             Map<String, String> additionalJwtHeaders,
             Map<String, JsonElement> additionalJwtOptions
     ) {
-        W3CVC vc = buildCredential(); // Build the Verifiable Credential
 
         // Convert additionalJwtOptions to the format expected by the signJws method
         Map<String, JsonElement> jsonElementAdditionalJwtOptions = new HashMap<>(additionalJwtOptions);
 
-        return (String) vc.signJws(issuerKey, issuerDid, subjectDid, additionalJwtHeaders, jsonElementAdditionalJwtOptions, continuation);
+        Continuation<? super Object> continuationSuper = ContinuationObjectUtils.createSuperContinuation();
+
+        return vc.signJws(issuerKey, issuerDid, subjectDid,
+                                    additionalJwtHeaders, jsonElementAdditionalJwtOptions, continuationSuper);
     }
 }
 
