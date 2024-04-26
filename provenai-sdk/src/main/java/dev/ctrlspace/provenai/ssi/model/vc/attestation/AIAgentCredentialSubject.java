@@ -1,5 +1,6 @@
 package dev.ctrlspace.provenai.ssi.model.vc.attestation;
 
+import dev.ctrlspace.provenai.ssi.model.vc.CredentialSubject;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,7 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder(toBuilder = true)
-public class AIAgentCredentialSubject {
+public class AIAgentCredentialSubject implements CredentialSubject {
     private String id;
     private String organizationName;
     private String agentName;

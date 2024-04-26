@@ -1,5 +1,6 @@
 package dev.ctrlspace.provenai.ssi.model.vc;
 
+import kotlinx.serialization.json.JsonElement;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -38,5 +39,6 @@ public class VerifiableCredential<T extends CredentialSubject> {
     private Date validUntil;
     private T credentialSubject;
     private CredentialSchema credentialSchema;
+    private JsonElement useData;
 
 }

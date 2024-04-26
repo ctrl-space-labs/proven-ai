@@ -19,11 +19,14 @@ public class VerifiablePresentationBuilder {
 
     private Continuation<Unit> continuationPlain;
 
+    private Continuation<? super Object> continuationSuper;
+
 
 
 
     public VerifiablePresentationBuilder() {
         this.continuationPlain = ContinuationObjectUtils.createPlainContinuation();
+        this.continuationSuper = ContinuationObjectUtils.createSuperContinuation();
         WaltidServices.INSTANCE.minimalInit(continuationPlain);
         // Initialize the presentation builder with default settings
         presentationBuilder = new PresentationBuilder();
@@ -50,18 +53,20 @@ public class VerifiablePresentationBuilder {
         return presentationBuilder.buildPresentationJson();
     }
 
-    public String buildAndSign(Key subjectKey, Continuation<? super Object> continuation) {
+    public Object buildAndSign(Key subjectKey, JsonElement presentationJson) {
         // Build the verifiable presentation JSON
-        JsonElement presentationJson = buildPresentationJson();
 
         // Convert the JSON element to a string
         String presentationJsonString = presentationJson.toString();
 
+        Continuation<? super Object> continuationSuper = ContinuationObjectUtils.createSuperContinuation();
+
+
         // Sign the JSON string using the subject key
-        String signedPresentation = (String) subjectKey.signJws(
+        Object signedPresentation =  subjectKey.signJws(
                 presentationJsonString.getBytes(StandardCharsets.UTF_8),
                 new HashMap<>(),
-                continuation
+                continuationSuper
         );
 
         return signedPresentation;

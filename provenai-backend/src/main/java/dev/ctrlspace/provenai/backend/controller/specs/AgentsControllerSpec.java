@@ -1,5 +1,6 @@
 package dev.ctrlspace.provenai.backend.controller.specs;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import dev.ctrlspace.provenai.backend.exceptions.ProvenAiErrorResponse;
 import dev.ctrlspace.provenai.backend.model.Agent;
 import dev.ctrlspace.provenai.backend.model.dtos.AgentAuthorizationRequestDTO;
@@ -49,7 +50,7 @@ public interface AgentsControllerSpec {
                             schema = @Schema(implementation = ProvenAiErrorResponse.class))),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    public AgentIdCredential createAgentVerifiableId(@PathVariable String id);
+    public AgentIdCredential createAgentVerifiableId(@PathVariable String id) throws Exception, JsonProcessingException;
 
 
     @Operation(summary = "Authorization request for an agent",

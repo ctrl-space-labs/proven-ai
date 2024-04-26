@@ -1,5 +1,6 @@
 package dev.ctrlspace.provenai.ssi.model.vc.attestation;
 
+import dev.ctrlspace.provenai.ssi.model.vc.CredentialSubject;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,7 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder(toBuilder = true)
-public class PermissionOfUseCredentialSubject {
+public class PermissionOfUseCredentialSubject implements CredentialSubject {
 
     private String id; // DID of the AI agent
     private String ownerID; // DID of the data owner
