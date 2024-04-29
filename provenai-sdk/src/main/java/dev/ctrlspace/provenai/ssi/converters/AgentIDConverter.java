@@ -40,6 +40,7 @@ public class AgentIDConverter {
         Map<String, JsonElement> map = Map.of("agent", jsonElement);
         JsonObject jsonObject = new JsonObject(map);
 
+
         credentialBuilder.credentialSubject(jsonObject);
 
         // Set validity duration
@@ -54,7 +55,6 @@ public class AgentIDConverter {
 
 
 
-//    I want a method to convert w3cvc to aiagentcredentials
 
 //    public VerifiableCredential<AIAgentCredentialSubject> convertToAgentIdVC(W3CCredentialSubject w3CCredentialSubject){
 //        VerifiableCredential<AIAgentCredentialSubject> agentIdVC = new VerifiableCredential<>();
