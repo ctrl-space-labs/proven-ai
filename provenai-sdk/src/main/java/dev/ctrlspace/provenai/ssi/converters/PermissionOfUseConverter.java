@@ -40,24 +40,12 @@ public class PermissionOfUseConverter {
             JsonElement jsonElement = json.parseToJsonElement(jsonObjectString);
             Map<String, JsonElement> map = Map.of("permissionOfUse", jsonElement);
             JsonObject jsonObject = new JsonObject(map);
+            jsonObject.put("id", json.parseToJsonElement("\"" + permissionOfUseCredential.getCredentialSubject().getId() + "\""));
+            jsonObject.put("ownerID", json.parseToJsonElement("\"" + permissionOfUseCredential.getCredentialSubject().getOwnerID() + "\""));
+            jsonObject.put("dataSegments", json.parseToJsonElement(objectMapper.writeValueAsString(permissionOfUseCredential.getCredentialSubject().getDataSegments())));
 
             credentialBuilder.credentialSubject(jsonObject);
 
-
-            // Create JsonElements for each field
-            JsonElement agentIdElement = json.parseToJsonElement("\"" + permissionOfUseCredential.getCredentialSubject().getId() + "\"");
-            JsonElement ownerIdElement = json.parseToJsonElement("\"" + permissionOfUseCredential.getCredentialSubject().getOwnerID() + "\"");
-            JsonElement dataSegmentsElement = json.parseToJsonElement(objectMapper.writeValueAsString(permissionOfUseCredential.getCredentialSubject().getDataSegments()));
-
-            // Create Pairs
-            Pair<String, JsonElement> agentId = new Pair<>("id", agentIdElement);
-            Pair<String, JsonElement> ownerId = new Pair<>("ownerID", ownerIdElement);
-            Pair<String, JsonElement> dataSegments= new Pair<>("dataSegments", dataSegmentsElement);
-
-            // Add each field to useData
-            credentialBuilder.useData(agentId);
-            credentialBuilder.useData(ownerId);
-            credentialBuilder.useData(dataSegments);
 
             // Set validity duration
             Duration duration = Duration.ofDays(30); // Example: 30 days validity period

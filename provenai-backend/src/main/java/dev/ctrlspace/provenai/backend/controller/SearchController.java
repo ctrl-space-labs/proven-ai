@@ -13,7 +13,11 @@ public class SearchController {
 
 
     @PostMapping("/search")
-    public List<SearchResult> search(@RequestParam String q, Authentication authentication) {
+    public List<SearchResult> search(@RequestParam String question, Authentication authentication) {
+        // find data pod IDs whose ACL policies match with Agents' policies
+        // get Data Pods ids
+        // REST call to gendox -> semantic search in data Pods IDs
+        // prepare Permission of use VC, with sections ISCC
         return List.of();
     }
 

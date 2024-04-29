@@ -6,15 +6,10 @@ import dev.ctrlspace.provenai.backend.model.Agent;
 import dev.ctrlspace.provenai.backend.model.dtos.AgentAuthorizationRequestDTO;
 import dev.ctrlspace.provenai.backend.model.dtos.AgentIdCredential;
 import dev.ctrlspace.provenai.backend.model.dtos.criteria.AgentCriteria;
-import dev.ctrlspace.provenai.ssi.issuer.ProveAIIssuer;
-import dev.ctrlspace.provenai.ssi.model.vc.VerifiableCredential;
-import dev.ctrlspace.provenai.ssi.model.vc.attestation.AIAgentCredentialSubject;
 //import kotlinx.serialization.json.internal.JsonException;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Date;
 
 
 @RestController
@@ -50,7 +45,7 @@ public class AgentsController implements AgentsControllerSpec {
 //        String agentIdVCJwt = provenAISDK.generateUnsignedVC(agentIdVC);
 
         //String url = ProvenAIIssueService.getOfferFor(agentIdVCJwt)
-        //String signedjwt = provenAISDK.generateSignedVC(agentIdVCJwt)
+//        String signedjwt = provenAISDK.generateSignedVC(agentIdVCJwt)
 
 
 
