@@ -8,6 +8,9 @@ import lombok.NoArgsConstructor;
 
 import java.util.Map;
 
+/**
+ * Class to represent the 'additionalSignVCParams' to sign a Verifiable Credential.
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

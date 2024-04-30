@@ -7,7 +7,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
-
+/**
+ * Class to represent the 'credentialSubject' part of the JSON
+ * This class represents the credential subject of a Permission of Use Credential.
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

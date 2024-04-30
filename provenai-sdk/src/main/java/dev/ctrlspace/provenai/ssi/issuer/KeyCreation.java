@@ -9,6 +9,13 @@ import kotlin.coroutines.Continuation;
 
 public class KeyCreation {
 
+    /**
+     * Method to generate a key
+     * @param keyType algorithm to produce cryptographic key
+     * @param characterLength length of characters the key
+     * @return LocalKey
+     */
+
     public static LocalKey generateKey(KeyType keyType, int characterLength) {
         // Create a continuation object
         Continuation<? super Object> continuation = ContinuationObjectUtils.createSuperContinuation();

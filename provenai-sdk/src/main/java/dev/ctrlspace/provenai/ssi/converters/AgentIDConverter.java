@@ -18,6 +18,9 @@ import java.util.Map;
 import java.util.UUID;
 
 
+/**
+ * AgentIDConverter class is used to convert VerifiableCredential<AIAgentCredentialSubject> to W3CVC format.
+ */
 public class AgentIDConverter {
 
     public W3CVC convertToW3CVC(VerifiableCredential<AIAgentCredentialSubject> agentIdCredential) throws JsonProcessingException, JSONException {

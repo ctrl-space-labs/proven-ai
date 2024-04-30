@@ -15,6 +15,9 @@ import org.json.JSONException;
 import java.time.Duration;
 import java.util.Map;
 
+/**
+ * LegalEntityConverter class is used to convert VerifiableCredential<LegalEntityCredentialSubject> to W3CVC format.
+ */
 public class LegalEntityConverter {
 
     public W3CVC convertToW3CVC(VerifiableCredential<LegalEntityCredentialSubject> legalEntityVerifiableCredential) throws JsonProcessingException, JSONException {

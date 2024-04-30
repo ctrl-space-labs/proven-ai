@@ -17,10 +17,18 @@ import org.json.JSONException;
 
 import java.util.HashMap;
 import java.util.Map;
-
+/**
+ * ProvenAIIssuer class is used to generate and sign Verifiable Credentials for AI Agents.
+ */
 public class ProvenAIIssuer {
 
-
+    /**
+     * Generate a W3CVC object from a VerifiableCredential object.
+     * @param vc VerifiableCredential object
+     * @return W3CVC standard credential object
+     * @throws JSONException
+     * @throws JsonProcessingException
+     */
     public W3CVC generateUnsignedVC(VerifiableCredential<? extends CredentialSubject> vc) throws JSONException, JsonProcessingException {
 
         AgentIDConverter agentIDConverter = new AgentIDConverter();
@@ -35,6 +43,14 @@ public class ProvenAIIssuer {
     }
 
 
+    /** Sign a W3CVC object with an issuer key.
+     * @param w3cVC W3CVC object
+     * @param issuerKey Key object
+     * @param issuerDid String
+     * @param subjectDid String
+     * @param additionalSignVCParams AdditionalSignVCParams object
+     * @return signed verifiable credential in JWS format
+     */
     public Object sign(W3CVC w3cVC, Key issuerKey, String issuerDid, String subjectDid, AdditionalSignVCParams additionalSignVCParams) {
 
         Continuation<? super Object> continuationSuper = ContinuationObjectUtils.createSuperContinuation();
@@ -43,8 +59,15 @@ public class ProvenAIIssuer {
     }
 
 
-
-
+    /**
+     * Generate a signed Verifiable Credential from a VerifiableCredential object.
+     * @param vc
+     * @param issuerKey
+     * @param additionalSignVCParams
+     * @return
+     * @throws JSONException
+     * @throws JsonProcessingException
+     */
 
     public Object generateSignedVC(VerifiableCredential<? extends CredentialSubject> vc, Key issuerKey, AdditionalSignVCParams additionalSignVCParams) throws JSONException, JsonProcessingException {
         W3CVC w3cVC = this.generateUnsignedVC(vc);

@@ -17,6 +17,9 @@ import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * NaturalPersonConverter class is used to convert VerifiableCredential<NaturalPersonCredentialSubject> to W3CVC format.
+ */
 public class NaturalPersonConverter {
     public W3CVC convertToW3CVC(VerifiableCredential<NaturalPersonCredentialSubject> naturalPersonVerifiableCredential) throws JsonProcessingException, JSONException {
 
