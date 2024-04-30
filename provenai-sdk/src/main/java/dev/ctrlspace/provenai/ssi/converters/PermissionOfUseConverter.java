@@ -57,17 +57,7 @@ public class PermissionOfUseConverter {
         }
 
 
-        public VerifiableCredential<PermissionOfUseCredentialSubject> convertToPermissionOfUseVerifiableCredential(W3CCredentialSubject w3CCredentialSubject){
-            VerifiableCredential<PermissionOfUseCredentialSubject> permissionOfUseCredential = new VerifiableCredential<>();
 
-            permissionOfUseCredential.setContext(w3CCredentialSubject.getContext());
-            permissionOfUseCredential.setId(w3CCredentialSubject.getId());
-            permissionOfUseCredential.setType(w3CCredentialSubject.getType());
-            permissionOfUseCredential.setIssuer(w3CCredentialSubject.getIssuerDid());
-            permissionOfUseCredential.setValidFrom(Date.from(w3CCredentialSubject.getValidFrom()));
-            permissionOfUseCredential.setValidUntil(Date.from(w3CCredentialSubject.getValidUntil()));
-            return permissionOfUseCredential;
-        }
 
 
 
