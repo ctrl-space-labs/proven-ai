@@ -12,6 +12,9 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 
+/**
+ * Class to represent the 'credentialSubject' and useData part of the JSON for W3CVC format Verifiable Credentials.
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -20,14 +23,6 @@ public class W3CCredentialSubject implements CredentialSubject{
 
 
     private String id;
-    private List<String> context;
-    private List<String> type;
-    private String credentialId;
-    private String issuerDid;
-    private Instant validFrom;
-    private Duration validFor;
-    private Instant validUntil;
     private Pair<String, JsonElement> useData;
     private JsonElement credentialSubject;
-    private String subjectDid;
 }

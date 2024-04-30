@@ -27,9 +27,15 @@ public class DidIssuer {
                 this.continuationSuper = ContinuationObjectUtils.createSuperContinuation();
                 this.continuationPlain = ContinuationObjectUtils.createPlainContinuation();
                 WaltidServices.INSTANCE.minimalInit(continuationPlain);
-//                WaltidServices.INSTANCE.init(continuationPlain);
 
         }
+
+        /**
+         * Method to create a DID using the did:key method
+         * @param keyType algorithm to produce cryptographic key
+         * @param localKey
+         * @return
+         */
 
         public DidResult createDidFromKey(KeyType keyType, LocalKey localKey) {
                 DidKeyCreateOptions options = new DidKeyCreateOptions(keyType,false);
@@ -45,12 +51,27 @@ public class DidIssuer {
 
         }
 
+        /**
+         * Method to create a DID using the did:web method. The key the did is resolved to is produced internally.
+         * @param domain domain to serve did document
+         * @param path path where did is located
+         * @param keyType algorithm to produce cryptographic key
+         * @return DidResult
+         */
 
-        // Method to create a DID using the did:web method
         public DidResult createDidFromWeb(String domain, String path, KeyType keyType) {
                 DidWebCreateOptions options = new DidWebCreateOptions(domain, path, keyType);
                 return (DidResult) DidService.INSTANCE.register(options, continuationSuper);
         }
+
+        /**
+         * Method to resolve a key DID to a key
+         * @param keyType algorithm to produce cryptographic key
+         * @param useJwkJcsPub When useJwkJcsPub is set to true
+         *                     the EBSI implementation jwk_jcs-pub encoding is performed
+         * @param localKey that the did will be resolved to
+         * @return DidResult
+         */
 
         public DidResult resolveKeyDidToKey(KeyType keyType, Boolean useJwkJcsPub, LocalKey localKey) {
                 DidKeyCreateOptions keyDidOptions = new DidKeyCreateOptions(keyType, useJwkJcsPub);
@@ -60,13 +81,21 @@ public class DidIssuer {
                 return (DidResult) localRegistrar.createByKey(localKey, keyDidOptions,continuationSuper);
         }
 
+
+        /**
+         * Method to resolve a web DID to a key
+         * @param domain domain to serve did document
+         * @param path path where did is located
+         * @param keyType algorithm to produce cryptographic key
+         * @param localKey that the did will be resolved to
+         * @return DidResult
+         */
+
         public DidResult resolveWebDidToKey(KeyType keyType, String domain, String path, LocalKey localKey) {
                 DidWebCreateOptions webDidOptions = new DidWebCreateOptions(domain, path, keyType);
                 LocalRegistrar localRegistrar = new LocalRegistrar();
                 return (DidResult) localRegistrar.createByKey(localKey, webDidOptions,continuationSuper);
         }
-
-//        i want a method to exort the did document
 
 
         public LocalKey generateKey(KeyType keyType) {

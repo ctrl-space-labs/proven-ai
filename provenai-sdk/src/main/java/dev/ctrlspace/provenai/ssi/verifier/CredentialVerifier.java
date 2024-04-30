@@ -17,6 +17,9 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+/**
+ * Class to verify a credential against a set of policies
+ */
 public class CredentialVerifier {
     private ExecutorService executorService;
 
@@ -25,6 +28,13 @@ public class CredentialVerifier {
         executorService = Executors.newCachedThreadPool();
     }
 
+    /**
+     * Method to verify a credential against a set of policies
+     * @param signedCredential The signed credential to be verified
+     * @param policies The policies to be verified against
+     * @param presentationContext The presentation context
+     * @return List of PolicyResult objects
+     */
     public CompletableFuture<List<PolicyResult>> verifyCredentialAsync(
             String signedCredential,
             List<PolicyRequest> policies,

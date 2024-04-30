@@ -41,7 +41,7 @@ public class PermissionOfUseConverter {
             Map<String, JsonElement> map = Map.of("permissionOfUse", jsonElement);
             JsonObject jsonObject = new JsonObject(map);
             jsonObject.put("id", json.parseToJsonElement("\"" + permissionOfUseCredential.getCredentialSubject().getId() + "\""));
-            jsonObject.put("ownerID", json.parseToJsonElement("\"" + permissionOfUseCredential.getCredentialSubject().getOwnerID() + "\""));
+//            jsonObject.put("ownerID", json.parseToJsonElement("\"" + permissionOfUseCredential.getCredentialSubject().getOwnerID() + "\""));
             jsonObject.put("dataSegments", json.parseToJsonElement(objectMapper.writeValueAsString(permissionOfUseCredential.getCredentialSubject().getDataSegments())));
 
             credentialBuilder.credentialSubject(jsonObject);

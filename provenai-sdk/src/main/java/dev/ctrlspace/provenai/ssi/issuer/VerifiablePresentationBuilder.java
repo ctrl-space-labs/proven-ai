@@ -12,6 +12,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.HashMap;
 
+/**
+ * Builder class for creating verifiable presentations and signing them.
+ */
 public class VerifiablePresentationBuilder {
 
 
@@ -32,23 +35,42 @@ public class VerifiablePresentationBuilder {
         presentationBuilder = new PresentationBuilder();
     }
 
+    /**
+     * Adds subject did to the verifiable presentation.
+     * @param did
+     */
     public void setDid(String did) {
         presentationBuilder.setDid(did);
     }
 
+    /**
+     * Sets the nonce of the verifiable presentation.
+     * @param nonce
+     */
     public void setNonce(String nonce) {
         presentationBuilder.setNonce(nonce);
     }
 
+    /**
+     * Adds a verifiable credential to the verifiable presentation.
+     * @param credential
+     */
     public void addCredential(JsonElement credential) {
         presentationBuilder.addCredential(credential);
     }
 
+    /**
+     * Adds multiple verifiable credentials to the verifiable presentation.
+     * @param credentials
+     */
     public void addCredentials(Collection<? extends JsonElement> credentials) {
         presentationBuilder.addCredentials(credentials);
     }
 
-    // Method to build a verifiable presentation
+    /**
+     * Builds the verifiable presentation JSON.
+     * @return The verifiable presentation JSON.
+     */
     public JsonElement buildPresentationJson() {
         return presentationBuilder.buildPresentationJson();
     }

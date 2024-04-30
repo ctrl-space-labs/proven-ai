@@ -14,6 +14,9 @@ import kotlin.coroutines.CoroutineContext;
 import kotlin.coroutines.EmptyCoroutineContext;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Class to verify a presentation against a set of policies
+ */
 public class PresentationVerifier {
     private ExecutorService executorService;
 
@@ -22,6 +25,15 @@ public class PresentationVerifier {
         executorService = Executors.newCachedThreadPool();
     }
 
+    /**
+     * Method to verify a presentation against a set of policies
+     * @param signedPresentation The signed presentation to be verified
+     * @param vpPolicies The policies to be verified against the whole verifiable presentation
+     * @param globalVcPolicies The global policies to be verified against the verifiable credentials
+     * @param specificCredentialPolicies The specific policies to be verified against specific credentials
+     * @param presentationContext The presentation context
+     * @return PresentationVerificationResponse object
+     */
     public CompletableFuture<PresentationVerificationResponse> verifyPresentationAsync(
             String signedPresentation,
             List<PolicyRequest> vpPolicies,

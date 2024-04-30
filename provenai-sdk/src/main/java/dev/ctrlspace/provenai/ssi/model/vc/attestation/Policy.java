@@ -5,6 +5,10 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * Class to represent the 'policy' part of the JSON
+ *
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

@@ -9,6 +9,10 @@ import lombok.NoArgsConstructor;
 import java.time.Instant;
 import java.util.List;
 
+/**
+ * Class to represent the 'credentialSubject' part of the JSON
+ * This class represents the credential subject of an AI Agent Credential.
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

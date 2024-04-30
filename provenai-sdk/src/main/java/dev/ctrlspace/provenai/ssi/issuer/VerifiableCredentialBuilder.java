@@ -20,6 +20,9 @@ import java.util.Map;
 import kotlinx.serialization.json.JsonElement;
 import kotlinx.serialization.json.JsonObject;
 
+/**
+ * Builder class for creating verifiable credentials according to the W3C standard and signing them.
+ */
 public class VerifiableCredentialBuilder {
 
     private CredentialBuilder credentialBuilder;
@@ -36,6 +39,11 @@ public class VerifiableCredentialBuilder {
         credentialBuilder = new CredentialBuilder(CredentialBuilderType.W3CV11CredentialBuilder);
     }
 
+    /**
+     * Adds a context to the verifiable credential.
+     * Default context is "https://www.w3.org/2018/credentials/v1".
+     * @param context The context to be added.
+     */
     public void addContext(String context) {
         credentialBuilder.addContext(context);
     }
@@ -43,7 +51,10 @@ public class VerifiableCredentialBuilder {
     /**
      * Adds a type to the verifiable credential.
      *
-     * @param type The type to be added. Supported types:
+     * @param type The type to be added. Supported types:  "VerifiableCredential", "VerifiableAttestation",
+     *                                                     "VerifiableAIAgent", "VerifiableAIAgent",
+     *                                                     "EBSILegalEntityVerifiableID ","VerifiableId"
+     *
      */
     public void addType(String type) {
         credentialBuilder.addType(type);
@@ -53,6 +64,10 @@ public class VerifiableCredentialBuilder {
         credentialBuilder.setCredentialId(credentialId);
     }
 
+    /**
+     * Sets the issuer of the verifiable credential.
+     * @param issuerDid The issuer DID.
+     */
     public void setIssuerDid(String issuerDid) {
         credentialBuilder.setIssuerDid(issuerDid);
     }
@@ -61,7 +76,10 @@ public class VerifiableCredentialBuilder {
         credentialBuilder.validFromNow();
     }
 
-
+  /**
+     * Sets the validity duration of the verifiable credential.
+     * @param duration The duration of the validity.
+     */
     public void validFor(Duration duration) {
         Instant validUntil = Instant.now().plus(duration);
         credentialBuilder.setValidUntil(KotlinToJavaUtils.toKotlinInstant(validUntil));
@@ -72,26 +90,52 @@ public class VerifiableCredentialBuilder {
     }
 
 
+/**
+     * Adds extra data about the credential.
+     * @param keyValue The key-value pair to be added.
+     */
+    public void useData(Pair<String, JsonElement> keyValue) {
+        credentialBuilder.useData(keyValue);
+    }
 
-public void useData(Pair<String, JsonElement> keyValue) {
-    credentialBuilder.useData(keyValue);
-}
-
-
+    /**
+     * Adds the credential subject to the verifiable credential.
+     * According to the credential type it contains data in json format about the subject of the credential.
+     * @param data JsonOnject
+     */
     public void credentialSubject(JsonObject data) {
         credentialBuilder.useCredentialSubject(data);
     }
 
-
+ /**
+     * Sets the subject DID of the verifiable credential.
+     * @param subjectDid The subject DID.
+     */
     public void setSubjectDid(String subjectDid) {
         credentialBuilder.setSubjectDid(subjectDid);
     }
 
-    // Build and return the verifiable credential
+    /**
+     * Builds the verifiable credential according to the W3C standard.
+     *
+     * @return The verifiable credential.
+     */
+
     public W3CVC buildCredential() {
         return credentialBuilder.buildW3C();
     }
 
+    /**
+     * Signs the verifiable credential with the issuer key.
+     *
+     * @param vc The verifiable credential to be signed.
+     * @param issuerKey The issuer key.
+     * @param issuerDid The issuer DID.
+     * @param subjectDid The subject DID.
+     * @param additionalJwtHeaders Additional JWT headers.
+     * @param additionalJwtOptions Additional JWT options.
+     * @return The signed verifiable credential in JWS format.
+     */
     public Object signCredential(
             W3CVC vc,
             Key issuerKey,

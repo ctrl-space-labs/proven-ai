@@ -11,8 +11,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
-// Main class representing the root of the JSON object
-// java do follows
 /**
  * Represents a Verifiable Credential.
  * <p>
