@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Type;
 
+import java.time.Instant;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -17,7 +18,6 @@ import java.util.UUID;
 @NoArgsConstructor
 @Builder
 public class Organization {
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "id")
     private UUID id;
@@ -31,15 +31,18 @@ public class Organization {
     @Column(name = "vat_number")
     private String vatNumber;
 
+//    @Column(columnDefinition = "jsonb", name = "verifiable_id_vp")
+//    @Type(JsonBinaryType.class)
+//    private JSONPObject verifiablePresentation;
     @Column(columnDefinition = "jsonb", name = "verifiable_id_vp")
-    @Type(JsonBinaryType.class)
-    private JSONPObject verifiablePresentation;
-    @Basic
+    @Type(value = JsonBinaryType.class)
+    private String verifiablePresentation;
+
     @Column(name = "created_at")
-    private Object createdAt;
+    private Instant createdAt;
     @Basic
     @Column(name = "updated_at")
-    private Object updatedAt;
+    private Instant updatedAt;
     @Basic
     @Column(name = "created_by")
     private UUID createdBy;
@@ -79,27 +82,27 @@ public class Organization {
         this.vatNumber = vatNumber;
     }
 
-    public JSONPObject getVerifiablePresentation() {
+    public String getVerifiablePresentation() {
         return verifiablePresentation;
     }
 
-    public void setVerifiablePresentation(JSONPObject verifiablePresentation) {
+    public void setVerifiablePresentation(String verifiablePresentation) {
         this.verifiablePresentation = verifiablePresentation;
     }
 
-    public Object getCreatedAt() {
+    public Instant getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Object createdAt) {
+    public void setCreatedAt(Instant createdAt) {
         this.createdAt = createdAt;
     }
 
-    public Object getUpdatedAt() {
+    public Instant getUpdatedAt() {
         return updatedAt;
     }
 
-    public void setUpdatedAt(Object updatedAt) {
+    public void setUpdatedAt(Instant updatedAt) {
         this.updatedAt = updatedAt;
     }
 

@@ -5,28 +5,31 @@ import io.hypersistence.utils.hibernate.type.json.JsonBinaryType;
 import jakarta.persistence.*;
 import org.hibernate.annotations.Type;
 
+import java.time.Instant;
 import java.util.Objects;
 import java.util.UUID;
 
 @Entity
 @Table(name = "agents", schema = "proven_ai")
 public class Agent {
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "id")
     private UUID id;
     @Basic
     @Column(name = "organization_id")
     private UUID organizationId;
-    @Column(columnDefinition = "jsonb", name = "agent_verifiable_id")
-    @Type(JsonBinaryType.class)
-    private JSONPObject agentVcId;
+//    @Column(columnDefinition = "jsonb", name = "agent_verifiable_id")
+//    @Type(JsonBinaryType.class)
+//    private JSONPObject agentVcId;
+    @Column(columnDefinition = "jsonb", name = "verifiable_id_vp")
+    @Type(value = JsonBinaryType.class)
+    private String agentVcId;
     @Basic
     @Column(name = "created_at")
-    private Object createdAt;
+    private Instant createdAt;
     @Basic
     @Column(name = "updated_at")
-    private Object updatedAt;
+    private Instant updatedAt;
     @Basic
     @Column(name = "created_by")
     private UUID createdBy;
@@ -50,27 +53,27 @@ public class Agent {
         this.organizationId = organizationId;
     }
 
-    public JSONPObject getAgentVcId() {
+    public String getAgentVcId() {
         return agentVcId;
     }
 
-    public void setAgentVcId(JSONPObject agentVcId) {
+    public void setAgentVcId(String agentVcId) {
         this.agentVcId = agentVcId;
     }
 
-    public Object getCreatedAt() {
+    public Instant getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Object createdAt) {
+    public void setCreatedAt(Instant createdAt) {
         this.createdAt = createdAt;
     }
 
-    public Object getUpdatedAt() {
+    public Instant getUpdatedAt() {
         return updatedAt;
     }
 
-    public void setUpdatedAt(Object updatedAt) {
+    public void setUpdatedAt(Instant updatedAt) {
         this.updatedAt = updatedAt;
     }
 
@@ -94,8 +97,8 @@ public class Agent {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Agent that = (Agent) o;
-        return Objects.equals(id, that.id) && Objects.equals(organizationId, that.organizationId) && Objects.equals(agentVcId, that.agentVcId) && Objects.equals(createdAt, that.createdAt) && Objects.equals(updatedAt, that.updatedAt) && Objects.equals(createdBy, that.createdBy) && Objects.equals(updatedBy, that.updatedBy);
+        Agent agent = (Agent) o;
+        return Objects.equals(id, agent.id) && Objects.equals(organizationId, agent.organizationId) && Objects.equals(agentVcId, agent.agentVcId) && Objects.equals(createdAt, agent.createdAt) && Objects.equals(updatedAt, agent.updatedAt) && Objects.equals(createdBy, agent.createdBy) && Objects.equals(updatedBy, agent.updatedBy);
     }
 
     @Override
