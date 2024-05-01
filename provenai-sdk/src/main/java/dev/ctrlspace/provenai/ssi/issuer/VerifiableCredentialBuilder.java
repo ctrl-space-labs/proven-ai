@@ -18,7 +18,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import kotlinx.serialization.json.JsonElement;
-import kotlinx.serialization.json.JsonObject;
 
 /**
  * Builder class for creating verifiable credentials according to the W3C standard and signing them.
@@ -103,7 +102,7 @@ public class VerifiableCredentialBuilder {
      * According to the credential type it contains data in json format about the subject of the credential.
      * @param data JsonOnject
      */
-    public void credentialSubject(JsonObject data) {
+    public void credentialSubject(String data) {
         credentialBuilder.useCredentialSubject(data);
     }
 
