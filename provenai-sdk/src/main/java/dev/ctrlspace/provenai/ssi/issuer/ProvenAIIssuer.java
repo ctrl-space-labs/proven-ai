@@ -24,6 +24,7 @@ public class ProvenAIIssuer {
 
     /**
      * Generate a W3CVC object from a VerifiableCredential object.
+     *
      * @param vc VerifiableCredential object
      * @return W3CVC standard credential object
      * @throws JSONException
@@ -43,13 +44,15 @@ public class ProvenAIIssuer {
     }
 
 
-    /** Sign a W3CVC object with an issuer key.
-     * @param w3cVC W3CVC object
-     * @param issuerKey Key object
-     * @param issuerDid String
-     * @param subjectDid String
-     * @param additionalSignVCParams AdditionalSignVCParams object
-     * @return signed verifiable credential in JWS format
+    /**
+     * Sign a W3CVC object with an issuer key.
+     *
+     * @param w3cVC The unsigned VC object
+     * @param issuerKey The key of the issuer signing the VC
+     * @param issuerDid The DID of the issuer signing the VC
+     * @param subjectDid The DID of the subject of the VC
+     * @param additionalSignVCParams Additional parameters to sign the VC like JWT headers and options
+     * @return The signed verifiable credential in JWS format
      */
     public Object sign(W3CVC w3cVC, Key issuerKey, String issuerDid, String subjectDid, AdditionalSignVCParams additionalSignVCParams) {
 
@@ -61,10 +64,11 @@ public class ProvenAIIssuer {
 
     /**
      * Generate a signed Verifiable Credential from a VerifiableCredential object.
-     * @param vc
-     * @param issuerKey
-     * @param additionalSignVCParams
-     * @return
+     *
+     * @param vc The VC to be generated and signed
+     * @param issuerKey The key of the issuer signing the VC
+     * @param additionalSignVCParams  Additional parameters to sign the VC like JWT headers and options
+     * @return The signed verifiable credential in JWS format
      * @throws JSONException
      * @throws JsonProcessingException
      */

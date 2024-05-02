@@ -37,6 +37,15 @@ public class DidIssuer {
          * @return
          */
 
+        // Method to create a DID using the did:key method
+
+        /**
+         * Create a DID from a key pair using the did:key method
+         *
+         * @param keyType The type of key to generate (enum Ed25519, secp256k1, secp256r1, RSA)
+         * @param localKey The key pair to use for the DID
+         * @return The DID result
+         */
         public DidResult createDidFromKey(KeyType keyType, LocalKey localKey) {
                 DidKeyCreateOptions options = new DidKeyCreateOptions(keyType,false);
                 DidResult didResult = (DidResult) DidService.INSTANCE.registerByKey("key", localKey,options, continuationSuper);

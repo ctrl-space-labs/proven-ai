@@ -16,6 +16,14 @@ public class KeyCreation {
      * @return LocalKey
      */
 
+    /**
+     * Generate a key pair with a specific key type and character length
+     *
+     *
+     * @param keyType The type of key to generate (enum Ed25519, secp256k1, secp256r1, RSA)
+     * @param characterLength The length of the key in characters, should be greater than 2048
+     * @return The generated key
+     */
     public static LocalKey generateKey(KeyType keyType, int characterLength) {
         // Create a continuation object
         Continuation<? super Object> continuation = ContinuationObjectUtils.createSuperContinuation();
