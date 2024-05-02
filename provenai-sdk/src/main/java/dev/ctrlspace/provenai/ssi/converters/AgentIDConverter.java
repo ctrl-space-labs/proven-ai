@@ -7,6 +7,7 @@ import dev.ctrlspace.provenai.ssi.model.vc.VerifiableCredential;
 import dev.ctrlspace.provenai.ssi.model.vc.attestation.AIAgentCredentialSubject;
 import dev.ctrlspace.provenai.ssi.model.vc.attestation.W3CCredentialSubject;
 import id.walt.credentials.vc.vcs.W3CVC;
+import kotlin.Pair;
 import kotlinx.serialization.json.Json;
 import kotlinx.serialization.json.JsonElement;
 import kotlinx.serialization.json.JsonObject;
@@ -42,7 +43,6 @@ public class AgentIDConverter {
         JsonElement jsonElement = json.parseToJsonElement(jsonObjectString);
         Map<String, JsonElement> map = Map.of("agent", jsonElement);
         JsonObject jsonObject = new JsonObject(map);
-
 
         credentialBuilder.credentialSubject(jsonObject);
 

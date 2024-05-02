@@ -87,6 +87,7 @@ public class OrganizationsController implements OrganizationsControllerSpec {
     }
 
 
+
 //    @GetMapping("/organizations/{organizationId}/verifiable-presentation")
 //    public ResponseEntity<VerifiablePresentationResponse> getOrganizationVerifiablePresentation(@PathVariable UUID organizationId) throws ProvenAiException, IOException {
 //        JsonNode verifiablePresentation = organizationsService.getOrganizationIdVerifiablePresentation(organizationId);

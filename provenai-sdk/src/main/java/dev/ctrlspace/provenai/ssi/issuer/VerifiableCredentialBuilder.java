@@ -56,6 +56,7 @@ public class VerifiableCredentialBuilder {
      *                                                     "EBSILegalEntityVerifiableID ","VerifiableId"
      *
      */
+
     public void addType(String type) {
         credentialBuilder.addType(type);
     }
