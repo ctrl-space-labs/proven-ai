@@ -22,11 +22,23 @@
             <id>waltid</id>
             <url>https://maven.walt.id/repository/waltid/</url>
         </repository>
+        <repository>
+            <id>consensys-maven</id>
+            <url>https://artifacts.consensys.net/public/maven/maven/</url>
+            <releases>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+            </snapshots>
+        </repository>
 
-       <repository>
-        <id>central</id>
-        <url>https://repo.maven.apache.org/maven2</url>
-    </repository>
+        <repository>
+            <id>central</id>
+            <url>https://repo.maven.apache.org/maven2</url>
+        </repository>
 
     </repositories>
 
@@ -137,6 +149,13 @@
             <artifactId>logback-core</artifactId>
             <version>1.4.14</version>
             <scope>compile</scope>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.web3j/core -->
+        <dependency>
+            <groupId>org.web3j</groupId>
+            <artifactId>core</artifactId>
+            <version>4.11.3</version>
         </dependency>
 
     </dependencies>

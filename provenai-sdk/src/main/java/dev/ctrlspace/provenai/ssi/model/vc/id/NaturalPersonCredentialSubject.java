@@ -15,6 +15,10 @@ import java.util.List;
  *     A natural person credential subject is a collection of properties that describe a natural person.
  *     It can be used to represent a person's identity.
  * </p>
+ * <p>
+ *     This class is compliant with the W3C and EBSI v.2 Data Model of Verifiable Credentials specifications.
+ *     @see <a href="https://code.europa.eu/ebsi/json-schema/-/tree/main/schemas/vcdm2.0/vid/natural-person">EBSI v.2.0 VID Natural Person</a>
+ * </p>
  */
 @Data
 @AllArgsConstructor

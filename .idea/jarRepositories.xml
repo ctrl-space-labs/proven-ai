@@ -17,6 +17,16 @@
       <option name="url" value="https://repo.maven.apache.org/maven2" />
     </remote-repository>
     <remote-repository>
+      <option name="id" value="consensys-maven" />
+      <option name="name" value="consensys-maven" />
+      <option name="url" value="https://artifacts.consensys.net/public/maven/maven/" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="consensys" />
+      <option name="name" value="consensys" />
+      <option name="url" value="https://cloudsmith.io/~consensys/repos/maven/packages/" />
+    </remote-repository>
+    <remote-repository>
       <option name="id" value="central" />
       <option name="name" value="Maven Central repository" />
       <option name="url" value="https://repo1.maven.org/maven2" />

@@ -7,12 +7,19 @@ import org.springframework.web.client.RestTemplate;
 
 /**
  * This class is responsible for issuing signed verifiable credentials.
- * It sends a request to the Credential Issuance API of Walt.id to issue a signed credential.
+ * It sends a request to, an OID4VC compliant, Credential Issuance API to issue a signed credential.
  * The API returns the credential offer url that can be imported to a web wallet app to be validated.
  */
 public class CredentialIssuanceApi {
     public static final RestTemplate restTemplate = new RestTemplate();
 
+    /**
+     * Sends a request to, an OID4VC compliant, Credential Issuance API to issue a signed credential.
+     * The API returns the credential offer url that can be imported to a web wallet app to be validated.
+     *
+     * @param requestBody The request body containing the credential subject and other parameters.
+     * @return The credential offer url.
+     */
     public String issueCredential(JsonNode requestBody) {
         String apiUrl = "http://localhost:7002/openid4vc/jwt/issue";
 
