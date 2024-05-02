@@ -21,7 +21,7 @@ public class CredentialIssuanceApi {
      * @return The credential offer url.
      */
     public String issueCredential(JsonNode requestBody) {
-        String apiUrl = "http://localhost:7002/openid4vc/jwt/issue";
+        String apiUrl = "http://localhost:7002/openid4vc/sdjwt/issue";
 
         HttpHeaders headers = buildHeaders();
 

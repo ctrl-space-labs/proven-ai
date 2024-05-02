@@ -1,6 +1,7 @@
 package dev.ctrlspace.provenai.backend.model;
 
-import com.fasterxml.jackson.databind.util.JSONPObject;
+import dev.ctrlspace.provenai.ssi.model.vc.VerifiableCredential;
+import dev.ctrlspace.provenai.ssi.model.vc.id.LegalEntityCredentialSubject;
 import io.hypersistence.utils.hibernate.type.json.JsonBinaryType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

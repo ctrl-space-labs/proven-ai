@@ -2,8 +2,12 @@ package dev.ctrlspace.provenai.backend.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import dev.ctrlspace.provenai.backend.controller.specs.AgentsControllerSpec;
+import dev.ctrlspace.provenai.backend.converters.AgentConverter;
+import dev.ctrlspace.provenai.backend.exceptions.ProvenAiException;
 import dev.ctrlspace.provenai.backend.model.Agent;
+import dev.ctrlspace.provenai.backend.model.Organization;
 import dev.ctrlspace.provenai.backend.model.dtos.AgentAuthorizationRequestDTO;
+import dev.ctrlspace.provenai.backend.model.dtos.AgentDTO;
 import dev.ctrlspace.provenai.backend.model.dtos.AgentIdCredential;
 import dev.ctrlspace.provenai.backend.model.dtos.criteria.AgentCriteria;
 //import kotlinx.serialization.json.internal.JsonException;
@@ -23,9 +27,13 @@ public class AgentsController implements AgentsControllerSpec {
 
    private AgentService agentService;
 
+   private AgentConverter agentConverter;
+
    @Autowired
-    public AgentsController(AgentService agentService) {
+    public AgentsController(AgentService agentService,
+                            AgentConverter agentConverter) {
        this.agentService = agentService;
+       this.agentConverter = agentConverter;
 
    }
 
@@ -36,10 +44,13 @@ public class AgentsController implements AgentsControllerSpec {
         return Page.empty();
     }
 
-    @PostMapping("/agents")
-    public Agent createAgents(Agent agent) {
-        return new Agent();
+    @PostMapping("/agents/registration")
+    public Agent registerAgent(@RequestBody AgentDTO agentDTO) {
+        Agent agent = agentConverter.toEntity(agentDTO);
+
+        return agentService.registerAgent(agent);
     }
+
 
     @PostMapping("/agents/{id}/credential-offer")
     public AgentIdCredential createAgentVerifiableId(@PathVariable String id) throws Exception, JsonProcessingException {
@@ -52,6 +63,24 @@ public class AgentsController implements AgentsControllerSpec {
 
         return agentIdCredential;
     }
+
+    @DeleteMapping("/agents/{id}")
+    public void deleteAgent(@PathVariable UUID id) throws ProvenAiException {
+        agentService.deleteAgent(id);
+    }
+
+    @PutMapping("/agents/{id}")
+    public Agent updateAgent(@PathVariable UUID id, @RequestBody AgentDTO agentDTO) throws ProvenAiException {
+        Agent agent = agentConverter.toEntity(agentDTO);
+        agent.setId(id);
+        return agentService.updateAgent(agent);
+    }
+
+    @GetMapping("/agents/{id}")
+    public Agent getAgentById(@PathVariable UUID id) throws ProvenAiException {
+        return agentService.getAgentById(id);
+    }
+
 
 
     /**

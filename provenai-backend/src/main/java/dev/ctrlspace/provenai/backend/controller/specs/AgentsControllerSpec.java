@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import dev.ctrlspace.provenai.backend.exceptions.ProvenAiErrorResponse;
 import dev.ctrlspace.provenai.backend.model.Agent;
 import dev.ctrlspace.provenai.backend.model.dtos.AgentAuthorizationRequestDTO;
+import dev.ctrlspace.provenai.backend.model.dtos.AgentDTO;
 import dev.ctrlspace.provenai.backend.model.dtos.AgentIdCredential;
 import dev.ctrlspace.provenai.backend.model.dtos.criteria.AgentCriteria;
 import io.swagger.v3.oas.annotations.Operation;
@@ -35,8 +36,7 @@ public interface AgentsControllerSpec {
             description = "Creates a new agent with the usage policies provided in the portal.</br>" +
                     "Once the agent has been created in the backend, a verifiable id can be issued for the agent.</br>" +
                     "the 'credential-offer' endpoint can be used to create a verifiable id for the agent.")
-    public Agent createAgents(Agent agent);
-
+    public Agent registerAgent(@RequestBody AgentDTO agentDTO);
     @Operation(summary = "Create a verifiable id for an agent",
             description = "Creates a verifiable id for the agent with the id provided in the request.</br>" +
                     "The verifiable id is issued by the ProvenAI issuer portal and can be used to authenticate the agent in the ProvenAI ecosystem.")
@@ -60,3 +60,5 @@ public interface AgentsControllerSpec {
                     "The authorization token can be used to authenticate the agent in the ProvenAI ecosystem.")
     public String authorizeAgent(@RequestBody AgentAuthorizationRequestDTO agentIdVP, @PathVariable String id);
 }
+
+
