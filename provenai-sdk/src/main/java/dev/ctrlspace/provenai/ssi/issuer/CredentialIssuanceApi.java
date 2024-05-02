@@ -10,7 +10,6 @@ import org.springframework.web.client.RestTemplate;
  * It sends a request to the Credential Issuance API of Walt.id to issue a signed credential.
  * The API returns the credential offer url that can be imported to a web wallet app to be validated.
  */
-@Component
 public class CredentialIssuanceApi {
     public static final RestTemplate restTemplate = new RestTemplate();
 
