@@ -66,18 +66,19 @@ public class AgentService {
                 .purpose("AI Agent Credential")
                 .build();
 
-        // Build the verifiable credential
-        VerifiableCredentialBuilder credentialBuilder = new VerifiableCredentialBuilder();
-        credentialBuilder.addContext("https://www.w3.org/2018/credentials/v1");
-        credentialBuilder.addType("VerifiableAIAgent");
-        credentialBuilder.setCredentialId("urn:uuid: " + UUID.randomUUID().toString());
-        credentialBuilder.setIssuerDid("did:key:_proven-ai-issuer_");
-        credentialBuilder.setSubjectDid("orgdid");
-        credentialBuilder.credentialSubject(objectMapper.writeValueAsString(credentialSubject));
-        credentialBuilder.validFor(Duration.ofDays(30)); // Example: 30 days validity period
-
-        // Build and return the verifiable credential
-        return credentialBuilder.buildCredential();
+//        // Build the verifiable credential
+//        VerifiableCredentialBuilder credentialBuilder = new VerifiableCredentialBuilder();
+//        credentialBuilder.addContext("https://www.w3.org/2018/credentials/v1");
+//        credentialBuilder.addType("VerifiableAIAgent");
+//        credentialBuilder.setCredentialId("urn:uuid: " + UUID.randomUUID().toString());
+//        credentialBuilder.setIssuerDid("did:key:_proven-ai-issuer_");
+//        credentialBuilder.setSubjectDid("orgdid");
+//        credentialBuilder.credentialSubject(objectMapper.writeValueAsString(credentialSubject));
+//        credentialBuilder.validFor(Duration.ofDays(30)); // Example: 30 days validity period
+//
+//        // Build and return the verifiable credential
+//        return credentialBuilder.buildCredential();
+        return null;
     }
 
 }
