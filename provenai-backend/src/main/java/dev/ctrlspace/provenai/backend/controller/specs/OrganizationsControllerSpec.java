@@ -16,7 +16,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import java.util.Optional;
 import java.util.UUID;
 
-@Tag(name = "Registered Organizations", description = "Endpoints for managing registered organizations")
+@Tag(name = "Registered Organizations",
+        description = "Endpoints for managing registered organizations. Full CRUD operations are supported.</br>" +
+        "Organizations are entities that act as the root of ProvenAI ecosystem. Organizations can be either Natural persons or Legal Entities. " +
+        "All data in ProvenAI belong to an organization, and the organization can have 1 or more users with access rights to perform actions on behalf of the organization." +
+        "For Organization registration, the organization owner needs to provide their Verifiable ID in order to verify their account and details provided.")
 public interface OrganizationsControllerSpec {
 
     @Operation(description = "Retrieves all registered organizations.",
@@ -45,7 +49,7 @@ public interface OrganizationsControllerSpec {
     @Operation(summary = "Register a new organization",
             description = "Registers a new organization with the details provided in the portal.</br>" +
                     "The organization represents both legal entities and natural persons that are part of the ProvenAI ecosystem. </br>" +
-                    "The organization is a legal entity that can be used to create and manage agents, data pods, and other resources. </br>" +
+                    "The organization be used to create and manage agents, data pods, and other resources. </br>" +
                     "SSI authentication is available by providing the Verifiable ID of the organization in the request.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successfully registered organization"),
