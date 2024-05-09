@@ -26,7 +26,7 @@ public class AIAgentCredentialSubject implements CredentialSubject {
     private String organizationName;
     private String agentName;
     private Instant creationDate;  // Assuming the use of java.util.Date; consider java.time.LocalDateTime for more precise control
-    private String purpose;
     private List<Policy> usagePolicies;
+
 
 }

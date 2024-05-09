@@ -12,5 +12,6 @@ import lombok.NoArgsConstructor;
 public class AgentCriteria {
 
     private String organizationId;
+    private String agentName;
 
 }

@@ -1,7 +1,6 @@
 package dev.ctrlspace.provenai.backend.model.dtos;
 
-import com.fasterxml.jackson.databind.util.JSONPObject;
-import dev.ctrlspace.provenai.ssi.model.vc.attestation.Policy;
+import dev.ctrlspace.provenai.backend.model.AclPolicies;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,15 +14,23 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder(toBuilder = true)
-public class AgentDTO {
-    private UUID id;
-    private UUID organizationId;
-    private String agentVcId;
-    private Instant createdAt;
-    private Instant updatedAt;
-    private UUID createdBy;
-    private UUID updatedBy;
-    private String agentName;
-    private List<Policy> usagePolicies;
+public class DataPodDTO {
 
+    private UUID id;
+
+    private UUID organizationId;
+
+    private String podUniqueName;
+
+    private String hostUrl;
+
+    private List<AclPolicies> aclPolicies;
+
+    private Instant createdAt;
+
+    private Instant updatedAt;
+
+    private UUID createdBy;
+
+    private UUID updatedBy;
 }

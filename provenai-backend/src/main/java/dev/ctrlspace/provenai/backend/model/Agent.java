@@ -18,12 +18,15 @@ public class Agent {
     @Basic
     @Column(name = "organization_id")
     private UUID organizationId;
-//    @Column(columnDefinition = "jsonb", name = "agent_verifiable_id")
-//    @Type(JsonBinaryType.class)
-//    private JSONPObject agentVcId;
-    @Column(columnDefinition = "jsonb", name = "verifiable_id_vp")
-    @Type(value = JsonBinaryType.class)
+
+    @Basic
+    @Column(name = "agent_verifiable_id", nullable = true)
     private String agentVcId;
+
+    @Basic
+    @Column(name = "agent_name")
+    private String agentName;
+
     @Basic
     @Column(name = "created_at")
     private Instant createdAt;
@@ -60,6 +63,10 @@ public class Agent {
     public void setAgentVcId(String agentVcId) {
         this.agentVcId = agentVcId;
     }
+
+    public String getAgentName() {return agentName;}
+
+    public void setAgentName(String agentName) {this.agentName = agentName;}
 
     public Instant getCreatedAt() {
         return createdAt;
@@ -98,11 +105,11 @@ public class Agent {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Agent agent = (Agent) o;
-        return Objects.equals(id, agent.id) && Objects.equals(organizationId, agent.organizationId) && Objects.equals(agentVcId, agent.agentVcId) && Objects.equals(createdAt, agent.createdAt) && Objects.equals(updatedAt, agent.updatedAt) && Objects.equals(createdBy, agent.createdBy) && Objects.equals(updatedBy, agent.updatedBy);
+        return Objects.equals(id, agent.id) && Objects.equals(organizationId, agent.organizationId) && Objects.equals(agentVcId, agent.agentVcId) && Objects.equals(agentName, agent.agentName) && Objects.equals(createdAt, agent.createdAt) && Objects.equals(updatedAt, agent.updatedAt) && Objects.equals(createdBy, agent.createdBy) && Objects.equals(updatedBy, agent.updatedBy);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, organizationId, agentVcId, createdAt, updatedAt, createdBy, updatedBy);
+        return Objects.hash(id, organizationId, agentVcId, agentName, createdAt, updatedAt, createdBy, updatedBy);
     }
 }

@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder(toBuilder = true)
-class Policy {
+public class Policy {
     private String policyType;
     private String policyValue;
 }

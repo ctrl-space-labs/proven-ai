@@ -6,15 +6,16 @@ import java.util.Objects;
 import java.util.UUID;
 
 @Entity
-@Table(name = "policy_options", schema = "proven_ai", catalog = "postgres")
+@Table(name = "policy_options", schema = "proven_ai")
 public class PolicyOption {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "id")
     private UUID id;
+
     @Basic
-    @Column(name = "policy_id")
-    private UUID policyId;
+    @Column(name = "policy_type_id")
+    private UUID policyTypeId;
     @Basic
     @Column(name = "name")
     private String name;
@@ -28,14 +29,6 @@ public class PolicyOption {
 
     public void setId(UUID id) {
         this.id = id;
-    }
-
-    public UUID getPolicyId() {
-        return policyId;
-    }
-
-    public void setPolicyId(UUID policyId) {
-        this.policyId = policyId;
     }
 
     public String getName() {
@@ -54,16 +47,21 @@ public class PolicyOption {
         this.description = description;
     }
 
+    public UUID getPolicyTypeId() {return policyTypeId;}
+
+    public void setPolicyTypeId(UUID policyTypeId) {this.policyTypeId = policyTypeId;}
+
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         PolicyOption that = (PolicyOption) o;
-        return Objects.equals(id, that.id) && Objects.equals(policyId, that.policyId) && Objects.equals(name, that.name) && Objects.equals(description, that.description);
+        return Objects.equals(id, that.id) && Objects.equals(policyTypeId, that.policyTypeId) && Objects.equals(name, that.name) && Objects.equals(description, that.description);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, policyId, name, description);
+        return Objects.hash(id, policyTypeId, name, description);
     }
 }

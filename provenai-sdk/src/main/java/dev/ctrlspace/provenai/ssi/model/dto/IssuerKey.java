@@ -1,4 +1,4 @@
-package dev.ctrlspace.provenai.backend.model.dtos;
+package dev.ctrlspace.provenai.ssi.model.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,8 +9,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder(toBuilder = true)
-public class AgentIdCredential {
-    private String agentId;
-    private String credentialOfferUrl;
-    private Object credentialJwt;
+public class IssuerKey {
+    private String jwk;
+    private String type;
+
+    // getters and setters
 }
