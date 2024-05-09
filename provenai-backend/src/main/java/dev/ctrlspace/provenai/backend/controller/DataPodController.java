@@ -8,9 +8,7 @@ import dev.ctrlspace.provenai.backend.services.DataPodService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
@@ -31,9 +29,11 @@ public class DataPodController implements DataPodControllerSpec {
     }
 
     @GetMapping("/data-pods/{id}")
-    public DataPod getById(UUID id) throws ProvenAiException {
+    public DataPod getById(@PathVariable UUID id) throws ProvenAiException {
         return dataPodService.getDataPodById(id);
     }
+
+
 
     @PostMapping("/data-pods")
     public DataPod create(DataPod dataPod) {
@@ -48,7 +48,23 @@ public class DataPodController implements DataPodControllerSpec {
 //                .credentialOfferUrl("openid-credential-offer://issuer.portal.walt.id/?credential_offer_uri=https%3A%2F%2Fissuer.portal.walt.id%2Fopenid4vc%2FcredentialOffer%3Fid%3D99d79908-32e6-4bd7-9873-562d2d262e12")
 //                .credentialJwt("eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsIm5hbWUiOiJKb2huIERvZSIsImVtYWlsIjoiam9obkBkb2UuY29tIn0.7J1Gzv")
 //                .build();
-//    }
+
+//delete dataPod
+
+    @DeleteMapping("/data-pods/{id}")
+    public void delete(@PathVariable UUID id) throws ProvenAiException {
+        dataPodService.deleteDataPodById(id);
+    }
+
+//    update data pod
+
+    @PutMapping("/data-pods/{id}")
+    public DataPod update(@PathVariable UUID id, DataPod dataPod) throws ProvenAiException {
+
+        return dataPodService.updateDataPod( dataPod);
+    }
+
+
 
 
 }

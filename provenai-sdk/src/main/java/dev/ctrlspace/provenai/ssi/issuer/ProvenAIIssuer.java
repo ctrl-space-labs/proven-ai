@@ -44,6 +44,7 @@ public class ProvenAIIssuer {
     }
 
 
+
     /**
      * Sign a W3CVC object with an issuer key.
      *
@@ -54,29 +55,32 @@ public class ProvenAIIssuer {
      * @param additionalSignVCParams Additional parameters to sign the VC like JWT headers and options
      * @return The signed verifiable credential in JWS format
      */
-    public Object sign(W3CVC w3cVC, Key issuerKey, String issuerDid, String subjectDid, AdditionalSignVCParams additionalSignVCParams) {
+    public Object generateSignedVCJwt(W3CVC w3cVC, Key issuerKey, String issuerDid, String subjectDid) {
 
         Continuation<? super Object> continuationSuper = ContinuationObjectUtils.createSuperContinuation();
 
-        return w3cVC.signJws(issuerKey, issuerDid, subjectDid, additionalSignVCParams.getAdditionalJwtHeaders(), additionalSignVCParams.getAdditionalJwtOptions(), continuationSuper);
+        Map<String, String> additionalJwtHeaders = new HashMap<>(); // Provide additional JWT headers if needed
+        Map<String, JsonElement> additionalJwtOptions = new HashMap<>(); // Provide additional JWT options if needed
+
+        return w3cVC.signJws(issuerKey, issuerDid, subjectDid,additionalJwtHeaders ,additionalJwtOptions, continuationSuper);
     }
 
 
-    /**
-     * Generate a signed Verifiable Credential from a VerifiableCredential object.
-     *
-     * @param vc The VC to be generated and signed
-     * @param issuerKey The key of the issuer signing the VC
-     * @param additionalSignVCParams  Additional parameters to sign the VC like JWT headers and options
-     * @return The signed verifiable credential in JWS format
-     * @throws JSONException
-     * @throws JsonProcessingException
-     */
-
-    public Object generateSignedVC(VerifiableCredential<? extends CredentialSubject> vc, Key issuerKey, AdditionalSignVCParams additionalSignVCParams) throws JSONException, JsonProcessingException {
-        W3CVC w3cVC = this.generateUnsignedVC(vc);
-        return this.sign(w3cVC, issuerKey, vc.getIssuer(), vc.getCredentialSubject().getId(), additionalSignVCParams);
-
-    }
+//    /**
+//     * Generate a signed Verifiable Credential from a VerifiableCredential object.
+//     *
+//     * @param vc The VC to be generated and signed
+//     * @param issuerKey The key of the issuer signing the VC
+//     * @param additionalSignVCParams  Additional parameters to sign the VC like JWT headers and options
+//     * @return The signed verifiable credential in JWS format
+//     * @throws JSONException
+//     * @throws JsonProcessingException
+//     */
+//
+//    public Object generateSignedVC(VerifiableCredential<? extends CredentialSubject> vc, Key issuerKey, AdditionalSignVCParams additionalSignVCParams) throws JSONException, JsonProcessingException {
+//        W3CVC w3cVC = this.generateUnsignedVC(vc);
+//        return this.sign(w3cVC, issuerKey, vc.getIssuer(), vc.getCredentialSubject().getId(), additionalSignVCParams);
+//
+//    }
 
 }

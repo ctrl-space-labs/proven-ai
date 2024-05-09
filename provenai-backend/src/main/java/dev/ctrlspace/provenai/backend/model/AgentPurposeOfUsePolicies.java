@@ -2,11 +2,12 @@ package dev.ctrlspace.provenai.backend.model;
 
 import jakarta.persistence.*;
 
+import java.time.Instant;
 import java.util.Objects;
 import java.util.UUID;
 
 @Entity
-@Table(name = "agent_purpose_of_use_policies", schema = "proven_ai", catalog = "postgres")
+@Table(name = "agent_purpose_of_use_policies", schema = "proven_ai")
 public class AgentPurposeOfUsePolicies {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
@@ -26,10 +27,10 @@ public class AgentPurposeOfUsePolicies {
     private String value;
     @Basic
     @Column(name = "created_at")
-    private Object createdAt;
+    private Instant createdAt;
     @Basic
     @Column(name = "updated_at")
-    private Object updatedAt;
+    private Instant updatedAt;
     @Basic
     @Column(name = "created_by")
     private UUID createdBy;
@@ -81,7 +82,7 @@ public class AgentPurposeOfUsePolicies {
         return createdAt;
     }
 
-    public void setCreatedAt(Object createdAt) {
+    public void setCreatedAt(Instant createdAt) {
         this.createdAt = createdAt;
     }
 
@@ -89,7 +90,7 @@ public class AgentPurposeOfUsePolicies {
         return updatedAt;
     }
 
-    public void setUpdatedAt(Object updatedAt) {
+    public void setUpdatedAt(Instant updatedAt) {
         this.updatedAt = updatedAt;
     }
 

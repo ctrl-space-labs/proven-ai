@@ -42,6 +42,23 @@ public class DataPodService {
         return dataPodRepository.findAll(DataPodPredicates.build(criteria), pageable);
     }
 
+//    delete datapodById
+
+    public void deleteDataPodById(UUID id) throws ProvenAiException {
+        DataPod dataPod = this.getDataPodById(id);
+        dataPodRepository.delete(dataPod);
+    }
+
+    public DataPod createDataPod(DataPod dataPod) {
+        return dataPodRepository.save(dataPod);
+    }
+
+    public DataPod updateDataPod(DataPod dataPod) {
+        return dataPodRepository.save(dataPod);
+    }
+
+
+
 
 
 }
