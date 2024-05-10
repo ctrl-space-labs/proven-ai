@@ -14,7 +14,10 @@ import org.springframework.data.domain.Pageable;
 
 import java.util.UUID;
 
-@Tag(name = "Data Pods", description = "Endpoints for managing data pods")
+@Tag(name = "Data Pods",
+        description = "Endpoints for managing data pods. Full CRUD operations are supported.</br>" +
+        "Data Pods can be created by organizations to store metadata of the actual data like that location in an external system and an Access Control List (ACL) specifying the Policies under which the data can be accessed. " +
+        "Data in a specific Pods can be shared with AI Agents only if the Agent's usage policies match with the Pod's ACL specified by the data owners. ")
 public interface DataPodControllerSpec {
 
     @Operation(summary = "Get all data pods")

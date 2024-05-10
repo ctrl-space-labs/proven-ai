@@ -1,24 +1,20 @@
 package dev.ctrlspace.provenai.backend.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.util.JSONPObject;
 import dev.ctrlspace.provenai.backend.controller.specs.AgentsControllerSpec;
 import dev.ctrlspace.provenai.backend.converters.AgentConverter;
 import dev.ctrlspace.provenai.backend.exceptions.ProvenAiException;
 import dev.ctrlspace.provenai.backend.model.Agent;
-import dev.ctrlspace.provenai.backend.model.Organization;
-import dev.ctrlspace.provenai.backend.model.dtos.AgentAuthorizationRequestDTO;
 import dev.ctrlspace.provenai.backend.model.dtos.AgentDTO;
 import dev.ctrlspace.provenai.backend.model.dtos.AgentIdCredential;
 import dev.ctrlspace.provenai.backend.model.dtos.criteria.AgentCriteria;
-import dev.ctrlspace.provenai.backend.model.dtos.criteria.OrganizationCriteria;
 import dev.ctrlspace.provenai.backend.services.AgentService;
-import dev.ctrlspace.provenai.ssi.issuer.CredentialIssuanceApi;
 import id.walt.credentials.vc.vcs.W3CVC;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -95,15 +91,11 @@ public class AgentsController implements AgentsControllerSpec {
     }
 
 
-    /**
-     * Verifies the agent id presentation and returns an authorization token
-     *
-     * @param agentIdVP
-     * @param id
-     * @return
-     */
-    @PostMapping("/agents/{id}/token")
-    public String authorizeAgent(@RequestBody AgentAuthorizationRequestDTO agentIdVP, @PathVariable String id) {
+    @PostMapping("/agents/token")
+    public String authorizeAgent(@RequestParam("grant_type") String grantType,
+                                 @RequestParam("scope") String scope,
+                                 @RequestParam("vp_token") String vpToken,
+                                 @RequestParam("presentation_submission") JSONPObject presentationSubmission) {
         return "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsIm5hbWUiOiJKb2huIERvZSIsImVtYWlsIjoiam9obkBkb2UuY29tIn0.7J1Gzv";
     }
 
