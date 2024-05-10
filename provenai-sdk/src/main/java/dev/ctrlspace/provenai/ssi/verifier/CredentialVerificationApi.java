@@ -1,6 +1,7 @@
 package dev.ctrlspace.provenai.ssi.verifier;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import dev.ctrlspace.provenai.utils.SSIConstants;
 import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
 
@@ -10,15 +11,13 @@ public class CredentialVerificationApi {
 
 
     public String verifyCredential(JsonNode requestBody) {
-        // TODO read from properties
-        String apiUrl = "http://localhost:7002/openid4vc/verify";
 
-        HttpHeaders headers = buildHeaders("http://localhost:7002/openid4vc/verify", "http://localhost:7002/openid4vc/verify");
+        HttpHeaders headers = buildHeaders(SSIConstants.VERIFIER_SUCCESS_URL, SSIConstants.VERIFIER_ERROR_URL);
 
         HttpEntity<JsonNode> requestEntity = new HttpEntity<>(requestBody, headers);
 
         ResponseEntity<String> responseEntity = restTemplate.exchange(
-                apiUrl,
+                SSIConstants.WALT_ID_VERIFIER_API,
                 HttpMethod.POST,
                 requestEntity,
                 String.class

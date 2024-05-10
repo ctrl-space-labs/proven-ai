@@ -18,7 +18,7 @@ import java.util.UUID;
 public class AgentDTO {
     private UUID id;
     private UUID organizationId;
-    private String agentVcId;
+    private String agentVcJwt;
     private Instant createdAt;
     private Instant updatedAt;
     private UUID createdBy;

@@ -23,6 +23,8 @@ public class OrganizationDTO {
 
     private String verifiablePresentation;
 
+    private String organizationDid;
+
     private Instant createdAt;
 
     private Instant updatedAt;

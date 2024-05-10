@@ -44,7 +44,7 @@ public interface OrganizationsControllerSpec {
             @ApiResponse(responseCode = "404", description = "The resource you were trying to reach is not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    public Optional<Organization> getOrganizationById(@PathVariable UUID organizationId) throws Exception;
+    public Organization getOrganizationById(@PathVariable UUID organizationId) throws Exception;
 
     @Operation(summary = "Register a new organization",
             description = "Registers a new organization with the details provided in the portal.</br>" +
@@ -83,19 +83,19 @@ public interface OrganizationsControllerSpec {
     public void deleteOrganization(@PathVariable UUID organizationId) throws Exception;
 
 
-    @Operation(summary = "Present the Verifiable Presentation ID of an organization",
-            description = "Presents the Verifiable Presentation ID of an organization provided an organization ID." +
-                    "The Verifiable Presentation ID is exported as a JSON object." +
-                    "The credential offer URL is exported. It can be copied to a web wallet to import a verifiable credential."
-    )
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successfully deleted registered organization"),
-            @ApiResponse(responseCode = "401", description = "You are not authorized to view the resource"),
-            @ApiResponse(responseCode = "403", description = "Accessing the resource you were trying to reach is forbidden"),
-            @ApiResponse(responseCode = "404", description = "The resource you were trying to reach is not found"),
-            @ApiResponse(responseCode = "500", description = "Internal server error")
-    })
-    VerifiablePresentationResponse getOrganizationVerifiablePresentation(@PathVariable UUID organizationId) throws Exception;
+//    @Operation(summary = "Present the Verifiable Presentation ID of an organization",
+//            description = "Presents the Verifiable Presentation ID of an organization provided an organization ID." +
+//                    "The Verifiable Presentation ID is exported as a JSON object." +
+//                    "The credential offer URL is exported. It can be copied to a web wallet to import a verifiable credential."
+//    )
+//    @ApiResponses(value = {
+//            @ApiResponse(responseCode = "200", description = "Successfully deleted registered organization"),
+//            @ApiResponse(responseCode = "401", description = "You are not authorized to view the resource"),
+//            @ApiResponse(responseCode = "403", description = "Accessing the resource you were trying to reach is forbidden"),
+//            @ApiResponse(responseCode = "404", description = "The resource you were trying to reach is not found"),
+//            @ApiResponse(responseCode = "500", description = "Internal server error")
+//    })
+//    VerifiablePresentationResponse getOrganizationVerifiablePresentation(@PathVariable UUID organizationId) throws Exception;
 
 
 

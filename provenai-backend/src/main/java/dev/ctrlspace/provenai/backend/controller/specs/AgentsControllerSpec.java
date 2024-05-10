@@ -44,7 +44,7 @@ public interface AgentsControllerSpec {
             description = "Creates a new agent with the usage policies provided in the portal.</br>" +
                     "Once the agent has been created in the backend, a verifiable id can be issued for the agent.</br>" +
                     "the 'credential-offer' endpoint can be used to create a verifiable id for the agent.")
-    public Agent registerAgent(@RequestBody AgentDTO agentDTO);
+    public Agent createAgent(@RequestBody AgentDTO agentDTO);
     @Operation(summary = "Create a verifiable id for an agent",
             description = "Creates a verifiable id for the agent with the id provided in the request.</br>" +
                     "The verifiable id is issued by the ProvenAI issuer portal and can be used to authenticate the agent in the ProvenAI ecosystem.")

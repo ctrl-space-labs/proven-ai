@@ -11,7 +11,6 @@ import java.util.UUID;
 @Entity
 @Table(name = "data_pod", schema = "proven_ai")
 public class DataPod {
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "id")
     private UUID id;

@@ -9,4 +9,5 @@ import java.util.UUID;
 
 @Repository
 public interface DataPodRepository extends JpaRepository<DataPod, UUID>, QuerydslPredicateExecutor<DataPod> {
+    boolean existsByPodUniqueName(String podUniqueName);
 }
