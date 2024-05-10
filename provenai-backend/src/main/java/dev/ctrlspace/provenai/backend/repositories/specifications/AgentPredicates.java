@@ -2,8 +2,11 @@ package dev.ctrlspace.provenai.backend.repositories.specifications;
 
 import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.Predicate;
+import com.querydsl.jpa.JPAExpressions;
+import dev.ctrlspace.provenai.backend.model.QAclPolicies;
 import dev.ctrlspace.provenai.backend.model.QAgent;
 import dev.ctrlspace.provenai.backend.model.dtos.criteria.AgentCriteria;
+import dev.ctrlspace.provenai.ssi.model.vc.attestation.Policy;
 
 import java.util.UUID;
 
@@ -15,6 +18,8 @@ public static Predicate build(AgentCriteria criteria) {
         return ExpressionUtils.allOf(
                 organizationId(criteria.getOrganizationId()),
                 agentName(criteria.getAgentName())
+
+
         );
     }
 
@@ -33,4 +38,7 @@ public static Predicate build(AgentCriteria criteria) {
     }
 
 
-}
+    }
+
+
+

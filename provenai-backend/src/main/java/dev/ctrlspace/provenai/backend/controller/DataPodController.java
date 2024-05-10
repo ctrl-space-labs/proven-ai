@@ -1,8 +1,10 @@
 package dev.ctrlspace.provenai.backend.controller;
 
 import dev.ctrlspace.provenai.backend.controller.specs.DataPodControllerSpec;
+import dev.ctrlspace.provenai.backend.converters.DataPodConverter;
 import dev.ctrlspace.provenai.backend.exceptions.ProvenAiException;
 import dev.ctrlspace.provenai.backend.model.DataPod;
+import dev.ctrlspace.provenai.backend.model.dtos.DataPodDTO;
 import dev.ctrlspace.provenai.backend.model.dtos.criteria.DataPodCriteria;
 import dev.ctrlspace.provenai.backend.services.DataPodService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,13 +20,17 @@ public class DataPodController implements DataPodControllerSpec {
 
     private DataPodService dataPodService;
 
+    private DataPodConverter dataPodConverter;
+
     @Autowired
-    public DataPodController(DataPodService dataPodService) {
+    public DataPodController(DataPodService dataPodService,
+                             DataPodConverter dataPodConverter) {
         this.dataPodService = dataPodService;
+        this.dataPodConverter = dataPodConverter;
     }
 
     @GetMapping("/data-pods")
-    public Page<DataPod> getAll(DataPodCriteria criteria, Pageable pageable) throws ProvenAiException {
+    public Page<DataPod> getAllDataPods(DataPodCriteria criteria, Pageable pageable) throws ProvenAiException {
         return dataPodService.getAllDataPods(criteria, pageable);
     }
 
@@ -36,8 +42,11 @@ public class DataPodController implements DataPodControllerSpec {
 
 
     @PostMapping("/data-pods")
-    public DataPod create(DataPod dataPod) {
-        return dataPod;
+    public DataPod create(@RequestBody DataPodDTO dataPodDto) throws ProvenAiException {
+
+        DataPod dataPod = dataPodConverter.toEntity(dataPodDto);
+
+        return dataPodService.createDataPod(dataPod, dataPodDto.getUsagePolicies());
     }
 
 //    @PostMapping("/data-pods/{id}/credential-offer")

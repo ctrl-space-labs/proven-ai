@@ -20,8 +20,8 @@ public class Agent {
     private UUID organizationId;
 
     @Basic
-    @Column(name = "agent_verifiable_id", nullable = true)
-    private String agentVcId;
+    @Column(name = "agent_vc_jwt", nullable = true)
+    private String agentVcJwt;
 
     @Basic
     @Column(name = "agent_name")
@@ -56,13 +56,9 @@ public class Agent {
         this.organizationId = organizationId;
     }
 
-    public String getAgentVcId() {
-        return agentVcId;
-    }
+    public String getAgentVcJwt() {return agentVcJwt;}
 
-    public void setAgentVcId(String agentVcId) {
-        this.agentVcId = agentVcId;
-    }
+    public void setAgentVcJwt(String agentVcJwt) {this.agentVcJwt = agentVcJwt;}
 
     public String getAgentName() {return agentName;}
 
@@ -105,11 +101,11 @@ public class Agent {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Agent agent = (Agent) o;
-        return Objects.equals(id, agent.id) && Objects.equals(organizationId, agent.organizationId) && Objects.equals(agentVcId, agent.agentVcId) && Objects.equals(agentName, agent.agentName) && Objects.equals(createdAt, agent.createdAt) && Objects.equals(updatedAt, agent.updatedAt) && Objects.equals(createdBy, agent.createdBy) && Objects.equals(updatedBy, agent.updatedBy);
+        return Objects.equals(id, agent.id) && Objects.equals(organizationId, agent.organizationId) && Objects.equals(agentVcJwt, agent.agentVcJwt) && Objects.equals(agentName, agent.agentName) && Objects.equals(createdAt, agent.createdAt) && Objects.equals(updatedAt, agent.updatedAt) && Objects.equals(createdBy, agent.createdBy) && Objects.equals(updatedBy, agent.updatedBy);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, organizationId, agentVcId, agentName, createdAt, updatedAt, createdBy, updatedBy);
+        return Objects.hash(id, organizationId, agentVcJwt, agentName, createdAt, updatedAt, createdBy, updatedBy);
     }
 }

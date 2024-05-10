@@ -46,7 +46,7 @@ public class AgentsController implements AgentsControllerSpec {
 
 
     @PostMapping("/agents")
-    public Agent registerAgent(@RequestBody AgentDTO agentDTO) {
+    public Agent createAgent(@RequestBody AgentDTO agentDTO) {
         Agent agent = agentConverter.toEntity(agentDTO);
 
         return agentService.createAgent(agent,agentDTO.getUsagePolicies());
@@ -57,20 +57,13 @@ public class AgentsController implements AgentsControllerSpec {
     public AgentIdCredential createAgentVerifiableId(@PathVariable String id) throws Exception, JsonProcessingException {
         AgentIdCredential agentIdCredential = new AgentIdCredential();
         W3CVC verifiableCredential = agentService.createAgentW3CVCByID(UUID.fromString(id));
-        Object signedVcJwt = agentService.createAgentSignedVcJwt(verifiableCredential);
+        Object signedVcJwt = agentService.createAgentSignedVcJwt(verifiableCredential, UUID.fromString(id));
         agentIdCredential.setAgentId(id);
         agentIdCredential.setCredentialOfferUrl(agentService.createAgentVCOffer(verifiableCredential));
         agentIdCredential.setCredentialJwt(signedVcJwt);
         agentService.updateAgentVerifiableId(UUID.fromString(id), signedVcJwt.toString()); // Update agent's verifiable ID
          return agentIdCredential;
     }
-
-
-//    @PostMapping("/agents/{id}/signed-vc")
-//    public void saveAgentSignedVCJwt(@PathVariable String id, @RequestBody String credentialJwt) {
-//        // Save the signed VC JWT for the specified agent
-//        agentService.saveAgentSignedVCJwt(credentialJwt, UUID.fromString(id));
-//    }
 
 
     @DeleteMapping("/agents/{id}")

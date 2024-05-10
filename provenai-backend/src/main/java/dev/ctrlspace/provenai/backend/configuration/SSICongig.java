@@ -16,20 +16,6 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class SSICongig {
 
-    //get from properties and env variables the actual keys\
-    private String issuerPrivateJwkStr ="{\"kty\":\"OKP\",\"d\":\"HIN9WcVCqhGvwZ8I47WeMtxGceSKpvaEnu5eXAoWyDo\",\"crv\":\"Ed25519\",\"kid\":\"CFQ-Nra5ynyBsfxwy7aNf8duAEUCMlMIrRIrDg6DIy4\",\"x\":\"h5nbw6X9JmI0BvuQ5M0JXfzO8s2eEbPdV29wsHTL9pk\"}";
-
-
-    @Bean
-    public Key provenAIIssuerKey() {
-        Key key = new LocalKey(issuerPrivateJwkStr);
-        return key;
-    }
-
-    @Bean
-    public String provenAIIssuerPrivateJwkStr() {
-        return issuerPrivateJwkStr;
-    }
 
     @Bean
     public CredentialIssuanceApi credentialIssuanceApi(ObjectMapper kotlinObjectMapper) {

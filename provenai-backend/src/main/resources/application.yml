@@ -16,17 +16,18 @@ spring:
     show-sql: true
     hibernate:
       ddl-auto: none
+#  datasource:
+#    url: ${DATABASE_URL}
+#    username: ${DATABASE_USERNAME}
+#    password: ${DATABASE_PASSWORD}
+#    hikari:
+#      maximum-pool-size: 100
+#      minimum-idle: 10
   datasource:
-    url: ${DATABASE_URL}
-    username: ${DATABASE_USERNAME}
-    password: ${DATABASE_PASSWORD}
-    hikari:
-      maximum-pool-size: 100
-      minimum-idle: 10
-  #  datasource:
-  #    url: jdbc:postgresql://localhost:5432/postgres
-  #    username: postgres
-  #    password: 123456789
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: postgres
+    password: 1234
+    driver-class-name: org.postgresql.Driver
   jackson:
     serialization:
       write-dates-as-timestamps: false
@@ -66,6 +67,12 @@ springdoc:
     path: /api-documentation
 
 proven-ai:
+  ssi:
+    issuer-private-jwk: ${ISSUER_PRIVATE_JWK}
+    verifier:
+      url: https://proven-ai-verifier.ctrlspace.dev/ssi/verifier
+    issuer:
+      url: https://proven-ai-issuer.ctrlspace.dev/ssi/issuer
   openapi:
     servers:
 #      concat hard coded url string with the context path from params

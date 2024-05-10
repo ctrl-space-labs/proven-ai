@@ -1,6 +1,7 @@
 package dev.ctrlspace.provenai.backend.model.dtos;
 
 import dev.ctrlspace.provenai.backend.model.AclPolicies;
+import dev.ctrlspace.provenai.ssi.model.vc.attestation.Policy;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -24,7 +25,7 @@ public class DataPodDTO {
 
     private String hostUrl;
 
-    private List<AclPolicies> aclPolicies;
+    private List<Policy> usagePolicies;
 
     private Instant createdAt;
 

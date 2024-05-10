@@ -1,13 +1,18 @@
 package dev.ctrlspace.provenai.backend.repositories;
 
-import dev.ctrlspace.provenai.backend.model.DataPod;
-import dev.ctrlspace.provenai.backend.model.Organization;
+import dev.ctrlspace.provenai.backend.model.AclPolicies;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.UUID;
 
 @Repository
-public interface OrganizationRepository  extends JpaRepository<Organization, UUID>, QuerydslPredicateExecutor<Organization> {
+public interface AclPoliciesRepository extends JpaRepository<AclPolicies, UUID>, QuerydslPredicateExecutor<AclPolicies> {
+
+
+    List<AclPolicies> findByDataPodId(UUID dataPodId);
+
+
 }

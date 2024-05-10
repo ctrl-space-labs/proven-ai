@@ -3,6 +3,8 @@ package dev.ctrlspace.provenai.backend.services;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.ctrlspace.provenai.backend.exceptions.ProvenAiException;
+import dev.ctrlspace.provenai.backend.model.Agent;
+import dev.ctrlspace.provenai.backend.model.DataPod;
 import dev.ctrlspace.provenai.backend.model.Organization;
 import dev.ctrlspace.provenai.backend.model.dtos.criteria.OrganizationCriteria;
 import dev.ctrlspace.provenai.backend.repositories.OrganizationRepository;
@@ -27,19 +29,25 @@ public class OrganizationsService {
 
     private OrganizationRepository organizationRepository;
 
-    private LegalEntityConverter legalEntityConverter;
+    private AgentService agentService;
+
 
     @Autowired
-    public OrganizationsService(OrganizationRepository organizationRepository) {
+    public OrganizationsService(OrganizationRepository organizationRepository,
+                                AgentService agentService) {
         this.organizationRepository = organizationRepository;
+        this.agentService = agentService;
     }
 
-    public Optional<Organization> getOrganizationById(UUID id) throws ProvenAiException {
-        return Optional.ofNullable(organizationRepository.findById(id)
-                .orElseThrow(() -> new ProvenAiException("ORGANIZATION_NOT_FOUND", "Organization not found with id: " + id, HttpStatus.NOT_FOUND)));
 
+    public Optional<Organization> getOptionalOrganizationById(UUID id) {
+        return organizationRepository.findById(id);
     }
 
+    public Organization getOrganizationById(UUID id) throws ProvenAiException {
+        return this.getOptionalOrganizationById(id)
+                .orElseThrow(() -> new ProvenAiException("ORGANIZATION_NOT_FOUND", "Organization not found with id: " + id, HttpStatus.NOT_FOUND));
+    }
 
     public Page<Organization> getAllOrganizations(OrganizationCriteria criteria, Pageable pageable) throws ProvenAiException {
         if (pageable == null) {
@@ -51,6 +59,20 @@ public class OrganizationsService {
     public Organization registerOrganization(Organization organization) {
 
         return organizationRepository.save(organization);
+
+    }
+
+    public Optional<Organization> getOrganizationOptionalByAgentId(UUID agentId) throws ProvenAiException {
+        Agent agent = agentService.getAgentById(agentId);
+        if (agent == null) {
+            throw new IllegalArgumentException("Agent not found with ID: " + agentId);
+        }
+        return organizationRepository.findById(agent.getOrganizationId());
+    }
+
+    public Organization getOrganizationByAgentId(UUID agentId) throws ProvenAiException {
+        return getOrganizationOptionalByAgentId(agentId)
+                .orElseThrow(() -> new IllegalArgumentException("Organization not found for Agent ID: " + agentId));
 
     }
 

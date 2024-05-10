@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import dev.ctrlspace.provenai.ssi.model.dto.WaltIdCredentialIssuanceRequest;
+import dev.ctrlspace.provenai.utils.SSIConstants;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
@@ -37,15 +38,13 @@ public class CredentialIssuanceApi {
      * @return The credential offer url.
      */
     public String issueCredential(JsonNode requestBody) {
-        // TODO read from properties
-        String apiUrl = "http://localhost:7002/openid4vc/jwt/issue";
 
         HttpHeaders headers = buildHeaders();
 
         HttpEntity<JsonNode> requestEntity = new HttpEntity<>(requestBody, headers);
 
         ResponseEntity<String> responseEntity = restTemplate.exchange(
-                apiUrl,
+                SSIConstants.WALT_ID_ISSUER_API,
                 HttpMethod.POST,
                 requestEntity,
                 String.class
