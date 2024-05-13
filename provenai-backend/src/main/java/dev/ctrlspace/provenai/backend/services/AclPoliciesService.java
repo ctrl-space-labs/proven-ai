@@ -22,9 +22,7 @@ public class AclPoliciesService {
     private PolicyTypeRepository policyTypeRepository;
 
     @Autowired
-    public AclPoliciesService(AclPoliciesRepository aclPoliciesRepository,
-                              PolicyOptionRepository policyOptionRepository,
-                              PolicyTypeRepository policyTypeRepository) {
+    public AclPoliciesService(AclPoliciesRepository aclPoliciesRepository, PolicyOptionRepository policyOptionRepository, PolicyTypeRepository policyTypeRepository) {
         this.aclPoliciesRepository = aclPoliciesRepository;
         this.policyOptionRepository = policyOptionRepository;
         this.policyTypeRepository = policyTypeRepository;
@@ -37,23 +35,34 @@ public class AclPoliciesService {
 
 
     List<AclPolicies> savePoliciesForDataPod(DataPod savedDataPod, List<Policy> policies) {
-        List<AclPolicies> savedPolicies = policies.stream()
-                .map(policy -> {
-                    PolicyOption policyOption = policyOptionRepository.findByName(policy.getPolicyValue());
-                    PolicyType policyType = policyTypeRepository.findByName(policy.getPolicyType());
+        List<AclPolicies> savedPolicies = policies.stream().map(policy -> {
+            PolicyType policyType = policyTypeRepository.findByName(policy.getPolicyType());
+            Instant now = Instant.now();
 
-                    AclPolicies aclPolicy = new AclPolicies();
-                    aclPolicy.setDataPod(savedDataPod);
-                    aclPolicy.setPolicyOption(policyOption);
-                    aclPolicy.setValue(policy.getPolicyValue());
-                    aclPolicy.setPolicyType(policyType);
-                    aclPolicy.setCreatedAt(Instant.now());
-                    aclPolicy.setUpdatedAt(Instant.now());
-                    return aclPolicy;
-                }).toList();
+            AclPolicies aclPolicy = new AclPolicies();
+            aclPolicy.setDataPod(savedDataPod);
+            aclPolicy.setPolicyType(policyType);
+            aclPolicy.setCreatedAt(now);
+            aclPolicy.setUpdatedAt(now);
+//          policies for agents access to data pods
+            if (policyType.getName().equals("ALLOW_LIST") || policyType.getName().equals("DENY_LIST")) {
+//              the value will be the agent ID
+                PolicyOption policyOption = policyOptionRepository.findByPolicyTypeId(policyType.getId());
+                aclPolicy.setPolicyOption(policyOption);
+                aclPolicy.setValue(policy.getPolicyValue());
+
+            } else {
+                PolicyOption policyOption = policyOptionRepository.findByName(policy.getPolicyValue());
+                aclPolicy.setPolicyOption(policyOption);
+                aclPolicy.setValue(policyOption.getName());
+            }
+
+            return aclPolicy;
+        }).toList();
 
         return aclPoliciesRepository.saveAll(savedPolicies);
     }
+
 
     public void deletePoliciesByDataPodId(UUID dataPodId) {
         List<AclPolicies> aclPolicies = aclPoliciesRepository.findByDataPodId(dataPodId);

@@ -21,7 +21,7 @@ public class OrganizationDTO {
 
     private String vatNumber;
 
-    private String verifiablePresentation;
+    private String organizationVpJwt;
 
     private String organizationDid;
 

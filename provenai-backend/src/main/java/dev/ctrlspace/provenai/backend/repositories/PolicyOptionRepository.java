@@ -14,4 +14,6 @@ public interface PolicyOptionRepository extends JpaRepository<PolicyOption, UUID
 
     PolicyOption findByName(String policyName);
 
+    PolicyOption findByPolicyTypeId(UUID policyTypeId);
+
     }

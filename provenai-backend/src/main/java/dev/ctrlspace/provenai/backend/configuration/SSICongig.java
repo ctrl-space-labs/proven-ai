@@ -7,8 +7,6 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import dev.ctrlspace.provenai.ssi.converters.AgentIDConverter;
 import dev.ctrlspace.provenai.ssi.issuer.CredentialIssuanceApi;
 import dev.ctrlspace.provenai.utils.JsonLiteralSerializer;
-import id.walt.crypto.keys.Key;
-import id.walt.crypto.keys.LocalKey;
 import kotlinx.serialization.json.JsonLiteral;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

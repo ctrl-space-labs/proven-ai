@@ -4,10 +4,8 @@ import dev.ctrlspace.provenai.backend.model.Organization;
 import dev.ctrlspace.provenai.backend.model.dtos.OrganizationDTO;
 import org.springframework.stereotype.Component;
 
-import java.time.Instant;
-
 @Component
-public class OrganizationConverter implements ProvenAIConverter<Organization, OrganizationDTO>{
+public class OrganizationConverter implements ProvenAIConverter<Organization, OrganizationDTO> {
 
     @Override
     public OrganizationDTO toDTO(Organization organization) {
@@ -18,13 +16,12 @@ public class OrganizationConverter implements ProvenAIConverter<Organization, Or
         organizationDTO.setCountry(organization.getCountry());
         organizationDTO.setVatNumber(organization.getVatNumber());
         organizationDTO.setOrganizationDid(organization.getOrganizationDid());
-        organizationDTO.setVerifiablePresentation(organization.getVerifiablePresentation());
-        organizationDTO.setCreatedAt( organization.getCreatedAt());
+        organizationDTO.setOrganizationVpJwt(organization.getOrganizationVpJwt());
+        organizationDTO.setCreatedAt(organization.getCreatedAt());
         organizationDTO.setUpdatedAt(organization.getUpdatedAt());
 
 
         return organizationDTO;
-
 
 
     }
@@ -38,13 +35,12 @@ public class OrganizationConverter implements ProvenAIConverter<Organization, Or
         organization.setCountry(organizationDTO.getCountry());
         organization.setOrganizationDid(organizationDTO.getOrganizationDid());
         organization.setVatNumber(organizationDTO.getVatNumber());
-        organization.setVerifiablePresentation(organizationDTO.getVerifiablePresentation());
+        organization.setOrganizationVpJwt(organizationDTO.getOrganizationVpJwt());
         organization.setCreatedAt(organizationDTO.getCreatedAt());
         organization.setUpdatedAt(organizationDTO.getUpdatedAt());
 
         return organization;
     }
-
 
 
 }

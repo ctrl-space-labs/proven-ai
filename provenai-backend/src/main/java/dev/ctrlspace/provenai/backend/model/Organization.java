@@ -32,9 +32,9 @@ public class Organization {
     @Column(name = "vat_number")
     private String vatNumber;
 
-    @Column(columnDefinition = "jsonb", name = "verifiable_id_vp")
-    @Type(value = JsonBinaryType.class)
-    private String verifiablePresentation;
+    @Basic
+    @Column(name = "organization_vp_jwt")
+    private String organizationVpJwt;
 
     @Basic
     @Column(name = "organization_did")
@@ -84,13 +84,9 @@ public class Organization {
         this.vatNumber = vatNumber;
     }
 
-    public String getVerifiablePresentation() {
-        return verifiablePresentation;
-    }
+    public String getOrganizationVpJwt() {return organizationVpJwt;}
 
-    public void setVerifiablePresentation(String verifiablePresentation) {
-        this.verifiablePresentation = verifiablePresentation;
-    }
+    public void setOrganizationVpJwt(String organizationVpJwt) {this.organizationVpJwt = organizationVpJwt;}
 
     public String getOrganizationDid() {
         return organizationDid;
@@ -138,11 +134,11 @@ public class Organization {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Organization that = (Organization) o;
-        return Objects.equals(id, that.id) && Objects.equals(name, that.name) && Objects.equals(country, that.country) && Objects.equals(vatNumber, that.vatNumber) && Objects.equals(verifiablePresentation, that.verifiablePresentation) && Objects.equals(organizationDid, that.organizationDid) && Objects.equals(createdAt, that.createdAt) && Objects.equals(updatedAt, that.updatedAt) && Objects.equals(createdBy, that.createdBy) && Objects.equals(updatedBy, that.updatedBy);
+        return Objects.equals(id, that.id) && Objects.equals(name, that.name) && Objects.equals(country, that.country) && Objects.equals(vatNumber, that.vatNumber) && Objects.equals(organizationVpJwt, that.organizationVpJwt) && Objects.equals(organizationDid, that.organizationDid) && Objects.equals(createdAt, that.createdAt) && Objects.equals(updatedAt, that.updatedAt) && Objects.equals(createdBy, that.createdBy) && Objects.equals(updatedBy, that.updatedBy);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, country, vatNumber, verifiablePresentation, organizationDid, createdAt, updatedAt, createdBy, updatedBy);
+        return Objects.hash(id, name, country, vatNumber, organizationVpJwt, organizationDid, createdAt, updatedAt, createdBy, updatedBy);
     }
 }
