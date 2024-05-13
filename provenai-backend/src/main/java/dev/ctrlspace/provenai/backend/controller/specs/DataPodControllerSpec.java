@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.UUID;
@@ -37,10 +38,11 @@ public interface DataPodControllerSpec {
             Pageable pageable) throws ProvenAiException;
 
     @Operation(summary = "Get a data pod by id")
-    public DataPod getById(UUID id) throws ProvenAiException;
+    public DataPod getDataPodById(UUID id) throws ProvenAiException;
 
     @Operation(summary = "Create a new data pod")
-    DataPod create(@RequestBody DataPodDTO dataPodDto) throws ProvenAiException;
+    DataPod createDataPod(@RequestBody DataPodDTO dataPodDto) throws ProvenAiException;
 
-
+    @Operation(summary = "Update a data pod")
+    public DataPod updateDataPod(@PathVariable UUID id, @RequestBody DataPodDTO dataPodDTO) throws ProvenAiException;
 }

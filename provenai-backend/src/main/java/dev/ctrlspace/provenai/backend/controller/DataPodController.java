@@ -7,9 +7,11 @@ import dev.ctrlspace.provenai.backend.model.DataPod;
 import dev.ctrlspace.provenai.backend.model.dtos.DataPodDTO;
 import dev.ctrlspace.provenai.backend.model.dtos.criteria.DataPodCriteria;
 import dev.ctrlspace.provenai.backend.services.DataPodService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -30,25 +32,25 @@ public class DataPodController implements DataPodControllerSpec {
     }
 
     @GetMapping("/data-pods")
-    public Page<DataPod> getAllDataPods(DataPodCriteria criteria, Pageable pageable) throws ProvenAiException {
+    public Page<DataPod> getAllDataPods(@Valid DataPodCriteria criteria, Pageable pageable) throws ProvenAiException {
         return dataPodService.getAllDataPods(criteria, pageable);
     }
 
     @GetMapping("/data-pods/{id}")
-    public DataPod getById(@PathVariable UUID id) throws ProvenAiException {
+    public DataPod getDataPodById(@PathVariable UUID id) throws ProvenAiException {
         return dataPodService.getDataPodById(id);
     }
 
 
-
     @PostMapping("/data-pods")
-    public DataPod create(@RequestBody DataPodDTO dataPodDto) throws ProvenAiException {
+    public DataPod createDataPod(@RequestBody DataPodDTO dataPodDto) throws ProvenAiException {
 
         DataPod dataPod = dataPodConverter.toEntity(dataPodDto);
 
-        return dataPodService.createDataPod(dataPod, dataPodDto.getUsagePolicies());
+        return dataPodService.createDataPod(dataPod, dataPodDto.getAclPolicies());
     }
 
+//    TODO: Create project VC
 //    @PostMapping("/data-pods/{id}/credential-offer")
 //    public DataPod createDataPodVerifiableId(UUID id) {
 //        return DataPod
@@ -58,22 +60,26 @@ public class DataPodController implements DataPodControllerSpec {
 //                .credentialJwt("eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsIm5hbWUiOiJKb2huIERvZSIsImVtYWlsIjoiam9obkBkb2UuY29tIn0.7J1Gzv")
 //                .build();
 
-//delete dataPod
 
     @DeleteMapping("/data-pods/{id}")
-    public void delete(@PathVariable UUID id) throws ProvenAiException {
+    public void deleteDataPod(@PathVariable UUID id) throws ProvenAiException {
         dataPodService.deleteDataPodById(id);
     }
 
-//    update data pod
 
     @PutMapping("/data-pods/{id}")
-    public DataPod update(@PathVariable UUID id, DataPod dataPod) throws ProvenAiException {
+    public DataPod updateDataPod(@PathVariable UUID id, @RequestBody DataPodDTO dataPodDTO) throws ProvenAiException {
+        UUID updatedDataPodId = dataPodDTO.getId();
 
-        return dataPodService.updateDataPod( dataPod);
+        DataPod dataPod = dataPodConverter.toEntity(dataPodDTO);
+        dataPod.setId(updatedDataPodId);
+
+        if (!id.equals(dataPodDTO.getId())) {
+            throw new ProvenAiException("DATA_POD_ID_MISMATCH", "ID in path and ID in body are not the same", HttpStatus.BAD_REQUEST);
+        }
+
+        return dataPodService.updateDataPod(dataPod);
     }
-
-
 
 
 }

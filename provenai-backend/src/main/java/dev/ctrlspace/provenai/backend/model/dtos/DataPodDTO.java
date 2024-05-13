@@ -25,7 +25,7 @@ public class DataPodDTO {
 
     private String hostUrl;
 
-    private List<Policy> usagePolicies;
+    private List<Policy> aclPolicies;
 
     private Instant createdAt;
 

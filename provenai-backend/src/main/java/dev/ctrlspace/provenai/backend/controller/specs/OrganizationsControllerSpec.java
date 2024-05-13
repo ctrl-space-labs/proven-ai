@@ -1,10 +1,13 @@
 package dev.ctrlspace.provenai.backend.controller.specs;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import dev.ctrlspace.provenai.backend.exceptions.ProvenAiException;
 import dev.ctrlspace.provenai.backend.model.Organization;
 import dev.ctrlspace.provenai.backend.model.dtos.OrganizationDTO;
-import dev.ctrlspace.provenai.backend.model.dtos.VerifiablePresentationResponse;
 import dev.ctrlspace.provenai.backend.model.dtos.criteria.OrganizationCriteria;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -13,20 +16,19 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import java.util.Optional;
 import java.util.UUID;
 
 @Tag(name = "Registered Organizations",
         description = "Endpoints for managing registered organizations. Full CRUD operations are supported.</br>" +
-        "Organizations are entities that act as the root of ProvenAI ecosystem. Organizations can be either Natural persons or Legal Entities. " +
-        "All data in ProvenAI belong to an organization, and the organization can have 1 or more users with access rights to perform actions on behalf of the organization." +
-        "For Organization registration, the organization owner needs to provide their Verifiable ID in order to verify their account and details provided.")
+                "Organizations are entities that act as the root of ProvenAI ecosystem. Organizations can be either Natural persons or Legal Entities. " +
+                "All data in ProvenAI belong to an organization, and the organization can have 1 or more users with access rights to perform actions on behalf of the organization." +
+                "For Organization registration, the organization owner needs to provide their Verifiable ID in order to verify their account and details provided.")
 public interface OrganizationsControllerSpec {
 
     @Operation(description = "Retrieves all registered organizations.",
             summary = "Retrieves all registered organizations.</br>" +
-            "Retrieves organizations based on provided criteria. </br>" +
-            "Supported criteria: organizationId, List<organizationId>, country, name.")
+                    "Retrieves organizations based on provided criteria. </br>" +
+                    "Supported criteria: organizationId, List<organizationId>, country, name.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successfully retrieved organizations"),
             @ApiResponse(responseCode = "401", description = "You are not authorized to view the resource"),
@@ -34,7 +36,11 @@ public interface OrganizationsControllerSpec {
             @ApiResponse(responseCode = "404", description = "The resource you were trying to reach is not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    Page<Organization> getAllOrganizations(OrganizationCriteria criteria, Pageable pageable) throws Exception;
+    Page<Organization> getAllOrganizations(
+            @Parameter(description = "Filtering criteria for Data Pods", required = false, schema = @Schema(implementation = OrganizationCriteria.class))
+            OrganizationCriteria criteria,
+            @Parameter(description = "Pagination information", required = false, schema = @Schema(implementation = Pageable.class))
+            Pageable pageable) throws ProvenAiException;
 
     @Operation(summary = "Get registered organization by ID")
     @ApiResponses(value = {
@@ -44,7 +50,8 @@ public interface OrganizationsControllerSpec {
             @ApiResponse(responseCode = "404", description = "The resource you were trying to reach is not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    public Organization getOrganizationById(@PathVariable UUID organizationId) throws Exception;
+    public Organization getOrganizationById(@PathVariable UUID organizationId) throws ProvenAiException;
+
 
     @Operation(summary = "Register a new organization",
             description = "Registers a new organization with the details provided in the portal.</br>" +
@@ -58,7 +65,7 @@ public interface OrganizationsControllerSpec {
             @ApiResponse(responseCode = "404", description = "The resource you were trying to reach is not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    public Organization registerOrganization(@RequestBody OrganizationDTO organizationDTO) throws Exception;
+    public Organization registerOrganization(@RequestBody OrganizationDTO organizationDTO) throws JsonProcessingException;
 
     @Operation(summary = "Update a registered organization",
             description = "Updates a registered organization.")
@@ -69,7 +76,8 @@ public interface OrganizationsControllerSpec {
             @ApiResponse(responseCode = "404", description = "The resource you were trying to reach is not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    public Organization updateOrganization(@PathVariable UUID organizationId, @RequestBody OrganizationDTO organizationDTO) throws Exception;
+    public Organization updateOrganization(@PathVariable UUID organizationId, @RequestBody OrganizationDTO organizationDTO)
+            throws ProvenAiException;
 
     @Operation(summary = "Delete a registered organization",
             description = "Deletes a registered organization.")
@@ -80,24 +88,8 @@ public interface OrganizationsControllerSpec {
             @ApiResponse(responseCode = "404", description = "The resource you were trying to reach is not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    public void deleteOrganization(@PathVariable UUID organizationId) throws Exception;
+    public void deleteOrganization(@PathVariable UUID organizationId) throws ProvenAiException;
 
 
-//    @Operation(summary = "Present the Verifiable Presentation ID of an organization",
-//            description = "Presents the Verifiable Presentation ID of an organization provided an organization ID." +
-//                    "The Verifiable Presentation ID is exported as a JSON object." +
-//                    "The credential offer URL is exported. It can be copied to a web wallet to import a verifiable credential."
-//    )
-//    @ApiResponses(value = {
-//            @ApiResponse(responseCode = "200", description = "Successfully deleted registered organization"),
-//            @ApiResponse(responseCode = "401", description = "You are not authorized to view the resource"),
-//            @ApiResponse(responseCode = "403", description = "Accessing the resource you were trying to reach is forbidden"),
-//            @ApiResponse(responseCode = "404", description = "The resource you were trying to reach is not found"),
-//            @ApiResponse(responseCode = "500", description = "Internal server error")
-//    })
-//    VerifiablePresentationResponse getOrganizationVerifiablePresentation(@PathVariable UUID organizationId) throws Exception;
-
-
-
-    }
+}
 

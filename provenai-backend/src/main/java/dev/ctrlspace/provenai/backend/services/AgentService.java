@@ -50,17 +50,18 @@ public class AgentService {
 
     private PolicyTypeRepository policyTypeRepository;
 
-    private OrganizationsService organizationsService;
 
     @Autowired
     public AgentService(AgentRepository agentRepository,
                         CredentialIssuanceApi credentialIssuanceApi,
                         AgentPurposeOfUsePoliciesService agentPurposeOfUsePoliciesService,
-                        PolicyTypeRepository policyTypeRepository) {
+                        PolicyTypeRepository policyTypeRepository,
+                        OrganizationRepository organizationRepository) {
         this.agentRepository = agentRepository;
         this.credentialIssuanceApi = credentialIssuanceApi;
         this.agentPurposeOfUsePoliciesService = agentPurposeOfUsePoliciesService;
         this.policyTypeRepository = policyTypeRepository;
+        this.organizationRepository = organizationRepository;
     }
 
 
@@ -92,7 +93,7 @@ public class AgentService {
     public W3CVC createAgentW3CVCByID(UUID agentId) throws JsonProcessingException, JSONException, ProvenAiException {
 
         Agent agent = getAgentById(agentId);
-        Organization organization = organizationsService.getOrganizationByAgentId(agentId);
+        Organization organization = getOrganizationByAgentId(agentId);
         ObjectMapper objectMapper = new ObjectMapper();
         List<AgentPurposeOfUsePolicies> agentPurposeOfUsePolicies = agentPurposeOfUsePoliciesService.getAgentPurposeOfUsePolicies(agentId);
 
@@ -119,11 +120,25 @@ public class AgentService {
     }
 
 
+    public Optional<Organization> getOrganizationOptionalByAgentId(UUID agentId) throws ProvenAiException {
+        Agent agent = getAgentById(agentId);
+        if (agent == null) {
+            throw new IllegalArgumentException("Agent not found with ID: " + agentId);
+        }
+        return organizationRepository.findById(agent.getOrganizationId());
+    }
+
+    public Organization getOrganizationByAgentId(UUID agentId) throws ProvenAiException {
+        return getOrganizationOptionalByAgentId(agentId)
+                .orElseThrow(() -> new IllegalArgumentException("Organization not found for Agent ID: " + agentId));
+
+    }
+
     public Object createAgentSignedVcJwt(W3CVC w3CVC, UUID agentId) throws ProvenAiException {
         LocalKey localKey = new LocalKey(issuerPrivateJwk);
         ProvenAIIssuer provenAIIssuer = new ProvenAIIssuer();
         AdditionalSignVCParams additionalSignVCParams = new AdditionalSignVCParams();
-        Organization organization = organizationsService.getOrganizationByAgentId(agentId);
+        Organization organization = getOrganizationByAgentId(agentId);
 
         return provenAIIssuer.generateSignedVCJwt(w3CVC, localKey, issuerDid, organization.getOrganizationDid());
 
@@ -151,7 +166,8 @@ public class AgentService {
     public Agent updateAgent(Agent agent) throws ProvenAiException {
         Agent existingAgent = getAgentById(agent.getId());
         existingAgent.setAgentVcJwt(agent.getAgentVcJwt());
-        existingAgent.setUpdatedAt(agent.getUpdatedAt());
+        existingAgent.setAgentName(agent.getAgentName());
+        existingAgent.setUpdatedAt(Instant.now());
 
         return agentRepository.save(existingAgent);
     }

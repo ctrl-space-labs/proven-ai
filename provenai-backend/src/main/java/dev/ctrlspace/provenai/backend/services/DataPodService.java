@@ -2,7 +2,9 @@ package dev.ctrlspace.provenai.backend.services;
 
 import dev.ctrlspace.provenai.backend.exceptions.ProvenAiException;
 import dev.ctrlspace.provenai.backend.model.AclPolicies;
+import dev.ctrlspace.provenai.backend.model.Agent;
 import dev.ctrlspace.provenai.backend.model.DataPod;
+import dev.ctrlspace.provenai.backend.model.Organization;
 import dev.ctrlspace.provenai.backend.model.dtos.criteria.DataPodCriteria;
 import dev.ctrlspace.provenai.backend.repositories.DataPodRepository;
 import dev.ctrlspace.provenai.backend.repositories.specifications.DataPodPredicates;
@@ -13,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -73,9 +76,17 @@ public class DataPodService {
         return savedDataPod;
     }
 
-    public DataPod updateDataPod(DataPod dataPod) {
-        return dataPodRepository.save(dataPod);
-    }
+    public DataPod updateDataPod(DataPod dataPod) throws ProvenAiException {
+        UUID dataPodId = dataPod.getId();
+        DataPod existingDataPod = dataPodRepository.findById(dataPod.getId())
+                .orElseThrow(() -> new ProvenAiException("DATA_POD_NOT_FOUND", "DataPod not found with id: " + dataPod.getId(), HttpStatus.NOT_FOUND));
+        existingDataPod.setPodUniqueName(dataPod.getPodUniqueName());
+        existingDataPod.setHostUrl(dataPod.getHostUrl());
+        existingDataPod.setUpdatedAt(Instant.now());
 
+        return dataPodRepository.save(existingDataPod);
+
+
+    }
 
 }

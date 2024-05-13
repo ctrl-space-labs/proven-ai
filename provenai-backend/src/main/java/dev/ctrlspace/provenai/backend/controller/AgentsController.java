@@ -12,6 +12,7 @@ import dev.ctrlspace.provenai.backend.model.dtos.criteria.AgentCriteria;
 import dev.ctrlspace.provenai.backend.services.AgentService;
 import id.walt.credentials.vc.vcs.W3CVC;
 import jakarta.validation.Valid;
+import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -38,31 +39,30 @@ public class AgentsController implements AgentsControllerSpec {
 
 
     @GetMapping("/agents")
-    public Page<Agent> getAllAgents(@Valid AgentCriteria criteria,  Pageable pageable) throws ProvenAiException {
+    public Page<Agent> getAllAgents(@Valid AgentCriteria criteria, Pageable pageable) throws ProvenAiException {
 
         return agentService.getAllAgents(criteria, pageable);
     }
-
 
 
     @PostMapping("/agents")
     public Agent createAgent(@RequestBody AgentDTO agentDTO) {
         Agent agent = agentConverter.toEntity(agentDTO);
 
-        return agentService.createAgent(agent,agentDTO.getUsagePolicies());
+        return agentService.createAgent(agent, agentDTO.getUsagePolicies());
     }
 
 
     @PostMapping("/agents/{id}/credential-offer")
-    public AgentIdCredential createAgentVerifiableId(@PathVariable String id) throws Exception, JsonProcessingException {
+    public AgentIdCredential createAgentVerifiableId(@PathVariable String id) throws ProvenAiException, JsonProcessingException, JSONException {
         AgentIdCredential agentIdCredential = new AgentIdCredential();
         W3CVC verifiableCredential = agentService.createAgentW3CVCByID(UUID.fromString(id));
         Object signedVcJwt = agentService.createAgentSignedVcJwt(verifiableCredential, UUID.fromString(id));
         agentIdCredential.setAgentId(id);
         agentIdCredential.setCredentialOfferUrl(agentService.createAgentVCOffer(verifiableCredential));
         agentIdCredential.setCredentialJwt(signedVcJwt);
-        agentService.updateAgentVerifiableId(UUID.fromString(id), signedVcJwt.toString()); // Update agent's verifiable ID
-         return agentIdCredential;
+        agentService.updateAgentVerifiableId(UUID.fromString(id), signedVcJwt.toString());
+        return agentIdCredential;
     }
 
 
@@ -83,7 +83,7 @@ public class AgentsController implements AgentsControllerSpec {
         return agentService.getAgentById(id);
     }
 
-
+    // TODO: Receive Agent VP from gendox to get token
     @PostMapping("/agents/token")
     public String authorizeAgent(@RequestParam("grant_type") String grantType,
                                  @RequestParam("scope") String scope,

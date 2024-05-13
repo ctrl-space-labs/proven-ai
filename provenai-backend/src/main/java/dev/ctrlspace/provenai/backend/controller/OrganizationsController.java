@@ -8,7 +8,6 @@ import dev.ctrlspace.provenai.backend.model.Organization;
 import dev.ctrlspace.provenai.backend.model.dtos.OrganizationDTO;
 import dev.ctrlspace.provenai.backend.model.dtos.criteria.OrganizationCriteria;
 import dev.ctrlspace.provenai.backend.services.OrganizationsService;
-import dev.ctrlspace.provenai.ssi.issuer.CredentialIssuanceApi;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -25,7 +24,6 @@ public class OrganizationsController implements OrganizationsControllerSpec {
     private OrganizationsService organizationsService;
     private OrganizationConverter organizationConverter;
 
-    private CredentialIssuanceApi credentialIssuanceApi;
 
 
     @Autowired
@@ -33,7 +31,6 @@ public class OrganizationsController implements OrganizationsControllerSpec {
                                    OrganizationConverter organizationConverter) {
         this.organizationsService = organizationsService;
         this.organizationConverter = organizationConverter;
-        this.credentialIssuanceApi = new CredentialIssuanceApi();
 
 
     }
@@ -61,7 +58,7 @@ public class OrganizationsController implements OrganizationsControllerSpec {
     }
 
     @PutMapping(value = "/organizations/{organizationId}", consumes = {"application/json"})
-    public Organization updateOrganization(@PathVariable UUID organizationId, @RequestBody OrganizationDTO organizationDTO) throws Exception {
+    public Organization updateOrganization(@PathVariable UUID organizationId, @RequestBody OrganizationDTO organizationDTO) throws ProvenAiException {
         UUID updatedOrganizationId = organizationDTO.getId();
         Organization organization = organizationConverter.toEntity(organizationDTO);
         organization.setId(updatedOrganizationId);
@@ -79,27 +76,4 @@ public class OrganizationsController implements OrganizationsControllerSpec {
         organizationsService.deleteOrganization(organizationId);
     }
 
-
-//    @GetMapping("/organizations/{organizationId}/verifiable-presentation")
-//    public ResponseEntity<VerifiablePresentationResponse> getOrganizationVerifiablePresentation(@PathVariable UUID organizationId) throws ProvenAiException, IOException {
-//        JsonNode verifiablePresentation = organizationsService.getOrganizationIdVerifiablePresentation(organizationId);
-//        String credentialOfferUrl = credentialIssuanceApi.issueCredential(verifiablePresentation);
-//
-//        VerifiablePresentationResponse response = new VerifiablePresentationResponse();
-//        response.setCredentialOfferUrl(credentialOfferUrl);
-//        response.setVerifiablePresentation(verifiablePresentation);
-//
-//        return ResponseEntity.ok(response);
-//    }
-//    @GetMapping("/organizations/{organizationId}/verifiable-presentation")
-//    public VerifiablePresentationResponse getOrganizationVerifiablePresentation(@PathVariable UUID organizationId) throws ProvenAiException, IOException {
-//        JsonNode verifiablePresentation = organizationsService.getOrganizationIdVerifiablePresentation(organizationId);
-//        String credentialOfferUrl = credentialIssuanceApi.issueCredential(verifiablePresentation);
-//
-//        VerifiablePresentationResponse verifiablePresentationResponse = new VerifiablePresentationResponse();
-//        verifiablePresentationResponse.setCredentialOfferUrl(credentialOfferUrl);
-//        verifiablePresentationResponse.setVerifiablePresentation(verifiablePresentation);
-//
-//        return verifiablePresentationResponse;
-//    }
 }
