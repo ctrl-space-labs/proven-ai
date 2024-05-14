@@ -7,6 +7,7 @@ import id.walt.did.helpers.WaltidServices;
 import kotlin.Unit;
 import kotlin.coroutines.Continuation;
 import kotlinx.serialization.json.JsonElement;
+import kotlinx.serialization.json.JsonPrimitive;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
@@ -55,7 +56,7 @@ public class VerifiablePresentationBuilder {
      * Adds a verifiable credential to the verifiable presentation.
      * @param credential
      */
-    public void addCredential(JsonElement credential) {
+    public void addCredential(JsonPrimitive credential) {
         presentationBuilder.addCredential(credential);
     }
 
@@ -63,7 +64,7 @@ public class VerifiablePresentationBuilder {
      * Adds multiple verifiable credentials to the verifiable presentation.
      * @param credentials
      */
-    public void addCredentials(Collection<? extends JsonElement> credentials) {
+    public void addCredentials(Collection<? extends JsonPrimitive> credentials) {
         presentationBuilder.addCredentials(credentials);
     }
 
