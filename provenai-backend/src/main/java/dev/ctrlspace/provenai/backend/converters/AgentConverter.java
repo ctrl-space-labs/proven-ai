@@ -1,9 +1,7 @@
 package dev.ctrlspace.provenai.backend.converters;
 
 import dev.ctrlspace.provenai.backend.model.Agent;
-import dev.ctrlspace.provenai.backend.model.Organization;
 import dev.ctrlspace.provenai.backend.model.dtos.AgentDTO;
-import dev.ctrlspace.provenai.backend.model.dtos.OrganizationDTO;
 import org.springframework.stereotype.Component;
 
 @Component
