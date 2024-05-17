@@ -1,7 +1,6 @@
 package dev.ctrlspace.provenai.backend.controller.specs;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.util.JSONPObject;
 import dev.ctrlspace.provenai.backend.exceptions.ProvenAiErrorResponse;
 import dev.ctrlspace.provenai.backend.exceptions.ProvenAiException;
 import dev.ctrlspace.provenai.backend.model.Agent;
@@ -15,7 +14,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import org.json.JSONException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 
 @Tag(name = "Agents", description = "Endpoints for managing AI Agents. Full CRUD operations are supported.</br>" +
         "AI Agents are entities that can be used to perform search request in the ProvenAI. Each Agent must be uniquely identified " +
@@ -131,9 +130,7 @@ public interface AgentsControllerSpec {
                                  @RequestParam("scope") String scope,
                                  @Parameter(description = "The Verifiable Agent ID Presentation Token in JWT format", required = true)
                                  @RequestParam("vp_token") String vpToken,
-                                 @Parameter(description = "The presentation submission derived from the VP definition. see. " +
-                                         "<a href='https://hub.ebsi.eu/conformance/learn/verifiable-presentation-exchange#presentation-definition-and-presentation-submission'>here</a>", required = true)
-                                 @RequestParam("presentation_submission") JSONPObject presentationSubmission) throws JsonProcessingException;
+                                 @RequestParam("username") String userIdentifier) throws InterruptedException, ProvenAiException, ExecutionException;
 
 
 }

@@ -9,9 +9,9 @@ import kotlin.coroutines.Continuation;
 import kotlinx.serialization.json.JsonElement;
 import kotlinx.serialization.json.JsonPrimitive;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.UUID;
+
 
 /**
  * Builder class for creating verifiable presentations and signing them.
@@ -44,6 +44,12 @@ public class VerifiablePresentationBuilder {
         presentationBuilder.setDid(did);
     }
 
+
+    public void setPresentationId() {
+        presentationBuilder.setPresentationId("urn:uuid:" + UUID.randomUUID().toString());
+    }
+
+
     /**
      * Sets the nonce of the verifiable presentation.
      * @param nonce
@@ -56,10 +62,7 @@ public class VerifiablePresentationBuilder {
      * Adds a verifiable credential to the verifiable presentation.
      * @param credential
      */
-    public void addCredential(JsonPrimitive credential) {
-        presentationBuilder.addCredential(credential);
-    }
-
+    public void addCredential(JsonPrimitive credential) {presentationBuilder.addCredential(credential);}
     /**
      * Adds multiple verifiable credentials to the verifiable presentation.
      * @param credentials
@@ -76,22 +79,11 @@ public class VerifiablePresentationBuilder {
         return presentationBuilder.buildPresentationJson();
     }
 
-    public Object buildAndSign(Key subjectKey, JsonElement presentationJson) {
-        // Build the verifiable presentation JSON
-
-        // Convert the JSON element to a string
-        String presentationJsonString = presentationJson.toString();
-
-        Continuation<? super Object> continuationSuper = ContinuationObjectUtils.createSuperContinuation();
-
-
-        // Sign the JSON string using the subject key
-        Object signedPresentation =  subjectKey.signJws(
-                presentationJsonString.getBytes(StandardCharsets.UTF_8),
-                new HashMap<>(),
-                continuationSuper
-        );
-
-        return signedPresentation;
+    public Object buildAndSign(Key subjectKey) {
+        // Call the buildAndSign method on the presentationBuilder instance
+        return presentationBuilder.buildAndSign(subjectKey,continuationSuper);
     }
-}
+
+
+
+    }

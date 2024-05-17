@@ -1,7 +1,6 @@
 package dev.ctrlspace.provenai.backend.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.util.JSONPObject;
 import dev.ctrlspace.provenai.backend.controller.specs.AgentsControllerSpec;
 import dev.ctrlspace.provenai.backend.converters.AgentConverter;
 import dev.ctrlspace.provenai.backend.exceptions.ProvenAiException;
@@ -16,9 +15,11 @@ import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 
 
 @RestController
@@ -83,14 +84,23 @@ public class AgentsController implements AgentsControllerSpec {
         return agentService.getAgentById(id);
     }
 
-    // TODO: Receive Agent VP from gendox to get token
+
     @PostMapping("/agents/token")
     public String authorizeAgent(@RequestParam("grant_type") String grantType,
                                  @RequestParam("scope") String scope,
                                  @RequestParam("vp_token") String vpToken,
-                                 @RequestParam("presentation_submission") JSONPObject presentationSubmission) {
-        return "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsIm5hbWUiOiJKb2huIERvZSIsImVtYWlsIjoiam9obkBkb2UuY29tIn0.7J1Gzv";
+                                 @RequestParam("username") String userIdentifier) throws InterruptedException, ProvenAiException, ExecutionException {
+
+        Boolean verificationResult =  agentService.verifyAgentVP(vpToken);
+        if (verificationResult.equals(Boolean.TRUE)) {
+            return agentService.getAgentJwtToken(userIdentifier);
+        }
+        else {
+            throw new ProvenAiException("VP_VERIFICATION_FAILED", "VP Verification failed", HttpStatus.BAD_REQUEST);
+        }
+
+    }
     }
 
 
-}
+

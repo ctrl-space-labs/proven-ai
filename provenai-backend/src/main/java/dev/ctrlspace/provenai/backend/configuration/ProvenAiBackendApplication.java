@@ -1,5 +1,6 @@
 package dev.ctrlspace.provenai.backend.configuration;
 
+import dev.ctrlspace.provenai.backend.authentication.KeycloakAuthenticationService;
 import dev.ctrlspace.provenai.backend.controller.DataPodController;
 import dev.ctrlspace.provenai.backend.converters.OrganizationConverter;
 import dev.ctrlspace.provenai.backend.exceptions.ResponseControllerAdvice;
@@ -22,7 +23,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 		LoggingObservationHandler.class,
 		ProvenAiBackendApplication.class,
 		ResponseControllerAdvice.class,
-		OrganizationConverter.class
+		OrganizationConverter.class,
+		KeycloakAuthenticationService.class
 
 })
 @EnableCaching
