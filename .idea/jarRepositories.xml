@@ -2,9 +2,29 @@
 <project version="4">
   <component name="RemoteRepositoriesConfiguration">
     <remote-repository>
+      <option name="id" value="waltid" />
+      <option name="name" value="waltid" />
+      <option name="url" value="https://maven.walt.id/repository/waltid/" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="central" />
+      <option name="name" value="central" />
+      <option name="url" value="https://repo.maven.apache.org/maven2" />
+    </remote-repository>
+    <remote-repository>
       <option name="id" value="central" />
       <option name="name" value="Central Repository" />
       <option name="url" value="https://repo.maven.apache.org/maven2" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="consensys-maven" />
+      <option name="name" value="consensys-maven" />
+      <option name="url" value="https://artifacts.consensys.net/public/maven/maven/" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="consensys" />
+      <option name="name" value="consensys" />
+      <option name="url" value="https://cloudsmith.io/~consensys/repos/maven/packages/" />
     </remote-repository>
     <remote-repository>
       <option name="id" value="central" />

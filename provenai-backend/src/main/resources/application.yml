@@ -1,0 +1,82 @@
+
+server:
+  port: 8082
+  servlet:
+    context-path: /proven-ai/api/v1
+logging:
+  level:
+    dev.ctrlspace: DEBUG
+    org.springframework: INFO
+
+spring:
+  mvc:
+    format:
+      date-time: yyyy-MM-dd'T'HH:mm:ss.SSSZ
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: none
+#  datasource:
+#    url: ${DATABASE_URL}
+#    username: ${DATABASE_USERNAME}
+#    password: ${DATABASE_PASSWORD}
+#    hikari:
+#      maximum-pool-size: 100
+#      minimum-idle: 10
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: postgres
+    password: 1234
+    driver-class-name: org.postgresql.Driver
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+  application:
+    name: proven-ai-api
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://dev.gendox.ctrlspace.dev/idp/realms/gendox-idp-dev
+          jwk-set-uri: https://dev.gendox.ctrlspace.dev/idp/realms/gendox-idp-dev/protocol/openid-connect/certs
+
+
+
+management:
+  tracing:
+    sampling:
+      probability: 1.0
+
+  metrics:
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+  observations:
+    key-values:
+      application: proven-ai-api
+
+springdoc:
+  swagger-ui:
+    path: /api-documentation
+
+proven-ai:
+  ssi:
+    issuer-private-jwk: ${ISSUER_PRIVATE_JWK}
+    verifier:
+      url: https://proven-ai-verifier.ctrlspace.dev/ssi/verifier
+    issuer:
+      url: https://proven-ai-issuer.ctrlspace.dev/ssi/issuer
+  openapi:
+    servers:
+#      concat hard coded url string with the context path from params
+      local-url: http://localhost:8082${server.servlet.context-path}
+      dev-url: https://dev.proven-ai.ctrlspace.dev${server.servlet.context-path}
+      prod-url: https://app.proven-ai.ctrlspace.dev${server.servlet.context-path}
+
