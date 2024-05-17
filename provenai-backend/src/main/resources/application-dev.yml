@@ -1,0 +1,29 @@
+
+
+spring:
+  mvc:
+    format:
+      date-time: yyyy-MM-dd'T'HH:mm:ss.SSSZ
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: none
+
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: postgres
+    password: 1234
+
+    hikari:
+      maximum-pool-size: 100
+      minimum-idle: 10
+
+proven-ai:
+  ssi:
+    issuer-private-jwk: ${ISSUER_PRIVATE_JWK}
+    verifier:
+      url: https://dev-proven-ai-verifier.ctrlspace.dev
+    issuer:
+      url: https://dev-proven-ai-issuer.ctrlspace.dev
+
