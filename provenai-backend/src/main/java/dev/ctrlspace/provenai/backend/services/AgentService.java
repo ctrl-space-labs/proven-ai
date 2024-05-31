@@ -55,10 +55,10 @@ public class AgentService {
 
     private KeycloakAuthenticationService keycloakAuthenticationService;
 
-    @Value("${issuer-did}")
+    @Value("${proven-ai.ssi.issuer-did}")
     private String issuerDid;
 
-    @Value("${issuer-private-jwk}")
+    @Value("${proven-ai.ssi.issuer-private-jwk}")
     private String issuerPrivateJwk;
 
 
