@@ -3,9 +3,7 @@ package dev.ctrlspace.provenai.backend.adapters;
 import dev.ctrlspace.provenai.backend.model.authentication.UserProfile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -36,8 +34,12 @@ public class GendoxProfileAdapter {
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.add("Authorization", "Bearer " + jwt);
 
-        ResponseEntity<UserProfile> responseEntity = restTemplate.getForEntity(
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+
+        ResponseEntity<UserProfile> responseEntity = restTemplate.exchange(
                 domain + contextPath + userProfilePath,
+                HttpMethod.GET,
+                entity,
                 UserProfile.class);
 
         return responseEntity.getBody();
