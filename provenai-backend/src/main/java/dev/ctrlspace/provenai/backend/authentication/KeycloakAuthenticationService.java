@@ -1,12 +1,8 @@
 package dev.ctrlspace.provenai.backend.authentication;
 
-import com.nimbusds.jose.JWSHeader;
-import com.nimbusds.jose.Payload;
-import com.nimbusds.jwt.JWTParser;
-import com.nimbusds.jwt.SignedJWT;
 import dev.ctrlspace.provenai.backend.exceptions.ProvenAiException;
 import dev.ctrlspace.provenai.backend.model.authentication.UserProfile;
-import org.jetbrains.annotations.Nullable;
+import jakarta.annotation.Nullable;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.KeycloakBuilder;
@@ -89,7 +85,7 @@ public class KeycloakAuthenticationService implements AuthenticationService {
         return jwtString;
     }
 
-    public Jwt impersonateUser(String username) {
+    public AccessTokenResponse impersonateUser(String username, @Nullable String scope) {
 
         AccessTokenResponse clientToken = keycloakClient.tokenManager().getAccessToken();
         HttpHeaders headers = new HttpHeaders();
@@ -101,6 +97,9 @@ public class KeycloakAuthenticationService implements AuthenticationService {
         map.add("subject_token", clientToken.getToken());
         map.add("requested_subject", username);
         map.add("requested_token_type", OAuth2Constants.ACCESS_TOKEN_TYPE);
+        if (scope != null) {
+            map.add("scope", scope);
+        }
 
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
 
@@ -110,33 +109,9 @@ public class KeycloakAuthenticationService implements AuthenticationService {
                 request,
                 AccessTokenResponse.class);
 
-        String tokenString = impersonationToken.getBody().getToken();
-        // Parse the JWT token
-        SignedJWT signedJWT = null;
-        try {
-            signedJWT = (SignedJWT) JWTParser.parse(tokenString);
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
-        }
+        AccessTokenResponse accessTokenResponse = impersonationToken.getBody();
 
-        // Extract headers and claims
-        JWSHeader jwtHeaders = signedJWT.getHeader();
-        Payload payload = signedJWT.getPayload();
-
-
-        // Convert Unix timestamps to Instant
-        Map<String, Object> claims = payload.toJSONObject();
-        convertTimestampsToInstant(claims);
-
-        // Rebuild the token using Spring Boot's Jwt class
-        Jwt jwt = Jwt.withTokenValue(tokenString)
-                .headers(h -> h.putAll(jwtHeaders.toJSONObject()))
-                .claims(c -> c.putAll(claims))
-                .build();
-
-
-        return jwt;
-
+        return accessTokenResponse;
     }
 
     @Override

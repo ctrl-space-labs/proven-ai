@@ -4,6 +4,7 @@ package dev.ctrlspace.provenai.backend.authentication;
 import dev.ctrlspace.provenai.backend.exceptions.ProvenAiException;
 import dev.ctrlspace.provenai.backend.model.authentication.UserProfile;
 import jakarta.annotation.Nullable;
+import org.keycloak.representations.AccessTokenResponse;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.security.oauth2.jwt.Jwt;
 
@@ -29,7 +30,7 @@ public interface AuthenticationService {
     public Jwt getClientToken();
 
 
-    public Jwt impersonateUser(String username);
+    public AccessTokenResponse impersonateUser(String username, @Nullable String scope);
 
     String createUser(UserProfile user, @Nullable String password, Boolean emailVerified, Boolean tempPassword) throws ProvenAiException;
 
