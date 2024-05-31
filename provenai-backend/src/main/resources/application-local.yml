@@ -14,4 +14,7 @@ proven-ai:
       url: https://dev-proven-ai-verifier.ctrlspace.dev/ssi/verifier
     issuer:
       url: https://dev-proven-ai-issuer.ctrlspace.dev/ssi/issuer
+  domains:
+    gendox:
+      base-url: https://dev.gendox.ctrlspace.dev
 
