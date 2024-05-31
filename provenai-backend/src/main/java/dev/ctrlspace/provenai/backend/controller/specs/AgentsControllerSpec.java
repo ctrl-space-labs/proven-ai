@@ -15,6 +15,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.json.JSONException;
+import org.keycloak.representations.AccessTokenResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -124,13 +125,13 @@ public interface AgentsControllerSpec {
                             schema = @Schema(implementation = ProvenAiErrorResponse.class))),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    public String authorizeAgent(@Parameter(description = "Grant type to be used. Must be 'vp_token'", example = "vp_token", required = true)
+    public AccessTokenResponse authorizeAgent(@Parameter(description = "Grant type to be used. Must be 'vp_token'", example = "vp_token", required = true)
                                  @RequestParam("grant_type") String grantType,
-                                 @Parameter(description = "Scope of the request.", example = "openid", required = true)
+                                              @Parameter(description = "Scope of the request.", example = "openid", required = true)
                                  @RequestParam("scope") String scope,
-                                 @Parameter(description = "The Verifiable Agent ID Presentation Token in JWT format", required = true)
+                                              @Parameter(description = "The Verifiable Agent ID Presentation Token in JWT format", required = true)
                                  @RequestParam("vp_token") String vpToken,
-                                 @RequestParam("username") String userIdentifier) throws InterruptedException, ProvenAiException, ExecutionException;
+                                              @RequestParam("username") String userIdentifier) throws InterruptedException, ProvenAiException, ExecutionException;
 
 
 }

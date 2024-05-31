@@ -59,6 +59,7 @@ public class SecurityConfiguration {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((authz) ->
                         authz
+                                .requestMatchers("/agents/token").permitAll()
                                 .requestMatchers("/actuator/health").permitAll()
                                 .requestMatchers("/auth/signup").permitAll()
                                 .requestMatchers("/users/login").permitAll()

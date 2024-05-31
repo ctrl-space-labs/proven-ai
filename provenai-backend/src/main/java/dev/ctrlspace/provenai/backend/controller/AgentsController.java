@@ -12,6 +12,7 @@ import dev.ctrlspace.provenai.backend.services.AgentService;
 import id.walt.credentials.vc.vcs.W3CVC;
 import jakarta.validation.Valid;
 import org.json.JSONException;
+import org.keycloak.representations.AccessTokenResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -86,21 +87,25 @@ public class AgentsController implements AgentsControllerSpec {
 
 
     @PostMapping("/agents/token")
-    public String authorizeAgent(@RequestParam("grant_type") String grantType,
-                                 @RequestParam("scope") String scope,
-                                 @RequestParam("vp_token") String vpToken,
-                                 @RequestParam("username") String userIdentifier) throws InterruptedException, ProvenAiException, ExecutionException {
+    public AccessTokenResponse authorizeAgent(@RequestParam("grant_type") String grantType,
+                                              @RequestParam("scope") String scope,
+                                              @RequestParam("vp_token") String vpToken,
+                                              @RequestParam("username") String userIdentifier) throws InterruptedException, ProvenAiException, ExecutionException {
 
-        Boolean verificationResult =  agentService.verifyAgentVP(vpToken);
+        if (!"vp_token".equals(grantType)) {
+            throw new ProvenAiException("INVALID_GRANT_TYPE", "Invalid grant type", HttpStatus.BAD_REQUEST);
+        }
+
+        Boolean verificationResult = agentService.verifyAgentVP(vpToken);
+//        verificationResult = Boolean.TRUE;
         if (verificationResult.equals(Boolean.TRUE)) {
-            return agentService.getAgentJwtToken(userIdentifier);
-        }
-        else {
-            throw new ProvenAiException("VP_VERIFICATION_FAILED", "VP Verification failed", HttpStatus.BAD_REQUEST);
+            return agentService.getAgentJwtToken(userIdentifier, scope);
+        } else {
+            throw new ProvenAiException("VP_VERIFICATION_FAILED", "VP Verification failed", HttpStatus.UNAUTHORIZED);
         }
 
     }
-    }
+}
 
 
 
