@@ -1,6 +1,9 @@
 package dev.ctrlspace.provenai.backend.services;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.ctrlspace.provenai.backend.authentication.KeycloakAuthenticationService;
 import dev.ctrlspace.provenai.backend.exceptions.ProvenAiException;
@@ -219,4 +222,25 @@ public class AgentService {
 
     }
 
-}
+    public List<Policy> getAgentUsagePolicies(String jwt) throws JsonProcessingException {
+        String[] chunks = jwt.split("\\.");
+        Base64.Decoder decoder = Base64.getUrlDecoder();
+            // Decode payload
+            String payload = new String(decoder.decode(chunks[1]));
+
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode payloadNode = mapper.readTree(payload);
+
+            // Extract usagePolicies JSON node
+            JsonNode usagePoliciesNode = payloadNode
+                    .path("vc")
+                    .path("credentialSubject")
+                    .path("agent")
+                    .path("usagePolicies");
+
+            return mapper.readValue(usagePoliciesNode.toString(), new TypeReference<List<Policy>>() {
+            });
+
+
+        }
+    }
