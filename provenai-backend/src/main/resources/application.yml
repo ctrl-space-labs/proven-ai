@@ -82,10 +82,12 @@ proven-ai:
       prod-url: https://app.proven-ai.ctrlspace.dev${server.servlet.context-path}
   domains:
     gendox:
-      base-url: https://gendox.ctrlspace.dev
+      base-url: https://gendox-api.ctrlspace.dev
       context-path: /gendox/api/v1
       apis:
         user-profile: /profile
+        semantic-search: /messages/semantic-search
+        completion: /messages/semantic-completion
 
 
 

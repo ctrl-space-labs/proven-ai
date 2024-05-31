@@ -1,17 +1,14 @@
 package dev.ctrlspace.provenai.backend.services;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import dev.ctrlspace.provenai.backend.adapters.GendoxQueryAdapter;
 import dev.ctrlspace.provenai.backend.exceptions.ProvenAiException;
 import dev.ctrlspace.provenai.backend.model.DataPod;
+import dev.ctrlspace.provenai.backend.model.authentication.UserProfile;
 import dev.ctrlspace.provenai.backend.model.dtos.SearchResult;
-import dev.ctrlspace.provenai.backend.repositories.OrganizationRepository;
-import dev.ctrlspace.provenai.ssi.model.vc.attestation.Policy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -22,18 +19,23 @@ public class SearchService {
 
     private DataPodService dataPodService;
 
+    private GendoxQueryAdapter gendoxQueryAdapter;
+
 
     @Autowired
-    public SearchService(DataPodService dataPodService) {
+    public SearchService(DataPodService dataPodService,
+                         GendoxQueryAdapter gendoxQueryAdapter) {
         this.dataPodService = dataPodService;
+        this.gendoxQueryAdapter = gendoxQueryAdapter;
     }
 
 // TODO: authentication
-    public List<SearchResult> search(String question) throws ProvenAiException, JsonProcessingException {
-        UUID agentID = UUID.fromString("3432-kj453-534kl56-65b4");
+    public List<SearchResult> search(String question, UserProfile agentProfile) throws ProvenAiException, JsonProcessingException {
+        UUID agentUserId = UUID.fromString(agentProfile.getId());
 
+        String searchResultJson = gendoxQueryAdapter.superAdminSearch(question, "4fd12adf-763b-4d17-a72b-df9f71b50e0d", "10");
         // Step 1: Get Matching Projects from AgentId
-        List<DataPod> dataPods = dataPodService.getMatchingAgentPolicyDataPods(agentID);
+        List<DataPod> dataPods = dataPodService.getMatchingAgentPolicyDataPods(agentUserId);
         // Step 2: Group ProjectIdIn by HostURL
         Map<String, List<UUID>>  dataPodsByHostUrl  = dataPodService.getDataPodsByHostUrl(dataPods);
         //TODO  Step 3: Gendox Search
