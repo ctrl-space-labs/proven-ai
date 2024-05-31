@@ -30,7 +30,9 @@ import id.walt.credentials.verification.policies.JwtSignaturePolicy;
 import id.walt.credentials.verification.policies.NotBeforeDatePolicy;
 import id.walt.credentials.verification.policies.vp.HolderBindingPolicy;
 import id.walt.crypto.keys.LocalKey;
+import jakarta.annotation.Nullable;
 import org.json.JSONException;
+import org.keycloak.representations.AccessTokenResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -179,7 +181,7 @@ public class AgentService {
 
     public Boolean verifyAgentVP(String vpJwt) throws InterruptedException, ExecutionException {
 //      Initialize presentationVerifier
-        PresentationVerifier presentationVerifier = new PresentationVerifier();
+         PresentationVerifier presentationVerifier = new PresentationVerifier();
 
 //        Initialize Policies to be checked
         HolderBindingPolicy holderBindingPolicy = new HolderBindingPolicy();
@@ -211,11 +213,9 @@ public class AgentService {
     }
 
 
-    public String getAgentJwtToken(String userIdentifier) throws ProvenAiException {
+    public AccessTokenResponse getAgentJwtToken(String userIdentifier, @Nullable String scope) throws ProvenAiException {
 
-        Jwt jwt = keycloakAuthenticationService.impersonateUser(userIdentifier);
-
-        return jwt.getTokenValue();
+        return keycloakAuthenticationService.impersonateUser(userIdentifier, scope);
 
     }
 
