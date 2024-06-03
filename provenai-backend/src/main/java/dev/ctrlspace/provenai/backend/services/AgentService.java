@@ -118,10 +118,20 @@ public class AgentService {
         ObjectMapper objectMapper = new ObjectMapper();
         List<AgentPurposeOfUsePolicies> agentPurposeOfUsePolicies = agentPurposeOfUsePoliciesService.getAgentPurposeOfUsePolicies(agentId);
 
+        String organizationName = organization.getName();
+        String organizationDid = organization.getOrganizationDid();
+        String agentName = agent.getAgentName();
+        Instant creationDate = Instant.now();
         // Build the list of usage policies
         List<Policy> usagePolicies = agentPurposeOfUsePolicies.stream().map(agentPurposeOfUsePolicy -> new Policy((policyTypeRepository.findById(agentPurposeOfUsePolicy.getPolicyTypeId())).get().getName(), agentPurposeOfUsePolicy.getValue())).toList();
 
-        AIAgentCredentialSubject credentialSubject = AIAgentCredentialSubject.builder().id(organization.getOrganizationDid()).organizationName(organization.getName()).agentName(agent.getAgentName()).creationDate(Instant.now()).usagePolicies(usagePolicies).build();
+        AIAgentCredentialSubject credentialSubject = AIAgentCredentialSubject.builder()
+                .id(organizationName)
+                .organizationName(organizationDid)
+                .agentName(agentName)
+                .creationDate(creationDate)
+                .usagePolicies(usagePolicies)
+                .build();
 
         VerifiableCredential<AIAgentCredentialSubject> verifiableCredential = new VerifiableCredential<>();
         verifiableCredential.setCredentialSubject(credentialSubject);
