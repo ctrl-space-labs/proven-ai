@@ -19,8 +19,9 @@
 
     <repositories>
         <repository>
-            <id>waltid</id>
-            <url>https://maven.walt.id/repository/waltid/</url>
+            <id>reposilite-repository-releases</id>
+            <name>Reposilite Repository</name>
+            <url>https://maven.waltid.dev/releases</url>
         </repository>
         <repository>
             <id>consensys-maven</id>
