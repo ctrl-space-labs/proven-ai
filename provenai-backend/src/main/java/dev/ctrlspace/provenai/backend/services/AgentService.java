@@ -22,6 +22,7 @@ import dev.ctrlspace.provenai.ssi.model.dto.WaltIdCredentialIssuanceRequest;
 import dev.ctrlspace.provenai.ssi.model.vc.AdditionalSignVCParams;
 import dev.ctrlspace.provenai.ssi.model.vc.VerifiableCredential;
 import dev.ctrlspace.provenai.ssi.model.vc.attestation.AIAgentCredentialSubject;
+import dev.ctrlspace.provenai.ssi.model.vc.attestation.AIAgentCredentialSubjectBuilder;
 import dev.ctrlspace.provenai.ssi.model.vc.attestation.Policy;
 import dev.ctrlspace.provenai.ssi.verifier.PresentationVerifier;
 import dev.ctrlspace.provenai.utils.WaltIdServiceInitUtils;
@@ -100,7 +101,7 @@ public class AgentService {
 
 
     public Agent createAgent(Agent agent, List<Policy> policies) {
-        agent.setAgentName(agent.getAgentName() + "Agent");
+        agent.setAgentName(agent.getAgentName());
         // Save the Agent entity first to generate its ID
         Agent savedAgent = agentRepository.save(agent);
 
@@ -111,30 +112,24 @@ public class AgentService {
     }
 
 
-    public W3CVC createAgentW3CVCByID(UUID agentId) throws JsonProcessingException, JSONException, ProvenAiException {
-
+    public W3CVC createAgentW3CVCByID( UUID agentId) throws JsonProcessingException, JSONException, ProvenAiException {
         Agent agent = getAgentById(agentId);
         Organization organization = getOrganizationByAgentId(agentId);
-        ObjectMapper objectMapper = new ObjectMapper();
         List<AgentPurposeOfUsePolicies> agentPurposeOfUsePolicies = agentPurposeOfUsePoliciesService.getAgentPurposeOfUsePolicies(agentId);
 
-        String organizationName = organization.getName();
-        String organizationDid = organization.getOrganizationDid();
-        String agentName = agent.getAgentName();
-        Instant creationDate = Instant.now();
-        // Build the list of usage policies
+//        // Build the list of usage policies
         List<Policy> usagePolicies = agentPurposeOfUsePolicies.stream().map(agentPurposeOfUsePolicy -> new Policy((policyTypeRepository.findById(agentPurposeOfUsePolicy.getPolicyTypeId())).get().getName(), agentPurposeOfUsePolicy.getValue())).toList();
 
-        AIAgentCredentialSubject credentialSubject = AIAgentCredentialSubject.builder()
-                .id(organizationName)
-                .organizationName(organizationDid)
-                .agentName(agentName)
-                .creationDate(creationDate)
-                .usagePolicies(usagePolicies)
-                .build();
 
         VerifiableCredential<AIAgentCredentialSubject> verifiableCredential = new VerifiableCredential<>();
-        verifiableCredential.setCredentialSubject(credentialSubject);
+        verifiableCredential.setCredentialSubject(AIAgentCredentialSubject.builder()
+                .id(organization.getOrganizationDid())
+                .organizationName(organization.getName())
+                .agentName(agent.getAgentName())
+                .agentId(agentId.toString())
+                .creationDate(Instant.now())
+                .usagePolicies(usagePolicies)
+                .build());
 
         ProvenAIIssuer provenAIIssuer = new ProvenAIIssuer();
 
