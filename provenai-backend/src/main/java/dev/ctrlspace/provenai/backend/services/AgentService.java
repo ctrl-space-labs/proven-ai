@@ -1,5 +1,6 @@
 package dev.ctrlspace.provenai.backend.services;
 
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -45,6 +46,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -89,7 +91,11 @@ public class AgentService {
 
 
     public Agent getAgentById(UUID id) throws ProvenAiException {
-        return agentRepository.findById(id).orElseThrow(() -> new ProvenAiException("AGENT_NOT_FOUND", "Organization not found with id:" + id, HttpStatus.NOT_FOUND));
+        return agentRepository.findById(id).orElseThrow(() -> new ProvenAiException("AGENT_NOT_FOUND", "Agent not found with id:" + id, HttpStatus.NOT_FOUND));
+    }
+
+    public Agent getAgentByName(String agentName) throws ProvenAiException {
+        return agentRepository.findByAgentName(agentName);
     }
 
     public Page<Agent> getAllAgents(AgentCriteria criteria, Pageable pageable) throws ProvenAiException {
@@ -205,11 +211,11 @@ public class AgentService {
 
         vpPolicies.add(new PolicyRequest(holderBindingPolicy, null));
         vpPolicies.add(new PolicyRequest(holderBindingPolicy, null));
-        globalVcPolicies.add(new PolicyRequest(jwtSignaturePolicy, null));
+//        globalVcPolicies.add(new PolicyRequest(jwtSignaturePolicy, null));
 
         globalVcPolicies.add(new PolicyRequest(expirationDatePolicy, null));
         globalVcPolicies.add(new PolicyRequest(notBeforeDatePolicy, null));
-        globalVcPolicies.add(new PolicyRequest(jwtSignaturePolicy, null));
+//        globalVcPolicies.add(new PolicyRequest(jwtSignaturePolicy, null));
 
 
         CompletableFuture<PresentationVerificationResponse> verificationFuture = presentationVerifier.verifyPresentationAsync(vpJwt, vpPolicies,
@@ -221,9 +227,9 @@ public class AgentService {
     }
 
 
-    public AccessTokenResponse getAgentJwtToken(String userIdentifier, @Nullable String scope) throws ProvenAiException {
+    public AccessTokenResponse getAgentJwtToken(String agentName, @Nullable String scope) throws ProvenAiException {
 
-        return keycloakAuthenticationService.impersonateUser(userIdentifier, scope);
+        return keycloakAuthenticationService.impersonateUser(agentName, scope);
 
     }
 
@@ -248,4 +254,33 @@ public class AgentService {
 
 
         }
+
+    public String getAgentNameFromVc(String vpToken) throws IOException, JsonProcessingException {
+        String[] vpChunks = vpToken.split("\\.");
+
+        // Base64Url decoder
+        Base64.Decoder decoder = Base64.getUrlDecoder();
+
+        // Decode the VP payload
+        String vpPayload = new String(decoder.decode(vpChunks[1]));
+
+        // Parse the VP payload
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode vpNode = mapper.readTree(vpPayload);
+
+        // Extract the VC token from the VP payload
+        String vcToken = vpNode.get("vp").get("verifiableCredential").get(0).asText();
+
+        // Split the VC token into header, payload, and signature
+        String[] vcChunks = vcToken.split("\\.");
+
+        // Decode the VC payload
+        String vcPayload = new String(decoder.decode(vcChunks[1]));
+
+        // Parse the VC payload
+        JsonNode vcNode = mapper.readTree(vcPayload);
+
+
+        return vcNode.get("vc").get("credentialSubject").get("agent").get("agentName").asText();
+    }
     }

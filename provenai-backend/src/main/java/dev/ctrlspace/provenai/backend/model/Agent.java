@@ -108,4 +108,6 @@ public class Agent {
     public int hashCode() {
         return Objects.hash(id, organizationId, agentVcJwt, agentName, createdAt, updatedAt, createdBy, updatedBy);
     }
+
+
 }

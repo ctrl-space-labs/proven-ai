@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.io.IOException;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
@@ -130,8 +131,7 @@ public interface AgentsControllerSpec {
                                               @Parameter(description = "Scope of the request.", example = "openid", required = true)
                                  @RequestParam("scope") String scope,
                                               @Parameter(description = "The Verifiable Agent ID Presentation Token in JWT format", required = true)
-                                 @RequestParam("vp_token") String vpToken,
-                                              @RequestParam("username") String userIdentifier) throws InterruptedException, ProvenAiException, ExecutionException;
+                                 @RequestParam("vp_token") String vpToken) throws InterruptedException, ProvenAiException, ExecutionException, IOException;
 
 
 }
