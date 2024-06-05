@@ -21,6 +21,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
@@ -92,17 +93,20 @@ public class AgentsController implements AgentsControllerSpec {
     @PostMapping("/agents/token")
     public AccessTokenResponse authorizeAgent(@RequestParam("grant_type") String grantType,
                                               @RequestParam("scope") String scope,
-                                              @RequestParam("vp_token") String vpToken,
-                                              @RequestParam("username") String userIdentifier) throws InterruptedException, ProvenAiException, ExecutionException {
+                                              @RequestParam("vp_token") String vpToken) throws InterruptedException, ProvenAiException, ExecutionException, IOException {
 
         if (!"vp_token".equals(grantType)) {
             throw new ProvenAiException("INVALID_GRANT_TYPE", "Invalid grant type", HttpStatus.BAD_REQUEST);
         }
 
         Boolean verificationResult = agentService.verifyAgentVP(vpToken);
+//          Boolean verificationResult = Boolean.TRUE;
+
+
 //        verificationResult = Boolean.TRUE;
         if (verificationResult.equals(Boolean.TRUE)) {
-            return agentService.getAgentJwtToken(userIdentifier, scope);
+            String agentName = agentService.getAgentNameFromVc(vpToken);
+            return agentService.getAgentJwtToken(agentName, scope);
         } else {
             throw new ProvenAiException("VP_VERIFICATION_FAILED", "VP Verification failed", HttpStatus.UNAUTHORIZED);
         }

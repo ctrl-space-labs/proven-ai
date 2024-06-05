@@ -18,4 +18,10 @@ public interface AgentRepository extends JpaRepository<Agent, UUID>, QuerydslPre
     @Query("update Agent a set a.agentVcJwt = :agentVcJwt where a.id = :id")
     void updateAgentVerifiableId(@Param(value = "id") UUID id, @Param(value = "agentVcJwt") String agentVcId);
 
+    Agent findByAgentName(String agentName);
+
+
 }
+
+
+
