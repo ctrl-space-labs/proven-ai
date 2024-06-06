@@ -17,6 +17,8 @@ import java.util.UUID;
 @Builder(toBuilder = true)
 public class AgentDTO {
     private UUID id;
+    private String agentUsername;
+    private UUID agentUserId;
     private UUID organizationId;
     private String agentVcJwt;
     private Instant createdAt;

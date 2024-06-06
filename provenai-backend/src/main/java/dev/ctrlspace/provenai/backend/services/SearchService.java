@@ -31,16 +31,20 @@ public class SearchService {
 
 // TODO: authentication
     public List<SearchResult> search(String question, UserProfile agentProfile) throws ProvenAiException, JsonProcessingException {
-        UUID agentUserId = UUID.fromString(agentProfile.getId());
-        String agentName = agentProfile.getName();
+        String agentUsername = agentProfile.getUserName();
 
         // Step 1: Get Matching Projects from AgentId
-        List<DataPod> dataPods = dataPodService.getMatchingAgentPolicyDataPods(agentName);
+        List<DataPod> dataPods = dataPodService.getAccessibleDataPodsForAgent(agentUsername);
         // Step 2: Group ProjectIdIn by HostURL
         Map<String, List<UUID>>  dataPodsByHostUrl  = dataPodService.getDataPodsByHostUrl(dataPods);
         //TODO  Step 3: Gendox Search
         // List<SearchResults> searchResults =  semanticSearchgendox
-        String searchResultJson = gendoxQueryAdapter.superAdminSearch(question, "4fd12adf-763b-4d17-a72b-df9f71b50e0d", "10");
+
+        for (DataPod dataPod : dataPods) {
+            String hostUrl = dataPod.getHostUrl();
+            List<UUID> projectIds = dataPodsByHostUrl.get(hostUrl);
+            String searchResultJson = gendoxQueryAdapter.superAdminSearch(question, dataPod.getId().toString(), dataPod.getHostUrl() , "10");
+        }
 
 //        return searchResults;
 

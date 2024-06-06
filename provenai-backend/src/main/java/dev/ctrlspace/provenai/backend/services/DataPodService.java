@@ -28,8 +28,6 @@ public class DataPodService {
 
     private AgentService agentService;
 
-    private List<DataPod> dataPods;
-
     @Autowired
     public DataPodService(DataPodRepository dataPodRepository,
                           AclPoliciesService aclPoliciesService,
@@ -94,34 +92,12 @@ public class DataPodService {
 
     }
 
-        public List<DataPod> getMatchingAgentPolicyDataPods(UUID agentId) throws ProvenAiException, JsonProcessingException {
-            Agent agent = agentService.getAgentById(agentId);
+        public List<DataPod> getAccessibleDataPodsForAgent(String agentUsername) throws ProvenAiException, JsonProcessingException {
+            Agent agent = agentService.getAgentByUsername(agentUsername);
             List<Policy> agentUsagePolicies = agentService.getAgentUsagePolicies(agent.getAgentVcJwt());
 
-            return dataPods.stream()
-                    .filter(dataPod -> {
-                        List<AclPolicies> aclPolicies = aclPoliciesService.getAclPoliciesByDataPodId(dataPod.getId());
+            return dataPodRepository.findAccessibleDataPodsForAgent(agent.getId());
 
-                        for (AclPolicies aclPolicy : aclPolicies) {
-                            if (aclPolicy.getPolicyType().getName().equals("ALLOW_LIST") &&
-                                    !aclPolicy.getValue().contains(agent.getId().toString())) {
-                                return false;
-                            } else {
-                                boolean policyMatches = agentUsagePolicies.stream()
-                                        .anyMatch(agentPolicy ->
-                                                agentPolicy.getPolicyType().equals(aclPolicy.getPolicyType().getName()) &&
-                                                        agentPolicy.getPolicyValue().equals(aclPolicy.getValue())
-                                        );
-
-                                if (!policyMatches) {
-                                    return false;
-                                }
-                            }
-                        }
-
-                        return true;
-                    })
-                    .collect(Collectors.toList());
         }
 
 

@@ -8,6 +8,8 @@ import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
@@ -19,6 +21,8 @@ public interface AgentRepository extends JpaRepository<Agent, UUID>, QuerydslPre
     void updateAgentVerifiableId(@Param(value = "id") UUID id, @Param(value = "agentVcJwt") String agentVcId);
 
     Agent findByAgentName(String agentName);
+
+    Optional<Agent> findByAgentUsername(String agentUsername);
 
 
 }

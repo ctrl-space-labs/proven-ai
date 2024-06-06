@@ -5,7 +5,6 @@ import dev.ctrlspace.provenai.backend.controller.specs.AgentsControllerSpec;
 import dev.ctrlspace.provenai.backend.converters.AgentConverter;
 import dev.ctrlspace.provenai.backend.exceptions.ProvenAiException;
 import dev.ctrlspace.provenai.backend.model.Agent;
-import dev.ctrlspace.provenai.backend.model.authentication.UserProfile;
 import dev.ctrlspace.provenai.backend.model.dtos.AgentDTO;
 import dev.ctrlspace.provenai.backend.model.dtos.AgentIdCredential;
 import dev.ctrlspace.provenai.backend.model.dtos.criteria.AgentCriteria;
@@ -18,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -62,7 +60,7 @@ public class AgentsController implements AgentsControllerSpec {
     public AgentIdCredential createAgentVerifiableId(@PathVariable String id) throws ProvenAiException, JsonProcessingException, JSONException {
 //        UserProfile agentProfile = (UserProfile) authentication.getPrincipal();
         AgentIdCredential agentIdCredential = new AgentIdCredential();
-        W3CVC verifiableCredential = agentService.createAgentW3CVCByID( UUID.fromString(id));
+        W3CVC verifiableCredential = agentService.createAgentW3CVCByID(UUID.fromString(id));
         Object signedVcJwt = agentService.createAgentSignedVcJwt(verifiableCredential, UUID.fromString(id));
         agentIdCredential.setAgentId(id);
         agentIdCredential.setCredentialOfferUrl(agentService.createAgentVCOffer(verifiableCredential));
@@ -105,8 +103,13 @@ public class AgentsController implements AgentsControllerSpec {
 
 //        verificationResult = Boolean.TRUE;
         if (verificationResult.equals(Boolean.TRUE)) {
-            String agentName = agentService.getAgentNameFromVc(vpToken);
-            return agentService.getAgentJwtToken(agentName, scope);
+            String agentVcJwt = agentService.getAgentVcJwt(vpToken);
+            Agent agent = agentService.getAllAgents(AgentCriteria
+                            .builder()
+                            .agentVcJwt(agentVcJwt)
+                            .build(),
+                    Pageable.unpaged()).getContent().getFirst();
+            return agentService.getAgentAccessToken(agent.getAgentUsername(), scope);
         } else {
             throw new ProvenAiException("VP_VERIFICATION_FAILED", "VP Verification failed", HttpStatus.UNAUTHORIZED);
         }
