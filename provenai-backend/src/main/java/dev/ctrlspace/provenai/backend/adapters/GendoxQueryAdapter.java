@@ -44,7 +44,7 @@ public class GendoxQueryAdapter {
      * @param size
      * @return
      */
-    public String superAdminSearch(String question, String projectId, String size) {
+    public String superAdminSearch(String question, String projectId, String domainFullPath, String size) {
 
         String adminJwt = authenticationService.getClientTokenString();
 
@@ -56,7 +56,8 @@ public class GendoxQueryAdapter {
 
         HttpEntity<MessageRequest> entity = new HttpEntity<>(message, headers);
 
-        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(domain + contextPath + semanticSearchPath)
+        // default for Gendox domainFullPath = domain + contextPath
+        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(domainFullPath + semanticSearchPath)
                 .queryParam("projectId", projectId)
                 .queryParam("size", size);
 

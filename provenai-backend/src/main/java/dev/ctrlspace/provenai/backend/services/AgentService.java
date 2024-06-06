@@ -3,7 +3,6 @@ package dev.ctrlspace.provenai.backend.services;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.ctrlspace.provenai.backend.authentication.KeycloakAuthenticationService;
@@ -23,7 +22,6 @@ import dev.ctrlspace.provenai.ssi.model.dto.WaltIdCredentialIssuanceRequest;
 import dev.ctrlspace.provenai.ssi.model.vc.AdditionalSignVCParams;
 import dev.ctrlspace.provenai.ssi.model.vc.VerifiableCredential;
 import dev.ctrlspace.provenai.ssi.model.vc.attestation.AIAgentCredentialSubject;
-import dev.ctrlspace.provenai.ssi.model.vc.attestation.AIAgentCredentialSubjectBuilder;
 import dev.ctrlspace.provenai.ssi.model.vc.attestation.Policy;
 import dev.ctrlspace.provenai.ssi.verifier.PresentationVerifier;
 import dev.ctrlspace.provenai.utils.WaltIdServiceInitUtils;
@@ -43,7 +41,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -94,6 +91,10 @@ public class AgentService {
         return agentRepository.findById(id).orElseThrow(() -> new ProvenAiException("AGENT_NOT_FOUND", "Agent not found with id:" + id, HttpStatus.NOT_FOUND));
     }
 
+    public Agent getAgentByUsername(String agentUsername) throws ProvenAiException {
+        return agentRepository.findByAgentUsername(agentUsername).orElseThrow(() -> new ProvenAiException("AGENT_NOT_FOUND", "Agent not found with username:" + agentUsername, HttpStatus.NOT_FOUND));
+    }
+
     public Agent getAgentByName(String agentName) throws ProvenAiException {
         return agentRepository.findByAgentName(agentName);
     }
@@ -118,7 +119,7 @@ public class AgentService {
     }
 
 
-    public W3CVC createAgentW3CVCByID( UUID agentId) throws JsonProcessingException, JSONException, ProvenAiException {
+    public W3CVC createAgentW3CVCByID(UUID agentId) throws JsonProcessingException, JSONException, ProvenAiException {
         Agent agent = getAgentById(agentId);
         Organization organization = getOrganizationByAgentId(agentId);
         List<AgentPurposeOfUsePolicies> agentPurposeOfUsePolicies = agentPurposeOfUsePoliciesService.getAgentPurposeOfUsePolicies(agentId);
@@ -195,7 +196,7 @@ public class AgentService {
 
     public Boolean verifyAgentVP(String vpJwt) throws InterruptedException, ExecutionException {
 //      Initialize presentationVerifier
-         PresentationVerifier presentationVerifier = new PresentationVerifier();
+        PresentationVerifier presentationVerifier = new PresentationVerifier();
 
 //        Initialize Policies to be checked
         HolderBindingPolicy holderBindingPolicy = new HolderBindingPolicy();
@@ -219,7 +220,7 @@ public class AgentService {
 
 
         CompletableFuture<PresentationVerificationResponse> verificationFuture = presentationVerifier.verifyPresentationAsync(vpJwt, vpPolicies,
-                                                                            globalVcPolicies, specificCredentialPolicies, presentationContext);
+                globalVcPolicies, specificCredentialPolicies, presentationContext);
 
         PresentationVerificationResponse response = verificationFuture.get();
 
@@ -227,35 +228,35 @@ public class AgentService {
     }
 
 
-    public AccessTokenResponse getAgentJwtToken(String agentName, @Nullable String scope) throws ProvenAiException {
+    public AccessTokenResponse getAgentAccessToken(String agentUsername, @Nullable String scope) throws ProvenAiException {
 
-        return keycloakAuthenticationService.impersonateUser(agentName, scope);
+        return keycloakAuthenticationService.impersonateUser(agentUsername, scope);
 
     }
 
     public List<Policy> getAgentUsagePolicies(String jwt) throws JsonProcessingException {
         String[] chunks = jwt.split("\\.");
         Base64.Decoder decoder = Base64.getUrlDecoder();
-            // Decode payload
-            String payload = new String(decoder.decode(chunks[1]));
+        // Decode payload
+        String payload = new String(decoder.decode(chunks[1]));
 
-            ObjectMapper mapper = new ObjectMapper();
-            JsonNode payloadNode = mapper.readTree(payload);
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode payloadNode = mapper.readTree(payload);
 
-            // Extract usagePolicies JSON node
-            JsonNode usagePoliciesNode = payloadNode
-                    .path("vc")
-                    .path("credentialSubject")
-                    .path("agent")
-                    .path("usagePolicies");
+        // Extract usagePolicies JSON node
+        JsonNode usagePoliciesNode = payloadNode
+                .path("vc")
+                .path("credentialSubject")
+                .path("agent")
+                .path("usagePolicies");
 
-            return mapper.readValue(usagePoliciesNode.toString(), new TypeReference<List<Policy>>() {
-            });
+        return mapper.readValue(usagePoliciesNode.toString(), new TypeReference<List<Policy>>() {
+        });
 
 
-        }
+    }
 
-    public String getAgentNameFromVc(String vpToken) throws IOException, JsonProcessingException {
+    public String getAgentVcJwt(String vpToken) throws IOException, JsonProcessingException {
         String[] vpChunks = vpToken.split("\\.");
 
         // Base64Url decoder
@@ -271,16 +272,6 @@ public class AgentService {
         // Extract the VC token from the VP payload
         String vcToken = vpNode.get("vp").get("verifiableCredential").get(0).asText();
 
-        // Split the VC token into header, payload, and signature
-        String[] vcChunks = vcToken.split("\\.");
-
-        // Decode the VC payload
-        String vcPayload = new String(decoder.decode(vcChunks[1]));
-
-        // Parse the VC payload
-        JsonNode vcNode = mapper.readTree(vcPayload);
-
-
-        return vcNode.get("vc").get("credentialSubject").get("agent").get("agentName").asText();
+        return vcToken;
     }
-    }
+}

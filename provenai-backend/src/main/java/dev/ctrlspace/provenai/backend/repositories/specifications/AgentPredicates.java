@@ -14,10 +14,11 @@ public class AgentPredicates {
 
     private static QAgent qAgent = QAgent.agent;
 
-public static Predicate build(AgentCriteria criteria) {
+    public static Predicate build(AgentCriteria criteria) {
         return ExpressionUtils.allOf(
                 organizationId(criteria.getOrganizationId()),
-                agentName(criteria.getAgentName())
+                agentName(criteria.getAgentName()),
+                agentVcJwt(criteria.getAgentVcJwt())
 
 
         );
@@ -38,7 +39,14 @@ public static Predicate build(AgentCriteria criteria) {
     }
 
 
+    private static Predicate agentVcJwt(String agentVcJwt) {
+        if (agentVcJwt == null) {
+            return null;
+        }
+        return qAgent.agentVcJwt.eq(agentVcJwt);
     }
+
+}
 
 
 

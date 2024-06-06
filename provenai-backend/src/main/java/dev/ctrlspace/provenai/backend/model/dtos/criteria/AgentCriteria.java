@@ -20,5 +20,6 @@ public class AgentCriteria {
     private List<AgentPurposeOfUsePolicies> agentPurposeOfUsePolicies;
     private List<Policy> policyIn;
     private Policy policy;
+    private String agentVcJwt;
 
 }

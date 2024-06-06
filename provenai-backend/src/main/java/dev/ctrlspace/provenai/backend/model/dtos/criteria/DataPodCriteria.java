@@ -18,10 +18,7 @@ public class DataPodCriteria {
         private String organizationId;
 
         private String podUniqueName;
-
         private Policy policy;
-
-
         private List<Policy> policyIn;
 
 //        private String allowAgentId; // the pods that a specific agent is allowed to access
