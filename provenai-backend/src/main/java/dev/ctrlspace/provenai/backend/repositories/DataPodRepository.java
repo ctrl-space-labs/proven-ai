@@ -17,35 +17,36 @@ public interface DataPodRepository extends JpaRepository<DataPod, UUID>, Queryds
 
 
 
-    @Query(value = "select * \n" +
-            "from proven_ai.data_pod dp \n" +
-            "         inner join (SELECT DISTINCT ap.data_pod_id \n" +
-            "                     FROM proven_ai.acl_policies ap \n" +
-            "                              LEFT JOIN (SELECT ap.data_pod_id \n" +
-            "                                         FROM proven_ai.acl_policies ap \n" +
-            "                                         WHERE ap.policy_type_id = (SELECT pt.id \n" +
-            "                                                                    FROM proven_ai.policy_types pt \n" +
-            "                                                                    WHERE name = 'DENY_LIST') \n" +
-            "                                           AND ap.value = :agent_id) AS subquery \n" +
-            "                                        ON ap.id = subquery.data_pod_id \n" +
-            "                     WHERE subquery.data_pod_id IS NULL) as pods_not_denying_access \n" +
-            "                    on dp.id = pods_not_denying_access.data_pod_id \n" +
-            "         left join (select distinct data_pod_id \n" +
-            "                    from proven_ai.acl_policies pod_acl \n" +
-            "                             inner join proven_ai.agent_purpose_of_use_policies agent_acl \n" +
-            "                                        on (pod_acl.policy_type_id = agent_acl.policy_type_id \n" +
-            "                                            and pod_acl.policy_option_id = agent_acl.policy_option_id) \n" +
-            "                    where agent_acl.agent_id = :agent_id) as match_usage_policies \n" +
-            "                   on dp.id = match_usage_policies.data_pod_id \n" +
-            "         left join (select distinct data_pod_id \n" +
-            "                    from proven_ai.acl_policies ap \n" +
-            "                    where ap.policy_type_id = (select pt.id from proven_ai.policy_types pt where name = 'ALLOW_LIST') \n" +
-            "                      and ap.value = :agent_id) as in_allow_list \n" +
-            "                   on dp.id = in_allow_list.data_pod_id \n" +
-            "where match_usage_policies.data_pod_id is not null \n" +
-            "   OR in_allow_list.data_pod_id is not null",
+    @Query(value = "SELECT dp.* \n" +
+            "FROM proven_ai.data_pod dp \n" +
+            "INNER JOIN (SELECT DISTINCT ap.data_pod_id \n" +
+            "            FROM proven_ai.acl_policies ap \n" +
+            "            LEFT JOIN (SELECT ap.data_pod_id \n" +
+            "                        FROM proven_ai.acl_policies ap \n" +
+            "                        WHERE ap.policy_type_id = (SELECT pt.id \n" +
+            "                                                   FROM proven_ai.policy_types pt \n" +
+            "                                                   WHERE pt.name = 'DENY_LIST') \n" +
+            "                          AND ap.value = CAST(:agentId AS text)) AS subquery \n" +
+            "            ON ap.id = subquery.data_pod_id \n" +
+            "            WHERE subquery.data_pod_id IS NULL) AS pods_not_denying_access \n" +
+            "ON dp.id = pods_not_denying_access.data_pod_id \n" +
+            "LEFT JOIN (SELECT DISTINCT pod_acl.data_pod_id \n" +
+            "           FROM proven_ai.acl_policies pod_acl \n" +
+            "           INNER JOIN proven_ai.agent_purpose_of_use_policies agent_acl \n" +
+            "           ON (pod_acl.policy_type_id = agent_acl.policy_type_id \n" +
+            "               AND pod_acl.policy_option_id = agent_acl.policy_option_id) \n" +
+            "           WHERE agent_acl.agent_id = :agentId) AS match_usage_policies \n" +
+            "ON dp.id = match_usage_policies.data_pod_id \n" +
+            "LEFT JOIN (SELECT DISTINCT ap.data_pod_id \n" +
+            "           FROM proven_ai.acl_policies ap \n" +
+            "           WHERE ap.policy_type_id = (SELECT pt.id FROM proven_ai.policy_types pt WHERE pt.name = 'ALLOW_LIST') \n" +
+            "             AND ap.value = CAST(:agentId AS text)) AS in_allow_list \n" +
+            "ON dp.id = in_allow_list.data_pod_id \n" +
+            "WHERE match_usage_policies.data_pod_id IS NOT NULL \n" +
+            "   OR in_allow_list.data_pod_id IS NOT NULL",
             nativeQuery = true)
     List<DataPod> findAccessibleDataPodsForAgent(@Param("agentId") UUID agentId);
+
 
 
 }

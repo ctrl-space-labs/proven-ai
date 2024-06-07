@@ -94,7 +94,6 @@ public class DataPodService {
 
         public List<DataPod> getAccessibleDataPodsForAgent(String agentUsername) throws ProvenAiException, JsonProcessingException {
             Agent agent = agentService.getAgentByUsername(agentUsername);
-            List<Policy> agentUsagePolicies = agentService.getAgentUsagePolicies(agent.getAgentVcJwt());
 
             return dataPodRepository.findAccessibleDataPodsForAgent(agent.getId());
 
