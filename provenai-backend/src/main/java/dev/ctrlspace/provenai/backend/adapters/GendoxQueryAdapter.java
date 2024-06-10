@@ -53,32 +53,6 @@ public class GendoxQueryAdapter {
      * @param size
      * @return
      */
-//    public String superAdminSearch(String question, String projectId, String domainFullPath, String size) {
-//
-//        String adminJwt = authenticationService.getClientTokenString();
-//
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.setContentType(MediaType.APPLICATION_JSON);
-//        headers.add("Authorization", "Bearer " + adminJwt);
-//
-//        MessageRequest message = new MessageRequest(question);
-//
-//        HttpEntity<MessageRequest> entity = new HttpEntity<>(message, headers);
-//
-//        // default for Gendox domainFullPath = domain + contextPath
-//        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(domain + contextPath+ semanticSearchPath)
-//                .queryParam("projectId", projectId)
-//                .queryParam("size", size);
-//
-//        ResponseEntity<String> responseEntity = restTemplate.exchange(
-//                builder.toUriString(),
-//                HttpMethod.POST,
-//                entity,
-//                String.class);
-//
-//        return responseEntity.getBody();
-//    }
-
 
 
     public List<DocumentInstanceSectionDTO> superAdminSearch(String question, String projectId, String domainFullPath, String size) throws ProvenAiException, JsonProcessingException {
