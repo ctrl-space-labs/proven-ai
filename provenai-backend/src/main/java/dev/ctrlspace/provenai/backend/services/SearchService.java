@@ -11,6 +11,7 @@ import dev.ctrlspace.provenai.backend.model.authentication.UserProfile;
 import dev.ctrlspace.provenai.backend.model.dtos.DocumentDTO;
 import dev.ctrlspace.provenai.backend.model.dtos.DocumentInstanceSectionDTO;
 import dev.ctrlspace.provenai.backend.model.dtos.SearchResult;
+import dev.ctrlspace.provenai.backend.utils.DocumentUrlUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,18 +30,21 @@ public class SearchService {
 
     private OrganizationsService organizationService;
 
+    private DocumentUrlUtils documentUrlUtils;
+
 
     @Autowired
     public SearchService(DataPodService dataPodService,
                          GendoxQueryAdapter gendoxQueryAdapter,
-                         OrganizationsService organizationService) {
+                         OrganizationsService organizationService,
+                         DocumentUrlUtils documentUrlUtils) {
         this.dataPodService = dataPodService;
         this.gendoxQueryAdapter = gendoxQueryAdapter;
         this.organizationService = organizationService;
+        this.documentUrlUtils = documentUrlUtils;
 
     }
 
-    // TODO: authentication
     public List<SearchResult> search(String question, UserProfile agentProfile) throws Exception {
         String agentUsername = agentProfile.getUserName();
         List<DataPod> dataPods = dataPodService.getAccessibleDataPodsForAgent(agentUsername);
@@ -59,13 +63,18 @@ public class SearchService {
 
                 // Map section details to SearchResult objects
                 for (DocumentInstanceSectionDTO section : sectionDetails) {
+                    String documentId = section.getDocumentDTO().getId().toString();
 
                     SearchResult searchResult = SearchResult.builder()
                             .documentSectionId(section.getId().toString())
-                            .documentId(section.getDocumentDTO().getId().toString())
-//                            .iscc(section.getIscc())
+                            .documentId(documentId)
+                            .iscc(section.getDocumentSectionIsccCode())
                             .text(section.getSectionValue())
                             .ownerName(organization.getName())
+                            .title(section.getDocumentSectionMetadata().getTitle())
+                            .tokens(String.valueOf(section.getTokenCount()))
+//                            TODO: change url format when documentSectionId is added to the url
+                            .documentURL(dataPod.getHostUrl().trim().replace("{documentId}", documentId))
                             .build();
 
                     searchResults.add(searchResult);

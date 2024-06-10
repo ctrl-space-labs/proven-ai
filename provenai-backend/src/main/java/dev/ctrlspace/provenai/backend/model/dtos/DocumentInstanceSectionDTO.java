@@ -18,6 +18,9 @@ public class DocumentInstanceSectionDTO {
     private DocumentDTO documentDTO;
     private DocumentSectionMetadataDTO documentSectionMetadata;
     private String sectionValue;
+    private String aiModelName;
+    private Double tokenCount;
+    private String documentSectionIsccCode;
     private UUID createdBy;
     private UUID updatedBy;
     private Instant createdAt;
