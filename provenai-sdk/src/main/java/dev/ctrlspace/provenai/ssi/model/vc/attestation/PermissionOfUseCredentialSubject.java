@@ -24,5 +24,5 @@ public class PermissionOfUseCredentialSubject implements CredentialSubject {
     private String id; // DID of the AI agent
     private String ownerDID; // DID of the data owner
     private List<Policy> policies; // List of usage policies
-    private List<String> dataSegments; // List of ISCCs
+    private String dataSegments; // List of ISCCs
 }

@@ -20,7 +20,6 @@ public class SearchResult {
     private String documentURL; // get document or document section by ID
     private String tokens;
     private String ownerName; // get public info of organization by ID
-    // TODO investigate if we need to change this with the actual VC
-    private PermissionOfUseCredentialSubject permissionOfUseCredentialSubject;
+    private Object signedPermissionOfUseVc;
 
 }
