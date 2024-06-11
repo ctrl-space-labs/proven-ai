@@ -20,6 +20,7 @@ public class DocumentDTO {
     private UUID organizationId;
     private UUID documentTemplateId;
     private String remoteUrl;
+    private String documentIsccCode;
     private UUID createdBy;
     private UUID updatedBy;
     private Instant createAt;

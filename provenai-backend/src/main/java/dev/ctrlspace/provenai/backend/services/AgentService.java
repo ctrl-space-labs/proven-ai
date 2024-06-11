@@ -91,6 +91,7 @@ public class AgentService {
         return agentRepository.findById(id).orElseThrow(() -> new ProvenAiException("AGENT_NOT_FOUND", "Agent not found with id:" + id, HttpStatus.NOT_FOUND));
     }
 
+
     public Agent getAgentByUsername(String agentUsername) throws ProvenAiException {
         return agentRepository.findByAgentUsername(agentUsername).orElseThrow(() -> new ProvenAiException("AGENT_NOT_FOUND", "Agent not found with username:" + agentUsername, HttpStatus.NOT_FOUND));
     }

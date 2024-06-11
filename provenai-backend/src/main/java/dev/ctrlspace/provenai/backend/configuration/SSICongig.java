@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import dev.ctrlspace.provenai.ssi.converters.AgentIDConverter;
+import dev.ctrlspace.provenai.ssi.converters.PermissionOfUseConverter;
 import dev.ctrlspace.provenai.ssi.issuer.CredentialIssuanceApi;
 import dev.ctrlspace.provenai.utils.JsonLiteralSerializer;
 import kotlinx.serialization.json.JsonLiteral;
@@ -23,6 +24,11 @@ public class SSICongig {
     @Bean
     public AgentIDConverter agentIDConverter(ObjectMapper kotlinObjectMapper) {
         return new AgentIDConverter(kotlinObjectMapper);
+    }
+
+    @Bean
+    public PermissionOfUseConverter permissionOfUseConverter(ObjectMapper kotlinObjectMapper) {
+        return new PermissionOfUseConverter(kotlinObjectMapper);
     }
 
     @Bean

@@ -59,7 +59,7 @@ public class AuditPermissionOfUseVc {
     @Column(name = "updated_at")
     private Instant updatedAt;
 
-    public Object getPermissionOfUseVcId() {
+    public UUID getPermissionOfUseVcId() {
         return permissionOfUseVcId;
     }
 
