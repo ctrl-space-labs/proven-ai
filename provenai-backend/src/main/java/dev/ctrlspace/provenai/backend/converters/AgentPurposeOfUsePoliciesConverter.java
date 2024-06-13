@@ -27,8 +27,8 @@ public class AgentPurposeOfUsePoliciesConverter {
     public Policy toPolicy(AgentPurposeOfUsePolicies agentPurposeOfUsePolicy) {
         Policy policy = new Policy();
 
-        Optional<PolicyOption> policyOption = policyOptionRepository.findById(agentPurposeOfUsePolicy.getPolicyOptionId());
-        Optional<PolicyType> policyType = policyTypeRepository.findById(agentPurposeOfUsePolicy.getPolicyTypeId());
+        Optional<PolicyOption> policyOption = policyOptionRepository.findById(agentPurposeOfUsePolicy.getPolicyOption().getId());
+        Optional<PolicyType> policyType = policyTypeRepository.findById(agentPurposeOfUsePolicy.getPolicyType().getId());
         // Set policy type and value in the Policy object
         policy.setPolicyType(policyType.get().getName());
         policy.setPolicyValue(policyOption.get().getName());
