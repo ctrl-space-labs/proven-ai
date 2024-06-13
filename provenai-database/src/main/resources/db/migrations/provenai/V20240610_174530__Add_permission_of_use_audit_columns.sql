@@ -1,47 +1,31 @@
-DO $$
-BEGIN
-    -- Check and add the column document_section_iscc
-    IF NOT EXISTS (SELECT 1 FROM information_schema.columns
-                   WHERE table_schema = 'proven_ai'
-                   AND table_name = 'audit_permission_of_use_vc'
-                   AND column_name = 'document_iscc') THEN
-        ALTER TABLE proven_ai.audit_permission_of_use_vc
-        ADD COLUMN document_section_iscc TEXT;
-    END IF;
+-- Add the column document_iscc if it does not exist
+ALTER TABLE proven_ai.audit_permission_of_use_vc
+    ADD COLUMN IF NOT EXISTS document_iscc TEXT;
 
-    -- Check and add the column processor_organization_did
-    IF NOT EXISTS (SELECT 1 FROM information_schema.columns
-                   WHERE table_schema = 'proven_ai'
-                   AND table_name = 'audit_permission_of_use_vc'
-                   AND column_name = 'processor_organization_did') THEN
-        ALTER TABLE proven_ai.audit_permission_of_use_vc
-        ADD COLUMN processor_organization_did TEXT;
-    END IF;
+-- Add the column processor_organization_did if it does not exist
+ALTER TABLE proven_ai.audit_permission_of_use_vc
+    ADD COLUMN IF NOT EXISTS processor_organization_did TEXT;
 
-    -- Check and add the column owner_organization_did
-    IF NOT EXISTS (SELECT 1 FROM information_schema.columns
-                   WHERE table_schema = 'proven_ai'
-                   AND table_name = 'audit_permission_of_use_vc'
-                   AND column_name = 'owner_organization_did') THEN
-        ALTER TABLE proven_ai.audit_permission_of_use_vc
-        ADD COLUMN owner_organization_did TEXT;
-    END IF;
+-- Add the column owner_organization_did if it does not exist
+ALTER TABLE proven_ai.audit_permission_of_use_vc
+    ADD COLUMN IF NOT EXISTS owner_organization_did TEXT;
 
-    -- Check and add the column embedding_model
-    IF NOT EXISTS (SELECT 1 FROM information_schema.columns
-                   WHERE table_schema = 'proven_ai'
-                   AND table_name = 'audit_permission_of_use_vc'
-                   AND column_name = 'embedding_model') THEN
-        ALTER TABLE proven_ai.audit_permission_of_use_vc
-        ADD COLUMN embedding_model TEXT;
-    END IF;
+-- Add the column embedding_model if it does not exist
+ALTER TABLE proven_ai.audit_permission_of_use_vc
+    ADD COLUMN IF NOT EXISTS embedding_model TEXT;
 
-    -- Check and add the column datapod_id
-    IF NOT EXISTS (SELECT 1 FROM information_schema.columns
-                   WHERE table_schema = 'proven_ai'
-                   AND table_name = 'audit_permission_of_use_vc'
-                   AND column_name = 'datapod_id') THEN
-        ALTER TABLE proven_ai.audit_permission_of_use_vc
-        ADD COLUMN datapod_id UUID;
-    END IF;
-END $$;
+-- Add the column datapod_id if it does not exist
+ALTER TABLE proven_ai.audit_permission_of_use_vc
+    ADD COLUMN IF NOT EXISTS owner_datapod_id UUID;
+
+
+-- Add the column processor_agent_id if it does not exist
+ALTER TABLE proven_ai.audit_permission_of_use_vc
+    ADD COLUMN IF NOT EXISTS processor_agent_id UUID;
+
+-- Alter the table to set the default value for permission_of_use_vc_id
+ALTER TABLE proven_ai.audit_permission_of_use_vc
+    ALTER COLUMN permission_of_use_vc_id SET DEFAULT public.uuid_generate_v4();
+
+
+
