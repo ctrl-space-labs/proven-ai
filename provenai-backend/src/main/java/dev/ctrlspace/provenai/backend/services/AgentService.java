@@ -45,6 +45,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -58,8 +59,8 @@ public class AgentService {
     private OrganizationRepository organizationRepository;
 
     private CredentialIssuanceApi credentialIssuanceApi;
-    private KeycloakAuthenticationService keycloakAuthenticationService;
 
+    private KeycloakAuthenticationService keycloakAuthenticationService;
 
     @Value("${proven-ai.ssi.issuer-did}")
     private String issuerDid;
@@ -99,6 +100,16 @@ public class AgentService {
     public Agent getAgentById(UUID id) throws ProvenAiException {
         return agentRepository.findById(id)
                 .orElseThrow(() -> new ProvenAiException("AGENT_NOT_FOUND", "Organization not found with id:" + id, HttpStatus.NOT_FOUND));
+        return agentRepository.findById(id).orElseThrow(() -> new ProvenAiException("AGENT_NOT_FOUND", "Agent not found with id:" + id, HttpStatus.NOT_FOUND));
+    }
+
+
+    public Agent getAgentByUsername(String agentUsername) throws ProvenAiException {
+        return agentRepository.findByAgentUsername(agentUsername).orElseThrow(() -> new ProvenAiException("AGENT_NOT_FOUND", "Agent not found with username:" + agentUsername, HttpStatus.NOT_FOUND));
+    }
+
+    public Agent getAgentByName(String agentName) throws ProvenAiException {
+        return agentRepository.findByAgentName(agentName);
     }
 
     public Page<Agent> getAllAgents(AgentCriteria criteria, Pageable pageable) throws ProvenAiException {
@@ -133,7 +144,7 @@ public class AgentService {
 
 
     public Agent createAgent(Agent agent, List<Policy> policies) {
-        agent.setAgentName(agent.getAgentName() + "Agent");
+        agent.setAgentName(agent.getAgentName());
         // Save the Agent entity first to generate its ID
         Agent savedAgent = agentRepository.save(agent);
 
@@ -145,28 +156,23 @@ public class AgentService {
 
 
     public W3CVC createAgentW3CVCByID(UUID agentId) throws JsonProcessingException, JSONException, ProvenAiException {
-
         Agent agent = getAgentById(agentId);
         Organization organization = getOrganizationByAgentId(agentId);
-        ObjectMapper objectMapper = new ObjectMapper();
         List<AgentPurposeOfUsePolicies> agentPurposeOfUsePolicies = agentPurposeOfUsePoliciesService.getAgentPurposeOfUsePolicies(agentId);
 
-        // Build the list of usage policies
-        List<Policy> usagePolicies = agentPurposeOfUsePolicies.stream()
-                .map(agentPurposeOfUsePolicy -> new Policy((policyTypeRepository.findById(agentPurposeOfUsePolicy.getPolicyType().getId())).get().getName()
-                        , agentPurposeOfUsePolicy.getValue()))
-                .toList();
+//        // Build the list of usage policies
+        List<Policy> usagePolicies = agentPurposeOfUsePolicies.stream().map(agentPurposeOfUsePolicy -> new Policy((policyTypeRepository.findById(agentPurposeOfUsePolicy.getPolicyTypeId())).get().getName(), agentPurposeOfUsePolicy.getValue())).toList();
 
-        AIAgentCredentialSubject credentialSubject = AIAgentCredentialSubject.builder()
+
+        VerifiableCredential<AIAgentCredentialSubject> verifiableCredential = new VerifiableCredential<>();
+        verifiableCredential.setCredentialSubject(AIAgentCredentialSubject.builder()
                 .id(organization.getOrganizationDid())
                 .organizationName(organization.getName())
                 .agentName(agent.getAgentName())
+                .agentId(agentId.toString())
                 .creationDate(Instant.now())
                 .usagePolicies(usagePolicies)
-                .build();
-
-        VerifiableCredential<AIAgentCredentialSubject> verifiableCredential = new VerifiableCredential<>();
-        verifiableCredential.setCredentialSubject(credentialSubject);
+                .build());
 
         ProvenAIIssuer provenAIIssuer = new ProvenAIIssuer();
 
@@ -200,18 +206,13 @@ public class AgentService {
 
     public String createAgentVCOffer(W3CVC w3CVC) {
 
-        WaltIdCredentialIssuanceRequest request = WaltIdCredentialIssuanceRequest.builder()
-                .issuerDid(issuerDid)
-                .issuerKey(IssuerKey.builder().jwk(issuerPrivateJwk).type("jwk").build())
-                .vc(w3CVC)
-                .build();
+        WaltIdCredentialIssuanceRequest request = WaltIdCredentialIssuanceRequest.builder().issuerDid(issuerDid).issuerKey(IssuerKey.builder().jwk(issuerPrivateJwk).type("jwk").build()).vc(w3CVC).build();
         return credentialIssuanceApi.issueCredential(request);
     }
 
 
     public void deleteAgent(UUID agentId) throws ProvenAiException {
-        Agent agent = agentRepository.findById(agentId)
-                .orElseThrow(() -> new ProvenAiException("AGENT_NOT_FOUND", "Agent not found with id: " + agentId, HttpStatus.NOT_FOUND));
+        Agent agent = agentRepository.findById(agentId).orElseThrow(() -> new ProvenAiException("AGENT_NOT_FOUND", "Agent not found with id: " + agentId, HttpStatus.NOT_FOUND));
         agentPurposeOfUsePoliciesService.deleteAgentPurposeOfUsePoliciesByAgentId(agentId);
         agentRepository.delete(agent);
     }
@@ -232,7 +233,7 @@ public class AgentService {
 
     public Boolean verifyAgentVP(String vpJwt) throws InterruptedException, ExecutionException {
 //      Initialize presentationVerifier
-         PresentationVerifier presentationVerifier = new PresentationVerifier();
+        PresentationVerifier presentationVerifier = new PresentationVerifier();
 
 //        Initialize Policies to be checked
         HolderBindingPolicy holderBindingPolicy = new HolderBindingPolicy();
@@ -248,15 +249,15 @@ public class AgentService {
 
         vpPolicies.add(new PolicyRequest(holderBindingPolicy, null));
         vpPolicies.add(new PolicyRequest(holderBindingPolicy, null));
-        globalVcPolicies.add(new PolicyRequest(jwtSignaturePolicy, null));
+//        globalVcPolicies.add(new PolicyRequest(jwtSignaturePolicy, null));
 
         globalVcPolicies.add(new PolicyRequest(expirationDatePolicy, null));
         globalVcPolicies.add(new PolicyRequest(notBeforeDatePolicy, null));
-        globalVcPolicies.add(new PolicyRequest(jwtSignaturePolicy, null));
+//        globalVcPolicies.add(new PolicyRequest(jwtSignaturePolicy, null));
 
 
         CompletableFuture<PresentationVerificationResponse> verificationFuture = presentationVerifier.verifyPresentationAsync(vpJwt, vpPolicies,
-                                                                            globalVcPolicies, specificCredentialPolicies, presentationContext);
+                globalVcPolicies, specificCredentialPolicies, presentationContext);
 
         PresentationVerificationResponse response = verificationFuture.get();
 
@@ -264,31 +265,50 @@ public class AgentService {
     }
 
 
-    public AccessTokenResponse getAgentJwtToken(String userIdentifier, @Nullable String scope) throws ProvenAiException {
+    public AccessTokenResponse getAgentAccessToken(String agentUsername, @Nullable String scope) throws ProvenAiException {
 
-        return keycloakAuthenticationService.impersonateUser(userIdentifier, scope);
+        return keycloakAuthenticationService.impersonateUser(agentUsername, scope);
 
     }
 
     public List<Policy> getAgentUsagePolicies(String jwt) throws JsonProcessingException {
         String[] chunks = jwt.split("\\.");
         Base64.Decoder decoder = Base64.getUrlDecoder();
-            // Decode payload
-            String payload = new String(decoder.decode(chunks[1]));
+        // Decode payload
+        String payload = new String(decoder.decode(chunks[1]));
 
-            ObjectMapper mapper = new ObjectMapper();
-            JsonNode payloadNode = mapper.readTree(payload);
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode payloadNode = mapper.readTree(payload);
 
-            // Extract usagePolicies JSON node
-            JsonNode usagePoliciesNode = payloadNode
-                    .path("vc")
-                    .path("credentialSubject")
-                    .path("agent")
-                    .path("usagePolicies");
+        // Extract usagePolicies JSON node
+        JsonNode usagePoliciesNode = payloadNode
+                .path("vc")
+                .path("credentialSubject")
+                .path("agent")
+                .path("usagePolicies");
 
-            return mapper.readValue(usagePoliciesNode.toString(), new TypeReference<List<Policy>>() {
-            });
+        return mapper.readValue(usagePoliciesNode.toString(), new TypeReference<List<Policy>>() {
+        });
 
 
-        }
     }
+
+    public String getAgentVcJwt(String vpToken) throws IOException, JsonProcessingException {
+        String[] vpChunks = vpToken.split("\\.");
+
+        // Base64Url decoder
+        Base64.Decoder decoder = Base64.getUrlDecoder();
+
+        // Decode the VP payload
+        String vpPayload = new String(decoder.decode(vpChunks[1]));
+
+        // Parse the VP payload
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode vpNode = mapper.readTree(vpPayload);
+
+        // Extract the VC token from the VP payload
+        String vcToken = vpNode.get("vp").get("verifiableCredential").get(0).asText();
+
+        return vcToken;
+    }
+}

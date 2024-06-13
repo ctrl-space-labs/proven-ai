@@ -21,7 +21,8 @@ public class AgentPredicates {
 
         return ExpressionUtils.allOf(
                 organizationId(criteria.getOrganizationId()),
-                agentName(criteria.getAgentName())
+                agentName(criteria.getAgentName()),
+                agentVcJwt(criteria.getAgentVcJwt())
 
 
         );
@@ -49,6 +50,13 @@ public class AgentPredicates {
                 criteria.getPolicy() == null;
     }
 
+
+    private static Predicate agentVcJwt(String agentVcJwt) {
+        if (agentVcJwt == null) {
+            return null;
+        }
+        return qAgent.agentVcJwt.eq(agentVcJwt);
+    }
 
 }
 

@@ -12,14 +12,14 @@ import lombok.NoArgsConstructor;
 @Builder(toBuilder = true)
 public class SearchResult {
 
-    private String id;
+    private String documentSectionId;
+    private String documentId;
     private String iscc;
     private String title;
     private String text;
-    private String documentURL;
+    private String documentURL; // get document or document section by ID
     private String tokens;
-    private String ownerName;
-    // TODO investigate if we need to change this with the actual VC
-    private PermissionOfUseCredentialSubject permissionOfUseCredentialSubject;
+    private String ownerName; // get public info of organization by ID
+    private Object signedPermissionOfUseVc;
 
 }

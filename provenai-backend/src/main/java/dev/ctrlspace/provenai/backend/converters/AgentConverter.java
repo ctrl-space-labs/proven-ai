@@ -30,6 +30,8 @@ public class AgentConverter implements ProvenAIConverter<Agent, AgentDTO> {
         Agent agent = new Agent();
 
         agent.setId(agentDTO.getId());
+        agent.setAgentUserId(agentDTO.getAgentUserId());
+        agent.setAgentUsername(agentDTO.getAgentUsername());
         agent.setOrganizationId(agentDTO.getOrganizationId());
         agent.setAgentName(agentDTO.getAgentName());
         agent.setAgentVcJwt(agentDTO.getAgentVcJwt());

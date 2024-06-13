@@ -1,13 +1,22 @@
 package dev.ctrlspace.provenai.backend.adapters;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.ctrlspace.provenai.backend.authentication.AuthenticationService;
+import dev.ctrlspace.provenai.backend.exceptions.ProvenAiException;
+import dev.ctrlspace.provenai.backend.model.dtos.DocumentInstanceSectionDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
+
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class GendoxQueryAdapter {
@@ -44,8 +53,9 @@ public class GendoxQueryAdapter {
      * @param size
      * @return
      */
-    public String superAdminSearch(String question, String projectId, String size) {
 
+
+    public List<DocumentInstanceSectionDTO> superAdminSearch(String question, String projectId, String domainFullPath, String size) throws ProvenAiException, JsonProcessingException {
         String adminJwt = authenticationService.getClientTokenString();
 
         HttpHeaders headers = new HttpHeaders();
@@ -56,15 +66,17 @@ public class GendoxQueryAdapter {
 
         HttpEntity<MessageRequest> entity = new HttpEntity<>(message, headers);
 
-        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(domain + contextPath + semanticSearchPath)
+        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(domain + contextPath+ semanticSearchPath)
                 .queryParam("projectId", projectId)
                 .queryParam("size", size);
 
-        ResponseEntity<String> responseEntity = restTemplate.exchange(
+        ParameterizedTypeReference<List<DocumentInstanceSectionDTO>> typeRef = new ParameterizedTypeReference<List<DocumentInstanceSectionDTO>>() {};
+
+        ResponseEntity<List<DocumentInstanceSectionDTO>> responseEntity = restTemplate.exchange(
                 builder.toUriString(),
                 HttpMethod.POST,
                 entity,
-                String.class);
+                typeRef);
 
         return responseEntity.getBody();
     }

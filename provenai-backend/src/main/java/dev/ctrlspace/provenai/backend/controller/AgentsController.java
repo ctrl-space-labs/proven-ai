@@ -21,6 +21,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
@@ -71,6 +72,7 @@ public class AgentsController implements AgentsControllerSpec {
 
     @PostMapping("/agents/{id}/credential-offer")
     public AgentIdCredential createAgentVerifiableId(@PathVariable String id) throws ProvenAiException, JsonProcessingException, JSONException {
+//        UserProfile agentProfile = (UserProfile) authentication.getPrincipal();
         AgentIdCredential agentIdCredential = new AgentIdCredential();
         W3CVC verifiableCredential = agentService.createAgentW3CVCByID(UUID.fromString(id));
         Object signedVcJwt = agentService.createAgentSignedVcJwt(verifiableCredential, UUID.fromString(id));
@@ -103,17 +105,25 @@ public class AgentsController implements AgentsControllerSpec {
     @PostMapping("/agents/token")
     public AccessTokenResponse authorizeAgent(@RequestParam("grant_type") String grantType,
                                               @RequestParam("scope") String scope,
-                                              @RequestParam("vp_token") String vpToken,
-                                              @RequestParam("username") String userIdentifier) throws InterruptedException, ProvenAiException, ExecutionException {
+                                              @RequestParam("vp_token") String vpToken) throws InterruptedException, ProvenAiException, ExecutionException, IOException {
 
         if (!"vp_token".equals(grantType)) {
             throw new ProvenAiException("INVALID_GRANT_TYPE", "Invalid grant type", HttpStatus.BAD_REQUEST);
         }
 
         Boolean verificationResult = agentService.verifyAgentVP(vpToken);
+//          Boolean verificationResult = Boolean.TRUE;
+
+
 //        verificationResult = Boolean.TRUE;
         if (verificationResult.equals(Boolean.TRUE)) {
-            return agentService.getAgentJwtToken(userIdentifier, scope);
+            String agentVcJwt = agentService.getAgentVcJwt(vpToken);
+            Agent agent = agentService.getAllAgents(AgentCriteria
+                            .builder()
+                            .agentVcJwt(agentVcJwt)
+                            .build(),
+                    Pageable.unpaged()).getContent().getFirst();
+            return agentService.getAgentAccessToken(agent.getAgentUsername(), scope);
         } else {
             throw new ProvenAiException("VP_VERIFICATION_FAILED", "VP Verification failed", HttpStatus.UNAUTHORIZED);
         }
