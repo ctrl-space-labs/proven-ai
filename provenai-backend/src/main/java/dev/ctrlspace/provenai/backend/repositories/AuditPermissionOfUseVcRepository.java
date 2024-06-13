@@ -8,5 +8,5 @@ import org.springframework.stereotype.Repository;
 import java.util.UUID;
 
 @Repository
-public interface AuditPermissionOfUseVcRepository extends JpaRepository<AuditPermissionOfUseVc, UUID>, QuerydslPredicateExecutor<AuditPermissionOfUseVc> {
+public interface AuditPermissionOfUseVcRepository extends JpaRepository<AuditPermissionOfUseVc, UUID>, QuerydslPredicateExecutor<AuditPermissionOfUseVc>, AuditPermissionOfUseRepositoryCustom {
 }

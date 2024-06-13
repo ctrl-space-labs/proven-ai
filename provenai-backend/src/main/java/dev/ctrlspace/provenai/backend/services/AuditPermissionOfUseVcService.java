@@ -2,12 +2,9 @@ package dev.ctrlspace.provenai.backend.services;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import dev.ctrlspace.provenai.backend.exceptions.ProvenAiException;
-import dev.ctrlspace.provenai.backend.model.Agent;
 import dev.ctrlspace.provenai.backend.model.AuditPermissionOfUseVc;
-import dev.ctrlspace.provenai.backend.model.Organization;
-import dev.ctrlspace.provenai.backend.model.dtos.criteria.AgentCriteria;
+import dev.ctrlspace.provenai.backend.model.dtos.AuditPermissionOfUseDTO;
 import dev.ctrlspace.provenai.backend.model.dtos.criteria.AuditPermissionOfUseVcCriteria;
-import dev.ctrlspace.provenai.backend.repositories.specifications.AgentPredicates;
 import dev.ctrlspace.provenai.backend.repositories.specifications.AuditPermissionOfUseVcPredicates;
 import dev.ctrlspace.provenai.ssi.issuer.ProvenAIIssuer;
 import dev.ctrlspace.provenai.ssi.model.vc.AdditionalSignVCParams;
@@ -46,11 +43,10 @@ public class AuditPermissionOfUseVcService {
     }
 
 
-    public Page<AuditPermissionOfUseVc> getAllAuditPermissionOfUseVc(AuditPermissionOfUseVcCriteria criteria, Pageable pageable) throws ProvenAiException {
-        if (pageable == null) {
-            throw new ProvenAiException("Pageable cannot be null", "pageable.null", HttpStatus.BAD_REQUEST);
-        }
-        return auditPermissionOfUseVcRepository.findAll(AuditPermissionOfUseVcPredicates.build(criteria), pageable);
+    public List<AuditPermissionOfUseDTO> getAllAuditPermissionOfUseVc(AuditPermissionOfUseVcCriteria criteria) throws ProvenAiException {
+
+
+        return auditPermissionOfUseVcRepository.findAuditPermissionsAnalytics(criteria);
     }
 
 
@@ -67,7 +63,7 @@ public class AuditPermissionOfUseVcService {
         auditPermissionOfUseVc.setProcessorOrganizationId(processorOrganizationId);
         auditPermissionOfUseVc.setProcessorOrganizationDid(processorOrganizationDid);
         auditPermissionOfUseVc.setSearchId(searchId);
-        auditPermissionOfUseVc.setDataPodId(dataPodId);
+        auditPermissionOfUseVc.setOwnerDataPodId(dataPodId);
         auditPermissionOfUseVc.setSectionIscc(sectionIscc);
         auditPermissionOfUseVc.setDocumentIscc(documentIscc);
         auditPermissionOfUseVc.setEmbeddingModel(embeddingModel);
