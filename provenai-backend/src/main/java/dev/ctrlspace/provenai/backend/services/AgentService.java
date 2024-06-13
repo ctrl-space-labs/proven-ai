@@ -2,13 +2,10 @@ package dev.ctrlspace.provenai.backend.services;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import dev.ctrlspace.provenai.backend.converters.AgentConverter;
 import dev.ctrlspace.provenai.backend.exceptions.ProvenAiException;
-import dev.ctrlspace.provenai.backend.model.AclPolicies;
 import dev.ctrlspace.provenai.backend.model.Agent;
 import dev.ctrlspace.provenai.backend.model.AgentPurposeOfUsePolicies;
 import dev.ctrlspace.provenai.backend.model.Organization;
-import dev.ctrlspace.provenai.backend.model.dtos.AgentDTO;
 import dev.ctrlspace.provenai.backend.model.dtos.criteria.AgentCriteria;
 import dev.ctrlspace.provenai.backend.repositories.*;
 import dev.ctrlspace.provenai.backend.repositories.specifications.AgentPredicates;
@@ -45,7 +42,7 @@ public class AgentService {
     @Value("${issuer-did}")
     private String issuerDid;
 
-    @Value("${issuer-private-jwk}")
+    @Value("${proven-ai.ssi.issuer-private-jwk}")
     private String issuerPrivateJwk;
 
 
@@ -68,6 +65,11 @@ public class AgentService {
         this.policyTypeRepository = policyTypeRepository;
         this.organizationRepository = organizationRepository;
         this.agentConverter = agentConverter;
+        this.keycloakAuthenticationService = keycloakAuthenticationService;
+
+        WaltIdServiceInitUtils.INSTANCE.initializeWaltIdServices();
+
+
     }
 
 
@@ -205,4 +207,65 @@ public class AgentService {
         agentRepository.updateAgentVerifiableId(agentId, verifiableId);
     }
 
-}
+    public Boolean verifyAgentVP(String vpJwt) throws InterruptedException, ExecutionException {
+//      Initialize presentationVerifier
+         PresentationVerifier presentationVerifier = new PresentationVerifier();
+
+//        Initialize Policies to be checked
+        HolderBindingPolicy holderBindingPolicy = new HolderBindingPolicy();
+        JwtSignaturePolicy jwtSignaturePolicy = new JwtSignaturePolicy();
+        NotBeforeDatePolicy notBeforeDatePolicy = new NotBeforeDatePolicy();
+        ExpirationDatePolicy expirationDatePolicy = new ExpirationDatePolicy();
+//        pass null for args
+//      Initialize Policy Types
+        List<PolicyRequest> vpPolicies = new ArrayList<>();
+        List<PolicyRequest> globalVcPolicies = new ArrayList<>();
+        HashMap<String, List<PolicyRequest>> specificCredentialPolicies = new HashMap<>();
+        HashMap<String, Object> presentationContext = new HashMap<>();
+
+        vpPolicies.add(new PolicyRequest(holderBindingPolicy, null));
+        vpPolicies.add(new PolicyRequest(holderBindingPolicy, null));
+        globalVcPolicies.add(new PolicyRequest(jwtSignaturePolicy, null));
+
+        globalVcPolicies.add(new PolicyRequest(expirationDatePolicy, null));
+        globalVcPolicies.add(new PolicyRequest(notBeforeDatePolicy, null));
+        globalVcPolicies.add(new PolicyRequest(jwtSignaturePolicy, null));
+
+
+        CompletableFuture<PresentationVerificationResponse> verificationFuture = presentationVerifier.verifyPresentationAsync(vpJwt, vpPolicies,
+                                                                            globalVcPolicies, specificCredentialPolicies, presentationContext);
+
+        PresentationVerificationResponse response = verificationFuture.get();
+
+        return response.overallSuccess();
+    }
+
+
+    public AccessTokenResponse getAgentJwtToken(String userIdentifier, @Nullable String scope) throws ProvenAiException {
+
+        return keycloakAuthenticationService.impersonateUser(userIdentifier, scope);
+
+    }
+
+    public List<Policy> getAgentUsagePolicies(String jwt) throws JsonProcessingException {
+        String[] chunks = jwt.split("\\.");
+        Base64.Decoder decoder = Base64.getUrlDecoder();
+            // Decode payload
+            String payload = new String(decoder.decode(chunks[1]));
+
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode payloadNode = mapper.readTree(payload);
+
+            // Extract usagePolicies JSON node
+            JsonNode usagePoliciesNode = payloadNode
+                    .path("vc")
+                    .path("credentialSubject")
+                    .path("agent")
+                    .path("usagePolicies");
+
+            return mapper.readValue(usagePoliciesNode.toString(), new TypeReference<List<Policy>>() {
+            });
+
+
+        }
+    }

@@ -1,9 +1,7 @@
 package dev.ctrlspace.provenai.ssi.issuer;
 
-import ch.qos.logback.core.net.ObjectWriter;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import dev.ctrlspace.provenai.ssi.converters.AgentIDConverter;
-import dev.ctrlspace.provenai.ssi.model.vc.AdditionalSignVCParams;
 import dev.ctrlspace.provenai.ssi.model.vc.CredentialSubject;
 import dev.ctrlspace.provenai.ssi.model.vc.VerifiableCredential;
 import dev.ctrlspace.provenai.ssi.model.vc.attestation.AIAgentCredentialSubject;
@@ -12,7 +10,6 @@ import id.walt.credentials.vc.vcs.W3CVC;
 import id.walt.crypto.keys.Key;
 import kotlin.coroutines.Continuation;
 import kotlinx.serialization.json.JsonElement;
-import kotlinx.serialization.json.JsonObject;
 import org.json.JSONException;
 
 import java.util.HashMap;
@@ -52,7 +49,6 @@ public class ProvenAIIssuer {
      * @param issuerKey The key of the issuer signing the VC
      * @param issuerDid The DID of the issuer signing the VC
      * @param subjectDid The DID of the subject of the VC
-     * @param additionalSignVCParams Additional parameters to sign the VC like JWT headers and options
      * @return The signed verifiable credential in JWS format
      */
     public Object generateSignedVCJwt(W3CVC w3cVC, Key issuerKey, String issuerDid, String subjectDid) {

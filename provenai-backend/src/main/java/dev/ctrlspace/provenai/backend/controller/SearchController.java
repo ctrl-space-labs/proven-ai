@@ -1,24 +1,40 @@
 package dev.ctrlspace.provenai.backend.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import dev.ctrlspace.provenai.backend.adapters.GendoxQueryAdapter;
+import dev.ctrlspace.provenai.backend.exceptions.ProvenAiException;
+import dev.ctrlspace.provenai.backend.model.authentication.UserProfile;
 import dev.ctrlspace.provenai.backend.model.dtos.SearchResult;
+import dev.ctrlspace.provenai.backend.services.DataPodService;
+import dev.ctrlspace.provenai.backend.services.SearchService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
-@RestController
+@Controller
 public class SearchController {
 
+    private SearchService searchService;
+
+
+
+    @Autowired
+    public SearchController(SearchService searchService) {
+        this.searchService = searchService;
+    }
 
     @PostMapping("/search")
-    public List<SearchResult> search(@RequestParam String question, Authentication authentication) {
-        // find data pod IDs whose ACL policies match with Agents' policies
-        // get Data Pods ids
-        // REST call to gendox -> semantic search in data Pods IDs
-        // prepare Permission of use VC, with sections ISCC
-        return List.of();
+    public List<SearchResult> search(@RequestBody String question, Authentication authentication) throws ProvenAiException, JsonProcessingException {
+
+        UserProfile agentProfile = (UserProfile) authentication.getPrincipal();
+        List<SearchResult> searchResults = searchService.search(question, agentProfile);
+
+        return searchResults;
+
     }
 
 }

@@ -3,22 +3,20 @@ package dev.ctrlspace.provenai.ssi.issuer;
 
 import dev.ctrlspace.provenai.utils.ContinuationObjectUtils;
 import dev.ctrlspace.provenai.utils.KotlinToJavaUtils;
+import dev.ctrlspace.provenai.utils.WaltIdServiceInitUtils;
 import id.walt.credentials.CredentialBuilder;
 import id.walt.credentials.CredentialBuilderType;
 import id.walt.credentials.vc.vcs.W3CVC;
 import id.walt.crypto.keys.Key;
-import id.walt.did.helpers.WaltidServices;
 import kotlin.Pair;
-import kotlin.Unit;
 import kotlin.coroutines.Continuation;
+import kotlinx.serialization.json.JsonElement;
+import kotlinx.serialization.json.JsonObject;
 
 import java.time.Duration;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
-
-import kotlinx.serialization.json.JsonElement;
-import kotlinx.serialization.json.JsonObject;
 
 /**
  * Builder class for creating verifiable credentials according to the W3C standard and signing them.
@@ -26,15 +24,10 @@ import kotlinx.serialization.json.JsonObject;
 public class VerifiableCredentialBuilder {
 
     private CredentialBuilder credentialBuilder;
-    private Continuation<Unit> continuationPlain;
-
-    private Continuation<? super Object> continuationSuper;
 
 
     public VerifiableCredentialBuilder() {
-        this.continuationPlain = ContinuationObjectUtils.createPlainContinuation();
-        this.continuationSuper = ContinuationObjectUtils.createSuperContinuation();
-        WaltidServices.INSTANCE.minimalInit(continuationPlain);
+        WaltIdServiceInitUtils.INSTANCE.initializeWaltIdServices();
         // Initialize the credential builder with default settings
         credentialBuilder = new CredentialBuilder(CredentialBuilderType.W3CV11CredentialBuilder);
     }
