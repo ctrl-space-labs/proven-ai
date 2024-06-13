@@ -1,13 +1,29 @@
 package dev.ctrlspace.provenai.backend.model;
 
+import dev.ctrlspace.provenai.backend.model.dtos.AuditPermissionOfUseDTO;
 import jakarta.persistence.*;
 
+import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.Objects;
 import java.util.UUID;
 
 @Entity
 @Table(name = "audit_permission_of_use_vc", schema = "proven_ai")
+@SqlResultSetMapping(
+        name = "AuditPermissionOfUseDTOMapping",
+        classes = @ConstructorResult(
+                targetClass = AuditPermissionOfUseDTO.class,
+                columns = {
+                        @ColumnResult(name = "ownerDatapodId", type = UUID.class),
+                        @ColumnResult(name = "ownerOrganizationId", type = UUID.class),
+                        @ColumnResult(name = "processorAgentId", type = UUID.class),
+                        @ColumnResult(name = "processorOrganizationId", type = UUID.class),
+                        @ColumnResult(name = "bucketStart", type = Timestamp.class),
+                        @ColumnResult(name = "sumTokens", type = Long.class)
+                }
+        )
+)
 public class AuditPermissionOfUseVc {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
@@ -43,7 +59,11 @@ public class AuditPermissionOfUseVc {
 
     @Basic
     @Column(name = "owner_datapod_id")
-    private UUID dataPodId;
+    private UUID ownerDataPodId;
+
+    @Basic
+    @Column(name = "processor_agent_id")
+    private UUID processorAgentId;
 
     @Basic
     @Column(name = "embedding_model")
@@ -135,24 +155,32 @@ public class AuditPermissionOfUseVc {
 
     public void setProcessorOrganizationDid(String processorOrganizationDid) {this.processorOrganizationDid = processorOrganizationDid;}
 
-    public UUID getDataPodId() {return dataPodId;}
+    public UUID getOwnerDataPodId() {return ownerDataPodId;}
 
-    public void setDataPodId(UUID dataPodId) {this.dataPodId = dataPodId;}
+    public void setOwnerDataPodId(UUID dataPodId) {this.ownerDataPodId = dataPodId;}
 
     public String getEmbeddingModel() {return embeddingModel;}
 
     public void setEmbeddingModel(String embeddingModel) {this.embeddingModel = embeddingModel;}
+
+    public UUID getProcessorAgentId() {
+        return processorAgentId;
+    }
+
+    public void setProcessorAgentId(UUID processorAgentId) {
+        this.processorAgentId = processorAgentId;
+    }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         AuditPermissionOfUseVc that = (AuditPermissionOfUseVc) o;
-        return Objects.equals(permissionOfUseVcId, that.permissionOfUseVcId) && Objects.equals(searchId, that.searchId) && Objects.equals(sectionIscc, that.sectionIscc) && Objects.equals(documentIscc, that.documentIscc) && Objects.equals(ownerOrganizationDid, that.ownerOrganizationDid) && Objects.equals(ownerOrganizationId, that.ownerOrganizationId) && Objects.equals(processorOrganizationDid, that.processorOrganizationDid) && Objects.equals(processorOrganizationId, that.processorOrganizationId) && Objects.equals(dataPodId, that.dataPodId) && Objects.equals(embeddingModel, that.embeddingModel) && Objects.equals(tokens, that.tokens) && Objects.equals(createdAt, that.createdAt) && Objects.equals(updatedAt, that.updatedAt);
+        return Objects.equals(permissionOfUseVcId, that.permissionOfUseVcId) && Objects.equals(searchId, that.searchId) && Objects.equals(sectionIscc, that.sectionIscc) && Objects.equals(documentIscc, that.documentIscc) && Objects.equals(ownerOrganizationDid, that.ownerOrganizationDid) && Objects.equals(ownerOrganizationId, that.ownerOrganizationId) && Objects.equals(processorOrganizationDid, that.processorOrganizationDid) && Objects.equals(processorOrganizationId, that.processorOrganizationId) && Objects.equals(ownerDataPodId, that.ownerDataPodId) && Objects.equals(processorAgentId, that.processorAgentId) && Objects.equals(embeddingModel, that.embeddingModel) && Objects.equals(tokens, that.tokens) && Objects.equals(createdAt, that.createdAt) && Objects.equals(updatedAt, that.updatedAt);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(permissionOfUseVcId, searchId, sectionIscc, documentIscc, ownerOrganizationDid, ownerOrganizationId, processorOrganizationDid, processorOrganizationId, dataPodId, embeddingModel, tokens, createdAt, updatedAt);
+        return Objects.hash(permissionOfUseVcId, searchId, sectionIscc, documentIscc, ownerOrganizationDid, ownerOrganizationId, processorOrganizationDid, processorOrganizationId, ownerDataPodId, processorAgentId, embeddingModel, tokens, createdAt, updatedAt);
     }
 }
