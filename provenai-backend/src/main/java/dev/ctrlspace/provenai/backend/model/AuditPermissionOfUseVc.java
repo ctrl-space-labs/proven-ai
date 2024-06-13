@@ -42,7 +42,7 @@ public class AuditPermissionOfUseVc {
     private UUID processorOrganizationId;
 
     @Basic
-    @Column(name = "datapod_id")
+    @Column(name = "owner_datapod_id")
     private UUID dataPodId;
 
     @Basic
