@@ -11,7 +11,6 @@ import dev.ctrlspace.provenai.backend.model.authentication.UserProfile;
 import dev.ctrlspace.provenai.backend.model.dtos.DocumentDTO;
 import dev.ctrlspace.provenai.backend.model.dtos.DocumentInstanceSectionDTO;
 import dev.ctrlspace.provenai.backend.model.dtos.SearchResult;
-import dev.ctrlspace.provenai.backend.utils.DocumentUrlUtils;
 import dev.ctrlspace.provenai.ssi.model.vc.attestation.Policy;
 import id.walt.credentials.vc.vcs.W3CVC;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,8 +31,6 @@ public class SearchService {
 
     private OrganizationsService organizationService;
 
-    private DocumentUrlUtils documentUrlUtils;
-
     private AuditPermissionOfUseVcService auditPermissionOfUseVcService;
 
     private AgentService agentService;
@@ -47,7 +44,6 @@ public class SearchService {
     public SearchService(DataPodService dataPodService,
                          GendoxQueryAdapter gendoxQueryAdapter,
                          OrganizationsService organizationService,
-                         DocumentUrlUtils documentUrlUtils,
                          AuditPermissionOfUseVcService auditPermissionOfUseVcService,
                          AgentService agentService,
                          AgentPurposeOfUsePoliciesService agentPurposeOfUsePoliciesService,
@@ -55,7 +51,6 @@ public class SearchService {
         this.dataPodService = dataPodService;
         this.gendoxQueryAdapter = gendoxQueryAdapter;
         this.organizationService = organizationService;
-        this.documentUrlUtils = documentUrlUtils;
         this.auditPermissionOfUseVcService = auditPermissionOfUseVcService;
         this.agentService = agentService;
         this.agentPurposeOfUsePoliciesService = agentPurposeOfUsePoliciesService;
