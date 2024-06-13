@@ -32,6 +32,9 @@ public class OrganizationPredicates {
     }
 
     public static Predicate country(String country) {
+        if (StringUtils.isNullOrEmpty(country)) {
+            return null;
+        }
         return QOrganization.organization.country.eq(country);
     }
 

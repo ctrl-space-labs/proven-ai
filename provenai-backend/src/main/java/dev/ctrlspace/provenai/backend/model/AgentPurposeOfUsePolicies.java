@@ -16,12 +16,18 @@ public class AgentPurposeOfUsePolicies {
     @Basic
     @Column(name = "agent_id")
     private UUID agentId;
-    @Basic
-    @Column(name = "policy_type_id")
-    private UUID policyTypeId;
-    @Basic
-    @Column(name = "policy_option_id")
-    private UUID policyOptionId;
+    @ManyToOne
+    @JoinColumn(name = "policy_type_id", referencedColumnName = "id", nullable = false)
+    private PolicyType policyType;
+    @ManyToOne
+    @JoinColumn(name = "policy_option_id", referencedColumnName = "id", nullable = false)
+    private PolicyOption policyOption;
+//    @Basic
+//    @Column(name = "policy_type_id")
+//    private UUID policyTypeId;
+//    @Basic
+//    @Column(name = "policy_option_id")
+//    private UUID policyOptionId;
     @Basic
     @Column(name = "value")
     private String value;
@@ -46,6 +52,7 @@ public class AgentPurposeOfUsePolicies {
         this.id = id;
     }
 
+
     public UUID getAgentId() {
         return agentId;
     }
@@ -54,20 +61,12 @@ public class AgentPurposeOfUsePolicies {
         this.agentId = agentId;
     }
 
-    public UUID getPolicyTypeId() {
-        return policyTypeId;
+    public PolicyOption getPolicyOption() {
+        return policyOption;
     }
 
-    public void setPolicyTypeId(UUID policyTypeId) {
-        this.policyTypeId = policyTypeId;
-    }
-
-    public UUID getPolicyOptionId() {
-        return policyOptionId;
-    }
-
-    public void setPolicyOptionId(UUID policyOptionId) {
-        this.policyOptionId = policyOptionId;
+    public void setPolicyOption(PolicyOption policyOption) {
+        this.policyOption = policyOption;
     }
 
     public String getValue() {
@@ -78,7 +77,7 @@ public class AgentPurposeOfUsePolicies {
         this.value = value;
     }
 
-    public Object getCreatedAt() {
+    public Instant getCreatedAt() {
         return createdAt;
     }
 
@@ -86,7 +85,7 @@ public class AgentPurposeOfUsePolicies {
         this.createdAt = createdAt;
     }
 
-    public Object getUpdatedAt() {
+    public Instant getUpdatedAt() {
         return updatedAt;
     }
 
@@ -110,16 +109,41 @@ public class AgentPurposeOfUsePolicies {
         this.updatedBy = updatedBy;
     }
 
+    public PolicyType getPolicyType() {
+        return policyType;
+    }
+
+    public void setPolicyType(PolicyType policyType) {
+        this.policyType = policyType;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        AgentPurposeOfUsePolicies that = (AgentPurposeOfUsePolicies) o;
-        return Objects.equals(id, that.id) && Objects.equals(agentId, that.agentId) && Objects.equals(policyTypeId, that.policyTypeId) && Objects.equals(policyOptionId, that.policyOptionId) && Objects.equals(value, that.value) && Objects.equals(createdAt, that.createdAt) && Objects.equals(updatedAt, that.updatedAt) && Objects.equals(createdBy, that.createdBy) && Objects.equals(updatedBy, that.updatedBy);
+        if (!(o instanceof AgentPurposeOfUsePolicies that)) return false;
+
+        if (!Objects.equals(id, that.id)) return false;
+        if (!Objects.equals(agentId, that.agentId)) return false;
+        if (!Objects.equals(policyType, that.policyType)) return false;
+        if (!Objects.equals(policyOption, that.policyOption)) return false;
+        if (!Objects.equals(value, that.value)) return false;
+        if (!Objects.equals(createdAt, that.createdAt)) return false;
+        if (!Objects.equals(updatedAt, that.updatedAt)) return false;
+        if (!Objects.equals(createdBy, that.createdBy)) return false;
+        return Objects.equals(updatedBy, that.updatedBy);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, agentId, policyTypeId, policyOptionId, value, createdAt, updatedAt, createdBy, updatedBy);
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (agentId != null ? agentId.hashCode() : 0);
+        result = 31 * result + (policyType != null ? policyType.hashCode() : 0);
+        result = 31 * result + (policyOption != null ? policyOption.hashCode() : 0);
+        result = 31 * result + (value != null ? value.hashCode() : 0);
+        result = 31 * result + (createdAt != null ? createdAt.hashCode() : 0);
+        result = 31 * result + (updatedAt != null ? updatedAt.hashCode() : 0);
+        result = 31 * result + (createdBy != null ? createdBy.hashCode() : 0);
+        result = 31 * result + (updatedBy != null ? updatedBy.hashCode() : 0);
+        return result;
     }
 }

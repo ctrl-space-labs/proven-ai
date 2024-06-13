@@ -52,6 +52,13 @@ public class DataPodService {
         return dataPodRepository.findAll(DataPodPredicates.build(criteria), pageable);
     }
 
+    public Page<AclPolicies> getAclPoliciesByDataPodId(UUID dataPodId, Pageable pageable) throws  ProvenAiException{
+        if (pageable == null) {
+            throw new ProvenAiException("Pageable cannot be null", "pageable.null", HttpStatus.BAD_REQUEST);
+        }
+        return aclPoliciesService.getAclPoliciesByDataPodId(dataPodId, pageable);
+    }
+
 
     public void deleteDataPodById(UUID id) throws ProvenAiException {
         DataPod dataPod = dataPodRepository.findById(id)

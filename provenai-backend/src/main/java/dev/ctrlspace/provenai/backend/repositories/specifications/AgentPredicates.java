@@ -14,7 +14,11 @@ public class AgentPredicates {
 
     private static QAgent qAgent = QAgent.agent;
 
-public static Predicate build(AgentCriteria criteria) {
+    public static Predicate build(AgentCriteria criteria) {
+        if (criteria == null || areAllCriteriaFieldsNull(criteria)) {
+            return qAgent.isNotNull(); // Return all agents if criteria is null or all fields are null
+        }
+
         return ExpressionUtils.allOf(
                 organizationId(criteria.getOrganizationId()),
                 agentName(criteria.getAgentName())
@@ -37,8 +41,16 @@ public static Predicate build(AgentCriteria criteria) {
         return qAgent.agentName.eq(agentName);
     }
 
-
+    private static boolean areAllCriteriaFieldsNull(AgentCriteria criteria) {
+        return criteria.getOrganizationId() == null &&
+                criteria.getAgentName() == null &&
+                criteria.getAgentPurposeOfUsePolicies() == null &&
+                criteria.getPolicyIn() == null &&
+                criteria.getPolicy() == null;
     }
+
+
+}
 
 
 

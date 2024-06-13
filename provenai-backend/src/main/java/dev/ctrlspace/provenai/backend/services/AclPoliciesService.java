@@ -1,12 +1,17 @@
 package dev.ctrlspace.provenai.backend.services;
 
+import dev.ctrlspace.provenai.backend.exceptions.ProvenAiException;
 import dev.ctrlspace.provenai.backend.model.*;
 import dev.ctrlspace.provenai.backend.repositories.PolicyOptionRepository;
 import dev.ctrlspace.provenai.backend.repositories.PolicyTypeRepository;
 import dev.ctrlspace.provenai.ssi.model.vc.attestation.Policy;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import dev.ctrlspace.provenai.backend.repositories.AclPoliciesRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 
 import java.time.Instant;
 import java.util.List;
@@ -28,8 +33,9 @@ public class AclPoliciesService {
         this.policyTypeRepository = policyTypeRepository;
     }
 
-    List<AclPolicies> getAclPoliciesByDataPodId(UUID dataPodId) {
-        return aclPoliciesRepository.findByDataPodId(dataPodId);
+    Page<AclPolicies> getAclPoliciesByDataPodId(UUID dataPodId, Pageable pageable) throws ProvenAiException {
+
+        return aclPoliciesRepository.findByDataPodId(dataPodId, pageable);
 
     }
 
@@ -47,8 +53,8 @@ public class AclPoliciesService {
 //          policies for agents access to data pods
             if (policyType.getName().equals("ALLOW_LIST") || policyType.getName().equals("DENY_LIST")) {
 //              the value will be the agent ID
-                PolicyOption policyOption = policyOptionRepository.findByPolicyTypeId(policyType.getId());
-                aclPolicy.setPolicyOption(policyOption);
+//                PolicyOption policyOption = policyOptionRepository.findByPolicyTypeId(policyType.getId());
+//                aclPolicy.setPolicyOption(policyOption);
                 aclPolicy.setValue(policy.getPolicyValue());
 
             } else {
