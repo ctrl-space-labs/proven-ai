@@ -1,4 +1,5 @@
 package dev.ctrlspace.provenai.backend.services;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -99,8 +100,7 @@ public class AgentService {
 
     public Agent getAgentById(UUID id) throws ProvenAiException {
         return agentRepository.findById(id)
-                .orElseThrow(() -> new ProvenAiException("AGENT_NOT_FOUND", "Organization not found with id:" + id, HttpStatus.NOT_FOUND));
-        return agentRepository.findById(id).orElseThrow(() -> new ProvenAiException("AGENT_NOT_FOUND", "Agent not found with id:" + id, HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new ProvenAiException("AGENT_NOT_FOUND", "Agent not found with id:" + id, HttpStatus.NOT_FOUND));
     }
 
 
@@ -140,9 +140,6 @@ public class AgentService {
     }
 
 
-
-
-
     public Agent createAgent(Agent agent, List<Policy> policies) {
         agent.setAgentName(agent.getAgentName());
         // Save the Agent entity first to generate its ID
@@ -161,7 +158,7 @@ public class AgentService {
         List<AgentPurposeOfUsePolicies> agentPurposeOfUsePolicies = agentPurposeOfUsePoliciesService.getAgentPurposeOfUsePolicies(agentId);
 
 //        // Build the list of usage policies
-        List<Policy> usagePolicies = agentPurposeOfUsePolicies.stream().map(agentPurposeOfUsePolicy -> new Policy((policyTypeRepository.findById(agentPurposeOfUsePolicy.getPolicyTypeId())).get().getName(), agentPurposeOfUsePolicy.getValue())).toList();
+        List<Policy> usagePolicies = agentPurposeOfUsePolicies.stream().map(agentPurposeOfUsePolicy -> new Policy((policyTypeRepository.findById(agentPurposeOfUsePolicy.getPolicyType().getId())).get().getName(), agentPurposeOfUsePolicy.getValue())).toList();
 
 
         VerifiableCredential<AIAgentCredentialSubject> verifiableCredential = new VerifiableCredential<>();
