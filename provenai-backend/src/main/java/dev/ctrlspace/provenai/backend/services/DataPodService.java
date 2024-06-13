@@ -1,10 +1,10 @@
 package dev.ctrlspace.provenai.backend.services;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import dev.ctrlspace.provenai.backend.exceptions.ProvenAiException;
 import dev.ctrlspace.provenai.backend.model.AclPolicies;
 import dev.ctrlspace.provenai.backend.model.Agent;
 import dev.ctrlspace.provenai.backend.model.DataPod;
-import dev.ctrlspace.provenai.backend.model.Organization;
 import dev.ctrlspace.provenai.backend.model.dtos.criteria.DataPodCriteria;
 import dev.ctrlspace.provenai.backend.repositories.DataPodRepository;
 import dev.ctrlspace.provenai.backend.repositories.specifications.DataPodPredicates;
@@ -16,9 +16,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class DataPodService {
@@ -27,11 +26,17 @@ public class DataPodService {
 
     private AclPoliciesService aclPoliciesService;
 
+    private AgentService agentService;
+
+    private List<DataPod> dataPods;
+
     @Autowired
     public DataPodService(DataPodRepository dataPodRepository,
-                          AclPoliciesService aclPoliciesService) {
+                          AclPoliciesService aclPoliciesService,
+                          AgentService agentService) {
         this.dataPodRepository = dataPodRepository;
         this.aclPoliciesService = aclPoliciesService;
+        this.agentService = agentService;
     }
 
 
@@ -96,4 +101,43 @@ public class DataPodService {
 
     }
 
-}
+        public List<DataPod> getMatchingAgentPolicyDataPods(UUID agentId) throws ProvenAiException, JsonProcessingException {
+            Agent agent = agentService.getAgentById(agentId);
+            List<Policy> agentUsagePolicies = agentService.getAgentUsagePolicies(agent.getAgentVcJwt());
+
+            return dataPods.stream()
+                    .filter(dataPod -> {
+                        List<AclPolicies> aclPolicies = aclPoliciesService.getAclPoliciesByDataPodId(dataPod.getId());
+
+                        for (AclPolicies aclPolicy : aclPolicies) {
+                            if (aclPolicy.getPolicyType().getName().equals("ALLOW_LIST") &&
+                                    !aclPolicy.getValue().contains(agent.getId().toString())) {
+                                return false;
+                            } else {
+                                boolean policyMatches = agentUsagePolicies.stream()
+                                        .anyMatch(agentPolicy ->
+                                                agentPolicy.getPolicyType().equals(aclPolicy.getPolicyType().getName()) &&
+                                                        agentPolicy.getPolicyValue().equals(aclPolicy.getValue())
+                                        );
+
+                                if (!policyMatches) {
+                                    return false;
+                                }
+                            }
+                        }
+
+                        return true;
+                    })
+                    .collect(Collectors.toList());
+        }
+
+
+    public Map<String, List<UUID>> getDataPodsByHostUrl(List<DataPod> dataPods) {
+        return dataPods.stream()
+                .collect(Collectors.groupingBy(DataPod::getHostUrl,
+                        Collectors.mapping(DataPod::getId, Collectors.toList())));
+    }
+
+
+    }
+
