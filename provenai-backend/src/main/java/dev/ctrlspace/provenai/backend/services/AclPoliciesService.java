@@ -40,6 +40,12 @@ public class AclPoliciesService {
 
     }
 
+    List<AclPolicies> getAclPoliciesByDataPodId(UUID dataPodId)  {
+
+        return aclPoliciesRepository.findByDataPodId(dataPodId);
+
+    }
+
 
     List<AclPolicies> savePoliciesForDataPod(DataPod savedDataPod, List<Policy> policies) {
         List<AclPolicies> savedPolicies = policies.stream().map(policy -> {

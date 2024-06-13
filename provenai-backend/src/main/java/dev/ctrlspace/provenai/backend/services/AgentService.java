@@ -1,13 +1,20 @@
 package dev.ctrlspace.provenai.backend.services;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import dev.ctrlspace.provenai.backend.authentication.KeycloakAuthenticationService;
+import dev.ctrlspace.provenai.backend.converters.AgentConverter;
 import dev.ctrlspace.provenai.backend.exceptions.ProvenAiException;
 import dev.ctrlspace.provenai.backend.model.Agent;
 import dev.ctrlspace.provenai.backend.model.AgentPurposeOfUsePolicies;
 import dev.ctrlspace.provenai.backend.model.Organization;
+import dev.ctrlspace.provenai.backend.model.dtos.AgentDTO;
 import dev.ctrlspace.provenai.backend.model.dtos.criteria.AgentCriteria;
-import dev.ctrlspace.provenai.backend.repositories.*;
+import dev.ctrlspace.provenai.backend.repositories.AgentRepository;
+import dev.ctrlspace.provenai.backend.repositories.OrganizationRepository;
+import dev.ctrlspace.provenai.backend.repositories.PolicyTypeRepository;
 import dev.ctrlspace.provenai.backend.repositories.specifications.AgentPredicates;
 import dev.ctrlspace.provenai.ssi.issuer.CredentialIssuanceApi;
 import dev.ctrlspace.provenai.ssi.issuer.ProvenAIIssuer;
@@ -17,18 +24,31 @@ import dev.ctrlspace.provenai.ssi.model.vc.AdditionalSignVCParams;
 import dev.ctrlspace.provenai.ssi.model.vc.VerifiableCredential;
 import dev.ctrlspace.provenai.ssi.model.vc.attestation.AIAgentCredentialSubject;
 import dev.ctrlspace.provenai.ssi.model.vc.attestation.Policy;
+import dev.ctrlspace.provenai.ssi.verifier.PresentationVerifier;
+import dev.ctrlspace.provenai.utils.WaltIdServiceInitUtils;
 import id.walt.credentials.vc.vcs.W3CVC;
+import id.walt.credentials.verification.models.PolicyRequest;
+import id.walt.credentials.verification.models.PresentationVerificationResponse;
+import id.walt.credentials.verification.policies.ExpirationDatePolicy;
+import id.walt.credentials.verification.policies.JwtSignaturePolicy;
+import id.walt.credentials.verification.policies.NotBeforeDatePolicy;
+import id.walt.credentials.verification.policies.vp.HolderBindingPolicy;
 import id.walt.crypto.keys.LocalKey;
+import jakarta.annotation.Nullable;
 import org.json.JSONException;
+import org.keycloak.representations.AccessTokenResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 @Service
 public class AgentService {
@@ -38,8 +58,10 @@ public class AgentService {
     private OrganizationRepository organizationRepository;
 
     private CredentialIssuanceApi credentialIssuanceApi;
+    private KeycloakAuthenticationService keycloakAuthenticationService;
 
-    @Value("${issuer-did}")
+
+    @Value("${proven-ai.ssi.issuer-did}")
     private String issuerDid;
 
     @Value("${proven-ai.ssi.issuer-private-jwk}")
@@ -58,7 +80,8 @@ public class AgentService {
                         AgentPurposeOfUsePoliciesService agentPurposeOfUsePoliciesService,
                         PolicyTypeRepository policyTypeRepository,
                         OrganizationRepository organizationRepository,
-                        AgentConverter agentConverter) {
+                        AgentConverter agentConverter,
+                        KeycloakAuthenticationService keycloakAuthenticationService) {
         this.agentRepository = agentRepository;
         this.credentialIssuanceApi = credentialIssuanceApi;
         this.agentPurposeOfUsePoliciesService = agentPurposeOfUsePoliciesService;
