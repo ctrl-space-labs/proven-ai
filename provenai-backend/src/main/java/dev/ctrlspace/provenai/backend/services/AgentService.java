@@ -2,10 +2,13 @@ package dev.ctrlspace.provenai.backend.services;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import dev.ctrlspace.provenai.backend.converters.AgentConverter;
 import dev.ctrlspace.provenai.backend.exceptions.ProvenAiException;
+import dev.ctrlspace.provenai.backend.model.AclPolicies;
 import dev.ctrlspace.provenai.backend.model.Agent;
 import dev.ctrlspace.provenai.backend.model.AgentPurposeOfUsePolicies;
 import dev.ctrlspace.provenai.backend.model.Organization;
+import dev.ctrlspace.provenai.backend.model.dtos.AgentDTO;
 import dev.ctrlspace.provenai.backend.model.dtos.criteria.AgentCriteria;
 import dev.ctrlspace.provenai.backend.repositories.*;
 import dev.ctrlspace.provenai.backend.repositories.specifications.AgentPredicates;
@@ -49,6 +52,7 @@ public class AgentService {
     private AgentPurposeOfUsePoliciesService agentPurposeOfUsePoliciesService;
 
     private PolicyTypeRepository policyTypeRepository;
+    private AgentConverter agentConverter;
 
 
     @Autowired
@@ -56,12 +60,14 @@ public class AgentService {
                         CredentialIssuanceApi credentialIssuanceApi,
                         AgentPurposeOfUsePoliciesService agentPurposeOfUsePoliciesService,
                         PolicyTypeRepository policyTypeRepository,
-                        OrganizationRepository organizationRepository) {
+                        OrganizationRepository organizationRepository,
+                        AgentConverter agentConverter) {
         this.agentRepository = agentRepository;
         this.credentialIssuanceApi = credentialIssuanceApi;
         this.agentPurposeOfUsePoliciesService = agentPurposeOfUsePoliciesService;
         this.policyTypeRepository = policyTypeRepository;
         this.organizationRepository = organizationRepository;
+        this.agentConverter = agentConverter;
     }
 
 
@@ -76,6 +82,29 @@ public class AgentService {
         }
         return agentRepository.findAll(AgentPredicates.build(criteria), pageable);
     }
+
+    public Page<AgentDTO> getAllAgentsWithoutVc(AgentCriteria criteria, Pageable pageable) throws ProvenAiException {
+        if (pageable == null) {
+            throw new ProvenAiException("Pageable cannot be null", "pageable.null", HttpStatus.BAD_REQUEST);
+        }
+
+        Page<Agent> agentsPage = agentRepository.findAll(AgentPredicates.build(criteria), pageable);
+        return agentsPage.map(agent -> {
+            AgentDTO agentDTO = agentConverter.toDTO(agent);
+            agentDTO.setAgentVcJwt(null); // Remove the agentVcJwt
+            return agentDTO;
+        });
+    }
+
+    public Page<AgentPurposeOfUsePolicies> getAgentPurposeOfUsePolicies(UUID id, Pageable pageable) throws ProvenAiException {
+        if (pageable == null) {
+            throw new ProvenAiException("Pageable cannot be null", "pageable.null", HttpStatus.BAD_REQUEST);
+        }
+        return agentPurposeOfUsePoliciesService.getAgentPurposeOfUsePolicies(id, pageable);
+    }
+
+
+
 
 
     public Agent createAgent(Agent agent, List<Policy> policies) {
@@ -99,7 +128,7 @@ public class AgentService {
 
         // Build the list of usage policies
         List<Policy> usagePolicies = agentPurposeOfUsePolicies.stream()
-                .map(agentPurposeOfUsePolicy -> new Policy((policyTypeRepository.findById(agentPurposeOfUsePolicy.getPolicyTypeId())).get().getName()
+                .map(agentPurposeOfUsePolicy -> new Policy((policyTypeRepository.findById(agentPurposeOfUsePolicy.getPolicyType().getId())).get().getName()
                         , agentPurposeOfUsePolicy.getValue()))
                 .toList();
 

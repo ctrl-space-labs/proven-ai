@@ -3,6 +3,7 @@ package dev.ctrlspace.provenai.backend.controller;
 import dev.ctrlspace.provenai.backend.controller.specs.DataPodControllerSpec;
 import dev.ctrlspace.provenai.backend.converters.DataPodConverter;
 import dev.ctrlspace.provenai.backend.exceptions.ProvenAiException;
+import dev.ctrlspace.provenai.backend.model.AclPolicies;
 import dev.ctrlspace.provenai.backend.model.DataPod;
 import dev.ctrlspace.provenai.backend.model.dtos.DataPodDTO;
 import dev.ctrlspace.provenai.backend.model.dtos.criteria.DataPodCriteria;
@@ -39,6 +40,11 @@ public class DataPodController implements DataPodControllerSpec {
     @GetMapping("/data-pods/{id}")
     public DataPod getDataPodById(@PathVariable UUID id) throws ProvenAiException {
         return dataPodService.getDataPodById(id);
+    }
+
+    @GetMapping("/data-pods/{id}/acl-policies")
+    public Page<AclPolicies> getAclPoliciesByDataPodId(@PathVariable UUID id, Pageable pageable) throws ProvenAiException {
+        return dataPodService.getAclPoliciesByDataPodId(id, pageable);
     }
 
 

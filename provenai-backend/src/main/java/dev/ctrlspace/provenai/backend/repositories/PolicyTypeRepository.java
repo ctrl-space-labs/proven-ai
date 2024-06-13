@@ -11,4 +11,7 @@ import java.util.UUID;
 public interface PolicyTypeRepository extends JpaRepository<PolicyType, UUID>, QuerydslPredicateExecutor<PolicyType> {
 
     PolicyType findByName(String policyName);
+
+
+
 }

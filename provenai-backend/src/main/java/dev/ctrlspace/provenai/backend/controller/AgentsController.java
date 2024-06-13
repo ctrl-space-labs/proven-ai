@@ -5,7 +5,9 @@ import com.fasterxml.jackson.databind.util.JSONPObject;
 import dev.ctrlspace.provenai.backend.controller.specs.AgentsControllerSpec;
 import dev.ctrlspace.provenai.backend.converters.AgentConverter;
 import dev.ctrlspace.provenai.backend.exceptions.ProvenAiException;
+import dev.ctrlspace.provenai.backend.model.AclPolicies;
 import dev.ctrlspace.provenai.backend.model.Agent;
+import dev.ctrlspace.provenai.backend.model.AgentPurposeOfUsePolicies;
 import dev.ctrlspace.provenai.backend.model.dtos.AgentDTO;
 import dev.ctrlspace.provenai.backend.model.dtos.AgentIdCredential;
 import dev.ctrlspace.provenai.backend.model.dtos.criteria.AgentCriteria;
@@ -43,6 +45,18 @@ public class AgentsController implements AgentsControllerSpec {
 
         return agentService.getAllAgents(criteria, pageable);
     }
+
+    @GetMapping("/agents/no-vc")
+    public Page<AgentDTO> getAllAgentsWithoutVc(@Valid AgentCriteria criteria, Pageable pageable) throws ProvenAiException {
+
+        return agentService.getAllAgentsWithoutVc(criteria, pageable);
+    }
+
+    @GetMapping("/agents/{id}/policies")
+    public Page<AgentPurposeOfUsePolicies> getAgentPurposeOfUsePolicies(@PathVariable UUID id, Pageable pageable) throws ProvenAiException {
+        return agentService.getAgentPurposeOfUsePolicies(id, pageable);
+    }
+
 
 
     @PostMapping("/agents")

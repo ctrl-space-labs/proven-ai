@@ -1,12 +1,14 @@
 package dev.ctrlspace.provenai.backend.services;
 
-import dev.ctrlspace.provenai.backend.model.Agent;
-import dev.ctrlspace.provenai.backend.model.AgentPurposeOfUsePolicies;
-import dev.ctrlspace.provenai.backend.model.PolicyOption;
+import dev.ctrlspace.provenai.backend.exceptions.ProvenAiException;
+import dev.ctrlspace.provenai.backend.model.*;
 import dev.ctrlspace.provenai.backend.repositories.AgentPurposeOfUsePoliciesRepository;
 import dev.ctrlspace.provenai.backend.repositories.PolicyOptionRepository;
+import dev.ctrlspace.provenai.backend.repositories.PolicyTypeRepository;
 import dev.ctrlspace.provenai.ssi.model.vc.attestation.Policy;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -22,11 +24,15 @@ public class AgentPurposeOfUsePoliciesService {
 
     private AgentPurposeOfUsePoliciesRepository agentPurposeOfUsePoliciesRepository;
 
+    private PolicyTypeRepository policyTypeRepository;
+
     @Autowired
     public AgentPurposeOfUsePoliciesService(AgentPurposeOfUsePoliciesRepository agentPurposeOfUsePoliciesRepository,
-                                            PolicyOptionRepository policyOptionRepository) {
+                                            PolicyOptionRepository policyOptionRepository,
+                                            PolicyTypeRepository policyTypeRepository) {
         this.agentPurposeOfUsePoliciesRepository = agentPurposeOfUsePoliciesRepository;
         this.policyOptionRepository = policyOptionRepository;
+        this.policyTypeRepository = policyTypeRepository;
 
     }
 
@@ -35,18 +41,26 @@ public class AgentPurposeOfUsePoliciesService {
         return agentPurposeOfUsePoliciesRepository.findByAgentId(agentId);
     }
 
+    public Page<AgentPurposeOfUsePolicies> getAgentPurposeOfUsePolicies(UUID agentId, Pageable pageable) {
+        return agentPurposeOfUsePoliciesRepository.findByAgentId(agentId, pageable);
+    }
+
+
+
 
     public List<AgentPurposeOfUsePolicies> savePoliciesForAgent(Agent savedAgent, List<Policy> policies) {
         List<AgentPurposeOfUsePolicies> savedPolicies = policies.stream()
                 .map(policy -> {
                     // Retrieve PolicyOption based on policy type name
                     PolicyOption policyOption = policyOptionRepository.findByName(policy.getPolicyValue());
+                    PolicyType policyType = policyTypeRepository.findById(policyOption.getPolicyTypeId())
+                            .orElseThrow(() -> new RuntimeException("Policy Type not found"));
 
                     AgentPurposeOfUsePolicies agentPurposeOfUsePolicy = new AgentPurposeOfUsePolicies();
                     agentPurposeOfUsePolicy.setAgentId(savedAgent.getId());
-                    agentPurposeOfUsePolicy.setPolicyOptionId(policyOption.getId());
+                    agentPurposeOfUsePolicy.setPolicyOption(policyOption);
                     agentPurposeOfUsePolicy.setValue(policy.getPolicyValue());
-                    agentPurposeOfUsePolicy.setPolicyTypeId(policyOption.getPolicyTypeId());
+                    agentPurposeOfUsePolicy.setPolicyType(policyType);
                     agentPurposeOfUsePolicy.setCreatedAt(Instant.now());
                     agentPurposeOfUsePolicy.setUpdatedAt(Instant.now());
 
