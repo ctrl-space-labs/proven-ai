@@ -2,9 +2,11 @@ package dev.ctrlspace.provenai.ssi.issuer;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import dev.ctrlspace.provenai.ssi.converters.AgentIDConverter;
+import dev.ctrlspace.provenai.ssi.converters.PermissionOfUseConverter;
 import dev.ctrlspace.provenai.ssi.model.vc.CredentialSubject;
 import dev.ctrlspace.provenai.ssi.model.vc.VerifiableCredential;
 import dev.ctrlspace.provenai.ssi.model.vc.attestation.AIAgentCredentialSubject;
+import dev.ctrlspace.provenai.ssi.model.vc.attestation.PermissionOfUseCredentialSubject;
 import dev.ctrlspace.provenai.utils.ContinuationObjectUtils;
 import id.walt.credentials.vc.vcs.W3CVC;
 import id.walt.crypto.keys.Key;
@@ -28,15 +30,18 @@ public class ProvenAIIssuer {
      * @throws JsonProcessingException
      */
     public W3CVC generateUnsignedVC(VerifiableCredential<? extends CredentialSubject> vc) throws JSONException, JsonProcessingException {
-
-        AgentIDConverter agentIDConverter = new AgentIDConverter();
         W3CVC w3cVC = new W3CVC();
-        if (vc.getCredentialSubject() instanceof AIAgentCredentialSubject) {
-            //cast param to VerifiableCredential<AIAgentCredentialSubject>
-            VerifiableCredential<AIAgentCredentialSubject> agentIdVC = (VerifiableCredential<AIAgentCredentialSubject>) vc;
 
+        if (vc.getCredentialSubject() instanceof AIAgentCredentialSubject) {
+            AgentIDConverter agentIDConverter = new AgentIDConverter();
+            VerifiableCredential<AIAgentCredentialSubject> agentIdVC = (VerifiableCredential<AIAgentCredentialSubject>) vc;
             w3cVC = agentIDConverter.convertToW3CVC(agentIdVC);
+        } else if (vc.getCredentialSubject() instanceof PermissionOfUseCredentialSubject) {
+            PermissionOfUseConverter permissionOfUseConverter = new PermissionOfUseConverter();
+            VerifiableCredential<PermissionOfUseCredentialSubject> permissionOfUseVC = (VerifiableCredential<PermissionOfUseCredentialSubject>) vc;
+            w3cVC = permissionOfUseConverter.convertToW3CVC(permissionOfUseVC);
         }
+
         return w3cVC;
     }
 

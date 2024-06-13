@@ -1,14 +1,22 @@
 package dev.ctrlspace.provenai.backend.services;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.ctrlspace.provenai.backend.adapters.GendoxQueryAdapter;
+import dev.ctrlspace.provenai.backend.converters.AgentPurposeOfUsePoliciesConverter;
 import dev.ctrlspace.provenai.backend.exceptions.ProvenAiException;
-import dev.ctrlspace.provenai.backend.model.DataPod;
+import dev.ctrlspace.provenai.backend.model.*;
 import dev.ctrlspace.provenai.backend.model.authentication.UserProfile;
+import dev.ctrlspace.provenai.backend.model.dtos.DocumentDTO;
+import dev.ctrlspace.provenai.backend.model.dtos.DocumentInstanceSectionDTO;
 import dev.ctrlspace.provenai.backend.model.dtos.SearchResult;
+import dev.ctrlspace.provenai.ssi.model.vc.attestation.Policy;
+import id.walt.credentials.vc.vcs.W3CVC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -21,56 +29,103 @@ public class SearchService {
 
     private GendoxQueryAdapter gendoxQueryAdapter;
 
+    private OrganizationsService organizationService;
+
+    private AuditPermissionOfUseVcService auditPermissionOfUseVcService;
+
+    private AgentService agentService;
+
+    private AgentPurposeOfUsePoliciesService agentPurposeOfUsePoliciesService;
+
+    private AgentPurposeOfUsePoliciesConverter agentPurposeOfUsePoliciesConverter;
+
 
     @Autowired
     public SearchService(DataPodService dataPodService,
-                         GendoxQueryAdapter gendoxQueryAdapter) {
+                         GendoxQueryAdapter gendoxQueryAdapter,
+                         OrganizationsService organizationService,
+                         AuditPermissionOfUseVcService auditPermissionOfUseVcService,
+                         AgentService agentService,
+                         AgentPurposeOfUsePoliciesService agentPurposeOfUsePoliciesService,
+                         AgentPurposeOfUsePoliciesConverter agentPurposeOfUsePoliciesConverter) {
         this.dataPodService = dataPodService;
         this.gendoxQueryAdapter = gendoxQueryAdapter;
+        this.organizationService = organizationService;
+        this.auditPermissionOfUseVcService = auditPermissionOfUseVcService;
+        this.agentService = agentService;
+        this.agentPurposeOfUsePoliciesService = agentPurposeOfUsePoliciesService;
+        this.agentPurposeOfUsePoliciesConverter = agentPurposeOfUsePoliciesConverter;
+
     }
 
-// TODO: authentication
-    public List<SearchResult> search(String question, UserProfile agentProfile) throws ProvenAiException, JsonProcessingException {
-        UUID agentUserId = UUID.fromString(agentProfile.getId());
+    public List<SearchResult> search(String question, UserProfile agentProfile) throws Exception {
+        String agentUsername = agentProfile.getUserName();
+        Agent agent = agentService.getAgentByUsername(agentUsername);
+        List<DataPod> dataPods = dataPodService.getAccessibleDataPodsForAgent(agentUsername);
+        Map<String, List<UUID>> dataPodsByHostUrl = dataPodService.getDataPodsByHostUrl(dataPods);
+        Organization processorOrganization = organizationService.getOrganizationById(agent.getOrganizationId());
+        List<AgentPurposeOfUsePolicies> agentPurposeOfUsePolicies = agentPurposeOfUsePoliciesService.getAgentPurposeOfUsePolicies(agent.getId());
+        List<Policy> policies = new ArrayList<>();
+        for (AgentPurposeOfUsePolicies agentPurposeOfUsePolicy : agentPurposeOfUsePolicies) {
+            Policy policy = agentPurposeOfUsePoliciesConverter.toPolicy(agentPurposeOfUsePolicy);
+            policies.add(policy);
+        }
 
-        String searchResultJson = gendoxQueryAdapter.superAdminSearch(question, "4fd12adf-763b-4d17-a72b-df9f71b50e0d", "10");
-        // Step 1: Get Matching Projects from AgentId
-        List<DataPod> dataPods = dataPodService.getMatchingAgentPolicyDataPods(agentUserId);
-        // Step 2: Group ProjectIdIn by HostURL
-        Map<String, List<UUID>>  dataPodsByHostUrl  = dataPodService.getDataPodsByHostUrl(dataPods);
-        //TODO  Step 3: Gendox Search
-        // List<SearchResults> searchResults =  semanticSearchgendox
+        List<SearchResult> searchResults = new ArrayList<>();
 
-//        return searchResults;
+        UUID searchId = UUID.randomUUID();
 
-        return null;
+        for (Map.Entry<String, List<UUID>> entry : dataPodsByHostUrl.entrySet()) {
+            String hostUrl = entry.getKey();
+            List<UUID> dataPodIds = entry.getValue();
+
+            for (UUID dataPodId : dataPodIds) {
+                List<DocumentInstanceSectionDTO> sectionDetails = gendoxQueryAdapter.superAdminSearch(question, dataPodId.toString(), hostUrl, "10");
+                DataPod dataPod = dataPodService.getDataPodById(dataPodId);
+                Organization ownerOrganization= organizationService.getOrganizationById(dataPod.getOrganizationId());
+
+                // Map section details to SearchResult objects
+                for (DocumentInstanceSectionDTO section : sectionDetails) {
+                    String documentId = section.getDocumentDTO().getId().toString();
+
+
+                    AuditPermissionOfUseVc auditPermissionOfUseVc = auditPermissionOfUseVcService.createAuditLog(
+                            ownerOrganization.getId(), ownerOrganization.getOrganizationDid(),
+                            agent.getId(), processorOrganization.getOrganizationDid(),
+                            searchId, dataPodId,
+                            section.getDocumentSectionIsccCode(), section.getDocumentDTO().getDocumentIsccCode(),
+                            section.getTokenCount().intValue(), section.getAiModelName()
+                    );
+
+                    W3CVC permissionOfUseVC = auditPermissionOfUseVcService.createPermissionOfUseW3CVC(
+                            ownerOrganization.getOrganizationDid(),
+                            processorOrganization.getOrganizationDid(),
+                            section.getDocumentSectionIsccCode(),
+                            policies);
+
+                    // Generate signed JWT for the Permission of Use VC
+                    String signedVCJwt = (String) auditPermissionOfUseVcService.createAgentSignedVcJwt(permissionOfUseVC, processorOrganization.getOrganizationDid());
+
+                    SearchResult searchResult = SearchResult.builder()
+                            .documentSectionId(section.getId().toString())
+                            .documentId(documentId)
+                            .iscc(section.getDocumentSectionIsccCode())
+                            .text(section.getSectionValue())
+                            .ownerName(processorOrganization.getName())
+                            .title(section.getDocumentSectionMetadata().getTitle())
+                            .tokens(String.valueOf(section.getTokenCount()))
+//                            TODO: change url format when documentSectionId is added to the url
+                            .documentURL(dataPod.getHostUrl().trim().replace("{documentId}", documentId))
+                            .signedPermissionOfUseVc(signedVCJwt)
+                            .build();
+
+                    searchResults.add(searchResult);
+                }
+            }
+        }
+
+        return searchResults;
     }
 
 
 }
-
-//    @PostMapping("/search")
-//    public List<SearchResult> search(@RequestParam String question, Authentication authentication) {
-//        // find data pod IDs whose ACL policies match with Agents' policies
-//        // get Data Pods ids
-//        // REST call to gendox -> semantic search in data Pods IDs
-//        // prepare Permission of use VC, with sections ISCC
-//
-//        UUID agentID = UUID.fromString("3432-kj453-534kl56-65b4");
-//
-//        // match agent's policies with data pods' policies
-////        1. GET all Pods that have AgentID in the Allow List check
-////        2. GET all Pods that have 'Pod Permission to Use' eg Education == 'Agent's  Purpose to Use' eg Education check
-////        3. REMOVE all Pods that have AgentID in the Block List check
-////      List<DataPod> dataPods = dataPodService.getDataPods(agentID);
-//
-////        get list of podIDs from dataPods (per hostURL) which are the Gendox project Ids eg ids = ["424235", "65tg54", "654546"]
-//
-//        // Do semantic search with criteria projectIdIn = ids
-//
-////        Get the results and prepare the [Responce DTO, text, ISCC, list of Usage Permition, owner name], etc
-//
-////        return the results
-//
-//        return List.of();
-//    }

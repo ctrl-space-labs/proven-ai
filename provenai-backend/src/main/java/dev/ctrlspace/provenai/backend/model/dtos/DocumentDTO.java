@@ -1,13 +1,12 @@
 package dev.ctrlspace.provenai.backend.model.dtos;
 
-import com.fasterxml.jackson.databind.util.JSONPObject;
-import dev.ctrlspace.provenai.ssi.model.vc.attestation.Policy;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -15,17 +14,17 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder(toBuilder = true)
-public class AgentDTO {
+public class DocumentDTO {
+
     private UUID id;
-    private String agentUsername;
-    private UUID agentUserId;
     private UUID organizationId;
-    private String agentVcJwt;
-    private Instant createdAt;
-    private Instant updatedAt;
+    private UUID documentTemplateId;
+    private String remoteUrl;
+    private String documentIsccCode;
     private UUID createdBy;
     private UUID updatedBy;
-    private String agentName;
-    private List<Policy> usagePolicies;
+    private Instant createAt;
+    private Instant updateAt;
+    private List<DocumentInstanceSectionDTO> documentInstanceSections = new ArrayList<>();
 
 }

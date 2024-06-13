@@ -68,11 +68,12 @@ public class DataPodPredicates {
     }
 
 
-    private static Predicate policy (Policy policy) {
+    private static Predicate policy(Policy policy) {
         if (policy == null) {
             return null;
         }
-          return qDataPod.id.in(
+
+        return qDataPod.id.in(
                 JPAExpressions.select(qDataPod.id)
                         .from(qDataPod)
                         .join(qDataPod.aclPolicies, QAclPolicies.aclPolicies)
@@ -81,6 +82,12 @@ public class DataPodPredicates {
         );
     }
 
+    /**
+     * Returns a Predicate that checks if the DataPod has any (at least one) of the policies in the list
+     *
+     * @param policyIn
+     * @return
+     */
     private static Predicate policyIn(List<Policy> policyIn) {
         if (policyIn == null || policyIn.isEmpty()) {
             return null;

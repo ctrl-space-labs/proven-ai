@@ -12,6 +12,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "agents", schema = "proven_ai")
 public class Agent {
+    // this is agent's gendox user id
     @Id
     @Column(name = "id")
     private UUID id;
@@ -26,6 +27,14 @@ public class Agent {
     @Basic
     @Column(name = "agent_name")
     private String agentName;
+
+    @Basic
+    @Column(name = "agent_username")
+    private String agentUsername;
+
+    @Basic
+    @Column(name = "agent_user_id")
+    private UUID agentUserId;
 
     @Basic
     @Column(name = "created_at")
@@ -64,6 +73,14 @@ public class Agent {
 
     public void setAgentName(String agentName) {this.agentName = agentName;}
 
+    public UUID getAgentUserId() {
+        return agentUserId;
+    }
+
+    public void setAgentUserId(UUID agentUserId) {
+        this.agentUserId = agentUserId;
+    }
+
     public Instant getCreatedAt() {
         return createdAt;
     }
@@ -96,16 +113,24 @@ public class Agent {
         this.updatedBy = updatedBy;
     }
 
+
+    public String getAgentUsername() {
+        return agentUsername;
+    }
+    public void setAgentUsername(String agentUsername) {
+        this.agentUsername = agentUsername;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Agent agent = (Agent) o;
-        return Objects.equals(id, agent.id) && Objects.equals(organizationId, agent.organizationId) && Objects.equals(agentVcJwt, agent.agentVcJwt) && Objects.equals(agentName, agent.agentName) && Objects.equals(createdAt, agent.createdAt) && Objects.equals(updatedAt, agent.updatedAt) && Objects.equals(createdBy, agent.createdBy) && Objects.equals(updatedBy, agent.updatedBy);
+        return Objects.equals(id, agent.id) && Objects.equals(organizationId, agent.organizationId) && Objects.equals(agentVcJwt, agent.agentVcJwt) && Objects.equals(agentName, agent.agentName) && Objects.equals(agentUsername, agent.agentUsername) && Objects.equals(agentUserId, agent.agentUserId) && Objects.equals(createdAt, agent.createdAt) && Objects.equals(updatedAt, agent.updatedAt) && Objects.equals(createdBy, agent.createdBy) && Objects.equals(updatedBy, agent.updatedBy);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, organizationId, agentVcJwt, agentName, createdAt, updatedAt, createdBy, updatedBy);
+        return Objects.hash(id, organizationId, agentVcJwt, agentName, agentUsername, agentUserId, createdAt, updatedAt, createdBy, updatedBy);
     }
 }

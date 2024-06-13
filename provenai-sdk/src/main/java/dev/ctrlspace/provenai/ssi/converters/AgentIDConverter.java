@@ -46,7 +46,7 @@ public class AgentIDConverter {
         credentialBuilder.addType("VerifiableAIAgent");
 
         // Set credential ID, issuer DID, and subject DID
-        credentialBuilder.setCredentialId("urn:uuid:"+ agentIdCredential.getId());
+        credentialBuilder.setCredentialId("urn:uuid:"+ agentIdCredential.getCredentialSubject().getAgentId());
         credentialBuilder.setIssuerDid("\"did:jwk:eyJrdHkiOiJPS1AiLCJjcnYiOiJFZDI1NTE5Iiwia2lkIjoiQ0ZRLU5yYTV5bnlCc2Z4d3k3YU5mOGR1QUVVQ01sTUlyUklyRGc2REl5NCIsIngiOiJoNW5idzZYOUptSTBCdnVRNU0wSlhmek84czJlRWJQZFYyOXdzSFRMOXBrIn0\"");
         credentialBuilder.setSubjectDid(agentIdCredential.getCredentialSubject().getId());
 
