@@ -113,4 +113,6 @@ export default {
   getAiModels: (organizationId, projectId) =>
     `${url}organizations/${organizationId}/projects/${projectId}/ai-models`,
 
+  getPermissionOfUseAnalytics: () => `${provenUrl}permission-of-use-analytics`,
+
 };

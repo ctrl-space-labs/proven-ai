@@ -9,6 +9,8 @@ import CardContent from '@mui/material/CardContent'
 // ** Custom Components
 import CustomChip from 'src/@core/components/mui/chip'
 import OptionsMenu from 'src/@core/components/option-menu'
+import {useEffect, useState} from "react";
+import {useSelector} from "react-redux";
 
 const data = [
   {
@@ -59,10 +61,38 @@ const data = [
 ]
 
 const AgentWordStatistics = () => {
+
+    const [tokensPerOwnerDataPod, setTokensPerOwnerDataPod] = useState([]);
+    const [dataPods, setDataPods] = useState([]);
+    const [graphData, setGraphData] = useState([]);
+
+    // import permissionOfUseAnalytics redux state here
+    const permissionOfUseAnalytics = useSelector((state) => state.permissionOfUseAnalytics);
+
+    useEffect(() => {
+
+        if (!permissionOfUseAnalytics.graphData) {
+            return;
+        }
+
+        const transformedData = Object.entries(permissionOfUseAnalytics.graphData.providedDataTokensByProcessorAgent).map(([key, value]) => ({
+            imgWidth: 22,
+            imgHeight: 22,
+            chipText: `${value.totalSumTokens}`,
+            title: key,
+            imgAlt: 'image-alt',
+            subtitle: 'some-subtitle',
+            src: '/images/avatars/1.png'
+        }));
+
+        setGraphData(transformedData)
+
+    }, [permissionOfUseAnalytics.graphData]);
+
   return (
     <Card>
       <CardHeader
-        title='Your Agent Statistics'
+        title='You provided to other Agents'
         action={
           <OptionsMenu
             options={['Refresh', 'Edit', 'Share']}
@@ -95,7 +125,7 @@ const AgentWordStatistics = () => {
             Budget
           </Typography>
         </Box>
-        {data.map((item, index) => {
+        {graphData.map((item, index) => {
           return (
             <Box
               key={item.title}
@@ -127,7 +157,7 @@ const AgentWordStatistics = () => {
                   skin='light'
                   size='small'
                   color='primary'
-                  label={item.chipText}
+                  label={`${item.chipText} Tokens`}
                   sx={{ height: 20, fontSize: '0.75rem', fontWeight: 500 }}
                 />
               </Box>

@@ -10,17 +10,55 @@ import ReactApexcharts from 'src/@core/components/react-apexcharts'
 
 // ** Util Import
 import { hexToRGBA } from 'src/@core/utils/hex-to-rgba'
+import {useEffect} from "react";
+import {useState} from "react";
+import {useSelector} from "react-redux";
 
-const series = [
-  {
-    name: 'Sales',
-    data: [17165, 13850, 12375, 9567, 7880]
-  }
-]
+
 
 const DataPodsStats = () => {
   // ** Hook
   const theme = useTheme()
+
+  const [tokensPerOwnerDataPod, setTokensPerOwnerDataPod] = useState([]);
+  const [dataPods, setDataPods] = useState([]);
+  const [totalTokensProvided, setTotalTokensProvided] = useState(0);
+
+  // import permissionOfUseAnalytics redux state here
+  const permissionOfUseAnalytics = useSelector((state) => state.permissionOfUseAnalytics);
+
+  useEffect(() => {
+
+    console.log("graph data updated! ", permissionOfUseAnalytics.graphData);
+    if (!permissionOfUseAnalytics.graphData) {
+      return;
+    }
+
+    const dataPodsStatsData = [
+      {
+        name: 'Sales',
+        data: Object.values(permissionOfUseAnalytics.graphData.providedDataTokensByOwnerDataPod).map((item) => item.totalSumTokens)
+      }
+    ];
+
+    const totalTokens = dataPodsStatsData[0].data.reduce((acc, item) => acc + item, 0);
+
+    console.log("totalTokens: ", totalTokens);
+
+    setTotalTokensProvided(totalTokens);
+
+
+    const categories = Object.keys(permissionOfUseAnalytics.graphData.providedDataTokensByOwnerDataPod);
+
+
+    setTokensPerOwnerDataPod(dataPodsStatsData);
+
+    setDataPods(categories);
+
+    console.log("categories: ", categories);
+    console.log("series: ", dataPodsStatsData);
+
+  }, [permissionOfUseAnalytics.graphData]);
 
   const options = {
     chart: {
@@ -78,7 +116,7 @@ const DataPodsStats = () => {
     xaxis: {
       axisTicks: { show: false },
       axisBorder: { show: false },
-      categories: ['US', 'IN', 'JA', 'CA', 'AU'],
+      categories: dataPods,
       labels: {
         formatter: val => `${Number(val) / 1000}k`,
         style: {
@@ -103,7 +141,7 @@ const DataPodsStats = () => {
     <Card>
       <CardHeader
         title='Your Data Pods Statistics'
-        subheader='Total $42,580 Words'
+        subheader={`Total ${totalTokensProvided} Tokens Provided to others!`}
         subheaderTypographyProps={{ sx: { lineHeight: 1.429 } }}
         titleTypographyProps={{ sx: { letterSpacing: '0.15px' } }}
         action={
@@ -114,7 +152,7 @@ const DataPodsStats = () => {
         }
       />
       <CardContent sx={{ p: '0 !important' }}>
-        <ReactApexcharts type='bar' height={294} series={series} options={options} />
+        <ReactApexcharts type='bar' height={294} series={tokensPerOwnerDataPod} options={options} />
       </CardContent>
     </Card>
   )

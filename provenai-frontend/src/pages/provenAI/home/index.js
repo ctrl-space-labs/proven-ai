@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import { useSelector } from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import { useAuth } from "src/hooks/useAuth";
 import documentService from "src/gendox-sdk/documentService";
 import authConfig from "src/configs/auth";
@@ -19,6 +19,7 @@ import MenuItem from "@mui/material/MenuItem";
 // Custom components
 import useRedirectOr404ForHome from "src/utils/useRedirectOr404ForHome";
 import StatisticsCart from "src/views/provenAI/home/statistics/StatisticsCard";
+import {fetchAnalytics} from "../../../store/apps/permissionOfUseAnalytics/permissionOfUseAnalytics";
 
 const period = [
   "Last 24 Hours",
@@ -44,6 +45,10 @@ const StyledCardContent = styled(CardContent)(({ theme }) => ({
 const ProvenAIHome = () => {
   const router = useRouter();
   const { organizationId } = router.query;
+
+  const dispatch = useDispatch();
+
+
   const auth = useAuth();
   const [selectedPeriod, setSelectedPeriod] = useState(["Last 24 Hours"]);
 
@@ -53,6 +58,16 @@ const ProvenAIHome = () => {
   const storedToken = window.localStorage.getItem(
     authConfig.storageTokenKeyName
   );
+
+  useEffect(() => {
+    dispatch(
+        fetchAnalytics({
+          organizationId: 'c83a1c61-4c79-4c49-8b3e-249e8c40a39f',
+          storedToken,
+        })
+    );
+  },[])
+
 
   return (
     <Card sx={{ backgroundColor: "transparent", boxShadow: "none" }}>
