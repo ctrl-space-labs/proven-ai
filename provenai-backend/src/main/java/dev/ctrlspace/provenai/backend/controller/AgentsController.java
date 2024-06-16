@@ -122,7 +122,7 @@ public class AgentsController implements AgentsControllerSpec {
                             .builder()
                             .agentVcJwt(agentVcJwt)
                             .build(),
-                    Pageable.unpaged()).getContent().getFirst();
+                    Pageable.unpaged()).getContent().get(0);
             return agentService.getAgentAccessToken(agent.getAgentUsername(), scope);
         } else {
             throw new ProvenAiException("VP_VERIFICATION_FAILED", "VP Verification failed", HttpStatus.UNAUTHORIZED);

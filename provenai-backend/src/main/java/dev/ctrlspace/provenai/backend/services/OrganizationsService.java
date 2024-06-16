@@ -57,13 +57,34 @@ public class OrganizationsService {
 
 
     public Organization updateOrganization(Organization organization) throws ProvenAiException {
-        UUID organizationId = organization.getId();
-        Organization existingOrganization = organizationRepository.findById(organizationId)
-                .orElseThrow(() -> new ProvenAiException("ORGANIZATION_NOT_FOUND", "Organization not found with id: " + organizationId, HttpStatus.NOT_FOUND));
-        existingOrganization.setName(organization.getName());
-        existingOrganization.setCountry(organization.getCountry());
+
+        Organization existingOrganization = organizationRepository.findById(organization.getId())
+                .orElseThrow(() -> new ProvenAiException("ORGANIZATION_NOT_FOUND", "Organization not found with id: " + organization.getId(), HttpStatus.NOT_FOUND));
+        if (organization.getName() != null && organization.getName() != "") {
+            existingOrganization.setName(organization.getName());
+        }
+        if (organization.getCountry() != null && organization.getCountry() != "") {
+            existingOrganization.setCountry(organization.getCountry());
+        }
+
+        existingOrganization.setIsNaturalPerson(organization.getIsNaturalPerson());
+        existingOrganization.setLegalPersonIdentifier(organization.getLegalPersonIdentifier());
+        existingOrganization.setLegalName(organization.getLegalName());
+        existingOrganization.setLegalAddress(organization.getLegalAddress());
+        existingOrganization.setTaxReference(organization.getTaxReference());
+        existingOrganization.setFamilyName(organization.getFamilyName());
+        existingOrganization.setFirstName(organization.getFirstName());
+        existingOrganization.setDateOfBirth(organization.getDateOfBirth());
+        existingOrganization.setGender(organization.getGender());
+        existingOrganization.setNationality(organization.getNationality());
+        existingOrganization.setPersonalIdentifier(organization.getPersonalIdentifier());
         existingOrganization.setVatNumber(organization.getVatNumber());
-        existingOrganization.setOrganizationVpJwt(organization.getOrganizationVpJwt());
+        if (organization.getOrganizationVpJwt() != null && organization.getOrganizationVpJwt() != "") {
+            existingOrganization.setOrganizationVpJwt(organization.getOrganizationVpJwt());
+        }
+        if (organization.getOrganizationDid() != null && organization.getOrganizationDid() != "") {
+            existingOrganization.setOrganizationDid(organization.getOrganizationDid());
+        }
         existingOrganization.setUpdatedAt(Instant.now());
 
         return organizationRepository.save(existingOrganization);
