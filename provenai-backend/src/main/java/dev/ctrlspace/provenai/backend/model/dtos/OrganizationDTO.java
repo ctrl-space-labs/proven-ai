@@ -16,21 +16,21 @@ import java.util.UUID;
 public class OrganizationDTO {
     private UUID id;
     private String name;
-
     private String country;
-
+    private Boolean isNaturalPerson;
+    private String legalPersonIdentifier;
+    private String legalName;
+    private String legalAddress;
+    private String taxReference;
+    private String familyName;
+    private String firstName;
+    private Instant dateOfBirth;
+    private String gender;
+    private String nationality;
+    private String personalIdentifier;
     private String vatNumber;
-
     private String organizationVpJwt;
-
     private String organizationDid;
 
-    private Instant createdAt;
-
-    private Instant updatedAt;
-
-    private UUID createdBy;
-
-    private UUID updatedBy;
 
 }

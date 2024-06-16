@@ -37,9 +37,7 @@ const UserInformation = ({ onSubmit, handleBack, userData, setUserData }) => {
   }, [userData, setValue]);
   
 
-  // useEffect(() => {
-  //   reset(userData);
-  // }, [userData, reset]);
+  
 
   const handleFormSubmit = (data) => {
     setUserData(data);
@@ -116,8 +114,26 @@ const UserInformation = ({ onSubmit, handleBack, userData, setUserData }) => {
               </FormControl>
             </Grid>
 
+            <Grid item xs={12} sm={3}>
+              <FormControl fullWidth>
+                <Controller
+                  name="personalIdentifier"
+                  control={control}
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      label="Personal Identifier"                      
+                      error={Boolean(errors.personalIdentifier)}
+                      helperText={errors.personalIdentifier ? "This field is required" : ""}
+                      
+                    />
+                  )}
+                />
+              </FormControl>
+            </Grid>
 
-            <Grid item xs={12} sm={4}>
+
+            <Grid item xs={12} sm={3}>
               <FormControl fullWidth>
                 <Controller
                   name="dateOfBirth"
@@ -138,7 +154,7 @@ const UserInformation = ({ onSubmit, handleBack, userData, setUserData }) => {
             </Grid>
 
 
-            <Grid item xs={12} sm={4}>
+            <Grid item xs={12} sm={3}>
               <FormControl fullWidth>
                 <InputLabel id="gender-label">Gender</InputLabel>
                 <Controller
@@ -164,7 +180,7 @@ const UserInformation = ({ onSubmit, handleBack, userData, setUserData }) => {
                 )}
               </FormControl>
             </Grid>
-            <Grid item xs={12} sm={4}>
+            <Grid item xs={12} sm={3}>
               <FormControl fullWidth>
                 <InputLabel id="nationality-label">Nationality</InputLabel>
                 <Controller

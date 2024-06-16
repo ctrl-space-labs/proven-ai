@@ -10,7 +10,6 @@ import {
 import { useTheme } from "@mui/material/styles";
 
 
-
 const ReviewAndComplete = ({
   onSubmit,
   handleBack,
@@ -19,7 +18,6 @@ const ReviewAndComplete = ({
   usePoliciesData,
 }) => {
   const theme = useTheme(); 
-
 
 
   return (
@@ -103,8 +101,8 @@ const ReviewAndComplete = ({
             <Typography variant="body1">Deny List:</Typography>
             {agentData.denyList.map((agent) => (
               <Chip
-                key={agent}
-                label={agent}
+                key={agent.agentId}
+                label={agent.name}
                 sx={{
                   backgroundColor: "red",
                 }}
@@ -115,8 +113,8 @@ const ReviewAndComplete = ({
             <Typography variant="body1">Allow List:</Typography>
             {agentData.allowList.map((agent) => (
               <Chip
-                key={agent}
-                label={agent}
+                key={agent.agentId}
+                label={agent.name}
                 sx={{
                   backgroundColor: "green",
                 }}

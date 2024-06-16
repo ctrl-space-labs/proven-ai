@@ -12,7 +12,7 @@ export default {
     return `${provenUrl}organizations?organizationIdIn=${organizationIds}`;
   },
 
-  getProvenOrganizationById: (organizationId) => {
+  provenOrganization: (organizationId) => {
     return `${provenUrl}organizations/${organizationId}`;    
   },
 
@@ -33,6 +33,14 @@ export default {
 
   getPoliciesByAgent: (agentId) =>
     `${provenUrl}agents/${agentId}/policies`,
+
+  aclPolicies:() =>
+    `${provenUrl}acl-policies`,
+
+
+
+
+
 
   getProfile: url + "profile",
   deleteProfileCaches: () => `${url}profile/caches`,

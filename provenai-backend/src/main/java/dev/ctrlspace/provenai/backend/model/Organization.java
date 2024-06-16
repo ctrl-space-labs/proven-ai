@@ -164,12 +164,12 @@ public class Organization {
         this.updatedBy = updatedBy;
     }
 
-    public Boolean getNaturalPerson() {
+    public Boolean getIsNaturalPerson() {
         return isNaturalPerson;
     }
 
-    public void setNaturalPerson(Boolean naturalPerson) {
-        isNaturalPerson = naturalPerson;
+    public void setIsNaturalPerson(Boolean isNaturalPerson) {
+        isNaturalPerson = isNaturalPerson;
     }
 
     public String getLegalPersonIdentifier() {

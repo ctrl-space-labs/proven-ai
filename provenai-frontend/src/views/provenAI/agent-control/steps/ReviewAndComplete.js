@@ -1,26 +1,10 @@
 // ** React Imports
 import React from "react";
-import {
-  Box,
-  Grid,
-  Typography,
-  Button,
-  Chip,
-} from "@mui/material";
+import { Box, Grid, Typography, Button, Chip } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 
-
-
-const ReviewAndComplete = ({
-  onSubmit,
-  handleBack,
-  userData,
-  agentData,
-  usePoliciesData,
-}) => {
-  const theme = useTheme(); 
-
-
+const ReviewAndComplete = ({ onSubmit, handleBack, userData, agentData }) => {
+  const theme = useTheme();
 
   return (
     <Box>
@@ -100,32 +84,18 @@ const ReviewAndComplete = ({
             ))}
           </Box>
           <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2, mb: 3 }}>
-            <Typography variant="body1">Deny List:</Typography>
-            {agentData.denyList.map((agent) => (
-              <Chip
-                key={agent}
-                label={agent}
-                sx={{
-                  backgroundColor: "red",
-                }}
-              />
-            ))}
+            <Typography variant="body1">
+              Compensation: {agentData.compensationType}
+            </Typography>
           </Box>
-          <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2, mb: 2 }}>
-            <Typography variant="body1">Allow List:</Typography>
-            {agentData.allowList.map((agent) => (
-              <Chip
-                key={agent}
-                label={agent}
-                sx={{
-                  backgroundColor: "green",
-                }}
-              />
-            ))}
+          {agentData.compensationType === "paid" && (
+            <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2, mb: 3 }}>
+            <Typography variant="body1">
+              Paid method: {agentData.compensation.name}
+            </Typography>
           </Box>
+          )}
         </Grid>
-
-       
 
         {/* Action Buttons */}
         <Grid

@@ -23,8 +23,8 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { agentSchema } from "../utils/validationSchemas";
 
 import policyService from "src/provenAI-sdk/policyService";
-import agentService from "src/provenAI-sdk/agentService";
 import authConfig from "src/configs/auth";
+import { gridColumnsTotalWidthSelector } from "@mui/x-data-grid";
 
 const AgentInformation = ({
   onSubmit,
@@ -35,13 +35,11 @@ const AgentInformation = ({
   const [usagePolicies, setUsagePolicies] = useState([]);
   const [compensationPolicies, setCompensationPolicies] = useState([]);
   const [selectedCompensation, setSelectedCompensation] = useState(
-    agentData.compensation && agentData.compensation.length > 0 ? "Paid" : "Free"
+    agentData.compensationType
   );
   const storedToken = window.localStorage.getItem(
     authConfig.storageTokenKeyName
   );
-
-  console.log("agentData", agentData);
 
   const {
     control,
@@ -52,16 +50,16 @@ const AgentInformation = ({
     resolver: yupResolver(agentSchema),
   });
 
-  const Compensation = [
+  const compensationTypes = [
     {
-      value: "Paid",
+      value: "paid",
       title: "Paid",
       content: "Anyone can use",
       icon: "mdi:currency-usd",
       iconProps: { fontSize: "2rem", style: { marginBottom: 8 } },
     },
     {
-      value: "Free",
+      value: "free",
       title: "Free",
       content: "Only within team",
       icon: "mdi:currency-usd-off",
@@ -69,34 +67,36 @@ const AgentInformation = ({
     },
   ];
 
-  const handleCompensationChange = (prop) => {
-    setSelectedCompensation(
-      typeof prop === "string" ? prop : prop.target.value
-    );
-  };
-
   useEffect(() => {
     const fetchUsagePolicies = async () => {
       try {
-        const usagePolicies = await policyService.getPolicyOptions(
+        const policies = await policyService.getPolicyOptions(
           "USAGE_POLICY",
           storedToken
         );
-        setUsagePolicies(usagePolicies.data);
+        const transformedPolicies = policies.data.map((policy) => ({
+          ...policy,
+          policyOptionId: policy.id,
+        }));
+        setUsagePolicies(transformedPolicies);
       } catch (error) {
-        console.error("Error fetching policy options:", error);
+        console.error("Error fetching USAGE_POLICY options:", error);
       }
     };
 
     const fetchCompensationPolicies = async () => {
       try {
-        const compensationPolicies = await policyService.getPolicyOptions(
+        const policies = await policyService.getPolicyOptions(
           "COMPENSATION_POLICY",
           storedToken
         );
-        setCompensationPolicies(compensationPolicies.data);
+        const transformedPolicies = policies.data.map((policy) => ({
+          ...policy,
+          policyOptionId: policy.id,
+        }));
+        setCompensationPolicies(transformedPolicies);
       } catch (error) {
-        console.error("Error fetching policy options:", error);
+        console.error("Error fetching COMPENSATION_POLICY options:", error);
       }
     };
 
@@ -104,10 +104,17 @@ const AgentInformation = ({
     fetchCompensationPolicies();
   }, [storedToken]);
 
+  const handleCompensationChange = (value) => {
+    setSelectedCompensation(value);
+  };
+
   const handleFormSubmit = (data) => {
     setAgentData(data);
     onSubmit();
   };
+
+  
+
 
   return (
     <form onSubmit={handleSubmit(handleFormSubmit)}>
@@ -189,23 +196,23 @@ const AgentInformation = ({
             </Typography>
 
             <Controller
-              name="compensation"
+              name="compensationType"
               control={control}
               render={({ field: { value, onChange } }) => (
                 <Grid container spacing={4} item xs={12} sm={12} mt={2}>
-                  {Compensation.map((item, index) => (
+                  {compensationTypes.map((type, index) => (
                     <CustomRadioIcons
-                    key={index}
-                      data={Compensation[index]}
-                      selected={selectedCompensation}
-                      icon={Compensation[index].icon}
+                      key={index}
+                      icon={type.icon}
                       name="custom-radios-icons"
-                      handleChange={(value) => {
-                        handleCompensationChange(value);
-                        onChange(value);
+                      data={compensationTypes[index]}
+                      selected={selectedCompensation}
+                      handleChange={(selectedValue) => {
+                        handleCompensationChange(selectedValue);
+                        onChange(selectedValue === "paid" ? "paid" : "free");
                       }}
                       gridProps={{ sm: 4, xs: 12 }}
-                      iconProps={Compensation[index].iconProps}
+                      iconProps={type.iconProps}
                     />
                   ))}
                 </Grid>
@@ -214,40 +221,41 @@ const AgentInformation = ({
           </FormControl>
         </Grid>
 
-        {selectedCompensation === "Paid" && (
-        <Grid item xs={12} sm={6}>
-          <FormControl fullWidth>
-            <Typography
-              variant="filled"
-              sx={{ fontWeight: 600, color: "text.primary" }}
-            >
-              Compensation Type
-            </Typography>
-            <Controller
-              name="compensationType"
-              control={control}
-              render={({ field }) => (                
-                <Select
-                  labelId="compensation-type"
-                  {...field}
-                  value={field.value}
-                    onChange={(e) => {
-                      field.onChange(e);
+        {selectedCompensation === "paid" && (
+          <Grid item xs={12} sm={6}>
+            <FormControl fullWidth>
+              <Typography
+                variant="filled"
+                sx={{ fontWeight: 600, color: "text.primary" }}
+              >
+                Compensation Type
+              </Typography>
+              <Controller
+                name="compensation"
+                control={control}
+                render={({ field: { value, onChange } }) => (
+                  <Select
+                    labelId="compensation-type"
+                    value={value?.name || ""}
+                    onChange={(event) => {
+                      const selectedPolicy = compensationPolicies.find(
+                        (policy) => policy.name === event.target.value
+                      );
+                      onChange(selectedPolicy);
                     }}
-                  label="Compensation Type"
-                >
-                  {compensationPolicies.map((policy) => (
+                    label="Compensation Type"
+                  >
+                    {compensationPolicies.map((policy) => (
                       <MenuItem key={policy.id} value={policy.name}>
                         {policy.name}
                       </MenuItem>
                     ))}
-                </Select>
-              )}
-            />
-          </FormControl>
-        </Grid>
+                  </Select>
+                )}
+              />
+            </FormControl>
+          </Grid>
         )}
-
 
         <Grid
           item

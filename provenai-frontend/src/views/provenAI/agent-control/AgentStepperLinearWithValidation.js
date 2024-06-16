@@ -20,25 +20,22 @@ import toast from "react-hot-toast";
 // ** Custom Components Imports
 import StepperCustomDot from "./StepperCustomDot";
 import StepperWrapper from "src/@core/styles/mui/stepper";
-
+import UserInformation from "./steps/UserInformation";
+import AgentInformation from "./steps/AgentInformation";
+import ReviewAndComplete from "./steps/ReviewAndComplete";
 import authConfig from "src/configs/auth";
 import organizationService from "src/provenAI-sdk/organizationService";
 import agentService from "src/provenAI-sdk/agentService";
-import converter from "src/views/provenAI/agent-control/utils/converter";
-
-// ** Utility Imports
+import converter from "src/views/provenAI/agent-control/utils/converterToStepperData";
 
 import {
   steps,
   defaultUserInformation,
-  defaultAgentInformation,
-  defaultDataUse,
+  defaultAgentInformation,  
 } from "src/views/provenAI/agent-control/utils/defaultValues";
 
-// ** Step Components Imports
-import UserInformation from "./steps/UserInformation";
-import AgentInformation from "./steps/AgentInformation";
-import ReviewAndComplete from "./steps/ReviewAndComplete";
+
+
 
 const StepperLinearWithValidation = () => {
   const theme = useTheme();
@@ -70,21 +67,20 @@ const StepperLinearWithValidation = () => {
       }
     };
 
-    const fetchAgent = async () => {
+    const fetchAgentPolicies = async () => {
       try {
         const agent = await agentService.getPoliciesByAgent(
           agentId,
           storedToken
         );
         setActiveAgentPolicies(agent.data.content);
-        console.log("agent!!!", agent.data.content);
       } catch (error) {
         console.error("Error fetching data pod:", error);
       }
     };
 
     fetchOrganization();
-    fetchAgent();
+    fetchAgentPolicies();
   }, [storedToken, organizationId, agentId]);
 
   useEffect(() => {
@@ -99,15 +95,15 @@ const StepperLinearWithValidation = () => {
     if (activeAgentPolicies && activeAgentPolicies.length > 0) {
       const agentPolicies = converter.toAgentPolicies(activeAgentPolicies);
       setAgentData((prevAgentData) => ({
-        ...prevAgentData,
-        agentPurpose: agentPolicies.agentPurposes,
-        compensation: agentPolicies.compensation,        
+        ...agentPolicies,      
       }));
       
     }
   }, [activeAgentPolicies]);
 
-  console.log("AgentDATA", agentData);
+
+  console.log("userData106", userData);
+  console.log("agentData107", agentData);
 
   
 
@@ -115,12 +111,13 @@ const StepperLinearWithValidation = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
 
-  const handleReset = () => {
-    setActiveStep(0);
-    // Reset logic here
+  const refreshPage = () => {
+    const url = `/provenAI/agent-control?organizationId=${organizationId}&agentId=${agentId}`;
+    router.reload(url); 
+
   };
 
-  const onSubmit = () => {
+  const onSubmit = async () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
     if (activeStep === steps.length - 1) {
       toast.success("Form Submitted");
@@ -168,8 +165,8 @@ const StepperLinearWithValidation = () => {
         <Fragment>
           <Typography>All steps are completed!</Typography>
           <Box sx={{ mt: 4, display: "flex", justifyContent: "flex-end" }}>
-            <Button size="large" variant="contained" onClick={handleReset}>
-              Reset
+            <Button size="large" variant="contained" onClick={refreshPage}>
+            Back
             </Button>
           </Box>
         </Fragment>
@@ -251,9 +248,6 @@ const StepperLinearWithValidation = () => {
       <CardContent>{renderContent()}</CardContent>
     </Card>
   );
-
-
-
 };
 
 export default StepperLinearWithValidation;

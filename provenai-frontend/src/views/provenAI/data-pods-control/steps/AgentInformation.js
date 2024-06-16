@@ -7,8 +7,7 @@ import {
   Typography,
   FormControl,
   TextField,
-  Button,
-  FormHelperText,
+  Button,  
   Chip,
   Autocomplete,
 } from "@mui/material";
@@ -16,19 +15,24 @@ import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 
 // ** Validation Schema and Default Values
-import {
-  agentSchema,
-} from "../utils/validationSchemas";
-
+import { agentSchema } from "../utils/validationSchemas";
 
 import policyService from "src/provenAI-sdk/policyService";
 import agentService from "src/provenAI-sdk/agentService";
 import authConfig from "src/configs/auth";
 
-const AgentInformation = ({ onSubmit, handleBack, agentData, setAgentData }) => {
+const AgentInformation = ({
+  onSubmit,
+  handleBack,
+  agentData,
+  setAgentData,
+}) => {
   const [usagePolicies, setUsagePolicies] = useState([]);
   const [agents, setAgents] = useState([]);
-  const storedToken = window.localStorage.getItem(authConfig.storageTokenKeyName);
+
+  const storedToken = window.localStorage.getItem(
+    authConfig.storageTokenKeyName
+  );
 
   const {
     control,
@@ -38,11 +42,7 @@ const AgentInformation = ({ onSubmit, handleBack, agentData, setAgentData }) => 
     defaultValues: agentData,
     resolver: yupResolver(agentSchema),
   });
-  
 
-  
-
-  
   useEffect(() => {
     const fetchPolicyOptions = async () => {
       try {
@@ -50,7 +50,11 @@ const AgentInformation = ({ onSubmit, handleBack, agentData, setAgentData }) => 
           "USAGE_POLICY",
           storedToken
         );
-        setUsagePolicies(policies.data);        
+        const transformedPolicies = policies.data.map(policy => ({
+          ...policy,
+          policyOptionId: policy.id, 
+        }));
+        setUsagePolicies(transformedPolicies);        
       } catch (error) {
         console.error("Error fetching policy options:", error);
       }
@@ -67,15 +71,32 @@ const AgentInformation = ({ onSubmit, handleBack, agentData, setAgentData }) => 
 
     fetchPolicyOptions();
     fetchAgents();
-  }, [storedToken]);  
+  }, [storedToken]);
 
+  const updateAgentDataWithNames = (data) => {
+    if (agents.length > 0) {
+      const updatedAgentData = {
+        ...data,
+        allowList: data.allowList.map((allow) => {
+          const agent = agents.find((agent) => agent.id === allow.agentId);
+          return agent ? { ...allow, name: agent.agentName } : allow;
+        }),
+        denyList: data.denyList.map((deny) => {
+          const agent = agents.find((agent) => agent.id === deny.agentId);
+          return agent ? { ...deny, name: agent.agentName } : deny;
+        }),
+      };
+      return updatedAgentData;
+    }
+  };
+  
 
   const handleFormSubmit = (data) => {
-    setAgentData(data);
+    const updatedData = updateAgentDataWithNames(data);
+    setAgentData(updatedData);
     onSubmit();
   };
 
-  
   return (
     <form onSubmit={handleSubmit(handleFormSubmit)}>
       <Grid container spacing={5}>
@@ -103,12 +124,12 @@ const AgentInformation = ({ onSubmit, handleBack, agentData, setAgentData }) => 
             <Controller
               name="agentPurpose"
               control={control}
-              render={({ field: { value , onChange }}) => (
+              render={({ field: { value, onChange } }) => (
                 <Autocomplete
-                  multiple                  
-                  sx={{ width: "40%", mt: 2,  }}
+                  multiple
+                  sx={{ width: "40%", mt: 2 }}
                   id="autocomplete-multiple-filled-agentPurpose"
-                  value={value? value.map((purpose) => purpose.name) : []}                                  
+                  value={value ? value.map((purpose) => purpose.name) : []}
                   onChange={(event, newValue) => {
                     // Map the new values back to the full objects
                     const updatedValues = newValue.map((name) =>
@@ -146,7 +167,7 @@ const AgentInformation = ({ onSubmit, handleBack, agentData, setAgentData }) => 
           </FormControl>
         </Grid>
 
-         <Grid item xs={12} sm={6}>
+        <Grid item xs={12} sm={6}>
           <FormControl fullWidth>
             <Typography
               variant="body2"
@@ -177,17 +198,34 @@ const AgentInformation = ({ onSubmit, handleBack, agentData, setAgentData }) => 
                     },
                   }}
                   id="autocomplete-multiple-filled-deny"
-                  // value={value? value.map((deny) => deny.name) : []}  
-                  value={value ? value.map((deny) => agents.find((agent) => agent.id === deny)?.agentName || deny) : []}                                
+                  // value={value? value.map((deny) => deny.name) : []}
+                  value={
+                    value
+                      ? value.map(
+                          (deny) =>
+                            agents.find((agent) => agent.id === deny.agentId)
+                              ?.agentName || deny.name
+                        )
+                      : []
+                  }
                   onChange={(event, newValue) => {
-                    const updatedValues = newValue.map((name) =>
-                      agents.find((agent) => agent.agentName === name)?.id || name
-                    );
+                    const updatedValues = newValue.map((name) => {
+                      const agent = agents.find(
+                        (agent) => agent.agentName === name
+                      );
+                      return agent
+                        ? { agentId: agent.id, name: agent.agentName }
+                        : { agentId: name, name };
+                    });
                     onChange(updatedValues);
                   }}
                   options={agents.map((agent) => agent.agentName)}
                   renderInput={(params) => (
-                    <TextField {...params} sx={{ mb: 2, mt: 2 }} placeholder="Select agents"/>
+                    <TextField
+                      {...params}
+                      sx={{ mb: 2, mt: 2 }}
+                      placeholder="Select agents"
+                    />
                   )}
                   renderTags={(value, getTagProps) =>
                     value.map((agent, index) => (
@@ -224,7 +262,7 @@ const AgentInformation = ({ onSubmit, handleBack, agentData, setAgentData }) => 
               name="allowList"
               control={control}
               render={({ field: { value, onChange } }) => (
-                <Autocomplete                  
+                <Autocomplete
                   multiple
                   sx={{
                     width: "80%",
@@ -242,11 +280,24 @@ const AgentInformation = ({ onSubmit, handleBack, agentData, setAgentData }) => 
                     },
                   }}
                   id="autocomplete-multiple-filled-allow"
-                  value={value ? value.map((allow) => agents.find((agent) => agent.id === allow)?.agentName || allow) : []}
+                  value={
+                    value
+                      ? value.map(
+                          (allow) =>
+                            agents.find((agent) => agent.id === allow.agentId)
+                              ?.agentName || allow.name
+                        )
+                      : []
+                  }
                   onChange={(event, newValue) => {
-                    const updatedValues = newValue.map((name) =>
-                      agents.find((agent) => agent.agentName === name)?.id || name
-                    );
+                    const updatedValues = newValue.map((name) => {
+                      const agent = agents.find(
+                        (agent) => agent.agentName === name
+                      );
+                      return agent
+                        ? { agentId: agent.id, name: agent.agentName }
+                        : { agentId: name, name };
+                    });
                     onChange(updatedValues);
                   }}
                   options={agents.map((agent) => agent.agentName)}
@@ -273,7 +324,7 @@ const AgentInformation = ({ onSubmit, handleBack, agentData, setAgentData }) => 
               )}
             />
           </FormControl>
-        </Grid> 
+        </Grid>
 
         <Grid
           item

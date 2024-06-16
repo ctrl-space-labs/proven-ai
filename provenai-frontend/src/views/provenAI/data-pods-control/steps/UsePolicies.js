@@ -60,7 +60,11 @@ const UsePolicy = ({
           "ATTRIBUTION_POLICY",
           storedToken
         );
-        setAttributionDefaultPolicies(policies.data);
+        const transformedPolicies = policies.data.map(policy => ({
+          ...policy,
+          policyOptionId: policy.id, 
+        }));
+        setAttributionDefaultPolicies(transformedPolicies);
       } catch (error) {
         console.error("Error fetching policy options:", error);
       }
@@ -72,7 +76,11 @@ const UsePolicy = ({
           "COMPENSATION_POLICY",
           storedToken
         );
-        setCompensationDefaultPolicies(policies.data);
+        const transformedPolicies = policies.data.map(policy => ({
+          ...policy,
+          policyOptionId: policy.id, 
+        }));        
+        setCompensationDefaultPolicies(transformedPolicies);
       } catch (error) {
         console.error("Error fetching policy options:", error);
       }
@@ -177,7 +185,7 @@ const UsePolicy = ({
                   multiple
                   sx={{ width: "80%", mt: 2 }}
                   id="autocomplete-multiple-filled-compensationPolicies"
-                  value={value ? value.map((policy) => policy.name) : []} // Extract the name field for display
+                  value={value ? value.map((policy) => policy.name) : []} 
                   onChange={(event, newValue) => {
                     // Map the new values back to the full objects
                     const updatedValues = newValue.map((name) =>

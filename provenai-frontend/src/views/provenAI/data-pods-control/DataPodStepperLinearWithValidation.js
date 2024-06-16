@@ -26,13 +26,12 @@ import UserInformation from "./steps/UserInformation";
 import AgentInformation from "./steps/AgentInformation";
 import UsePolicy from "./steps/UsePolicies";
 import ReviewAndComplete from "./steps/ReviewAndComplete";
-
 import authConfig from "src/configs/auth";
 import organizationService from "src/provenAI-sdk/organizationService";
 import dataPodsService from "src/provenAI-sdk/dataPodsService";
-
-import converter from "src/views/provenAI/data-pods-control/utils/converter";
-
+import aclPoliciesService from "src/provenAI-sdk/aclPoliciesService";
+import aclPoliciesConverter from "src/views/provenAI/data-pods-control/utils/convertToAclPolicies";
+import converter from "src/views/provenAI/data-pods-control/utils/converterToStepperData";
 
 import {
   steps,
@@ -50,7 +49,7 @@ const StepperLinearWithValidation = () => {
   );
   const [activeStep, setActiveStep] = useState(0);
   const [activeOrganization, setActiveOrganization] = useState({});
-  const [activeDataPod, setActiveDataPod] = useState({});
+  const [activeDataPodPolicies, setActiveDataPodPolicies] = useState({});
   const [userErrors, setUserErrors] = useState({});
   const [agentErrors, setAgentErrors] = useState({});
   const [dataUseErrors, setDataUseErrors] = useState({});
@@ -74,20 +73,20 @@ const StepperLinearWithValidation = () => {
       }
     };
 
-    const fetchDataPod = async () => {
+    const fetchDataPodPolicies = async () => {
       try {
-        const dataPod = await dataPodsService.getAclPoliciesByDataPod(
+        const dataPodPolicies = await dataPodsService.getAclPoliciesByDataPod(
           dataPodId,
           storedToken
         );
-        setActiveDataPod(dataPod.data.content);
+        setActiveDataPodPolicies(dataPodPolicies.data.content);
       } catch (error) {
         console.error("Error fetching data pod:", error);
       }
     };
 
     fetchOrganization();
-    fetchDataPod();
+    fetchDataPodPolicies();
   }, [storedToken, organizationId, dataPodId]);
 
   useEffect(() => {
@@ -97,44 +96,73 @@ const StepperLinearWithValidation = () => {
     }
   }, [activeOrganization]);
 
- 
-
   useEffect(() => {
-    if (activeDataPod && activeDataPod.length > 0) {
-      const agentPolicies = converter.toAgentPolicies(activeDataPod);
+    if (activeDataPodPolicies && activeDataPodPolicies.length > 0) {
+      const agentPolicies = converter.toAgentPolicies(activeDataPodPolicies);
       setAgentData((prevAgentData) => ({
-        ...prevAgentData,
-        agentPurpose: agentPolicies.agentPurposes,
-        allowList: agentPolicies.allowList,
-        denyList: agentPolicies.denyList,
+        ...agentPolicies,
       }));
 
-      const usePolicies = converter.toUsePolicies(activeDataPod);
+      const usePolicies = converter.toUsePolicies(activeDataPodPolicies);
       setUsePoliciesData((prevUsePoliciesData) => ({
-        ...prevUsePoliciesData,
         ...usePolicies,
       }));
     }
-  }, [activeDataPod]);
-
-  // console.log("userData", userData);
-  // console.log("agentData", agentData);
-  // console.log("dataUseData", dataUseData);
-  // console.log("activeDataPod", activeDataPod);
-
+  }, [activeDataPodPolicies]);
+  
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
 
-  const handleReset = () => {
-    setActiveStep(0);
-    // Reset logic here
+  const refreshPage = () => {
+    const url = `/provenAI/data-pods-control?organizationId=${organizationId}&dataPodId=${dataPodId}`;
+    router.reload(url); 
+
   };
 
-  const onSubmit = () => {
+  
+  const onSubmit = async () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
     if (activeStep === steps.length - 1) {
-      toast.success("Form Submitted");
+      try {
+        const organizationDTO = converter.toOrganizationDTO(
+          organizationId,
+          userData
+        );
+        await organizationService.updateOrganization(
+          organizationDTO,
+          storedToken
+        );
+        toast.success("Organization updated successfully!");
+
+        // Convert and compare policies
+        const { aclPoliciesToCreate, aclPolicyIdsToDelete } =
+          aclPoliciesConverter.convertAndComparePolicies(
+            agentData,
+            usePoliciesData,
+            activeDataPodPolicies,
+            dataPodId
+          );
+
+        // Create new ACL policies
+        for (const aclPolicyDTO of aclPoliciesToCreate) {
+          await aclPoliciesService.createAclPolicy(aclPolicyDTO, storedToken);
+          console.log("Creating new ACL policy:", aclPolicyDTO);
+          toast.success("Policy created successfully!");
+        }
+
+        // Delete obsolete ACL policies
+        if (aclPolicyIdsToDelete.length > 0) {
+          await aclPoliciesService.deleteAclPolicies(aclPolicyIdsToDelete, storedToken);
+          console.log("Deleting obsolete ACL policies:", aclPolicyIdsToDelete);
+          toast.success("Policies deleted successfully!");
+        }
+
+        toast.success("ACL policies updated successfully!");
+      } catch (error) {
+        console.error("Error updating ACL policies:", error);
+        toast.error("Failed to update ACL policies!");
+      }
     }
   };
 
@@ -188,8 +216,8 @@ const StepperLinearWithValidation = () => {
         <Fragment>
           <Typography>All steps are completed!</Typography>
           <Box sx={{ mt: 4, display: "flex", justifyContent: "flex-end" }}>
-            <Button size="large" variant="contained" onClick={handleReset}>
-              Reset
+            <Button size="large" variant="contained" onClick={refreshPage}>
+              Back
             </Button>
           </Box>
         </Fragment>

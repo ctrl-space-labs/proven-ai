@@ -47,6 +47,14 @@ public class AclPoliciesService {
     }
 
 
+    public AclPolicies createAclPolicy(AclPolicies aclPolicy) {
+        Instant now = Instant.now();
+        aclPolicy.setCreatedAt(now);
+        aclPolicy.setUpdatedAt(now);
+        return aclPoliciesRepository.save(aclPolicy);
+    }
+
+
     List<AclPolicies> savePoliciesForDataPod(DataPod savedDataPod, List<Policy> policies) {
         List<AclPolicies> savedPolicies = policies.stream().map(policy -> {
             PolicyType policyType = policyTypeRepository.findByName(policy.getPolicyType());
@@ -80,6 +88,14 @@ public class AclPoliciesService {
     public void deletePoliciesByDataPodId(UUID dataPodId) {
         List<AclPolicies> aclPolicies = aclPoliciesRepository.findByDataPodId(dataPodId);
         aclPoliciesRepository.deleteAll(aclPolicies);
+    }
+
+    public void deleteAclPolicy(UUID aclPolicyId) {
+        aclPoliciesRepository.deleteById(aclPolicyId);
+    }
+
+    public void deleteAclPolicies(List<UUID> aclPolicyIds) {
+        aclPoliciesRepository.deleteAllById(aclPolicyIds);
     }
 
 

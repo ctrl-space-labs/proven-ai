@@ -1,26 +1,3 @@
-// Define the testing array with 20 titles
-export const testing = [
-  { title: "Education" },
-  { title: "Healthcare" },
-  { title: "Finance" },
-  { title: "Marketing" },
-  { title: "Customer Service" },
-  { title: "Human Resources" },
-  { title: "Retail" },
-  { title: "Manufacturing" },
-  { title: "Transportation" },
-  { title: "Agriculture" },
-  { title: "Entertainment" },
-  { title: "Real Estate" },
-  { title: "Legal" },
-  { title: "Energy" },
-  { title: "Gaming" },
-  { title: "Security" },
-  { title: "Tourism" },
-  { title: "E-commerce" },
-  { title: "Telecommunications" },
-  { title: "Insurance" },
-];
 
 export const steps = [
   {
@@ -45,6 +22,7 @@ export const defaultUserInformation = {
   firstName: "",
   familyName: "",
   selectedOrganizationType: "natural-person",
+  personalIdentifier: "",
   gender: "",
   dateOfBirth: "",
   nationality: "",

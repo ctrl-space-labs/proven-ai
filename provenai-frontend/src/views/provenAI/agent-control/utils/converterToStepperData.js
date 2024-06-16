@@ -5,7 +5,7 @@
  * @returns {UserInformation} The converted  user information.
  */
 const toUserInformation = (organization) => {
-  if (organization.naturalPerson) {
+  if (organization.isNaturalPerson) {
     return {
       selectedOrganizationType: "natural-person",
       firstName: organization.firstName,
@@ -13,8 +13,9 @@ const toUserInformation = (organization) => {
       gender: organization.gender,
       dateOfBirth: organization.dateOfBirth,
       nationality: organization.nationality,
+      personalIdentifier: organization.personalIdentifier,
     };
-  } else if (!organization.naturalPerson) {
+  } else if (!organization.isNaturalPerson) {
     return {
       selectedOrganizationType: "legal-entity",
       legalPersonIdentifier: organization.legalPersonIdentifier,
@@ -32,47 +33,50 @@ const toUserInformation = (organization) => {
 /**
  * Converts activeDataPod to agent policies.
  *
- * @param {Array} activeDataPod - The active data pod to convert.
+ * @param {Array} activeAgentPolicies - The active data pod to convert.
  * @returns {Object} The converted agent policies including agent purposes, allow list, and deny list.
  */
-const toAgentPolicies = (activeAgent) => {
-  const agentPurposes = new Map();
-  const compensation = new Map();
-  
+const toAgentPolicies = (activeAgentPolicies) => {
+  const agentPurpose = new Map();
+  let compensation = null;
+  let compensationType = "free";
 
-  activeAgent.forEach((item) => {
+  activeAgentPolicies.forEach((item) => {
     if (item.policyType.name === "USAGE_POLICY" && item.policyOption) {
-      if (!agentPurposes.has(item.policyOption.id)) {
-        agentPurposes.set(item.policyOption.id, {
-          id: item.policyOption.id,
-          name: item.policyOption.name,
-          description: item.policyOption.description,
-        });
-      }
-    } 
-    if (item.policyType.name === "COMPENSATION_POLICY" && item.policyOption) {
-      if (!compensation.has(item.policyOption.id)) {
-        compensation.set(item.policyOption.id, {
-          id: item.policyOption.id,
+      if (!agentPurpose.has(item.policyOption.id)) {
+        agentPurpose.set(item.policyOption.id, {
+          policyTypeId: item.policyType.id,
+          policyOptionId: item.policyOption.id,
           name: item.policyOption.name,
           description: item.policyOption.description,
         });
       }
     }
+    if (item.policyType.name === "COMPENSATION_POLICY" && item.policyOption) {
+      if (!compensation) {
+        compensation = {
+          policyTypeId: item.policyType.id,
+          policyOptionId: item.policyOption.id,
+          name: item.policyOption.name,
+          description: item.policyOption.description,
+        };
+      }
+    }
   });
 
+  // If no compensation is set, set it to the default free type
+  if (compensation) {
+    compensationType = "paid";
+  }
+
   return {
-    agentPurposes: Array.from(agentPurposes.values()),
-    compensation: Array.from(compensation.values()),
-    
+    agentPurpose: Array.from(agentPurpose.values()),
+    compensation: compensation,
+    compensationType: compensationType,
   };
 };
-
-
-
 
 export default {
   toUserInformation,
   toAgentPolicies,
-  
 };

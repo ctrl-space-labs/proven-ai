@@ -59,9 +59,9 @@ public class OrganizationsController implements OrganizationsControllerSpec {
 
     @PutMapping(value = "/organizations/{organizationId}", consumes = {"application/json"})
     public Organization updateOrganization(@PathVariable UUID organizationId, @RequestBody OrganizationDTO organizationDTO) throws ProvenAiException {
-        UUID updatedOrganizationId = organizationDTO.getId();
+
         Organization organization = organizationConverter.toEntity(organizationDTO);
-        organization.setId(updatedOrganizationId);
+        organization.setId(organizationDTO.getId());
 
         if (!organizationId.equals(organizationDTO.getId())) {
             throw new ProvenAiException("ORGANIZATION_ID_MISMATCH", "ID in path and ID in body are not the same", HttpStatus.BAD_REQUEST);

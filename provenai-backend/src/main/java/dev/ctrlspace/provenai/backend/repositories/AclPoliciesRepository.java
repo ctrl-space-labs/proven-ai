@@ -13,11 +13,7 @@ import java.util.UUID;
 @Repository
 public interface AclPoliciesRepository extends JpaRepository<AclPolicies, UUID>, QuerydslPredicateExecutor<AclPolicies> {
 
-
     Page<AclPolicies> findByDataPodId(UUID dataPodId, Pageable pageable);
-
     List<AclPolicies> findByDataPodId(UUID dataPodId);
-
-
 
 }
