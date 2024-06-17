@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import {useDispatch, useSelector} from "react-redux";
 import { useAuth } from "src/hooks/useAuth";
-import documentService from "src/gendox-sdk/documentService";
 import authConfig from "src/configs/auth";
 
 // MUI components

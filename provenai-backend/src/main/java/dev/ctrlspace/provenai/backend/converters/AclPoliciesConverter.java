@@ -32,7 +32,7 @@ public class AclPoliciesConverter implements ProvenAIConverter<AclPolicies, AclP
 
 
     @Override
-    public AclPoliciesDTO toDTO(AclPolicies aclPolicies) throws Exception, JsonProcessingException {
+    public AclPoliciesDTO toDTO(AclPolicies aclPolicies) throws Exception, JsonProcessingException, ProvenAiException {
         AclPoliciesDTO dto = new AclPoliciesDTO();
         dto.setId(aclPolicies.getId());
         dto.setDataPodId(aclPolicies.getDataPod().getId());

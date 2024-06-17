@@ -1,5 +1,4 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import projectService from "src/gendox-sdk/projectService";
 
 export const fetchProject = createAsyncThunk(
   "activeProject/fetchProject",

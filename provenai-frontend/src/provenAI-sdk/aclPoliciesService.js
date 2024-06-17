@@ -8,7 +8,6 @@ import apiRequests from "src/configs/apiRequest.js";
  *  @returns {Promise<axios.AxiosResponse<AclPolicy>>}
  */
 const createAclPolicy = async (aclPolicyDTO, storedToken) => {
-  console.log("aclPolicyDTO", aclPolicyDTO);
   return axios.post(apiRequests.aclPolicies(), aclPolicyDTO, {
     headers: {
       "Content-Type": "application/json",
@@ -24,7 +23,6 @@ const createAclPolicy = async (aclPolicyDTO, storedToken) => {
  * @returns {Promise<axios.AxiosResponse>}
  */
 const deleteAclPolicies = async (aclPolicyIds, storedToken) => {
-  console.log("aclPolicyIds", aclPolicyIds);
   const queryParams = aclPolicyIds.map(id => `aclPolicyIds=${id}`).join('&');
   const url = `${apiRequests.aclPolicies()}?${queryParams}`;
 

@@ -312,7 +312,7 @@ const UserInformation = ({ onSubmit, handleBack, userData, setUserData }) => {
         
 
         <Grid item xs={12} sx={{ display: "flex", justifyContent: "space-between" }}>
-          <Button size="large" variant="outlined" color="secondary" onClick={handleBack}>
+          <Button size="large" variant="outlined" color="secondary" >
             Previous
           </Button>
           <Button size="large" type="submit" variant="contained">

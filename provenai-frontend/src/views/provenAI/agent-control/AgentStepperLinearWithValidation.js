@@ -26,16 +26,15 @@ import ReviewAndComplete from "./steps/ReviewAndComplete";
 import authConfig from "src/configs/auth";
 import organizationService from "src/provenAI-sdk/organizationService";
 import agentService from "src/provenAI-sdk/agentService";
-import converter from "src/views/provenAI/agent-control/utils/converterToStepperData";
+import agentPurposeOfUsePoliciesService from "src/provenAI-sdk/agentPurposeOfUsePoliciesService";
+import converterToStepperData from "src/views/provenAI/agent-control/utils/converterToStepperData";
+import convertToAgentPurposeOfUsePolicies from "src/views/provenAI/agent-control/utils/convertToAgentPurposeOfUsePolicies";
 
 import {
   steps,
   defaultUserInformation,
-  defaultAgentInformation,  
+  defaultAgentInformation,
 } from "src/views/provenAI/agent-control/utils/defaultValues";
-
-
-
 
 const StepperLinearWithValidation = () => {
   const theme = useTheme();
@@ -85,27 +84,25 @@ const StepperLinearWithValidation = () => {
 
   useEffect(() => {
     if (Object.keys(activeOrganization).length !== 0) {
-      const userInfo = converter.toUserInformation(activeOrganization);
+      const userInfo =
+        converterToStepperData.toUserInformation(activeOrganization);
       setUserData(userInfo);
     }
   }, [activeOrganization]);
 
-
   useEffect(() => {
     if (activeAgentPolicies && activeAgentPolicies.length > 0) {
-      const agentPolicies = converter.toAgentPolicies(activeAgentPolicies);
+      const agentPolicies =
+        converterToStepperData.toAgentPolicies(activeAgentPolicies);
       setAgentData((prevAgentData) => ({
-        ...agentPolicies,      
+        ...agentPolicies,
       }));
-      
     }
   }, [activeAgentPolicies]);
 
-
-  console.log("userData106", userData);
-  console.log("agentData107", agentData);
-
-  
+  // console.log("userData106", userData);
+  // console.log("agentData107", agentData);
+  // console.log("ACTIVE AGENT POLICIES", activeAgentPolicies);
 
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
@@ -113,14 +110,56 @@ const StepperLinearWithValidation = () => {
 
   const refreshPage = () => {
     const url = `/provenAI/agent-control?organizationId=${organizationId}&agentId=${agentId}`;
-    router.reload(url); 
-
+    router.reload(url);
   };
 
   const onSubmit = async () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
     if (activeStep === steps.length - 1) {
-      toast.success("Form Submitted");
+      try {
+        const organizationDTO = converterToStepperData.toOrganizationDTO(
+          organizationId,
+          userData
+        );
+        await organizationService.updateOrganization(
+          organizationDTO,
+          storedToken
+        );
+        toast.success("Organization updated successfully!");
+
+        const { policiesToCreate, policyIdsToDelete } =
+          convertToAgentPurposeOfUsePolicies.convertAndComparePolicies(
+            agentData,
+            activeAgentPolicies,
+            agentId
+          );
+
+        // Create new policies
+        for (const policy of policiesToCreate) {
+          await agentPurposeOfUsePoliciesService.createAgentPurposeOfUsePolicy(
+            policy,
+            storedToken
+          );
+
+          console.log("Creating policy:", policy);
+          toast.success("Policy created successfully!");
+        }
+
+        // Delete obsolete policies
+        if (policyIdsToDelete.length > 0) {
+          await agentPurposeOfUsePoliciesService.deleteAgentPurposeOfUsePolicies(
+            policyIdsToDelete,
+            storedToken
+          );
+          console.log("Deleting policy:", policyIdsToDelete);
+          toast.success("Policy deleted successfully!");
+        }
+
+        toast.success("Agent purpose of use policies updated successfully!");
+      } catch (error) {
+        console.error("Error updating Agent purpose of use policies:", error);
+        toast.error("Failed to update Agent purpose of use policies!");
+      }
     }
   };
 
@@ -143,7 +182,7 @@ const StepperLinearWithValidation = () => {
             agentData={agentData}
             setAgentData={setAgentData}
           />
-        );      
+        );
       case 2:
         return (
           <ReviewAndComplete
@@ -151,7 +190,6 @@ const StepperLinearWithValidation = () => {
             handleBack={handleBack}
             userData={userData}
             agentData={agentData}
-            
           />
         );
       default:
@@ -166,7 +204,7 @@ const StepperLinearWithValidation = () => {
           <Typography>All steps are completed!</Typography>
           <Box sx={{ mt: 4, display: "flex", justifyContent: "flex-end" }}>
             <Button size="large" variant="contained" onClick={refreshPage}>
-            Back
+              Back
             </Button>
           </Box>
         </Fragment>
