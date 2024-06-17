@@ -22,12 +22,6 @@ public class AgentPurposeOfUsePolicies {
     @ManyToOne
     @JoinColumn(name = "policy_option_id", referencedColumnName = "id", nullable = false)
     private PolicyOption policyOption;
-//    @Basic
-//    @Column(name = "policy_type_id")
-//    private UUID policyTypeId;
-//    @Basic
-//    @Column(name = "policy_option_id")
-//    private UUID policyOptionId;
     @Basic
     @Column(name = "value")
     private String value;

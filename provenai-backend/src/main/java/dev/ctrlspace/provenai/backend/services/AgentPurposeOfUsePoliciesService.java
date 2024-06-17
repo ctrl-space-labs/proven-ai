@@ -45,6 +45,13 @@ public class AgentPurposeOfUsePoliciesService {
         return agentPurposeOfUsePoliciesRepository.findByAgentId(agentId, pageable);
     }
 
+    public AgentPurposeOfUsePolicies createAgentPurposeOfUsePolicy(AgentPurposeOfUsePolicies agentPurposeOfUsePolicy) {
+        Instant now = Instant.now();
+        agentPurposeOfUsePolicy.setCreatedAt(now);
+        agentPurposeOfUsePolicy.setUpdatedAt(now);
+        return agentPurposeOfUsePoliciesRepository.save(agentPurposeOfUsePolicy);
+    }
+
 
 
 
@@ -76,5 +83,10 @@ public class AgentPurposeOfUsePoliciesService {
     public void deleteAgentPurposeOfUsePoliciesByAgentId(UUID agentId) {
         List<AgentPurposeOfUsePolicies> policies = agentPurposeOfUsePoliciesRepository.findByAgentId(agentId);
         agentPurposeOfUsePoliciesRepository.deleteAll(policies);    }
+
+
+    public void deleteAgentPurposeOfUsePolicies(List<UUID> policyIds) {
+        agentPurposeOfUsePoliciesRepository.deleteAllById(policyIds);
+    }
 
 }
