@@ -27,7 +27,7 @@ public interface DataPodRepository extends JpaRepository<DataPod, UUID>, Queryds
             "                                                   FROM proven_ai.policy_types pt \n" +
             "                                                   WHERE pt.name = 'DENY_LIST') \n" +
             "                          AND ap.value = CAST(:agentId AS text)) AS subquery \n" +
-            "            ON ap.id = subquery.data_pod_id \n" +
+            "            ON ap.data_pod_id = subquery.data_pod_id \n" +
             "            WHERE subquery.data_pod_id IS NULL) AS pods_not_denying_access \n" +
             "ON dp.id = pods_not_denying_access.data_pod_id \n" +
             "LEFT JOIN (SELECT DISTINCT pod_acl.data_pod_id \n" +
