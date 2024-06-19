@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import dev.ctrlspace.provenai.backend.exceptions.ProvenAiException;
 
 import dev.ctrlspace.provenai.backend.model.Organization;
+import dev.ctrlspace.provenai.backend.model.dtos.CredentialVerificationDTO;
 import dev.ctrlspace.provenai.backend.model.dtos.criteria.OrganizationCriteria;
 import dev.ctrlspace.provenai.backend.repositories.OrganizationRepository;
 import dev.ctrlspace.provenai.backend.repositories.specifications.OrganizationPredicates;
@@ -116,8 +117,11 @@ public class OrganizationsService {
         organizationRepository.delete(organization);
     }
 
-    public String verifyOrganizationVP(JsonNode vpRequest) {
-        return credentialVerificationApi.verifyCredential(vpRequest);
+    public CredentialVerificationDTO verifyOrganizationVP(JsonNode vpRequest) {
+        CredentialVerificationDTO credentialVerificationDTO = new CredentialVerificationDTO();
+        credentialVerificationDTO.setCredentialVerificationUrl(credentialVerificationApi.verifyCredential(vpRequest));
+
+        return credentialVerificationDTO;
     }
 
 
