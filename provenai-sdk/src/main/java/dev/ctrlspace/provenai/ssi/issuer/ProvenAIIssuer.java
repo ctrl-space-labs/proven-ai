@@ -2,11 +2,13 @@ package dev.ctrlspace.provenai.ssi.issuer;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import dev.ctrlspace.provenai.ssi.converters.AgentIDConverter;
+import dev.ctrlspace.provenai.ssi.converters.LegalEntityConverter;
 import dev.ctrlspace.provenai.ssi.converters.PermissionOfUseConverter;
 import dev.ctrlspace.provenai.ssi.model.vc.CredentialSubject;
 import dev.ctrlspace.provenai.ssi.model.vc.VerifiableCredential;
 import dev.ctrlspace.provenai.ssi.model.vc.attestation.AIAgentCredentialSubject;
 import dev.ctrlspace.provenai.ssi.model.vc.attestation.PermissionOfUseCredentialSubject;
+import dev.ctrlspace.provenai.ssi.model.vc.id.LegalEntityCredentialSubject;
 import dev.ctrlspace.provenai.utils.ContinuationObjectUtils;
 import id.walt.credentials.vc.vcs.W3CVC;
 import id.walt.crypto.keys.Key;

@@ -1,6 +1,7 @@
 package dev.ctrlspace.provenai.backend.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import dev.ctrlspace.provenai.backend.controller.specs.OrganizationsControllerSpec;
 import dev.ctrlspace.provenai.backend.converters.OrganizationConverter;
 import dev.ctrlspace.provenai.backend.exceptions.ProvenAiException;
@@ -8,11 +9,13 @@ import dev.ctrlspace.provenai.backend.model.Organization;
 import dev.ctrlspace.provenai.backend.model.dtos.OrganizationDTO;
 import dev.ctrlspace.provenai.backend.model.dtos.criteria.OrganizationCriteria;
 import dev.ctrlspace.provenai.backend.services.OrganizationsService;
+import dev.ctrlspace.provenai.ssi.verifier.CredentialVerificationApi;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -26,9 +29,11 @@ public class OrganizationsController implements OrganizationsControllerSpec {
 
 
 
+
     @Autowired
     public OrganizationsController(OrganizationsService organizationsService,
-                                   OrganizationConverter organizationConverter) {
+                                   OrganizationConverter organizationConverter,
+                                   CredentialVerificationApi credentialVerificationApi) {
         this.organizationsService = organizationsService;
         this.organizationConverter = organizationConverter;
 
@@ -74,6 +79,12 @@ public class OrganizationsController implements OrganizationsControllerSpec {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteOrganization(@PathVariable UUID organizationId) throws ProvenAiException {
         organizationsService.deleteOrganization(organizationId);
+    }
+
+    @PostMapping("/organizations/verify-vp")
+    public ResponseEntity<String> verifyOrganizationVP( @RequestBody JsonNode vpRequest) {
+        String verificationResult = organizationsService.verifyOrganizationVP(vpRequest);
+        return ResponseEntity.ok(verificationResult);
     }
 
 }

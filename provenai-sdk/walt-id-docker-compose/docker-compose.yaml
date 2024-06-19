@@ -1,0 +1,54 @@
+services:
+
+  issuer-api:
+    platform: linux/x86_64
+    image: waltid/issuer-api:latest
+    volumes:
+      - ./issuer-api/config:/waltid-issuer-api/config
+
+  verifier-api:
+    platform: linux/x86_64
+    image: waltid/verifier-api:latest
+    volumes:
+      - ./verifier-api/config:/waltid-verifier-api/config
+
+
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    cap_add:
+      - NET_ADMIN
+    ports:
+
+      - target: $WALLET_BACKEND_PORT
+        published: $WALLET_BACKEND_PORT # wallet-api
+        protocol: tcp
+        mode: host
+
+      - target: $ISSUER_API_PORT
+        published: $ISSUER_API_PORT # issuer-api
+        protocol: tcp
+        mode: host
+
+      - target: $VERIFIER_API_PORT
+        published: $VERIFIER_API_PORT # verifier-api
+        protocol: tcp
+        mode: host
+
+      - target: $WALLET_FRONTEND_PORT
+        published: $WALLET_FRONTEND_PORT # waltid-web-wallet
+        protocol: tcp
+        mode: host
+
+      - target: $WEB_PORTAL_PORT
+        published: $WEB_PORTAL_PORT # web-portal
+        protocol: tcp
+        mode: host
+
+      - target: $VC_REPO_PORT
+        published: $VC_REPO_PORT # vc-repo
+        protocol: tcp
+        mode: host
+
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile

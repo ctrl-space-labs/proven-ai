@@ -5,15 +5,14 @@ import dev.ctrlspace.provenai.utils.SSIConstants;
 import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.UUID;
+
 public class CredentialVerificationApi {
 
     public static final RestTemplate restTemplate = new RestTemplate();
 
-
     public String verifyCredential(JsonNode requestBody) {
-
-        HttpHeaders headers = buildHeaders(SSIConstants.VERIFIER_SUCCESS_URL, SSIConstants.VERIFIER_ERROR_URL);
-
+        HttpHeaders headers = buildHeaders();
         HttpEntity<JsonNode> requestEntity = new HttpEntity<>(requestBody, headers);
 
         ResponseEntity<String> responseEntity = restTemplate.exchange(
@@ -26,19 +25,19 @@ public class CredentialVerificationApi {
         return responseEntity.getBody();
     }
 
-
-
-
-    public HttpHeaders buildHeaders(String successRedirectUri, String errorRedirectUri) {
+    public HttpHeaders buildHeaders() {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-//        headers.set("authorizeBaseUrl", authorizeBaseUrl);
-//        headers.set("responseMode", responseMode);
-        headers.set("successRedirectUri", successRedirectUri);
-        headers.set("errorRedirectUri", errorRedirectUri);
-        return headers;
+        headers.set("accept", "*/*");
+        headers.set("authorizeBaseUrl", "openid4vp://authorize");
+        headers.set("responseMode", "direct_post");
+        headers.set("successRedirectUri", SSIConstants.VERIFIER_SUCCESS_URL);
+        headers.set("errorRedirectUri", SSIConstants.VERIFIER_ERROR_URL);
 
+        // Debugging
+        System.out.println("Headers: " + headers);
+
+        return headers;
     }
 }
-
 
