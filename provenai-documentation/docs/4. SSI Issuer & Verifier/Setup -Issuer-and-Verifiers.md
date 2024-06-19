@@ -39,11 +39,9 @@ cd docker-compose && docker-compose up
 ### Description
 This API enables the issuance of a credential utilizing the OID4CI protocol to issue a signed credential. It generates a credential offer url that can be imported to any OID compliant wallet to receive the credential.
 
-
-### Parameters
+### RequestBody
 - **VerifiableCredential**: The verifiable credential to be issued in json format.
   - Type: Json Node
-
 
 ### Response
 The credential offer URL of the credential to be issued.
@@ -55,6 +53,34 @@ openid-credential-offer://localhost/?credential_offer=%7B%22credential_issuer%22
 
 ### Description
 This API initialized an OIDC presentation session, given a presentation definition. The URL returned can be rendered as QR code for the holder.
-### Parameters
+
+### RequestBody
 - **Presentation Definition**: The verifiable presentation in json format.  It describes the presentation requirement for this verification session and contains the VP, global VC and specific VC, that will be checked for the credntial to be verified.
   - Type: Json Node
+
+### HTTP Headers
+
+#### `authorizeBaseUrl`
+
+- **Description:** Base URL of the wallet authorize endpoint used in OIDC sessions (defaults to `openid4vp://authorize`).
+- **Value:** `openid4vp://authorize`
+
+#### `responseMode`
+
+- **Description:** Response mode for the OIDC presentation session.
+- **Value:** `direct_post` indicating the response should be returned directly via HTTP POST.
+
+#### `successRedirectUri`
+
+- **Description:** Redirect URI to return upon successful verification.
+
+### `errorRedirectUri`
+
+- **Description:** Redirect URI to return when a policy fails.
+
+The error and success URIS are set in the `SSIConstants` class. The "$id" will be replaced with the session id.
+
+### Response
+The verification URL containing the presentation definition. We can provide the URL or the QR code rendered in the wallet to verify Verifiable Credentials against the presentation definition provided. When the verification is successful we will be redirected to the successRedirectUri. If the verification fails, meaning none of the Verifiable Credentials in our wallet fullfill the presentation definition provided, we will be redirected to the errorRedirectUri.
+#### Example value: 
+openid4vp://authorize?response_type=vp_token&client_id=&response_mode=direct_post&state=M4d9Xz2e073Z&presentation_definition_uri=http%3A%2F%2Fverifier-api%3A7003%2Fopenid4vc%2Fpd%2FM4d9Xz2e073Z&client_id_scheme=redirect_uri&response_uri=http%3A%2F%2Fverifier-api%3A7003%2Fopenid4vc%2Fverify%2FM4d9Xz2e073Z
