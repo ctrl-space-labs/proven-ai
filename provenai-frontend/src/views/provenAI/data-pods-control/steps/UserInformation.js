@@ -19,6 +19,8 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { userSchema, defaultUserInformation } from "../utils/validationSchemas";
 // ** Icon Imports
 import Icon from "src/@core/components/icon";
+import {useRouter} from "next/router";
+import QRCodeComponent from "../../gq-code-component/QRCodeComponent";
 
 const UserInformation = ({
   onSubmit,
@@ -44,6 +46,8 @@ const UserInformation = ({
     defaultValues: userData,
     resolver: yupResolver(userSchema),
   });
+
+  const router = useRouter();
 
   const selectedOrganizationType = watch("selectedOrganizationType");
 
@@ -89,6 +93,22 @@ const UserInformation = ({
     onSubmit();
   };
 
+  const handleMenuItemClick = (org) => {
+    updateShallowQueryParams({ organizationId: org.id });
+    console.log(`Clicked on organization: `, org);
+  };
+
+  const updateShallowQueryParams = (params) => {
+    router.push({
+      pathname: router.pathname,
+      query: {
+        ...router.query,
+        ...params,
+      },
+    }, undefined, { shallow: true });
+  };
+
+
   return (
     <form onSubmit={handleSubmit(handleFormSubmit)}>
       <Grid container spacing={5}>
@@ -104,12 +124,7 @@ const UserInformation = ({
           </Typography>
         </Grid>
         <Grid item xs={12} sm={5}>
-          {((!Object.keys(activeOrganization).length &&
-            !Object.keys(activeDataPod).length) ||
-            (!Object.keys(activeOrganization).length &&
-              Object.keys(activeDataPod).length) ||
-            (Object.keys(activeOrganization).length &&
-              !Object.keys(activeDataPod).length)) && (
+          {(!Object.keys(activeOrganization).length || !Object.keys(activeDataPod).length) && (
             <FormControl fullWidth>
               <InputLabel id="user-organization-label">
                 Select Organization
@@ -127,7 +142,7 @@ const UserInformation = ({
                       New Organization
                     </MenuItem>
                     {userOrganizations.map((org) => (
-                      <MenuItem key={org.id} value={org.name}>
+                      <MenuItem key={org.id} value={org.name} onClick={() => handleMenuItemClick(org)}>
                         {org.name}
                       </MenuItem>
                     ))}
@@ -461,10 +476,17 @@ const UserInformation = ({
           >
             <Icon icon="mdi:account-outline" fontSize={50} />
             <Typography sx={{ flexGrow: 1, mx: 2, textAlign: "center" }}>
-              Inspiration from experts to help you start and grow your big
-              ideas.
+              Authenticate using W3C Verifiable ID
             </Typography>
             <Button variant="outlined">Verifiable ID</Button>
+          </Box>
+          <Box>
+            <QRCodeComponent
+                value="https://example.com/&q=http://localhost:3001/provenAI/data-pods-control/?"
+                size={256}
+                fgColor={theme.palette.primary.dark}
+                logo='/images/provenAILogo.svg'
+            />
           </Box>
         </Grid>
 

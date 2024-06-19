@@ -63,10 +63,13 @@ const DataPodsControl = () => {
         setActiveOrganization(organization.data);
       } catch (error) {
         console.error("Error fetching organization:", error);
+        if (error.response.status === 404) {
+          setActiveOrganization({});
+        }
       }
 
     const activeOrgProjects = auth.user.organizations.find(
-      (org) => org.id === activeOrganization.id
+      (org) => org.id === organizationId
     )?.projects;
 
     if (activeOrgProjects) {

@@ -86,7 +86,9 @@ const StepperLinearWithValidation = ({
     if (Object.keys(activeOrganization).length !== 0) {
       const userInfo = converter.toUserInformation(activeOrganization);
       setUserData(userInfo);
-    }  
+    } else {
+      setUserData(defaultUserInformation);
+    }
   
   }, [activeOrganization]);
 
@@ -121,11 +123,14 @@ const StepperLinearWithValidation = ({
           activeOrganization.id,
           userData
         );
+        // TODO if to GET or PUT
         await organizationService.updateOrganization(
           organizationDTO,
           storedToken
         );
         toast.success("Organization updated successfully!");
+
+        // TODO if new data pod, POST DataPod
 
         // Convert and compare policies
         const { aclPoliciesToCreate, aclPolicyIdsToDelete } =
