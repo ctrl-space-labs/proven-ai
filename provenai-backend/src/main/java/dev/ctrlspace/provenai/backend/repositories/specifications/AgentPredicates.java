@@ -42,12 +42,14 @@ public class AgentPredicates {
         return qAgent.agentName.eq(agentName);
     }
 
+    //TODO remove this. Criteria in Agents have mandatory fields
     private static boolean areAllCriteriaFieldsNull(AgentCriteria criteria) {
         return criteria.getOrganizationId() == null &&
                 criteria.getAgentName() == null &&
                 criteria.getAgentPurposeOfUsePolicies() == null &&
                 criteria.getPolicyIn() == null &&
-                criteria.getPolicy() == null;
+                criteria.getPolicy() == null &&
+                criteria.getAgentVcJwt() == null;
     }
 
 
