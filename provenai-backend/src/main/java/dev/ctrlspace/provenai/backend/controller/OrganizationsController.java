@@ -6,6 +6,7 @@ import dev.ctrlspace.provenai.backend.controller.specs.OrganizationsControllerSp
 import dev.ctrlspace.provenai.backend.converters.OrganizationConverter;
 import dev.ctrlspace.provenai.backend.exceptions.ProvenAiException;
 import dev.ctrlspace.provenai.backend.model.Organization;
+import dev.ctrlspace.provenai.backend.model.dtos.CredentialVerificationDTO;
 import dev.ctrlspace.provenai.backend.model.dtos.OrganizationDTO;
 import dev.ctrlspace.provenai.backend.model.dtos.criteria.OrganizationCriteria;
 import dev.ctrlspace.provenai.backend.services.OrganizationsService;
@@ -82,9 +83,9 @@ public class OrganizationsController implements OrganizationsControllerSpec {
     }
 
     @PostMapping("/organizations/verify-vp")
-    public ResponseEntity<String> verifyOrganizationVP( @RequestBody JsonNode vpRequest) {
-        String verificationResult = organizationsService.verifyOrganizationVP(vpRequest);
-        return ResponseEntity.ok(verificationResult);
+    public CredentialVerificationDTO verifyOrganizationVP(@RequestBody JsonNode vpRequest) {
+        CredentialVerificationDTO credentialVerificationDTO = organizationsService.verifyOrganizationVP(vpRequest);
+        return credentialVerificationDTO;
     }
 
 }
