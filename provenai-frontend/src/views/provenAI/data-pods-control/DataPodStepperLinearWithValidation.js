@@ -1,6 +1,7 @@
 // ** React Imports
 import { Fragment, useState, useEffect } from "react";
 import { styled, useTheme } from "@mui/material/styles";
+import { useSelector } from "react-redux";
 import { useRouter } from "next/router";
 
 // ** MUI Imports
@@ -23,7 +24,7 @@ import StepperWrapper from "src/@core/styles/mui/stepper";
 
 // ** Step Components Imports
 import UserInformation from "./steps/UserInformation";
-import AgentInformation from "./steps/AgentInformation";
+import DataPodInformation from "./steps/DataPodInformation";
 import UsePolicy from "./steps/UsePolicies";
 import ReviewAndComplete from "./steps/ReviewAndComplete";
 import authConfig from "src/configs/auth";
@@ -36,97 +37,88 @@ import converter from "src/views/provenAI/data-pods-control/utils/converterToSte
 import {
   steps,
   defaultUserInformation,
-  defaultAgentInformation,
+  defaultAgentInformation as defaultDataPodInformation,
   defaultDataUse,
 } from "src/views/provenAI/data-pods-control/utils/defaultValues";
+import { set } from "nprogress";
 
-const StepperLinearWithValidation = () => {
-  const theme = useTheme();
+const StepperLinearWithValidation = ({
+  activeDataPod,
+  activeOrganization,
+  setActiveOrganization,
+  dataPodPolicies,
+  userDataPods,
+  userOrganizations
+}) => {
   const router = useRouter();
-  const { organizationId, dataPodId } = router.query;
+  // const activeOrganization = useSelector((state) => state.activeOrganization.activeOrganization);
+
+  
+
   const storedToken = window.localStorage.getItem(
     authConfig.storageTokenKeyName
   );
-  const [activeStep, setActiveStep] = useState(0);
-  const [activeOrganization, setActiveOrganization] = useState({});
-  const [activeDataPodPolicies, setActiveDataPodPolicies] = useState({});
+
+  
+  const [activeStep, setActiveStep] = useState(0); 
   const [userErrors, setUserErrors] = useState({});
   const [agentErrors, setAgentErrors] = useState({});
   const [dataUseErrors, setDataUseErrors] = useState({});
 
   // Form data states
   const [userData, setUserData] = useState(defaultUserInformation);
-  const [agentData, setAgentData] = useState(defaultAgentInformation);
+  const [dataPodData, setDataPodData] = useState(defaultDataPodInformation);
   const [usePoliciesData, setUsePoliciesData] = useState(defaultDataUse);
 
-  useEffect(() => {
-    const fetchOrganization = async () => {
-      try {
-        const organization =
-          await organizationService.getProvenOrganizationById(
-            organizationId,
-            storedToken
-          );
-        setActiveOrganization(organization.data);
-      } catch (error) {
-        console.error("Error fetching organization:", error);
-      }
-    };
+  // console.log("ACTIVE ORGANIZATION", activeOrganization);
+  // console.log("ACTIVE DATA POD", activeDataPod);
+  // console.log("DATA POD POLICIES", dataPodPolicies);
+  // console.log("USER DATA PODS", userDataPods);
+  // console.log("USER ORGANIZATIONS", userOrganizations);
+  console.log("USER DATA", userData);
+  console.log("DATA POD DATA", dataPodData);
+  console.log("USE POLICIES DATA", usePoliciesData);
 
-    const fetchDataPodPolicies = async () => {
-      try {
-        const dataPodPolicies = await dataPodsService.getAclPoliciesByDataPod(
-          dataPodId,
-          storedToken
-        );
-        setActiveDataPodPolicies(dataPodPolicies.data.content);
-      } catch (error) {
-        console.error("Error fetching data pod:", error);
-      }
-    };
+  
 
-    fetchOrganization();
-    fetchDataPodPolicies();
-  }, [storedToken, organizationId, dataPodId]);
 
   useEffect(() => {
     if (Object.keys(activeOrganization).length !== 0) {
       const userInfo = converter.toUserInformation(activeOrganization);
       setUserData(userInfo);
-    }
+    }  
+  
   }, [activeOrganization]);
 
   useEffect(() => {
-    if (activeDataPodPolicies && activeDataPodPolicies.length > 0) {
-      const agentPolicies = converter.toAgentPolicies(activeDataPodPolicies);
-      setAgentData((prevAgentData) => ({
+    if (dataPodPolicies && dataPodPolicies.length > 0) {
+      const agentPolicies = converter.toAgentPolicies(dataPodPolicies);
+      setDataPodData((prevAgentData) => ({
         ...agentPolicies,
       }));
 
-      const usePolicies = converter.toUsePolicies(activeDataPodPolicies);
+      const usePolicies = converter.toUsePolicies(dataPodPolicies);
       setUsePoliciesData((prevUsePoliciesData) => ({
         ...usePolicies,
       }));
     }
-  }, [activeDataPodPolicies]);
-  
+  }, [dataPodPolicies]);
+
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
 
   const refreshPage = () => {
-    const url = `/provenAI/data-pods-control?organizationId=${organizationId}&dataPodId=${dataPodId}`;
-    router.reload(url); 
-
+    const url = `/provenAI/data-pods-control?organizationId=${activeOrganization.id}&dataPodId=${activeDataPod.id}`;
+    router.reload(url);
   };
 
-  
   const onSubmit = async () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
     if (activeStep === steps.length - 1) {
       try {
         const organizationDTO = converter.toOrganizationDTO(
-          organizationId,
+          activeOrganization.id,
           userData
         );
         await organizationService.updateOrganization(
@@ -138,10 +130,10 @@ const StepperLinearWithValidation = () => {
         // Convert and compare policies
         const { aclPoliciesToCreate, aclPolicyIdsToDelete } =
           aclPoliciesConverter.convertAndComparePolicies(
-            agentData,
+            dataPodData,
             usePoliciesData,
-            activeDataPodPolicies,
-            dataPodId
+            dataPodPolicies,
+            activeDataPod.id
           );
 
         // Create new ACL policies
@@ -153,7 +145,10 @@ const StepperLinearWithValidation = () => {
 
         // Delete obsolete ACL policies
         if (aclPolicyIdsToDelete.length > 0) {
-          await aclPoliciesService.deleteAclPolicies(aclPolicyIdsToDelete, storedToken);
+          await aclPoliciesService.deleteAclPolicies(
+            aclPolicyIdsToDelete,
+            storedToken
+          );
           console.log("Deleting obsolete ACL policies:", aclPolicyIdsToDelete);
           toast.success("Policies deleted successfully!");
         }
@@ -175,15 +170,21 @@ const StepperLinearWithValidation = () => {
             handleBack={handleBack}
             userData={userData}
             setUserData={setUserData}
+            userOrganizations={userOrganizations}
+            setActiveOrganization={setActiveOrganization}       
+            activeDataPod={activeDataPod}
+            activeOrganization={activeOrganization}
           />
         );
       case 1:
         return (
-          <AgentInformation
+          <DataPodInformation
             onSubmit={onSubmit}
             handleBack={handleBack}
-            agentData={agentData}
-            setAgentData={setAgentData}
+            dataPodData={dataPodData}
+            userDataPods={userDataPods}
+            setDataPodData={setDataPodData}
+            activeDataPod={activeDataPod}
           />
         );
       case 2:
@@ -201,7 +202,7 @@ const StepperLinearWithValidation = () => {
             onSubmit={onSubmit}
             handleBack={handleBack}
             userData={userData}
-            agentData={agentData}
+            dataPodData={dataPodData}
             usePoliciesData={usePoliciesData}
           />
         );

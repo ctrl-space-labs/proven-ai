@@ -19,6 +19,9 @@ export default {
   getDataPodsByOrganization: () =>
     `${provenUrl}data-pods`,
 
+  getDataPodById: (dataPodId) =>
+    `${provenUrl}data-pods/${dataPodId}`,
+
   getAgentsByOrganization: () =>
     `${provenUrl}agents`,
 

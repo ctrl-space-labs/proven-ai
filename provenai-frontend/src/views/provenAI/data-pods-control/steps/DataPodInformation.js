@@ -7,9 +7,12 @@ import {
   Typography,
   FormControl,
   TextField,
-  Button,  
+  Button,
   Chip,
   Autocomplete,
+  MenuItem,
+  InputLabel,
+  Select,
 } from "@mui/material";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -21,11 +24,13 @@ import policyService from "src/provenAI-sdk/policyService";
 import agentService from "src/provenAI-sdk/agentService";
 import authConfig from "src/configs/auth";
 
-const AgentInformation = ({
+const DataPodInformation = ({
   onSubmit,
   handleBack,
-  agentData,
-  setAgentData,
+  dataPodData,
+  setDataPodData,
+  userDataPods,
+  activeDataPod,
 }) => {
   const [usagePolicies, setUsagePolicies] = useState([]);
   const [agents, setAgents] = useState([]);
@@ -37,9 +42,10 @@ const AgentInformation = ({
   const {
     control,
     handleSubmit,
+    watch,
     formState: { errors },
   } = useForm({
-    defaultValues: agentData,
+    defaultValues: dataPodData,
     resolver: yupResolver(agentSchema),
   });
 
@@ -50,11 +56,11 @@ const AgentInformation = ({
           "USAGE_POLICY",
           storedToken
         );
-        const transformedPolicies = policies.data.map(policy => ({
+        const transformedPolicies = policies.data.map((policy) => ({
           ...policy,
-          policyOptionId: policy.id, 
+          policyOptionId: policy.id,
         }));
-        setUsagePolicies(transformedPolicies);        
+        setUsagePolicies(transformedPolicies);
       } catch (error) {
         console.error("Error fetching policy options:", error);
       }
@@ -89,27 +95,70 @@ const AgentInformation = ({
       return updatedAgentData;
     }
   };
-  
 
   const handleFormSubmit = (data) => {
     const updatedData = updateAgentDataWithNames(data);
-    setAgentData(updatedData);
+    setDataPodData(updatedData);
     onSubmit();
   };
 
   return (
     <form onSubmit={handleSubmit(handleFormSubmit)}>
       <Grid container spacing={5}>
-        <Grid item xs={12}>
+        <Grid item xs={12} sm={4}>
           <Typography
-            variant="h4"
+            variant="h5"
             sx={{ fontWeight: 800, color: "text.primary" }}
           >
-            Agent Information
+            Data Pod Information
           </Typography>
           <Typography variant="subtitle2" component="p">
-            Enter Your Agent Details
+            Enter your references to sort your data pods
           </Typography>
+        </Grid>
+
+        <Grid item xs={12} sm={5}>
+          {!Object.keys(activeDataPod).length > 0 && (
+            <FormControl fullWidth>
+              <InputLabel id="user-data-pod-label">
+                Select Data Pod
+              </InputLabel>
+              <Controller
+                name="selectedDataPod"
+                control={control}
+                render={({ field }) => (
+                  <Select
+                    labelId="user-data-pod-label"
+                    {...field}
+                    label="Data Pod"
+                  >
+                    <MenuItem value="new-data-pod">New Data Pod</MenuItem>
+                    {userDataPods.map((dp) => (
+                      <MenuItem key={dp.id} value={dp.name}>
+                        {dp.name}
+                      </MenuItem>
+                    ))}
+                    
+                  </Select>
+                )}
+              />
+            </FormControl>
+          )}
+        </Grid>
+        <Grid item xs={12} sm={3}>
+          {watch("selectedDataPod") === "new-data-pod" && (
+            <Button
+              variant="contained"
+              onClick={() =>
+                (window.location.href = "https://your-new-site.com")
+              }
+            >
+              Create Data Pod
+            </Button>
+          )}
+        </Grid>
+        <Grid item xs={12}>
+          {" "}
         </Grid>
 
         <Grid item xs={12}>
@@ -302,7 +351,11 @@ const AgentInformation = ({
                   }}
                   options={agents.map((agent) => agent.agentName)}
                   renderInput={(params) => (
-                    <TextField {...params} sx={{ mb: 2, mt: 2 }} />
+                    <TextField
+                      {...params}
+                      sx={{ mb: 2, mt: 2 }}
+                      placeholder="Select agents"
+                    />
                   )}
                   renderTags={(value, getTagProps) =>
                     value.map((agent, index) => (
@@ -348,4 +401,4 @@ const AgentInformation = ({
   );
 };
 
-export default AgentInformation;
+export default DataPodInformation;

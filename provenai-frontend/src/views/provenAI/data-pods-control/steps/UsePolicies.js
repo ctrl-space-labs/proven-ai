@@ -95,7 +95,7 @@ const UsePolicy = ({
       <Grid container spacing={5}>
         <Grid item xs={12}>
           <Typography
-            variant="h4"
+            variant="h5"
             sx={{ fontWeight: 800, color: "text.primary" }}
           >
             Data Use Policy

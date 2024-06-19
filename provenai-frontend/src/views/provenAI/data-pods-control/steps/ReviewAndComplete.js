@@ -14,7 +14,7 @@ const ReviewAndComplete = ({
   onSubmit,
   handleBack,
   userData,
-  agentData,
+  dataPodData,
   usePoliciesData,
 }) => {
   const theme = useTheme(); 
@@ -93,13 +93,13 @@ const ReviewAndComplete = ({
           </Typography>
           <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2, mb: 3 }}>
             <Typography variant="body1">Agent Purpose:</Typography>
-            {agentData.agentPurpose?.map((p) => (
+            {dataPodData.agentPurpose?.map((p) => (
               <Chip key={p.name} label={p.name} />
             ))}
           </Box>
           <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2, mb: 3 }}>
             <Typography variant="body1">Deny List:</Typography>
-            {agentData.denyList.map((agent) => (
+            {dataPodData.denyList.map((agent) => (
               <Chip
                 key={agent.agentId}
                 label={agent.name}
@@ -111,7 +111,7 @@ const ReviewAndComplete = ({
           </Box>
           <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2, mb: 2 }}>
             <Typography variant="body1">Allow List:</Typography>
-            {agentData.allowList.map((agent) => (
+            {dataPodData.allowList.map((agent) => (
               <Chip
                 key={agent.agentId}
                 label={agent.name}
