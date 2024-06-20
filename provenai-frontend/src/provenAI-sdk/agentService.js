@@ -35,6 +35,22 @@ const getAgentWithoutVc = async (storedToken) => {
 };
 
 /**
+ * Get Agent by id
+ * @param agentId
+ * @param storedToken
+ * @returns {Promise<axios.AxiosResponse<Agent>>}
+ */
+const getAgentById = async (agentId, storedToken) => {
+  return axios.get(apiRequests.getAgentById(agentId), {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + storedToken,
+    }    
+  });
+};
+
+
+/**
  * Get  policies by agent id
  * @param agentId
  * @param storedToken
@@ -56,5 +72,6 @@ const getPoliciesByAgent = async (agentId, storedToken) => {
 export default {
   getAgentsByOrganization,
   getAgentWithoutVc,
+  getAgentById,
   getPoliciesByAgent
 };

@@ -1,22 +1,49 @@
 import React from "react";
 import { useState, useEffect } from "react";
 import { styled, useTheme } from "@mui/material/styles";
-import { Grid, Typography, Box, FormControl, InputLabel, Select, MenuItem, TextField, Button, FormHelperText } from "@mui/material";
+import {
+  Grid,
+  Typography,
+  Box,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  TextField,
+  Button,
+  FormHelperText,
+} from "@mui/material";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { userSchema, defaultUserInformation } from "../utils/validationSchemas";
 // ** Icon Imports
 import Icon from "src/@core/components/icon";
 
-const UserInformation = ({ onSubmit, handleBack, userData, setUserData }) => {
-  const theme = useTheme();  
-  const { control, handleSubmit, watch, setValue, formState: { errors }, reset } = useForm({    
+const UserInformation = ({
+  onSubmit,
+  handleBack,
+  userData,
+  setUserData,
+  activeOrganization,
+  activeAgent,
+  userOrganizations,
+}) => {
+  const theme = useTheme();
+  const {
+    control,
+    handleSubmit,
+    watch,
+    setValue,
+    formState: { errors },
+    reset,
+  } = useForm({
     defaultValues: userData,
     resolver: yupResolver(userSchema),
   });
 
   const selectedOrganizationType = watch("selectedOrganizationType");
-  
+
+  console.log("userData2", userData);
 
   useEffect(() => {
     Object.keys(userData).forEach((key) => {
@@ -25,38 +52,98 @@ const UserInformation = ({ onSubmit, handleBack, userData, setUserData }) => {
   }, [userData, setValue]);
 
   useEffect(() => {
+    if (activeOrganization?.id) {
+      const activeOrgName =
+        userOrganizations.find((org) => org.id === activeOrganization.id)
+          ?.name || "new-organization";
+      setValue("selectedUserOrganization", activeOrgName);
+    }
+  }, [activeOrganization, userOrganizations, setValue]);
+
+  useEffect(() => {
     Object.keys(userData).forEach((key) => {
-      if (key === 'dateOfBirth' && userData[key]) {
+      if (key === "dateOfBirth" && userData[key]) {
         const date = new Date(userData[key]);
-        const formattedDate = date.toISOString().split('T')[0]; // Convert to yyyy-MM-dd format
+        const formattedDate = date.toISOString().split("T")[0]; // Convert to yyyy-MM-dd format
         setValue(key, formattedDate);
       } else {
         setValue(key, userData[key]);
       }
     });
   }, [userData, setValue]);
-  
-
- 
 
   const handleFormSubmit = (data) => {
     setUserData(data);
     onSubmit();
   };
 
-
-
   return (
     <form onSubmit={handleSubmit(handleFormSubmit)}>
       <Grid container spacing={5}>
-        <Grid item xs={12} sm={6}>
-          <Typography variant="body2" sx={{ fontWeight: 600, color: "text.primary" }}>
+        <Grid item xs={12} sm={4}>
+          <Typography
+            variant="h5"
+            sx={{ fontWeight: 600, color: "text.primary" }}
+          >
             User Information
           </Typography>
           <Typography variant="caption" component="p">
             Enter Your Account Details
           </Typography>
         </Grid>
+
+        <Grid item xs={12} sm={5}>
+          {((!Object.keys(activeOrganization).length &&
+            !Object.keys(activeAgent).length) ||
+            (!Object.keys(activeOrganization).length &&
+              Object.keys(activeAgent).length) ||
+            (Object.keys(activeOrganization).length &&
+              !Object.keys(activeAgent).length)) && (
+            <FormControl fullWidth>
+              <InputLabel id="user-organization-label">
+                Select Organization
+              </InputLabel>
+              <Controller
+                name="selectedUserOrganization"
+                control={control}                
+                render={({ field }) => (
+                  <Select
+                    labelId="user-organization-label"
+                    {...field}
+                    label="User Organization"
+                  >
+                    <MenuItem value="new-organization">
+                      New Organization
+                    </MenuItem>
+                    {userOrganizations.map((org) => (
+                      <MenuItem key={org.id} value={org.name}>
+                        {org.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                )}
+              />
+            </FormControl>
+          )}
+        </Grid>
+        <Grid item xs={12} sm={3}>
+          {watch("selectedUserOrganization") === "new-organization" && (
+            <Button
+              variant="contained"
+              onClick={() =>
+                (window.location.href = "https://your-new-site.com")
+              }
+            >
+              Create Organization
+            </Button>
+          )}
+        </Grid>
+        <Grid item xs={12}>
+          {" "}
+        </Grid>
+
+
+
         <Grid item xs={12} sm={6}>
           <Box sx={{ display: "flex", alignItems: "center" }}>
             <FormControl fullWidth>
@@ -91,7 +178,9 @@ const UserInformation = ({ onSubmit, handleBack, userData, setUserData }) => {
                       {...field}
                       label="First Name"
                       error={Boolean(errors.firstName)}
-                      helperText={errors.firstName ? "This field is required" : ""}
+                      helperText={
+                        errors.firstName ? "This field is required" : ""
+                      }
                     />
                   )}
                 />
@@ -107,13 +196,14 @@ const UserInformation = ({ onSubmit, handleBack, userData, setUserData }) => {
                       {...field}
                       label="Last Name"
                       error={Boolean(errors.familyName)}
-                      helperText={errors.familyName ? "This field is required" : ""}
+                      helperText={
+                        errors.familyName ? "This field is required" : ""
+                      }
                     />
                   )}
                 />
               </FormControl>
             </Grid>
-
 
             <Grid item xs={12} sm={4}>
               <FormControl fullWidth>
@@ -127,14 +217,14 @@ const UserInformation = ({ onSubmit, handleBack, userData, setUserData }) => {
                       type="date"
                       InputLabelProps={{ shrink: true }}
                       error={Boolean(errors.dateOfBirth)}
-                      helperText={errors.dateOfBirth ? "This field is required" : ""}
-                      
+                      helperText={
+                        errors.dateOfBirth ? "This field is required" : ""
+                      }
                     />
                   )}
                 />
               </FormControl>
             </Grid>
-
 
             <Grid item xs={12} sm={4}>
               <FormControl fullWidth>
@@ -203,7 +293,11 @@ const UserInformation = ({ onSubmit, handleBack, userData, setUserData }) => {
                       {...field}
                       label="Legal Person Identifier"
                       error={Boolean(errors.legalPersonIdentifier)}
-                      helperText={errors.legalPersonIdentifier ? "This field is required" : ""}
+                      helperText={
+                        errors.legalPersonIdentifier
+                          ? "This field is required"
+                          : ""
+                      }
                     />
                   )}
                 />
@@ -219,7 +313,9 @@ const UserInformation = ({ onSubmit, handleBack, userData, setUserData }) => {
                       {...field}
                       label="Legal Name"
                       error={Boolean(errors.legalName)}
-                      helperText={errors.legalName ? "This field is required" : ""}
+                      helperText={
+                        errors.legalName ? "This field is required" : ""
+                      }
                     />
                   )}
                 />
@@ -235,7 +331,9 @@ const UserInformation = ({ onSubmit, handleBack, userData, setUserData }) => {
                       {...field}
                       label="Legal Address"
                       error={Boolean(errors.legalAddress)}
-                      helperText={errors.legalAddress ? "This field is required" : ""}
+                      helperText={
+                        errors.legalAddress ? "This field is required" : ""
+                      }
                     />
                   )}
                 />
@@ -251,7 +349,9 @@ const UserInformation = ({ onSubmit, handleBack, userData, setUserData }) => {
                       {...field}
                       label="Country"
                       error={Boolean(errors.country)}
-                      helperText={errors.country ? "This field is required" : ""}
+                      helperText={
+                        errors.country ? "This field is required" : ""
+                      }
                     />
                   )}
                 />
@@ -267,7 +367,9 @@ const UserInformation = ({ onSubmit, handleBack, userData, setUserData }) => {
                       {...field}
                       label="Tax Reference"
                       error={Boolean(errors.taxReference)}
-                      helperText={errors.taxReference ? "This field is required" : ""}
+                      helperText={
+                        errors.taxReference ? "This field is required" : ""
+                      }
                     />
                   )}
                 />
@@ -283,7 +385,9 @@ const UserInformation = ({ onSubmit, handleBack, userData, setUserData }) => {
                       {...field}
                       label="VAT Number"
                       error={Boolean(errors.vatNumber)}
-                      helperText={errors.vatNumber ? "This field is required" : ""}
+                      helperText={
+                        errors.vatNumber ? "This field is required" : ""
+                      }
                     />
                   )}
                 />
@@ -303,16 +407,21 @@ const UserInformation = ({ onSubmit, handleBack, userData, setUserData }) => {
                   label="Profile Link"
                   placeholder="https://yourprofilelink.com"
                   error={Boolean(errors.profileLink)}
-                  helperText={errors.profileLink ? "This field is required" : ""}
+                  helperText={
+                    errors.profileLink ? "This field is required" : ""
+                  }
                 />
               )}
             />
           </FormControl>
         </Grid>
-        
 
-        <Grid item xs={12} sx={{ display: "flex", justifyContent: "space-between" }}>
-          <Button size="large" variant="outlined" color="secondary" >
+        <Grid
+          item
+          xs={12}
+          sx={{ display: "flex", justifyContent: "space-between" }}
+        >
+          <Button size="large" variant="outlined" color="secondary">
             Previous
           </Button>
           <Button size="large" type="submit" variant="contained">
@@ -325,6 +434,3 @@ const UserInformation = ({ onSubmit, handleBack, userData, setUserData }) => {
 };
 
 export default UserInformation;
-
-
-

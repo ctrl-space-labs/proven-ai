@@ -31,7 +31,6 @@ const DataPodsControl = () => {
   const dispatch = useDispatch();
   const { organizationId, dataPodId } = router.query;
   const auth = useAuth();
-  console.log("AUTH", auth);
   const userOrganizations = auth?.user?.organizations;
   const [userDataPods, setUserDataPods] = useState([]);
   const [activeOrganization, setActiveOrganization] = useState({});
@@ -42,7 +41,6 @@ const DataPodsControl = () => {
     authConfig.storageTokenKeyName
   );
 
-  console.log("STATE", state);
 
   useEffect(() => {
     if (!organizationId) {

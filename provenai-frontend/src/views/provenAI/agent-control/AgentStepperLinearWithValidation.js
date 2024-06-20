@@ -36,80 +36,60 @@ import {
   defaultAgentInformation,
 } from "src/views/provenAI/agent-control/utils/defaultValues";
 
-const StepperLinearWithValidation = () => {
+const AgentStepperLinearWithValidation = ({
+  userOrganizations,
+  activeOrganization,
+  activeAgent,
+  agentPolicies
+}
+) => {
   const theme = useTheme();
   const router = useRouter();
-  const { organizationId, agentId } = router.query;
   const storedToken = window.localStorage.getItem(
     authConfig.storageTokenKeyName
   );
 
   const [activeStep, setActiveStep] = useState(0);
-  const [activeOrganization, setActiveOrganization] = useState({});
-  const [activeAgentPolicies, setActiveAgentPolicies] = useState({});
 
   // Form data states
   const [userData, setUserData] = useState(defaultUserInformation);
   const [agentData, setAgentData] = useState(defaultAgentInformation);
 
-  useEffect(() => {
-    const fetchOrganization = async () => {
-      try {
-        const organization =
-          await organizationService.getProvenOrganizationById(
-            organizationId,
-            storedToken
-          );
-        setActiveOrganization(organization.data);
-      } catch (error) {
-        console.error("Error fetching organization:", error);
-      }
-    };
+  console.log("activeOrganization11", activeOrganization);
+  console.log("activeAgent11", activeAgent);
+  console.log("agentPolicies11", agentPolicies);
 
-    const fetchAgentPolicies = async () => {
-      try {
-        const agent = await agentService.getPoliciesByAgent(
-          agentId,
-          storedToken
-        );
-        setActiveAgentPolicies(agent.data.content);
-      } catch (error) {
-        console.error("Error fetching data pod:", error);
-      }
-    };
-
-    fetchOrganization();
-    fetchAgentPolicies();
-  }, [storedToken, organizationId, agentId]);
+  
 
   useEffect(() => {
     if (Object.keys(activeOrganization).length !== 0) {
       const userInfo =
         converterToStepperData.toUserInformation(activeOrganization);
+        console.log("userInfo@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@", userInfo);
       setUserData(userInfo);
     }
   }, [activeOrganization]);
 
   useEffect(() => {
-    if (activeAgentPolicies && activeAgentPolicies.length > 0) {
-      const agentPolicies =
-        converterToStepperData.toAgentPolicies(activeAgentPolicies);
+    if (agentPolicies && agentPolicies.length > 0) {
+      const agentDataPolicies =
+        converterToStepperData.toAgentPolicies(agentPolicies);
       setAgentData((prevAgentData) => ({
-        ...agentPolicies,
+        ...agentDataPolicies,
       }));
     }
-  }, [activeAgentPolicies]);
+  }, [agentPolicies]);
 
   // console.log("userData106", userData);
   // console.log("agentData107", agentData);
-  // console.log("ACTIVE AGENT POLICIES", activeAgentPolicies);
+  // console.log("ACTIVE AGENT POLICIES", agentPolicies);
 
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
 
   const refreshPage = () => {
-    const url = `/provenAI/agent-control?organizationId=${organizationId}&agentId=${agentId}`;
+    const url = `/provenAI/agent-control?organizationId=${activeOrganization.id}&agentId=${activeAgent.id}`;
     router.reload(url);
   };
 
@@ -118,7 +98,7 @@ const StepperLinearWithValidation = () => {
     if (activeStep === steps.length - 1) {
       try {
         const organizationDTO = converterToStepperData.toOrganizationDTO(
-          organizationId,
+          activeOrganization.id,
           userData
         );
         await organizationService.updateOrganization(
@@ -130,8 +110,8 @@ const StepperLinearWithValidation = () => {
         const { policiesToCreate, policyIdsToDelete } =
           convertToAgentPurposeOfUsePolicies.convertAndComparePolicies(
             agentData,
-            activeAgentPolicies,
-            agentId
+            agentPolicies,
+            activeAgent.id
           );
 
         // Create new policies
@@ -172,6 +152,9 @@ const StepperLinearWithValidation = () => {
             handleBack={handleBack}
             userData={userData}
             setUserData={setUserData}
+            activeOrganization={activeOrganization}
+            activeAgent={activeAgent}
+            userOrganizations={userOrganizations}       
           />
         );
       case 1:
@@ -181,6 +164,7 @@ const StepperLinearWithValidation = () => {
             handleBack={handleBack}
             agentData={agentData}
             setAgentData={setAgentData}
+            activeAgent={activeAgent}
           />
         );
       case 2:
@@ -288,4 +272,4 @@ const StepperLinearWithValidation = () => {
   );
 };
 
-export default StepperLinearWithValidation;
+export default AgentStepperLinearWithValidation;

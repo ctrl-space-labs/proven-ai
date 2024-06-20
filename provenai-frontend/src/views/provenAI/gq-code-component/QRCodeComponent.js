@@ -14,15 +14,20 @@ const QRCodeComponent = ({ value, size, fgColor, logo }) => {
                     image: logo,
                     dotsOptions: {
                         color: fgColor,
-                        type: 'classy',
+                        type: 'classy',                        
                     },
-                    backgroundOptions: {
-                        color: 'rgba(0, 0, 0, 0)', // Transparent background
-                    },
+                    // backgroundOptions: {
+                    //     color: 'rgba(0, 0, 0, 0)', // Transparent background
+                    // },
                     imageOptions: {
                         crossOrigin: 'anonymous',
                         margin: 5,
                         imageSize: 0.25
+                    },
+                    qrOptions: {
+                        typeNumber: 0,
+                        mode: 'Byte',
+                        errorCorrectionLevel: 'H',
                     },
 
                     // "cornersSquareOptions": {"type": "extra-rounded", "color": "#000000"},

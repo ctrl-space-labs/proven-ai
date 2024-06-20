@@ -1,11 +1,11 @@
 import React from "react";
 import { useState, useEffect } from "react";
 import { styled, useTheme } from "@mui/material/styles";
-import { useSelector } from "react-redux";
 import {
   Grid,
   Typography,
   Box,
+  Dialog,  
   FormControl,
   InputLabel,
   Select,
@@ -19,8 +19,8 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { userSchema, defaultUserInformation } from "../utils/validationSchemas";
 // ** Icon Imports
 import Icon from "src/@core/components/icon";
-import {useRouter} from "next/router";
-import QRCodeComponent from "../../gq-code-component/QRCodeComponent";
+import { useRouter } from "next/router";
+import CredentialsWithQrCodeComponent from "src/views/provenAI/data-pods-control/CredentialsWithQrCodeComponent";
 
 const UserInformation = ({
   onSubmit,
@@ -48,8 +48,12 @@ const UserInformation = ({
   });
 
   const router = useRouter();
-
   const selectedOrganizationType = watch("selectedOrganizationType");
+  const [openCredentials, setOpenCredentials] = useState(false);
+
+  // Handle Edit dialog
+  const handleCredentialsOpen = () => setOpenCredentials(true);
+  const handleCredentialsClose = () => setOpenCredentials(false);
 
   console.log("active organization222", activeOrganization);
   // console.log("active data pod2222", activeDataPod);
@@ -99,20 +103,23 @@ const UserInformation = ({
   };
 
   const updateShallowQueryParams = (params) => {
-    router.push({
-      pathname: router.pathname,
-      query: {
-        ...router.query,
-        ...params,
+    router.push(
+      {
+        pathname: router.pathname,
+        query: {
+          ...router.query,
+          ...params,
+        },
       },
-    }, undefined, { shallow: true });
+      undefined,
+      { shallow: true }
+    );
   };
-
 
   return (
     <form onSubmit={handleSubmit(handleFormSubmit)}>
       <Grid container spacing={5}>
-        <Grid item xs={12} sm={4}>
+        <Grid item xs={12} sm={6}>
           <Typography
             variant="h5"
             sx={{ fontWeight: 800, color: "text.primary" }}
@@ -123,26 +130,31 @@ const UserInformation = ({
             Enter Your Account Details
           </Typography>
         </Grid>
-        <Grid item xs={12} sm={5}>
-          {(!Object.keys(activeOrganization).length || !Object.keys(activeDataPod).length) && (
+        <Grid item xs={12} sm={6}>
+          {(!Object.keys(activeOrganization).length ||
+            !Object.keys(activeDataPod).length) && (
             <FormControl fullWidth>
               <InputLabel id="user-organization-label">
                 Select Organization
               </InputLabel>
               <Controller
                 name="selectedUserOrganization"
-                control={control}                
+                control={control}
                 render={({ field }) => (
                   <Select
                     labelId="user-organization-label"
                     {...field}
                     label="User Organization"
                   >
-                    <MenuItem value="new-organization">
+                    {/* <MenuItem value="new-organization">
                       New Organization
-                    </MenuItem>
+                    </MenuItem> */}
                     {userOrganizations.map((org) => (
-                      <MenuItem key={org.id} value={org.name} onClick={() => handleMenuItemClick(org)}>
+                      <MenuItem
+                        key={org.id}
+                        value={org.name}
+                        onClick={() => handleMenuItemClick(org)}
+                      >
                         {org.name}
                       </MenuItem>
                     ))}
@@ -152,7 +164,7 @@ const UserInformation = ({
             </FormControl>
           )}
         </Grid>
-        <Grid item xs={12} sm={3}>
+        {/* <Grid item xs={12} sm={3}>
           {watch("selectedUserOrganization") === "new-organization" && (
             <Button
               variant="contained"
@@ -163,7 +175,7 @@ const UserInformation = ({
               Create Organization
             </Button>
           )}
-        </Grid>
+        </Grid> */}
         <Grid item xs={12}>
           {" "}
         </Grid>
@@ -478,17 +490,21 @@ const UserInformation = ({
             <Typography sx={{ flexGrow: 1, mx: 2, textAlign: "center" }}>
               Authenticate using W3C Verifiable ID
             </Typography>
-            <Button variant="outlined">Verifiable ID</Button>
-          </Box>
-          <Box>
-            <QRCodeComponent
-                value="https://example.com/&q=http://localhost:3001/provenAI/data-pods-control/?"
-                size={256}
-                fgColor={theme.palette.primary.dark}
-                logo='/images/provenAILogo.svg'
-            />
+            <Button variant="outlined" onClick={handleCredentialsOpen}>
+              Verifiable ID
+            </Button>
           </Box>
         </Grid>
+        <Dialog
+          open={openCredentials}
+          onClose={handleCredentialsClose}          
+          sx={{ "& .MuiPaper-root": { width: "100%", maxWidth: 650 } }}
+        >
+          <CredentialsWithQrCodeComponent
+            handleCredentialsClose={handleCredentialsClose}
+          />
+          
+        </Dialog>
 
         <Grid
           item

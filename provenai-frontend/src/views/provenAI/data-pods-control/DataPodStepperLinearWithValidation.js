@@ -52,9 +52,7 @@ const StepperLinearWithValidation = ({
 }) => {
   const router = useRouter();
   // const activeOrganization = useSelector((state) => state.activeOrganization.activeOrganization);
-
-  
-
+ 
   const storedToken = window.localStorage.getItem(
     authConfig.storageTokenKeyName
   );
@@ -75,9 +73,9 @@ const StepperLinearWithValidation = ({
   // console.log("DATA POD POLICIES", dataPodPolicies);
   // console.log("USER DATA PODS", userDataPods);
   // console.log("USER ORGANIZATIONS", userOrganizations);
-  console.log("USER DATA", userData);
-  console.log("DATA POD DATA", dataPodData);
-  console.log("USE POLICIES DATA", usePoliciesData);
+  // console.log("USER DATA", userData);
+  // console.log("DATA POD DATA", dataPodData);
+  // console.log("USE POLICIES DATA", usePoliciesData);
 
   
 

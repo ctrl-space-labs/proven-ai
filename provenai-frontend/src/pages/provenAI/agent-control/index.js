@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import { useSelector } from "react-redux";
 import { useAuth } from "src/hooks/useAuth";
 import authConfig from "src/configs/auth";
 
@@ -11,14 +10,10 @@ import CardContent from "@mui/material/CardContent";
 import Card from "@mui/material/Card";
 import Box from "@mui/material/Box";
 
-
-// Custom components
-import useRedirectOr404ForHome from "src/utils/useRedirectOr404ForHome";
+import organizationService from "src/provenAI-sdk/organizationService";
+import agentService from "src/provenAI-sdk/agentService";
 
 import AgentStepperLinearWithValidation from "src/views/provenAI/agent-control/AgentStepperLinearWithValidation";
-
-
-
 
 const StyledCardContent = styled(CardContent)(({ theme }) => ({
   paddingTop: `${theme.spacing(10)} !important`,
@@ -31,16 +26,75 @@ const StyledCardContent = styled(CardContent)(({ theme }) => ({
 
 const AgentControl = () => {
   const router = useRouter();
-  const { organizationId} = router.query;
+  const { organizationId, agentId } = router.query;
   const auth = useAuth();
-  
 
- 
-  useRedirectOr404ForHome(organizationId);
+  const userOrganizations = auth?.user?.organizations;
+  const [activeOrganization, setActiveOrganization] = useState({});
+  const [activeAgent, setActiveAgent] = useState({});
+  const [agentPolicies, setAgentPolicies] = useState({});
 
   const storedToken = window.localStorage.getItem(
     authConfig.storageTokenKeyName
   );
+
+  console.log("activeOrganization00", activeOrganization);
+  console.log("activeAgent00", activeAgent);
+  console.log("agentPolicies00", agentPolicies);
+
+  useEffect(() => {
+    if (!organizationId) {
+      setActiveOrganization({});
+    }
+
+    if (!agentId) {
+      setActiveAgent({});
+    }
+
+    const fetchOrganization = async () => {
+      try {
+        const organization =
+          await organizationService.getProvenOrganizationById(
+            organizationId,
+            storedToken
+          );
+        setActiveOrganization(organization.data);
+      } catch (error) {
+        console.error("Error fetching organization:", error);
+      }
+    };
+
+    const fetchAgent = async () => {
+      try {
+        const agent = await agentService.getAgentById(agentId, storedToken);
+        setActiveAgent(agent.data);
+      } catch (error) {
+        console.error("Error fetching agent:", error);
+      }
+    };
+
+    const fetchAgentPolicies = async () => {
+      try {
+        const agent = await agentService.getPoliciesByAgent(
+          agentId,
+          storedToken
+        );
+        setAgentPolicies(agent.data.content);
+      } catch (error) {
+        console.error("Error fetching data pod:", error);
+      }
+    };
+
+    if (organizationId) {
+      fetchOrganization();
+    }
+
+    if (agentId) {
+      fetchAgent();
+      fetchAgentPolicies();
+    }
+    
+  }, [storedToken, organizationId, agentId]);
 
   return (
     <Card sx={{ backgroundColor: "transparent", boxShadow: "none" }}>
@@ -58,15 +112,16 @@ const AgentControl = () => {
           >
             Agent Control Policies
           </Typography>
-
-          
         </Box>
       </StyledCardContent>
       <Box sx={{ height: 20 }} />
-      
-        <AgentStepperLinearWithValidation />
-      
-      
+
+      <AgentStepperLinearWithValidation
+        userOrganizations={userOrganizations}
+        activeOrganization={activeOrganization}
+        activeAgent={activeAgent}
+        agentPolicies={agentPolicies}
+      />
     </Card>
   );
 };

@@ -20,7 +20,7 @@ const getDataPodsByOrganization = async (organizationId, storedToken) => {
 };
 
 /**
- * Get all data pods by organizationId
+ * Get data pod by id
  * @param dataPodId
  * @param storedToken
  * @returns {Promise<axios.AxiosResponse<DataPod>>}

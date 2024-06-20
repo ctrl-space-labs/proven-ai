@@ -2,7 +2,7 @@
  * Converts a organization to a user Information.
  *
  * @param {Organization} organization - The organization to convert.
- * @returns {UserInformation} The converted  user information.
+ * @returns {userData} The converted  user information.
  */
 const toUserInformation = (organization) => {
   if (organization.isNaturalPerson) {

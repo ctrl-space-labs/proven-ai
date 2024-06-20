@@ -31,6 +31,7 @@ const AgentInformation = ({
   handleBack,
   agentData,
   setAgentData,
+  activeAgent
 }) => {
   const [usagePolicies, setUsagePolicies] = useState([]);
   const [compensationPolicies, setCompensationPolicies] = useState([]);
@@ -44,6 +45,7 @@ const AgentInformation = ({
   const {
     control,
     handleSubmit,
+    watch,
     formState: { errors },
   } = useForm({
     defaultValues: agentData,
@@ -119,16 +121,60 @@ const AgentInformation = ({
   return (
     <form onSubmit={handleSubmit(handleFormSubmit)}>
       <Grid container spacing={5}>
-        <Grid item xs={12}>
+        <Grid item xs={12} sm={4}>
           <Typography
-            variant="h4"
-            sx={{ fontWeight: 800, color: "text.primary" }}
+            variant="h5"
+            sx={{ fontWeight: 600, color: "text.primary" }}
           >
             Agent Information
           </Typography>
           <Typography variant="subtitle2" component="p">
             Enter Your Agent Details
           </Typography>
+        </Grid>
+
+        <Grid item xs={12} sm={5}>
+          {!Object.keys(activeAgent).length > 0 && (
+            <FormControl fullWidth>
+              <InputLabel id="user-agents-label">
+                Select Agent
+              </InputLabel>
+              <Controller
+                name="selectedAgent"
+                control={control}
+                render={({ field }) => (
+                  <Select
+                    labelId="user-agent-label"
+                    {...field}
+                    label="Agent"
+                  >
+                    <MenuItem value="new-agent">New Agent</MenuItem>
+                    {/* {userAgents.map((dp) => (
+                      <MenuItem key={dp.id} value={dp.name}>
+                        {dp.name}
+                      </MenuItem>
+                    ))} */}
+                    
+                  </Select>
+                )}
+              />
+            </FormControl>
+          )}
+        </Grid>
+        <Grid item xs={12} sm={3}>
+          {watch("selectedAgent") === "new-agent" && (
+            <Button
+              variant="contained"
+              onClick={() =>
+                (window.location.href = "https://your-new-site.com")
+              }
+            >
+              Create Agent
+            </Button>
+          )}
+        </Grid>
+        <Grid item xs={12}>
+          {" "}
         </Grid>
 
         <Grid item xs={12}>
