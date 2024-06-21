@@ -1,13 +1,26 @@
 package dev.ctrlspace.provenai.backend.services;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import dev.ctrlspace.provenai.backend.exceptions.ProvenAiException;
 
 import dev.ctrlspace.provenai.backend.model.Organization;
+import dev.ctrlspace.provenai.backend.model.dtos.CredentialVerificationDTO;
 import dev.ctrlspace.provenai.backend.model.dtos.criteria.OrganizationCriteria;
 import dev.ctrlspace.provenai.backend.repositories.OrganizationRepository;
 import dev.ctrlspace.provenai.backend.repositories.specifications.OrganizationPredicates;
+import dev.ctrlspace.provenai.ssi.issuer.ProvenAIIssuer;
+import dev.ctrlspace.provenai.ssi.model.vc.AdditionalSignVCParams;
+import dev.ctrlspace.provenai.ssi.model.vc.VerifiableCredential;
+import dev.ctrlspace.provenai.ssi.model.vc.id.LegalEntityCredentialSubject;
+import dev.ctrlspace.provenai.ssi.verifier.CredentialVerificationApi;
+import dev.ctrlspace.provenai.utils.WaltIdServiceInitUtils;
+import id.walt.credentials.vc.vcs.W3CVC;
+import id.walt.crypto.keys.LocalKey;
+import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -24,12 +37,18 @@ public class OrganizationsService {
 
     private AgentService agentService;
 
+    private CredentialVerificationApi credentialVerificationApi;
+
 
     @Autowired
     public OrganizationsService(OrganizationRepository organizationRepository,
-                                AgentService agentService) {
+                                AgentService agentService,
+                                CredentialVerificationApi credentialVerificationApi) {
         this.organizationRepository = organizationRepository;
         this.agentService = agentService;
+        this.credentialVerificationApi = credentialVerificationApi;
+        WaltIdServiceInitUtils.INSTANCE.initializeWaltIdServices();
+
     }
 
 
@@ -97,5 +116,13 @@ public class OrganizationsService {
                 .orElseThrow(() -> new ProvenAiException("ORGANIZATION_NOT_FOUND", "Organization not found with id: " + organizationId, HttpStatus.NOT_FOUND));
         organizationRepository.delete(organization);
     }
+
+    public CredentialVerificationDTO verifyOrganizationVP(JsonNode vpRequest) {
+        CredentialVerificationDTO credentialVerificationDTO = new CredentialVerificationDTO();
+        credentialVerificationDTO.setCredentialVerificationUrl(credentialVerificationApi.verifyCredential(vpRequest));
+
+        return credentialVerificationDTO;
+    }
+
 
 }

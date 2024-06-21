@@ -61,8 +61,9 @@ public class SearchService {
     public List<SearchResult> search(String question, UserProfile agentProfile) throws Exception {
         String agentUsername = agentProfile.getUserName();
         Agent agent = agentService.getAgentByUsername(agentUsername);
-        List<DataPod> dataPods = dataPodService.getAccessibleDataPodsForAgent(agentUsername);
-        Map<String, List<UUID>> dataPodsByHostUrl = dataPodService.getDataPodsByHostUrl(dataPods);
+        List<DataPod> accessibleDataPodsForAgent = dataPodService.getAccessibleDataPodsForAgent(agentUsername);
+
+        Map<String, List<UUID>> dataPodsByHostUrl = dataPodService.getDataPodsByHostUrl(accessibleDataPodsForAgent);
         Organization processorOrganization = organizationService.getOrganizationById(agent.getOrganizationId());
         List<AgentPurposeOfUsePolicies> agentPurposeOfUsePolicies = agentPurposeOfUsePoliciesService.getAgentPurposeOfUsePolicies(agent.getId());
         List<Policy> policies = new ArrayList<>();
@@ -87,20 +88,21 @@ public class SearchService {
                 // Map section details to SearchResult objects
                 for (DocumentInstanceSectionDTO section : sectionDetails) {
                     String documentId = section.getDocumentDTO().getId().toString();
+                    String documentSectionIscc = section.getDocumentSectionIsccCode();
 
 
                     AuditPermissionOfUseVc auditPermissionOfUseVc = auditPermissionOfUseVcService.createAuditLog(
                             ownerOrganization.getId(), ownerOrganization.getOrganizationDid(),
                             agent.getId(), processorOrganization.getOrganizationDid(),
                             searchId, dataPodId,
-                            section.getDocumentSectionIsccCode(), section.getDocumentDTO().getDocumentIsccCode(),
+                            documentSectionIscc, section.getDocumentDTO().getDocumentIsccCode(),
                             section.getTokenCount().intValue(), section.getAiModelName()
                     );
 
                     W3CVC permissionOfUseVC = auditPermissionOfUseVcService.createPermissionOfUseW3CVC(
                             ownerOrganization.getOrganizationDid(),
                             processorOrganization.getOrganizationDid(),
-                            section.getDocumentSectionIsccCode(),
+                            documentSectionIscc,
                             policies);
 
                     // Generate signed JWT for the Permission of Use VC
@@ -109,7 +111,7 @@ public class SearchService {
                     SearchResult searchResult = SearchResult.builder()
                             .documentSectionId(section.getId().toString())
                             .documentId(documentId)
-                            .iscc(section.getDocumentSectionIsccCode())
+                            .iscc(documentSectionIscc)
                             .text(section.getSectionValue())
                             .ownerName(processorOrganization.getName())
                             .title(section.getDocumentSectionMetadata().getTitle())
