@@ -18,20 +18,12 @@ import java.util.UUID;
 public class DataPodDTO {
 
     private UUID id;
-
     private UUID organizationId;
-
     private String podUniqueName;
-
     private String hostUrl;
-
     private List<Policy> aclPolicies;
-
     private Instant createdAt;
-
     private Instant updatedAt;
-
     private UUID createdBy;
-
     private UUID updatedBy;
 }

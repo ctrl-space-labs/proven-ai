@@ -78,6 +78,9 @@ public class DataPodService {
             throw new ProvenAiException("DataPod with the same name already exists", "dataPod.name.duplicate", HttpStatus.BAD_REQUEST);
         }
 
+        Instant now = Instant.now();
+        dataPod.setCreatedAt(now);
+        dataPod.setUpdatedAt(now);
 
         DataPod savedDataPod = dataPodRepository.save(dataPod);
 
