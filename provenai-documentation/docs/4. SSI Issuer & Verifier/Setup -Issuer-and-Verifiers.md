@@ -2,7 +2,7 @@
 sidebar_position: 1
 ---
 
-# Introduction
+# 4.1 Introduction
 ProvenAI is a platform that enables you to create, manage, and verify self-sovereign identities (SSI) for your users.
 To Issue and verify credentials, you need to set up Issuers and Verifiers. This guide will walk you through the process of setting up Issuers and Verifiers on ProvenAI.
 
@@ -10,7 +10,7 @@ The Walt.id platform is a self-sovereign identity (SSI) platform that enables yo
 This guide will walk you through the process of setting up Issuers and Verifiers on Walt.id.
 
 
-# Setup WaltId Services 
+# 4.2 Setup WaltId Services 
 
 ## Pre-requisites
 Install Docker on your machine.
@@ -33,8 +33,8 @@ cd docker-compose && docker-compose up
 - Wallet API: http://localhost:7001
 - Web Wallet (Frontend): http://localhost:7101
 
-## Credential Issuance API
-### Endpoint: POST `/openid4vc/jwt/issue`
+## 4.3 Credential Issuance API
+### Route: POST `/openid4vc/jwt/issue`
 
 ### Description
 This API enables the issuance of a credential utilizing the OID4CI protocol to issue a signed credential. It generates a credential offer url that can be imported to any OID compliant wallet to receive the credential.
@@ -48,8 +48,8 @@ The credential offer URL of the credential to be issued.
 #### Example value: 
 openid-credential-offer://localhost/?credential_offer=%7B%22credential_issuer%22%3A%22http%3A%2F%2Flocalhost%3A8000%22%2C%22credentials%22%3A%5B%22VerifiableId%22%5D%2C%22grants%22%3A%7B%22authorization_code%22%3A%7B%22issuer_state%22%3A%22501414a4-c461-43f0-84b2-c628730c7c02%22%7D%7D%7D
 
-## Credential Verification API
-### Endpoint: POST `/openid4vc/verify`
+## 4.4 Credential Verification API
+### Route: POST `/openid4vc/verify`
 
 ### Description
 This API initialized an OIDC presentation session, given a presentation definition. The URL returned can be rendered as QR code for the holder.
@@ -74,7 +74,7 @@ This API initialized an OIDC presentation session, given a presentation definiti
 
 - **Description:** Redirect URI to return upon successful verification.
 
-### `errorRedirectUri`
+#### `errorRedirectUri`
 
 - **Description:** Redirect URI to return when a policy fails.
 
