@@ -17,7 +17,7 @@ public class OrganizationDTO {
     private UUID id;
     private String name;
     private String country;
-    private Boolean isNaturalPerson;
+    private Boolean naturalPerson;
     private String legalPersonIdentifier;
     private String legalName;
     private String legalAddress;
