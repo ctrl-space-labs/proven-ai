@@ -21,7 +21,7 @@ export const defaultUserInformation = {
   profileLink: "",
 };
 
-export const defaultAgentInformation = {
+export const defaultDataPodInformation = {
   agentPurpose: [],
 };
 

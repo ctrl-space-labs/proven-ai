@@ -37,28 +37,28 @@ import converter from "src/views/provenAI/data-pods-control/utils/converterToSte
 import {
   steps,
   defaultUserInformation,
-  defaultAgentInformation as defaultDataPodInformation,
+  defaultDataPodInformation,
   defaultDataUse,
 } from "src/views/provenAI/data-pods-control/utils/defaultValues";
-import { set } from "nprogress";
 
 const StepperLinearWithValidation = ({
   activeDataPod,
   activeOrganization,
-  setActiveOrganization,
   dataPodPolicies,
   userDataPods,
-  userOrganizations
+  userOrganizations,
+  organizationId,
+  dataPodId,
+  activeStep,
+  setActiveStep,
 }) => {
   const router = useRouter();
   // const activeOrganization = useSelector((state) => state.activeOrganization.activeOrganization);
- 
+
   const storedToken = window.localStorage.getItem(
     authConfig.storageTokenKeyName
   );
 
-  
-  const [activeStep, setActiveStep] = useState(0); 
   const [userErrors, setUserErrors] = useState({});
   const [agentErrors, setAgentErrors] = useState({});
   const [dataUseErrors, setDataUseErrors] = useState({});
@@ -70,6 +70,7 @@ const StepperLinearWithValidation = ({
 
   // console.log("ACTIVE ORGANIZATION", activeOrganization);
   // console.log("ACTIVE DATA POD", activeDataPod);
+  // console.log("DATA POD ID id id id id ", dataPodId);
   // console.log("DATA POD POLICIES", dataPodPolicies);
   // console.log("USER DATA PODS", userDataPods);
   // console.log("USER ORGANIZATIONS", userOrganizations);
@@ -77,17 +78,16 @@ const StepperLinearWithValidation = ({
   // console.log("DATA POD DATA", dataPodData);
   // console.log("USE POLICIES DATA", usePoliciesData);
 
-  
-
-
   useEffect(() => {
     if (Object.keys(activeOrganization).length !== 0) {
       const userInfo = converter.toUserInformation(activeOrganization);
       setUserData(userInfo);
     } else {
-      setUserData(defaultUserInformation);
+      setUserData(prevData => ({
+        ...defaultUserInformation,
+        organizationName: prevData.organizationName,
+      }));
     }
-  
   }, [activeOrganization]);
 
   useEffect(() => {
@@ -101,6 +101,12 @@ const StepperLinearWithValidation = ({
       setUsePoliciesData((prevUsePoliciesData) => ({
         ...usePolicies,
       }));
+    } else {      
+      setDataPodData(prevData => ({
+        ...defaultDataPodInformation,
+        dataPodName: prevData.dataPodName,
+      }));
+      setUsePoliciesData(defaultDataUse);
     }
   }, [dataPodPolicies]);
 
@@ -118,17 +124,35 @@ const StepperLinearWithValidation = ({
     if (activeStep === steps.length - 1) {
       try {
         const organizationDTO = converter.toOrganizationDTO(
-          activeOrganization.id,
+          organizationId,
           userData
         );
-        // TODO if to GET or PUT
-        await organizationService.updateOrganization(
-          organizationDTO,
-          storedToken
-        );
-        toast.success("Organization updated successfully!");
+        
+        if (Object.keys(activeOrganization).length !== 0) {
+          await organizationService.updateOrganization(
+            organizationDTO,
+            storedToken
+          );
+          toast.success("Organization updated successfully!");
+        } else {
+          await organizationService.createOrganization(
+            organizationDTO,
+            storedToken
+          );
+          toast.success("Organization registration successfully!");
+        }
 
-        // TODO if new data pod, POST DataPod
+        
+        if (Object.keys(activeDataPod).length === 0) {
+          const dataPodDTO = converter.toDataPodDTO(
+            dataPodData,
+            organizationId,
+            dataPodId
+          );
+          
+          await dataPodsService.createDataPod(dataPodDTO, storedToken);
+          toast.success("Data Pod created successfully!");
+        }
 
         // Convert and compare policies
         const { aclPoliciesToCreate, aclPolicyIdsToDelete } =
@@ -136,13 +160,14 @@ const StepperLinearWithValidation = ({
             dataPodData,
             usePoliciesData,
             dataPodPolicies,
-            activeDataPod.id
+            dataPodId
           );
+
+          
 
         // Create new ACL policies
         for (const aclPolicyDTO of aclPoliciesToCreate) {
           await aclPoliciesService.createAclPolicy(aclPolicyDTO, storedToken);
-          console.log("Creating new ACL policy:", aclPolicyDTO);
           toast.success("Policy created successfully!");
         }
 
@@ -152,7 +177,6 @@ const StepperLinearWithValidation = ({
             aclPolicyIdsToDelete,
             storedToken
           );
-          console.log("Deleting obsolete ACL policies:", aclPolicyIdsToDelete);
           toast.success("Policies deleted successfully!");
         }
 
@@ -174,7 +198,6 @@ const StepperLinearWithValidation = ({
             userData={userData}
             setUserData={setUserData}
             userOrganizations={userOrganizations}
-            setActiveOrganization={setActiveOrganization}       
             activeDataPod={activeDataPod}
             activeOrganization={activeOrganization}
           />
@@ -188,6 +211,7 @@ const StepperLinearWithValidation = ({
             userDataPods={userDataPods}
             setDataPodData={setDataPodData}
             activeDataPod={activeDataPod}
+            organizationId={organizationId}
           />
         );
       case 2:

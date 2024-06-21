@@ -69,6 +69,9 @@ public class OrganizationsService {
     }
 
     public Organization registerOrganization(Organization organization) {
+        Instant now = Instant.now();
+        organization.setCreatedAt(now);
+        organization.setUpdatedAt(now);
 
         return organizationRepository.save(organization);
 
@@ -86,7 +89,7 @@ public class OrganizationsService {
             existingOrganization.setCountry(organization.getCountry());
         }
 
-        existingOrganization.setIsNaturalPerson(organization.getIsNaturalPerson());
+        existingOrganization.setNaturalPerson(organization.getNaturalPerson());
         existingOrganization.setLegalPersonIdentifier(organization.getLegalPersonIdentifier());
         existingOrganization.setLegalName(organization.getLegalName());
         existingOrganization.setLegalAddress(organization.getLegalAddress());

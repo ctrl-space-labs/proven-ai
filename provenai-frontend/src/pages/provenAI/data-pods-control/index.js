@@ -12,9 +12,8 @@ import Card from "@mui/material/Card";
 import Box from "@mui/material/Box";
 import organizationService from "src/provenAI-sdk/organizationService";
 import dataPodsService from "src/provenAI-sdk/dataPodsService";
-import StepperLinearWithValidation from "src/views/provenAI/data-pods-control/DataPodStepperLinearWithValidation";
-import { fetchOrganization } from "src/store/apps/activeOrganization/activeOrganization";
-import { fetchProject } from "src/store/apps/activeProject/activeProject";
+import DataPodStepperLinearWithValidation from "src/views/provenAI/data-pods-control/DataPodStepperLinearWithValidation";
+
 
 const StyledCardContent = styled(CardContent)(({ theme }) => ({
   paddingTop: `${theme.spacing(10)} !important`,
@@ -36,10 +35,16 @@ const DataPodsControl = () => {
   const [activeOrganization, setActiveOrganization] = useState({});
   const [activeDataPod, setActiveDataPod] = useState({});
   const [dataPodPolicies, setDataPodPolicies] = useState({});
+  const [activeStep, setActiveStep] = useState(0);
+
 
   const storedToken = window.localStorage.getItem(
     authConfig.storageTokenKeyName
   );
+
+  useEffect(() => {
+    setActiveStep(0);
+  }, [organizationId]);
 
 
   useEffect(() => {
@@ -63,6 +68,8 @@ const DataPodsControl = () => {
         console.error("Error fetching organization:", error);
         if (error.response.status === 404) {
           setActiveOrganization({});
+          setActiveDataPod({});
+          setDataPodPolicies({});
         }
       }
 
@@ -102,6 +109,7 @@ const DataPodsControl = () => {
     if (organizationId) {
       fetchOrganization();      
     }
+
     if (dataPodId) {
       fetchDataPod();
       fetchDataPodPolicies();
@@ -124,13 +132,16 @@ const DataPodsControl = () => {
       </StyledCardContent>
       <Box sx={{ height: 20 }} />
 
-      <StepperLinearWithValidation
+      <DataPodStepperLinearWithValidation
         userOrganizations={userOrganizations}
         userDataPods={userDataPods}
         activeOrganization={activeOrganization}
-        setActiveOrganization={setActiveOrganization}  
         activeDataPod={activeDataPod}
         dataPodPolicies={dataPodPolicies}
+        organizationId={organizationId}
+        dataPodId={dataPodId}
+        activeStep={activeStep}
+        setActiveStep={setActiveStep}
       />
     </Card>
   );

@@ -5,7 +5,7 @@
  * @returns {userData} The converted  user information.
  */
 const toUserInformation = (organization) => {
-  if (organization.isNaturalPerson) {
+  if (organization.naturalPerson) {
     return {
       selectedOrganizationType: "natural-person",
       firstName: organization.firstName,
@@ -15,7 +15,7 @@ const toUserInformation = (organization) => {
       nationality: organization.nationality,
       personalIdentifier: organization.personalIdentifier,
     };
-  } else if (!organization.isNaturalPerson) {
+  } else if (!organization.naturalPerson) {
     return {
       selectedOrganizationType: "legal-entity",
       legalPersonIdentifier: organization.legalPersonIdentifier,
@@ -92,7 +92,7 @@ const toOrganizationDTO = (organizationId, userInfo) => {
   if (userInfo.selectedOrganizationType === "natural-person") {
     return {
       id: organizationId,
-      isNaturalPerson: true,
+      naturalPerson: true,
       firstName: userInfo.firstName,
       familyName: userInfo.familyName,
       gender: userInfo.gender,
@@ -103,7 +103,7 @@ const toOrganizationDTO = (organizationId, userInfo) => {
   } else if (userInfo.selectedOrganizationType === "legal-entity") {
     return {
       id: organizationId,
-      isNaturalPerson: false,
+      naturalPerson: false,
       legalPersonIdentifier: userInfo.legalPersonIdentifier,
       legalName: userInfo.legalName,
       legalAddress: userInfo.legalAddress,

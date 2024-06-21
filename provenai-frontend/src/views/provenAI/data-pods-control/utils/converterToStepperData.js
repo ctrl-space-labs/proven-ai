@@ -5,7 +5,7 @@
  * @returns {UserInformation} The converted  user information.
  */
 const toUserInformation = (organization) => {
-  if (organization.isNaturalPerson) {
+  if (organization.naturalPerson) {
     return {
       selectedOrganizationType: "natural-person",
       firstName: organization.firstName,
@@ -14,8 +14,9 @@ const toUserInformation = (organization) => {
       dateOfBirth: organization.dateOfBirth,
       nationality: organization.nationality,
       personalIdentifier: organization.personalIdentifier,
+      organizationName: organization.name,
     };
-  } else if (!organization.isNaturalPerson) {
+  } else if (!organization.naturalPerson) {
     return {
       selectedOrganizationType: "legal-entity",
       legalPersonIdentifier: organization.legalPersonIdentifier,
@@ -24,6 +25,8 @@ const toUserInformation = (organization) => {
       country: organization.country,
       taxReference: organization.taxReference,
       vatNumber: organization.vatNumber,
+      organizationName: organization.name,
+
     };
   } else {
     return null;
@@ -33,41 +36,66 @@ const toUserInformation = (organization) => {
 /**
  * Converts user information to an organization DTO.
  *
- * @param {UserInformation} userInfo - The user information to convert.
+ * @param {UserInformation} userData - The user information to convert.
  * @returns {OrganizationDTO} The converted organization DTO.
  */
-const toOrganizationDTO = (organizationId, userInfo) => {
+const toOrganizationDTO = (organizationId, userData) => {
   const formatDate = (date) => {
     const d = new Date(date);
-    return d.toISOString();
+    if (!isNaN(d)) {
+      return d.toISOString();
+    } else {
+      return null;
+    }  
   };
 
-  if (userInfo.selectedOrganizationType === "natural-person") {
+  if (userData.selectedOrganizationType === "natural-person") {
     return {
       id: organizationId,
-      isNaturalPerson: true,
-      firstName: userInfo.firstName,
-      familyName: userInfo.familyName,
-      gender: userInfo.gender,
-      dateOfBirth: formatDate(userInfo.dateOfBirth),
-      nationality: userInfo.nationality,
-      personalIdentifier: userInfo.personalIdentifier,
+      name: userData.organizationName,
+      naturalPerson: true,
+      firstName: userData.firstName,
+      familyName: userData.familyName,
+      gender: userData.gender,
+      dateOfBirth: formatDate(userData.dateOfBirth),
+      nationality: userData.nationality,
+      personalIdentifier: userData.personalIdentifier,
     };
-  } else if (userInfo.selectedOrganizationType === "legal-entity") {
+  } else if (userData.selectedOrganizationType === "legal-entity") {
     return {
       id: organizationId,
-      isNaturalPerson: false,
-      legalPersonIdentifier: userInfo.legalPersonIdentifier,
-      legalName: userInfo.legalName,
-      legalAddress: userInfo.legalAddress,
-      country: userInfo.country,
-      taxReference: userInfo.taxReference,
-      vatNumber: userInfo.vatNumber,
+      name: userData.organizationName,
+      naturalPerson: false,
+      legalPersonIdentifier: userData.legalPersonIdentifier,
+      legalName: userData.legalName,
+      legalAddress: userData.legalAddress,
+      country: userData.country,
+      taxReference: userData.taxReference,
+      vatNumber: userData.vatNumber,
     };
   } else {
     return null;
   }
 };
+
+/**
+ * Convert DataPodData to  dataPodDTO
+ *
+ * @param {DataPodData} dataPodData - The data pod data to convert.
+ * @returns {DataPodDTO} The converted data pod DTO.
+ *
+ */
+
+const toDataPodDTO = (dataPodData, organizationId, dataPodId) => {
+  return {
+    id: dataPodId,
+    organizationId: organizationId,
+    podUniqueName: dataPodData.dataPodName,
+    aclPolicies: []
+  };
+};
+
+
 
 /**
  * Converts activeDataPod to agent policies.
@@ -76,7 +104,6 @@ const toOrganizationDTO = (organizationId, userInfo) => {
  * @returns {Object} The converted agent policies including agent purposes, allow list, and deny list.
  */
 const toAgentPolicies = (activeDataPod) => {
-  console.log(activeDataPod);
   const agentPurpose = new Map();
   const allowList = new Map();
   const denyList = new Map();
@@ -94,9 +121,9 @@ const toAgentPolicies = (activeDataPod) => {
     } else if (item.policyType.name === "ALLOW_LIST" && item.value) {
       if (!allowList.has(item.value)) {
         allowList.set(item.value, {
-          policyTypeId: item.policyType.id||null,
-          policyOptionId: item.policyOption.id||null ,
-          agentId: item.value||null,
+          policyTypeId: item.policyType.id || null,
+          policyOptionId: item.policyOption.id || null,
+          agentId: item.value || null,
           name: "",
         });
       }
@@ -119,8 +146,6 @@ const toAgentPolicies = (activeDataPod) => {
   };
 };
 
-
-
 /**
  * Converts activeDataPod to use policies.
  *
@@ -136,7 +161,7 @@ const toUsePolicies = (activeDataPod) => {
       if (!attributionPolicies.has(item.policyOption.id)) {
         attributionPolicies.set(item.policyOption.id, {
           policyTypeId: item.policyType.id,
-          policyOptionId: item.policyOption.id,          
+          policyOptionId: item.policyOption.id,
           name: item.policyOption.name,
           description: item.policyOption.description,
         });
@@ -146,7 +171,7 @@ const toUsePolicies = (activeDataPod) => {
       if (!compensationPolicies.has(item.policyOption.id)) {
         compensationPolicies.set(item.policyOption.id, {
           policyTypeId: item.policyType.id,
-          policyOptionId: item.policyOption.id, 
+          policyOptionId: item.policyOption.id,
           name: item.policyOption.name,
           description: item.policyOption.description,
         });
@@ -165,4 +190,5 @@ export default {
   toAgentPolicies,
   toUsePolicies,
   toOrganizationDTO,
+  toDataPodDTO,
 };

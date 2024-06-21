@@ -27,13 +27,11 @@ const UserInformation = ({
   handleBack,
   userData,
   setUserData,
-  userOrganizations,
-  setActiveOrganization,
+  userOrganizations,  
   activeOrganization,
   activeDataPod,
 }) => {
   const theme = useTheme();
-  // const activeOrganization = useSelector((state) => state.activeOrganization.activeOrganization);
 
   const {
     control,
@@ -55,9 +53,9 @@ const UserInformation = ({
   const handleCredentialsOpen = () => setOpenCredentials(true);
   const handleCredentialsClose = () => setOpenCredentials(false);
 
-  console.log("active organization222", activeOrganization);
+  // console.log("active organization222", activeOrganization);
   // console.log("active data pod2222", activeDataPod);
-  console.log("USER ORGANIZATIONS2222", userOrganizations);
+  // console.log("USER ORGANIZATIONS2222", userOrganizations);
   // console.log(
   //   "aaa",
   //   activeOrganization.id
@@ -76,9 +74,9 @@ const UserInformation = ({
       const activeOrgName =
         userOrganizations.find((org) => org.id === activeOrganization.id)
           ?.name || "new-organization";
-      setValue("selectedUserOrganization", activeOrgName);
+      setValue("organizationName", activeOrgName);
     }
-  }, [activeOrganization, userOrganizations, setValue]);
+  }, [activeOrganization, userOrganizations]);
 
   useEffect(() => {
     Object.keys(userData).forEach((key) => {
@@ -98,6 +96,10 @@ const UserInformation = ({
   };
 
   const handleMenuItemClick = (org) => {
+    setUserData((prevData) => ({
+      ...prevData,
+      organizationName: org.name,
+    }));
     updateShallowQueryParams({ organizationId: org.id });
     console.log(`Clicked on organization: `, org);
   };
@@ -138,7 +140,7 @@ const UserInformation = ({
                 Select Organization
               </InputLabel>
               <Controller
-                name="selectedUserOrganization"
+                name="organizationName"
                 control={control}
                 render={({ field }) => (
                   <Select
@@ -165,7 +167,7 @@ const UserInformation = ({
           )}
         </Grid>
         {/* <Grid item xs={12} sm={3}>
-          {watch("selectedUserOrganization") === "new-organization" && (
+          {watch("organizationName") === "new-organization" && (
             <Button
               variant="contained"
               onClick={() =>
