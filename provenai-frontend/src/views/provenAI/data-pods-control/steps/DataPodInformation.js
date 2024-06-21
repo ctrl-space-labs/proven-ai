@@ -1,6 +1,7 @@
 // ** React Imports
 import React from "react";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/router";
 
 import {
   Grid,
@@ -23,6 +24,7 @@ import { agentSchema } from "../utils/validationSchemas";
 import policyService from "src/provenAI-sdk/policyService";
 import agentService from "src/provenAI-sdk/agentService";
 import authConfig from "src/configs/auth";
+import { set } from "nprogress";
 
 const DataPodInformation = ({
   onSubmit,
@@ -31,7 +33,21 @@ const DataPodInformation = ({
   setDataPodData,
   userDataPods,
   activeDataPod,
+  organizationId,
 }) => {
+  const router = useRouter();
+
+  const {
+    control,
+    handleSubmit,
+    watch,
+    setValue,
+    formState: { errors },
+  } = useForm({
+    defaultValues: dataPodData,
+    resolver: yupResolver(agentSchema),
+  });
+
   const [usagePolicies, setUsagePolicies] = useState([]);
   const [agents, setAgents] = useState([]);
 
@@ -39,15 +55,11 @@ const DataPodInformation = ({
     authConfig.storageTokenKeyName
   );
 
-  const {
-    control,
-    handleSubmit,
-    watch,
-    formState: { errors },
-  } = useForm({
-    defaultValues: dataPodData,
-    resolver: yupResolver(agentSchema),
-  });
+  useEffect(() => {
+    Object.keys(dataPodData).forEach((key) => {
+      setValue(key, dataPodData[key]);
+    });
+  }, [dataPodData, setValue]);
 
   useEffect(() => {
     const fetchPolicyOptions = async () => {
@@ -79,6 +91,14 @@ const DataPodInformation = ({
     fetchAgents();
   }, [storedToken]);
 
+  useEffect(() => {
+    if (activeDataPod?.id) {
+      const activeDataPodName =
+        userDataPods.find((dp) => dp.id === activeDataPod.id)?.name || "";
+      setValue("dataPodName", activeDataPodName);
+    }
+  }, [activeDataPod, userDataPods, setValue]);
+
   const updateAgentDataWithNames = (data) => {
     if (agents.length > 0) {
       const updatedAgentData = {
@@ -102,10 +122,33 @@ const DataPodInformation = ({
     onSubmit();
   };
 
+  const handleMenuItemClick = (daPod) => {
+    setDataPodData((prevData) => ({
+      ...prevData,
+      dataPodName: daPod.name,
+    }));
+    updateShallowQueryParams({ organizationId, dataPodId: daPod.id });
+    console.log(`Clicked on Data Pod: `, daPod);
+  };
+
+  const updateShallowQueryParams = (params) => {
+    router.push(
+      {
+        pathname: router.pathname,
+        query: {
+          ...router.query,
+          ...params,
+        },
+      },
+      undefined,
+      { shallow: true }
+    );
+  };
+
   return (
     <form onSubmit={handleSubmit(handleFormSubmit)}>
       <Grid container spacing={5}>
-        <Grid item xs={12} sm={4}>
+        <Grid item xs={12} sm={6}>
           <Typography
             variant="h5"
             sx={{ fontWeight: 800, color: "text.primary" }}
@@ -117,14 +160,12 @@ const DataPodInformation = ({
           </Typography>
         </Grid>
 
-        <Grid item xs={12} sm={5}>
+        <Grid item xs={12} sm={6}>
           {!Object.keys(activeDataPod).length > 0 && (
             <FormControl fullWidth>
-              <InputLabel id="user-data-pod-label">
-                Select Data Pod
-              </InputLabel>
+              <InputLabel id="user-data-pod-label">Select Data Pod</InputLabel>
               <Controller
-                name="selectedDataPod"
+                name="dataPodName"
                 control={control}
                 render={({ field }) => (
                   <Select
@@ -132,21 +173,24 @@ const DataPodInformation = ({
                     {...field}
                     label="Data Pod"
                   >
-                    <MenuItem value="new-data-pod">New Data Pod</MenuItem>
+                    {/* <MenuItem value="new-data-pod">New Data Pod</MenuItem> */}
                     {userDataPods.map((dp) => (
-                      <MenuItem key={dp.id} value={dp.name}>
+                      <MenuItem
+                        key={dp.id}
+                        value={dp.name}
+                        onClick={() => handleMenuItemClick(dp)}
+                      >
                         {dp.name}
                       </MenuItem>
                     ))}
-                    
                   </Select>
                 )}
               />
             </FormControl>
           )}
         </Grid>
-        <Grid item xs={12} sm={3}>
-          {watch("selectedDataPod") === "new-data-pod" && (
+        {/* <Grid item xs={12} sm={3}>
+          {watch("dataPodName") === "new-data-pod" && (
             <Button
               variant="contained"
               onClick={() =>
@@ -156,7 +200,7 @@ const DataPodInformation = ({
               Create Data Pod
             </Button>
           )}
-        </Grid>
+        </Grid> */}
         <Grid item xs={12}>
           {" "}
         </Grid>

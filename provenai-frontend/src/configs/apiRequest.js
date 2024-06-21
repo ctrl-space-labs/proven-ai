@@ -15,12 +15,21 @@ export default {
     return `${provenUrl}organizations?organizationIdIn=${organizationIds}`;
   },
 
-  provenOrganization: (organizationId) => {
+  provenOrganization: () => {
+    return `${provenUrl}organizations`;
+  },
+
+  organizationRegistration: () => {
+    return `${provenUrl}organizations/registration`;
+  },
+
+  provenOrganizationById: (organizationId) => {
     return `${provenUrl}organizations/${organizationId}`;    
   },
 
-  getDataPodsByOrganization: () =>
-    `${provenUrl}data-pods`,
+  dataPods: () => {
+   return `${provenUrl}data-pods`;
+  },
 
   getDataPodById: (dataPodId) =>
     `${provenUrl}data-pods/${dataPodId}`,

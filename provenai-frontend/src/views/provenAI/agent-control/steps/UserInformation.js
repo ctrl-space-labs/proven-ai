@@ -55,7 +55,7 @@ const UserInformation = ({
     if (activeOrganization?.id) {
       const activeOrgName =
         userOrganizations.find((org) => org.id === activeOrganization.id)
-          ?.name || "new-organization";
+          ?.name || "";
       setValue("selectedUserOrganization", activeOrgName);
     }
   }, [activeOrganization, userOrganizations, setValue]);

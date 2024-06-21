@@ -22,6 +22,7 @@ export const defaultUserInformation = {
   firstName: "",
   familyName: "",
   selectedOrganizationType: "natural-person",
+  organizationName: "",
   personalIdentifier: "",
   gender: "",
   dateOfBirth: "",
@@ -36,6 +37,13 @@ export const defaultUserInformation = {
 };
 
 export const defaultAgentInformation = {
+  agentPurpose: [],
+  denyList: [],
+  allowList : [],
+};
+
+export const defaultDataPodInformation = {
+  dataPodName: "",  
   agentPurpose: [],
   denyList: [],
   allowList : [],

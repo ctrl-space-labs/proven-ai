@@ -25,7 +25,7 @@ const getOrganizationsByCriteria = async (organizationIds, storedToken) => {
  * @returns {Promise<axios.AxiosResponse<Organization>>}
  */
 const getProvenOrganizationById = async (organizationId, storedToken) => {
-  return axios.get(apiRequests.provenOrganization(organizationId), {
+  return axios.get(apiRequests.provenOrganizationById(organizationId), {
       headers: {
           'Content-Type': 'application/json',
           Authorization: 'Bearer ' + storedToken
@@ -43,17 +43,35 @@ const getProvenOrganizationById = async (organizationId, storedToken) => {
  *  @returns {Promise<axios.AxiosResponse<Organization>>}
  */ 
   const updateOrganization = async (organizationDTO, storedToken) => {
-    return axios.put(apiRequests.provenOrganization(organizationDTO.id), organizationDTO, {
+    return axios.put(apiRequests.provenOrganizationById(organizationDTO.id), organizationDTO, {
       headers: {
         "Content-Type": "application/json",
         Authorization: "Bearer " + storedToken,
       },
     });
   };
+
+
+  /**
+   * Registration a new organization
+   * @param organizationDTO
+   * @param storedToken
+   * @returns {Promise<axios.AxiosResponse<Organization>>}
+   
+   */
+  const createOrganization = async (organizationDTO, storedToken) => {
+    return axios.post(apiRequests.organizationRegistration(), organizationDTO, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + storedToken,
+      },
+    });
+  }
  
 
 export default {
   getOrganizationsByCriteria,
   getProvenOrganizationById,
-  updateOrganization
+  updateOrganization,
+  createOrganization
 };
