@@ -128,7 +128,7 @@ const StepperLinearWithValidation = ({
     router.reload(url);
   };
   const getVcOfferUrl = async () => {
-    const offer = await organizationService.getVcOfferUrl(storedToken, activeOrganization.id, router.asPath);
+    const offer = await organizationService.getVcOfferUrl(storedToken, organizationId, router.asPath);
     return offer.data.credentialVerificationUrl;
   }
 
