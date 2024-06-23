@@ -28,7 +28,7 @@ const DataPodsControl = () => {
   const router = useRouter();
   const state = useSelector((state) => state);
   const dispatch = useDispatch();
-  const { organizationId, dataPodId } = router.query;
+  const { organizationId, dataPodId, vcOfferSessionId } = router.query;
   const auth = useAuth();
   const userOrganizations = auth?.user?.organizations;
   const [userDataPods, setUserDataPods] = useState([]);
@@ -142,6 +142,7 @@ const DataPodsControl = () => {
         dataPodId={dataPodId}
         activeStep={activeStep}
         setActiveStep={setActiveStep}
+        vcOfferSessionId={vcOfferSessionId}
       />
     </Card>
   );

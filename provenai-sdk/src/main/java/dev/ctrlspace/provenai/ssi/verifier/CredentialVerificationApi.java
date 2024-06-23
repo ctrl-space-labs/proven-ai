@@ -11,8 +11,8 @@ public class CredentialVerificationApi {
 
     public static final RestTemplate restTemplate = new RestTemplate();
 
-    public String verifyCredential(JsonNode requestBody) {
-        HttpHeaders headers = buildHeaders();
+    public String verifyCredential(JsonNode requestBody, String successRedirect, String errorRedirect) {
+        HttpHeaders headers = buildHeaders(successRedirect, errorRedirect);
         HttpEntity<JsonNode> requestEntity = new HttpEntity<>(requestBody, headers);
 
         ResponseEntity<String> responseEntity = restTemplate.exchange(
@@ -25,14 +25,14 @@ public class CredentialVerificationApi {
         return responseEntity.getBody();
     }
 
-    public HttpHeaders buildHeaders() {
+    public HttpHeaders buildHeaders(String successRedirect, String errorRedirect) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("accept", "*/*");
         headers.set("authorizeBaseUrl", "openid4vp://authorize");
         headers.set("responseMode", "direct_post");
-        headers.set("successRedirectUri", SSIConstants.VERIFIER_SUCCESS_URL);
-        headers.set("errorRedirectUri", SSIConstants.VERIFIER_ERROR_URL);
+        headers.set("successRedirectUri", successRedirect);
+        headers.set("errorRedirectUri", errorRedirect);
 
         // Debugging
         System.out.println("Headers: " + headers);

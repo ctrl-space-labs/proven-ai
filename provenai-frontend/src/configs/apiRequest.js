@@ -7,6 +7,8 @@ import { get } from "react-hook-form";
 const url = 'https://dev.gendox.ctrlspace.dev/gendox/api/v1/' // Development Environment (Hetzner)
 const provenUrl = 'http://localhost:8082/proven-ai/api/v1/' // Local Environment
 
+const verifierUrl = 'http://localhost:7003/' // Local Environment
+
 
 export default {
 
@@ -25,6 +27,14 @@ export default {
 
   provenOrganizationById: (organizationId) => {
     return `${provenUrl}organizations/${organizationId}`;    
+  },
+
+  provenGetVcOfferUrl: (organizationId, redirectURL) => {
+    let url = `${provenUrl}organizations/${organizationId}/verify-vp`;
+    if (redirectURL) {
+      url += `?redirectPath=${btoa(redirectURL)}`;
+    }
+    return url;
   },
 
   dataPods: () => {
@@ -62,5 +72,12 @@ export default {
   getProfile: url + "profile",
 
   getPermissionOfUseAnalytics: () => `${provenUrl}permission-of-use-analytics`,
+
+
+
+  ssi: {
+    getVcFromOffer: (offerId) => `${verifierUrl}openid4vc/session/${offerId}`,
+  }
+
 
 };

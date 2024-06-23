@@ -19,6 +19,36 @@ const getOrganizationsByCriteria = async (organizationIds, storedToken) => {
 
 
 /**
+ * Get VC Offer URL
+ * @param storedToken
+ * @param organizationId
+ * @returns {Promise<axios.AxiosResponse<{credentialVerificationUrl: string}>>}
+ */
+const getVcOfferUrl = async (storedToken, organizationId, redirectURL) => {
+    return axios.post(apiRequests.provenGetVcOfferUrl(organizationId, redirectURL), {
+      "vc_policies": [
+        "expired",
+        "not-before"
+      ],
+      "request_credentials": [
+        "NaturalPersonVerifiableID",
+        "VerifiableID",
+        "VerifiableId",
+        "eIDAS2PID",
+        "LegalEntityVerifiableID",
+        "VerifiablePID"
+      ]
+    }, {
+        headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + storedToken,
+        }
+    });
+
+}
+
+
+/**
  * Get all organization users
  * @param organizationId 
  * @param storedToken
@@ -73,5 +103,6 @@ export default {
   getOrganizationsByCriteria,
   getProvenOrganizationById,
   updateOrganization,
-  createOrganization
+  createOrganization,
+  getVcOfferUrl
 };

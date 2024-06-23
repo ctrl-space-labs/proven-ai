@@ -30,6 +30,7 @@ const UserInformation = ({
   userOrganizations,  
   activeOrganization,
   activeDataPod,
+  getVcOfferUrl
 }) => {
   const theme = useTheme();
 
@@ -504,6 +505,7 @@ const UserInformation = ({
         >
           <CredentialsWithQrCodeComponent
             handleCredentialsClose={handleCredentialsClose}
+            getURL={getVcOfferUrl}
           />
           
         </Dialog>

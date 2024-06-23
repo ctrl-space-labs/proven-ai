@@ -40,6 +40,7 @@ import {
   defaultDataPodInformation,
   defaultDataUse,
 } from "src/views/provenAI/data-pods-control/utils/defaultValues";
+import ssiService from "../../../provenAI-sdk/ssiService";
 
 const StepperLinearWithValidation = ({
   activeDataPod,
@@ -51,6 +52,7 @@ const StepperLinearWithValidation = ({
   dataPodId,
   activeStep,
   setActiveStep,
+  vcOfferSessionId
 }) => {
   const router = useRouter();
   // const activeOrganization = useSelector((state) => state.activeOrganization.activeOrganization);
@@ -79,10 +81,17 @@ const StepperLinearWithValidation = ({
   // console.log("USE POLICIES DATA", usePoliciesData);
 
   useEffect(() => {
+    if (vcOfferSessionId) {
+      handleVcOfferFlow();
+    }
+  }, [vcOfferSessionId]);
+
+  useEffect(() => {
     if (Object.keys(activeOrganization).length !== 0) {
       const userInfo = converter.toUserInformation(activeOrganization);
       setUserData(userInfo);
     } else {
+      // new organization
       setUserData(prevData => ({
         ...defaultUserInformation,
         organizationName: prevData.organizationName,
@@ -118,6 +127,39 @@ const StepperLinearWithValidation = ({
     const url = `/provenAI/data-pods-control?organizationId=${activeOrganization.id}&dataPodId=${activeDataPod.id}`;
     router.reload(url);
   };
+  const getVcOfferUrl = async () => {
+    const offer = await organizationService.getVcOfferUrl(storedToken, activeOrganization.id, router.asPath);
+    return offer.data.credentialVerificationUrl;
+  }
+
+  /**
+   * Handle successful VC offer
+   *
+   * @param organizationId
+   * @return {Promise<boolean>}   true if VC offer flow completed successfully
+   */
+  const handleVcOfferFlow = async () => {
+
+    let offeredVP = await ssiService.getVcOffered(vcOfferSessionId);
+    if (offeredVP.data.policyResults.success !== true) {
+      throw new Error("VC offer failed");
+    }
+    // offeredVP.data.policyResults -> this is an array. we are looking for the element that has value .credential === "VerifiablePresentation"
+    // the in this element, has a array 'policies', we are looking for the element that has value .policy === "signature"
+    let organizationDid = ssiService.getVerifiedVcSignaturePolicy(offeredVP.data).sub;
+    let vcCredentialSubject = ssiService.getVerifiedVcCredentialSubject(offeredVP.data);
+    console.log("VC CredentialSubject: ", ssiService.getVerifiedVcCredentialSubject(offeredVP.data))
+    console.log("organizationDid", organizationDid);
+
+
+
+    setUserData(prevData => (
+        {
+          ...prevData,
+          organizationVpJwt: offeredVP.data.tokenResponse.vp_token,
+          organizationDid: organizationDid
+        }));
+  }
 
   const onSubmit = async () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -200,6 +242,7 @@ const StepperLinearWithValidation = ({
             userOrganizations={userOrganizations}
             activeDataPod={activeDataPod}
             activeOrganization={activeOrganization}
+            getVcOfferUrl={getVcOfferUrl}
           />
         );
       case 1:

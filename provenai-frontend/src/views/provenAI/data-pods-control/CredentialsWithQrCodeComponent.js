@@ -1,6 +1,8 @@
 import React from "react";
 import { styled, useTheme } from "@mui/material/styles";
 
+import { useState, useEffect } from "react";
+
 import {
   Box,
   Button,
@@ -14,11 +16,44 @@ import {
 } from "@mui/material";
 import Icon from "src/@core/components/icon";
 import QRCodeComponent from "src/views/provenAI/gq-code-component/QRCodeComponent";
+import useClipboard from "../../../@core/hooks/useClipboard";
 
-const CredentialsWithQrCodeComponent = ({ handleCredentialsClose }) => {
+const CredentialsWithQrCodeComponent = ({ handleCredentialsClose, getURL }) => {
   const theme = useTheme();
 
-  return (
+  const clipboard = useClipboard()
+
+  const [url, setUrl] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [copyButtonText, setCopyButtonText] = useState('Copy URL')
+
+  useEffect(() => {
+    const fetchURL = async () => {
+      setLoading(true);
+      const url = await getURL();
+      setUrl(url);
+      setLoading(false);
+    };
+
+    fetchURL();
+
+  }, []);
+
+    const copyValue = (value) => {
+        clipboard.copy(value)
+        // toast.success('The source code has been copied to your clipboard.', {
+        //     duration: 2000
+        // })
+    }
+
+    function copyUrl() {
+        return () => {
+            copyValue(url)
+            setCopyButtonText('Copied!')
+        };
+    }
+
+    return (
     <Box
       sx={{
          border: "2px solid ",
@@ -64,12 +99,17 @@ const CredentialsWithQrCodeComponent = ({ handleCredentialsClose }) => {
         }}
       >
         <Box sx={{ textAlign: "center" }}>
-          <QRCodeComponent
-            value="https://example.com/&q=http://localhost:3001/provenAI/data-pods-control/?"
-            size={256}
-            fgColor={theme.palette.primary.dark}
-            logo="/images/provenAILogo.svg"
-          />
+          {/*  if offerURL is null show a loader else show the QRCodeComponent*/}
+            {loading ? (
+                <Typography variant="h6">Loading...</Typography>
+            ) : (
+                <QRCodeComponent
+                value={url}
+                size={256}
+                fgColor={theme.palette.primary.dark}
+                logo="/images/provenAILogo.svg"
+                />
+            )}
         </Box>
       </DialogContent>
       <DialogActions
@@ -81,15 +121,17 @@ const CredentialsWithQrCodeComponent = ({ handleCredentialsClose }) => {
           width: "100%",
         }}
       >
-        <Button variant="outlined" onClick={handleCredentialsClose}>
-          COPY URL
+        <Button variant="outlined" onClick={copyUrl()}>
+            <Icon icon='mdi:content-copy' fontSize={20} />
+            {copyButtonText}
         </Button>
+
         <Button
           variant="contained"
           sx={{ mr: 2 }}
-          onClick={handleCredentialsClose}
+
         >
-          UPLOAD VC
+          I don't have wallet :'(
         </Button>
       </DialogActions>
     </Box>
