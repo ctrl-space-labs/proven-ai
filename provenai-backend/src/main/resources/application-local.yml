@@ -17,4 +17,6 @@ proven-ai:
   domains:
     gendox:
       base-url: http://localhost:8080
+    proven-ai-frontend:
+      base-url: http://localhost:3001
 

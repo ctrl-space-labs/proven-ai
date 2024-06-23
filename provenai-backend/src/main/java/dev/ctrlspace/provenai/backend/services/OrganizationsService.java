@@ -18,6 +18,7 @@ import dev.ctrlspace.provenai.ssi.verifier.CredentialVerificationApi;
 import dev.ctrlspace.provenai.utils.WaltIdServiceInitUtils;
 import id.walt.credentials.vc.vcs.W3CVC;
 import id.walt.crypto.keys.LocalKey;
+import jakarta.annotation.Nullable;
 import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,10 +26,16 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.util.UriComponentsBuilder;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class OrganizationsService {
@@ -38,6 +45,14 @@ public class OrganizationsService {
     private AgentService agentService;
 
     private CredentialVerificationApi credentialVerificationApi;
+
+    @Value("${proven-ai.domains.proven-ai-frontend.base-url}")
+    private String baseUrl;
+
+    @Value("${proven-ai.domains.proven-ai-frontend.context-path}")
+    private String contextPath;
+
+
 
 
     @Autowired
@@ -120,11 +135,42 @@ public class OrganizationsService {
         organizationRepository.delete(organization);
     }
 
-    public CredentialVerificationDTO verifyOrganizationVP(JsonNode vpRequest) {
+    /**
+     * Verify organization VP
+     * @param vpRequest
+     * @param organizationId the organization ID to use for the default redirect if the `redirectPath` is not provided.
+     * @param redirectPath the URL to redirect to after verification
+     * @return
+     */
+    public CredentialVerificationDTO verifyOrganizationVP(JsonNode vpRequest, UUID organizationId, String redirectPath) {
         CredentialVerificationDTO credentialVerificationDTO = new CredentialVerificationDTO();
-        credentialVerificationDTO.setCredentialVerificationUrl(credentialVerificationApi.verifyCredential(vpRequest));
+        String successRedirect = getSuccessRedirectUrl(organizationId, redirectPath);
+
+        String VERIFIER_ERROR_URL = "http://localhost:3001/ssi/verify/fail/?id=$id";
+        credentialVerificationDTO.setCredentialVerificationUrl(credentialVerificationApi.verifyCredential(vpRequest, successRedirect, VERIFIER_ERROR_URL));
 
         return credentialVerificationDTO;
+    }
+
+    private String getSuccessRedirectUrl(UUID organizationId, @Nullable String redirectPath) {
+
+
+        if (redirectPath != null && !redirectPath.isEmpty()) {
+            String url = removeParamFromUrl(baseUrl + redirectPath, "vcOfferSessionId");
+            return url + "&vcOfferSessionId=$id";
+        }
+
+        return baseUrl + "/provenAI/data-pods-control/?vcOfferSessionId=$id&organizationId=" + organizationId.toString();
+    }
+
+    public static String removeParamFromUrl(String url, String paramToRemove) {
+        UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUriString(url);
+
+        uriBuilder.replaceQueryParam(paramToRemove);
+
+        URI uri = uriBuilder.build().toUri();
+
+        return uri.toString();
     }
 
 

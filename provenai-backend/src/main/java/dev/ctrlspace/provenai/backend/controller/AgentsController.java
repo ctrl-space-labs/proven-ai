@@ -43,6 +43,7 @@ public class AgentsController implements AgentsControllerSpec {
     }
 
 
+    // TODO: Authorization check that you can access only yours
     @GetMapping("/agents")
     public Page<Agent> getAllAgents(@Valid AgentCriteria criteria, Pageable pageable) throws ProvenAiException {
 

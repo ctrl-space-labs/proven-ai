@@ -12,13 +12,15 @@ import dev.ctrlspace.provenai.backend.model.dtos.criteria.OrganizationCriteria;
 import dev.ctrlspace.provenai.backend.services.OrganizationsService;
 import dev.ctrlspace.provenai.ssi.verifier.CredentialVerificationApi;
 import jakarta.validation.Valid;
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Base64;
 import java.util.UUID;
 
 
@@ -28,6 +30,8 @@ public class OrganizationsController implements OrganizationsControllerSpec {
     private OrganizationsService organizationsService;
     private OrganizationConverter organizationConverter;
 
+    @Value("${proven-ai.domains.proven-ai-frontend.base-url}")
+    private String provenAiFrontendBaseUrl;
 
 
 
@@ -82,9 +86,13 @@ public class OrganizationsController implements OrganizationsControllerSpec {
         organizationsService.deleteOrganization(organizationId);
     }
 
-    @PostMapping("/organizations/verify-vp")
-    public CredentialVerificationDTO verifyOrganizationVP(@RequestBody JsonNode vpRequest) {
-        CredentialVerificationDTO credentialVerificationDTO = organizationsService.verifyOrganizationVP(vpRequest);
+    @PostMapping("/organizations/{organizationId}/verify-vp")
+    public CredentialVerificationDTO verifyOrganizationVP(@RequestBody JsonNode vpRequest, @PathVariable UUID organizationId, @RequestParam(required = false, name = "redirectPath") String base64RedirectPath) throws ProvenAiException {
+        String redirectPath = new String(Base64.getDecoder().decode(base64RedirectPath));
+        if (Strings.isNotBlank(redirectPath) && redirectPath.startsWith("http")) {
+            throw new ProvenAiException("INVALID_REDIRECT_URL", "Only relative path is allowed", HttpStatus.BAD_REQUEST);
+        }
+        CredentialVerificationDTO credentialVerificationDTO = organizationsService.verifyOrganizationVP(vpRequest, organizationId, redirectPath);
         return credentialVerificationDTO;
     }
 
