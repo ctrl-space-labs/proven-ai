@@ -55,7 +55,7 @@ public class CredentialIssuanceApi {
 
     public String issueCredential(WaltIdCredentialIssuanceRequest credentialIssuanceRequest) {
 
-
+        credentialIssuanceRequest.setCredentialConfigurationId("");
         JsonNode requestBody = objectMapper.valueToTree(credentialIssuanceRequest);
         return issueCredential(requestBody);
 
