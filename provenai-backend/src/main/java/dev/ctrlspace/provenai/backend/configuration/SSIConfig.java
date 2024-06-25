@@ -9,17 +9,23 @@ import dev.ctrlspace.provenai.ssi.converters.PermissionOfUseConverter;
 import dev.ctrlspace.provenai.ssi.issuer.CredentialIssuanceApi;
 import dev.ctrlspace.provenai.ssi.verifier.CredentialVerificationApi;
 import dev.ctrlspace.provenai.utils.JsonLiteralSerializer;
+import dev.ctrlspace.provenai.utils.SSIJWTUtils;
 import kotlinx.serialization.json.JsonLiteral;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class SSICongig {
+public class SSIConfig {
 
 
     @Bean
     public CredentialIssuanceApi credentialIssuanceApi(ObjectMapper kotlinObjectMapper) {
         return new CredentialIssuanceApi(kotlinObjectMapper);
+    }
+
+    @Bean
+    public SSIJWTUtils ssiJWTUtils() {
+        return new SSIJWTUtils();
     }
 
     @Bean

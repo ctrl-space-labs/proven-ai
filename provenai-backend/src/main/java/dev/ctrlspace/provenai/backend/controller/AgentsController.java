@@ -11,6 +11,7 @@ import dev.ctrlspace.provenai.backend.model.dtos.AgentDTO;
 import dev.ctrlspace.provenai.backend.model.dtos.AgentIdCredential;
 import dev.ctrlspace.provenai.backend.model.dtos.criteria.AgentCriteria;
 import dev.ctrlspace.provenai.backend.services.AgentService;
+import dev.ctrlspace.provenai.ssi.verifier.ProvenAIVerifier;
 import id.walt.credentials.vc.vcs.W3CVC;
 import jakarta.validation.Valid;
 import org.json.JSONException;
@@ -110,8 +111,9 @@ public class AgentsController implements AgentsControllerSpec {
         if (!"vp_token".equals(grantType)) {
             throw new ProvenAiException("INVALID_GRANT_TYPE", "Invalid grant type", HttpStatus.BAD_REQUEST);
         }
+        ProvenAIVerifier provenAIVerifier = new ProvenAIVerifier();
 
-        Boolean verificationResult = agentService.verifyAgentVP(vpToken);
+        Boolean verificationResult = provenAIVerifier.verifyVPJwt(vpToken);
 //          Boolean verificationResult = Boolean.TRUE;
 
 

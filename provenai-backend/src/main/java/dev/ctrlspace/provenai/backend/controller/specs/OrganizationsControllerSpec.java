@@ -20,7 +20,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.io.IOException;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 
 @Tag(name = "Registered Organizations",
         description = "Endpoints for managing registered organizations. Full CRUD operations are supported.</br>" +
@@ -69,7 +71,7 @@ public interface OrganizationsControllerSpec {
             @ApiResponse(responseCode = "404", description = "The resource you were trying to reach is not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    public Organization registerOrganization(@RequestBody OrganizationDTO organizationDTO) throws JsonProcessingException;
+    public Organization registerOrganization(@RequestBody OrganizationDTO organizationDTO) throws IOException, ExecutionException, InterruptedException, ProvenAiException;
 
     @Operation(summary = "Update a registered organization",
             description = "Updates a registered organization.")

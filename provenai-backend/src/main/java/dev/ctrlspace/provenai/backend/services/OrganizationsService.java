@@ -10,11 +10,15 @@ import dev.ctrlspace.provenai.backend.model.dtos.CredentialVerificationDTO;
 import dev.ctrlspace.provenai.backend.model.dtos.criteria.OrganizationCriteria;
 import dev.ctrlspace.provenai.backend.repositories.OrganizationRepository;
 import dev.ctrlspace.provenai.backend.repositories.specifications.OrganizationPredicates;
+import dev.ctrlspace.provenai.backend.utils.JWTUtils;
+import dev.ctrlspace.provenai.backend.utils.ValidatorUtils;
 import dev.ctrlspace.provenai.ssi.issuer.ProvenAIIssuer;
 import dev.ctrlspace.provenai.ssi.model.vc.AdditionalSignVCParams;
 import dev.ctrlspace.provenai.ssi.model.vc.VerifiableCredential;
 import dev.ctrlspace.provenai.ssi.model.vc.id.LegalEntityCredentialSubject;
 import dev.ctrlspace.provenai.ssi.verifier.CredentialVerificationApi;
+import dev.ctrlspace.provenai.ssi.verifier.ProvenAIVerifier;
+import dev.ctrlspace.provenai.utils.SSIJWTUtils;
 import dev.ctrlspace.provenai.utils.WaltIdServiceInitUtils;
 import id.walt.credentials.vc.vcs.W3CVC;
 import id.walt.crypto.keys.LocalKey;
@@ -26,9 +30,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.time.Instant;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
+import java.util.concurrent.ExecutionException;
 
 @Service
 public class OrganizationsService {
@@ -39,14 +44,26 @@ public class OrganizationsService {
 
     private CredentialVerificationApi credentialVerificationApi;
 
+    private JWTUtils jwtUtils;
+
+    private SSIJWTUtils ssiJwtUtils;
+
+    private ValidatorUtils validatorUtils;
+
 
     @Autowired
     public OrganizationsService(OrganizationRepository organizationRepository,
                                 AgentService agentService,
-                                CredentialVerificationApi credentialVerificationApi) {
+                                CredentialVerificationApi credentialVerificationApi,
+                                JWTUtils jwtUtils,
+                                SSIJWTUtils ssiJwtUtils,
+                                ValidatorUtils validatorUtils) {
         this.organizationRepository = organizationRepository;
         this.agentService = agentService;
         this.credentialVerificationApi = credentialVerificationApi;
+        this.jwtUtils = jwtUtils;
+        this.ssiJwtUtils = ssiJwtUtils;
+        this.validatorUtils = validatorUtils;
         WaltIdServiceInitUtils.INSTANCE.initializeWaltIdServices();
 
     }
@@ -68,11 +85,29 @@ public class OrganizationsService {
         return organizationRepository.findAll(OrganizationPredicates.build(criteria), pageable);
     }
 
-    public Organization registerOrganization(Organization organization) {
+    public Organization registerOrganization(Organization organization) throws ExecutionException, InterruptedException, ProvenAiException, IOException {
 
+        ProvenAIVerifier provenAIVerifier = new ProvenAIVerifier();
+
+        Boolean verificationResult = provenAIVerifier.verifyVPJwt(organization.getOrganizationVpJwt());
+        if (!verificationResult) {
+            throw new ProvenAiException("INVALID_VP_JWT", "Invalid VP JWT", HttpStatus.BAD_REQUEST);
+        }
+
+        String OrganizationVcJwt = ssiJwtUtils.getVCJwtFromVPJwt(organization.getOrganizationVpJwt());
+
+
+        Boolean credentialSubjectValidation = validatorUtils.validateCredentialSubjectFields(OrganizationVcJwt, organization);
+        if (!credentialSubjectValidation) {
+            throw new ProvenAiException("CREDENTIAL_FIELDS_MISMATCH", "Credential fields do not match the organization fields", HttpStatus.BAD_REQUEST);
+        }
+        organization.setCreatedAt(Instant.now());
+        organization.setUpdatedAt(Instant.now());
         return organizationRepository.save(organization);
-
     }
+
+
+
 
 
     public Organization updateOrganization(Organization organization) throws ProvenAiException {
