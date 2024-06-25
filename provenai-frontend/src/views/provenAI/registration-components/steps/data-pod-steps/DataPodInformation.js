@@ -19,7 +19,7 @@ import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 
 // ** Validation Schema and Default Values
-import { agentSchema } from "../utils/validationSchemas";
+import { agentSchema } from "src/utils/validationSchemas";
 
 import policyService from "src/provenAI-sdk/policyService";
 import agentService from "src/provenAI-sdk/agentService";
@@ -127,6 +127,7 @@ const DataPodInformation = ({
       ...prevData,
       dataPodName: daPod.name,
     }));
+    set
     updateShallowQueryParams({ organizationId, dataPodId: daPod.id });
     console.log(`Clicked on Data Pod: `, daPod);
   };

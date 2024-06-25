@@ -20,98 +20,175 @@ import toast from "react-hot-toast";
 // ** Custom Components Imports
 import StepperCustomDot from "./StepperCustomDot";
 import StepperWrapper from "src/@core/styles/mui/stepper";
-import UserInformation from "./steps/UserInformation";
-import AgentInformation from "./steps/AgentInformation";
-import ReviewAndComplete from "./steps/ReviewAndComplete";
+import UserInformation from "../registration-components/steps/UserInformation";
+import AgentInformation from "../registration-components/steps/agent-steps/AgentInformation";
+import ReviewAndComplete from "../registration-components/steps/agent-steps/ReviewAndComplete";
 import authConfig from "src/configs/auth";
 import organizationService from "src/provenAI-sdk/organizationService";
 import agentService from "src/provenAI-sdk/agentService";
 import agentPurposeOfUsePoliciesService from "src/provenAI-sdk/agentPurposeOfUsePoliciesService";
-import converterToStepperData from "src/views/provenAI/agent-control/utils/converterToStepperData";
-import convertToAgentPurposeOfUsePolicies from "src/views/provenAI/agent-control/utils/convertToAgentPurposeOfUsePolicies";
+import organizationConverter from "src/converters/organizationConverter";
+import agentConverter from "src/converters/agentConverter";
+import convertToAgentPurposeOfUsePolicies from "src/converters/agentPurposeOfUsePoliciesConverter";
 
 import {
-  steps,
+  agentSteps,
   defaultUserInformation,
   defaultAgentInformation,
-} from "src/views/provenAI/agent-control/utils/defaultValues";
+} from "src/utils/defaultValues";
+import ssiService from "../../../provenAI-sdk/ssiService";
 
 const AgentStepperLinearWithValidation = ({
   userOrganizations,
   activeOrganization,
   activeAgent,
-  agentPolicies
-}
-) => {
+  agentPolicies,
+  activeStep,
+  setActiveStep,
+  organizationId,
+  agentId,
+  userAgents,
+  vcOfferSessionId,
+}) => {
   const theme = useTheme();
   const router = useRouter();
   const storedToken = window.localStorage.getItem(
     authConfig.storageTokenKeyName
   );
 
-  const [activeStep, setActiveStep] = useState(0);
-
   // Form data states
   const [userData, setUserData] = useState(defaultUserInformation);
   const [agentData, setAgentData] = useState(defaultAgentInformation);
 
-  console.log("activeOrganization11", activeOrganization);
-  console.log("activeAgent11", activeAgent);
-  console.log("agentPolicies11", agentPolicies);
+  // console.log("USER AGENTS", userAgents);
+  // console.log("User Data", userData);
+  // console.log("Agent Data", agentData);
+  // console.log("User Agents--->", userAgents);
+  // console.log("Active Agent--->", activeAgent);
 
-  
+  useEffect(() => {
+    if (vcOfferSessionId) {
+      handleVcOfferFlow();
+    }
+  }, [vcOfferSessionId]);
 
   useEffect(() => {
     if (Object.keys(activeOrganization).length !== 0) {
       const userInfo =
-        converterToStepperData.toUserInformation(activeOrganization);
-        console.log("userInfo@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@", userInfo);
+      organizationConverter.toUserInformation(activeOrganization);
       setUserData(userInfo);
+    } else {
+      // new organization
+      setUserData((prevData) => ({
+        ...defaultUserInformation,
+        organizationName: prevData.organizationName,
+      }));
     }
   }, [activeOrganization]);
 
   useEffect(() => {
     if (agentPolicies && agentPolicies.length > 0) {
       const agentDataPolicies =
-        converterToStepperData.toAgentPolicies(agentPolicies);
+        agentConverter.toAgentPolicies(agentPolicies);
       setAgentData((prevAgentData) => ({
         ...agentDataPolicies,
       }));
+    } else {
+      setAgentData((prevAgentData) => ({
+        ...defaultAgentInformation,
+        agentName: prevAgentData.agentName,
+        agentUserId: prevAgentData.agentUserId,
+      }));
     }
   }, [agentPolicies]);
-
-  // console.log("userData106", userData);
-  // console.log("agentData107", agentData);
-  // console.log("ACTIVE AGENT POLICIES", agentPolicies);
 
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
 
   const refreshPage = () => {
-    const url = `/provenAI/agent-control?organizationId=${activeOrganization.id}&agentId=${activeAgent.id}`;
+    const url = `/provenAI/agent-control?organizationId=${organizationId}&agentId=${agentId}`;
     router.reload(url);
+  };
+
+  const getVcOfferUrl = async () => {
+    const offer = await organizationService.getVcOfferUrl(
+      storedToken,
+      organizationId,
+      router.asPath
+    );
+    return offer.data.credentialVerificationUrl;
+  };
+
+  /**
+   * Handle successful VC offer
+   *
+   * @param organizationId
+   * @return {Promise<boolean>}   true if VC offer flow completed successfully
+   */
+  const handleVcOfferFlow = async () => {
+    let offeredVP = await ssiService.getVcOffered(vcOfferSessionId);
+    if (offeredVP.data.policyResults.success !== true) {
+      throw new Error("VC offer failed");
+    }
+    // offeredVP.data.policyResults -> this is an array. we are looking for the element that has value .credential === "VerifiablePresentation"
+    // the in this element, has a array 'policies', we are looking for the element that has value .policy === "signature"
+    let organizationDid = ssiService.getVerifiedVcSignaturePolicy(
+      offeredVP.data
+    ).sub;
+    let vcCredentialSubject = ssiService.getVerifiedVcCredentialSubject(
+      offeredVP.data
+    );
+    console.log(
+      "VC CredentialSubject: ",
+      ssiService.getVerifiedVcCredentialSubject(offeredVP.data)
+    );
+    console.log("organizationDid", organizationDid);
+
+    setUserData((prevData) => ({
+      ...prevData,
+      organizationVpJwt: offeredVP.data.tokenResponse.vp_token,
+      organizationDid: organizationDid,
+    }));
   };
 
   const onSubmit = async () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
-    if (activeStep === steps.length - 1) {
+    if (activeStep === agentSteps.length - 1) {
       try {
-        const organizationDTO = converterToStepperData.toOrganizationDTO(
-          activeOrganization.id,
+        const organizationDTO = organizationConverter.toOrganizationDTO(
+          organizationId,
           userData
         );
-        await organizationService.updateOrganization(
-          organizationDTO,
-          storedToken
-        );
-        toast.success("Organization updated successfully!");
+        if (Object.keys(activeOrganization).length !== 0) {
+          await organizationService.updateOrganization(
+            organizationDTO,
+            storedToken
+          );
+          toast.success("Organization updated successfully!");
+        } else {
+          await organizationService.createOrganization(
+            organizationDTO,
+            storedToken
+          );
+          toast.success("Organization registration successfully!");
+        }
+
+        if (Object.keys(activeAgent).length === 0) {
+          const agentDTO = agentConverter.toAgentDTO(
+            agentData,
+            organizationId,
+            agentId
+          );
+          await agentService.createAgent(agentDTO, storedToken);
+          toast.success("Agent created successfully!");
+        }
 
         const { policiesToCreate, policyIdsToDelete } =
           convertToAgentPurposeOfUsePolicies.convertAndComparePolicies(
             agentData,
             agentPolicies,
-            activeAgent.id
+            agentId
           );
 
         // Create new policies
@@ -153,8 +230,9 @@ const AgentStepperLinearWithValidation = ({
             userData={userData}
             setUserData={setUserData}
             activeOrganization={activeOrganization}
-            activeAgent={activeAgent}
-            userOrganizations={userOrganizations}       
+            secondFieldOnUrl={Object.keys(activeAgent).length}
+            userOrganizations={userOrganizations}
+            getVcOfferUrl={getVcOfferUrl}
           />
         );
       case 1:
@@ -165,6 +243,8 @@ const AgentStepperLinearWithValidation = ({
             agentData={agentData}
             setAgentData={setAgentData}
             activeAgent={activeAgent}
+            userAgents={userAgents}
+            organizationId={organizationId}
           />
         );
       case 2:
@@ -182,7 +262,7 @@ const AgentStepperLinearWithValidation = ({
   };
 
   const renderContent = () => {
-    if (activeStep === steps.length) {
+    if (activeStep === agentSteps.length) {
       return (
         <Fragment>
           <Typography>All steps are completed!</Typography>
@@ -203,7 +283,7 @@ const AgentStepperLinearWithValidation = ({
       <CardContent>
         <StepperWrapper>
           <Stepper activeStep={activeStep}>
-            {steps.map((step, index) => {
+            {agentSteps.map((step, index) => {
               const labelProps = {};
               // if (index === activeStep) {
               //   labelProps.error = false;

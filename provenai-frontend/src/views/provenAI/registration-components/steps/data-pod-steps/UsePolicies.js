@@ -16,7 +16,7 @@ import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 
 // ** Validation Schema and Default Values
-import { dataUseSchema, defaultDataUse } from "../utils/validationSchemas";
+import { dataUseSchema } from "src/utils/validationSchemas";
 
 import policyService from "src/provenAI-sdk/policyService";
 import authConfig from "src/configs/auth";

@@ -1,7 +1,6 @@
 // ** React Imports
 import { Fragment, useState, useEffect } from "react";
 import { styled, useTheme } from "@mui/material/styles";
-import { useSelector } from "react-redux";
 import { useRouter } from "next/router";
 
 // ** MUI Imports
@@ -23,23 +22,24 @@ import StepperCustomDot from "./StepperCustomDot";
 import StepperWrapper from "src/@core/styles/mui/stepper";
 
 // ** Step Components Imports
-import UserInformation from "./steps/UserInformation";
-import DataPodInformation from "./steps/DataPodInformation";
-import UsePolicy from "./steps/UsePolicies";
-import ReviewAndComplete from "./steps/ReviewAndComplete";
+import UserInformation from "../registration-components/steps/UserInformation";
+import DataPodInformation from "../registration-components/steps/data-pod-steps/DataPodInformation";
+import UsePolicy from "../registration-components/steps/data-pod-steps/UsePolicies";
+import ReviewAndComplete from "../registration-components/steps/data-pod-steps/ReviewAndComplete";
 import authConfig from "src/configs/auth";
 import organizationService from "src/provenAI-sdk/organizationService";
 import dataPodsService from "src/provenAI-sdk/dataPodsService";
 import aclPoliciesService from "src/provenAI-sdk/aclPoliciesService";
-import aclPoliciesConverter from "src/views/provenAI/data-pods-control/utils/convertToAclPolicies";
-import converter from "src/views/provenAI/data-pods-control/utils/converterToStepperData";
+import aclPoliciesConverter from "src/converters/aclPoliciesConverter";
+import organizationConverter from "src/converters/organizationConverter";
+import dataPodConverter from "src/converters/dataPodConverter";
 
 import {
-  steps,
+  dataPodSteps,
   defaultUserInformation,
   defaultDataPodInformation,
   defaultDataUse,
-} from "src/views/provenAI/data-pods-control/utils/defaultValues";
+} from "src/utils/defaultValues";
 import ssiService from "../../../provenAI-sdk/ssiService";
 
 const StepperLinearWithValidation = ({
@@ -88,7 +88,7 @@ const StepperLinearWithValidation = ({
 
   useEffect(() => {
     if (Object.keys(activeOrganization).length !== 0) {
-      const userInfo = converter.toUserInformation(activeOrganization);
+      const userInfo = organizationConverter.toUserInformation(activeOrganization);
       setUserData(userInfo);
     } else {
       // new organization
@@ -101,12 +101,12 @@ const StepperLinearWithValidation = ({
 
   useEffect(() => {
     if (dataPodPolicies && dataPodPolicies.length > 0) {
-      const agentPolicies = converter.toAgentPolicies(dataPodPolicies);
+      const agentPolicies = dataPodConverter.toAgentPolicies(dataPodPolicies);
       setDataPodData((prevAgentData) => ({
         ...agentPolicies,
       }));
 
-      const usePolicies = converter.toUsePolicies(dataPodPolicies);
+      const usePolicies = dataPodConverter.toUsePolicies(dataPodPolicies);
       setUsePoliciesData((prevUsePoliciesData) => ({
         ...usePolicies,
       }));
@@ -163,9 +163,9 @@ const StepperLinearWithValidation = ({
 
   const onSubmit = async () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
-    if (activeStep === steps.length - 1) {
+    if (activeStep === dataPodSteps.length - 1) {
       try {
-        const organizationDTO = converter.toOrganizationDTO(
+        const organizationDTO = organizationConverter.toOrganizationDTO(
           organizationId,
           userData
         );
@@ -186,7 +186,7 @@ const StepperLinearWithValidation = ({
 
         
         if (Object.keys(activeDataPod).length === 0) {
-          const dataPodDTO = converter.toDataPodDTO(
+          const dataPodDTO = dataPodConverter.toDataPodDTO(
             dataPodData,
             organizationId,
             dataPodId
@@ -240,7 +240,7 @@ const StepperLinearWithValidation = ({
             userData={userData}
             setUserData={setUserData}
             userOrganizations={userOrganizations}
-            activeDataPod={activeDataPod}
+            secondFieldOnUrl={Object.keys(activeDataPod).length}
             activeOrganization={activeOrganization}
             getVcOfferUrl={getVcOfferUrl}
           />
@@ -282,7 +282,7 @@ const StepperLinearWithValidation = ({
   };
 
   const renderContent = () => {
-    if (activeStep === steps.length) {
+    if (activeStep === dataPodSteps.length) {
       return (
         <Fragment>
           <Typography>All steps are completed!</Typography>
@@ -303,7 +303,7 @@ const StepperLinearWithValidation = ({
       <CardContent>
         <StepperWrapper>
           <Stepper activeStep={activeStep}>
-            {steps.map((step, index) => {
+            {dataPodSteps.map((step, index) => {
               const labelProps = {};
               // if (index === activeStep) {
               //   labelProps.error = false;

@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import { useDispatch, useSelector } from "react-redux";
 import { useAuth } from "src/hooks/useAuth";
 import authConfig from "src/configs/auth";
 
@@ -12,8 +11,7 @@ import Card from "@mui/material/Card";
 import Box from "@mui/material/Box";
 import organizationService from "src/provenAI-sdk/organizationService";
 import dataPodsService from "src/provenAI-sdk/dataPodsService";
-import DataPodStepperLinearWithValidation from "src/views/provenAI/data-pods-control/DataPodStepperLinearWithValidation";
-
+import DataPodStepperLinearWithValidation from "src/views/provenAI/data-pods-control/DataPodStepper";
 
 const StyledCardContent = styled(CardContent)(({ theme }) => ({
   paddingTop: `${theme.spacing(10)} !important`,
@@ -26,8 +24,6 @@ const StyledCardContent = styled(CardContent)(({ theme }) => ({
 
 const DataPodsControl = () => {
   const router = useRouter();
-  const state = useSelector((state) => state);
-  const dispatch = useDispatch();
   const { organizationId, dataPodId, vcOfferSessionId } = router.query;
   const auth = useAuth();
   const userOrganizations = auth?.user?.organizations;
@@ -37,7 +33,6 @@ const DataPodsControl = () => {
   const [dataPodPolicies, setDataPodPolicies] = useState({});
   const [activeStep, setActiveStep] = useState(0);
 
-
   const storedToken = window.localStorage.getItem(
     authConfig.storageTokenKeyName
   );
@@ -46,16 +41,10 @@ const DataPodsControl = () => {
     setActiveStep(0);
   }, [organizationId]);
 
-
   useEffect(() => {
     if (!organizationId) {
       setActiveOrganization({});
     }
-
-    if (!dataPodId) {
-      setActiveDataPod({});
-    }
-
     const fetchOrganization = async () => {
       try {
         const organization =
@@ -73,14 +62,24 @@ const DataPodsControl = () => {
         }
       }
 
-    const activeOrgProjects = auth.user.organizations.find(
-      (org) => org.id === organizationId
-    )?.projects;
+      const activeOrgProjects = auth.user.organizations.find(
+        (org) => org.id === organizationId
+      )?.projects;
 
-    if (activeOrgProjects) {
-      setUserDataPods(activeOrgProjects);
-    }
+      if (activeOrgProjects) {
+        setUserDataPods(activeOrgProjects);
+      }
     };
+
+    if (organizationId) {
+      fetchOrganization();
+    }
+  }, [storedToken, organizationId]);
+
+  useEffect(() => {
+    if (!dataPodId) {
+      setActiveDataPod({});
+    }
 
     const fetchDataPod = async () => {
       try {
@@ -91,7 +90,9 @@ const DataPodsControl = () => {
         setActiveDataPod(dataPod.data);
       } catch (error) {
         console.error("Error fetching data pod:", error);
-      }
+       if (error.response.status === 404) {          
+        setActiveDataPod({});       
+      }}
     };
 
     const fetchDataPodPolicies = async () => {
@@ -103,12 +104,12 @@ const DataPodsControl = () => {
         setDataPodPolicies(dataPodPolicies.data.content);
       } catch (error) {
         console.error("Error fetching data pod:", error);
+        if (error.response.status === 404) {          
+          setActiveAgent({});
+          setAgentPolicies({});
+        }
       }
     };
-
-    if (organizationId) {
-      fetchOrganization();      
-    }
 
     if (dataPodId) {
       fetchDataPod();

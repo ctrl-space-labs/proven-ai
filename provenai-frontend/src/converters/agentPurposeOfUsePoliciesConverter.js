@@ -33,12 +33,7 @@ const getAgentPurposeOfUsePoliciesDiff = (currentPolicies, newPolicies) => {
       newPolicy.policyOptionId === currentPolicy.policyOptionId       
     );
   }).map((policy) => policy.id);
-
-  console.log("currentPolicies", currentPolicies);
-  console.log("newPolicies", newPolicies);
-
-  console.log("policiesToCreate", policiesToCreate);
-  console.log("policyIdsToDelete", policyIdsToDelete);
+  
 
   return { policiesToCreate, policyIdsToDelete };
 

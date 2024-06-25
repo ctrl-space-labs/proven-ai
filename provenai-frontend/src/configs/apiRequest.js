@@ -1,8 +1,5 @@
-// const url = "http://localhost:5000/gendox/api/v1/"; // Local Environment
+const gendoxUrl = "http://localhost:5000/gendox/api/v1/"; // Local Environment
 //const url= 'https://gendox-api.ctrlspace.dev/gendox/api/v1/' // Production Environment (AWS)
-
-import { get } from "react-hook-form";
-
 // const url= 'http://localhost:8080/gendox/api/v1/' // Local Environment
 const url = 'https://dev.gendox.ctrlspace.dev/gendox/api/v1/' // Development Environment (Hetzner)
 const provenUrl = 'http://localhost:8082/proven-ai/api/v1/' // Local Environment
@@ -44,7 +41,7 @@ export default {
   getDataPodById: (dataPodId) =>
     `${provenUrl}data-pods/${dataPodId}`,
 
-  getAgentsByOrganization: () =>
+  agents: () =>
     `${provenUrl}agents`,
 
   getAgentById: (agentId) =>
@@ -67,6 +64,10 @@ export default {
 
   agentPurposeOfUsePolicies:() =>
     `${provenUrl}agent-purpose-of-use-policies`,
+
+  userAgents: () => {
+    return `${gendoxUrl}project-agents`;
+  },
 
 
   getProfile: url + "profile",

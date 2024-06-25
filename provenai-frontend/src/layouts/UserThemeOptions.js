@@ -16,7 +16,7 @@ const UserThemeOptions = () => {
       MuiCssBaseline: {
         styleOverrides: {
           '.layout-content-wrapper': {
-            backgroundImage: mode === 'light' ? `url('/images/gendox-background-light.webp')` : `url('/images/gendox-background-dark.webp')`,
+            backgroundImage: mode === 'light' ? `url('/images/proven-ai-background-light.webp')` : `url('/images/proven-ai-background-dark.webp')`,
             backgroundRepeat: 'no-repeat',
             backgroundSize: 'cover',
             backgroundPosition: 'right top',

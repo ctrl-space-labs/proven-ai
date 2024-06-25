@@ -5,6 +5,7 @@ import {
   Grid,
   Typography,
   Box,
+  Dialog,  
   FormControl,
   InputLabel,
   Select,
@@ -15,20 +16,24 @@ import {
 } from "@mui/material";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { userSchema, defaultUserInformation } from "../utils/validationSchemas";
+import { userSchema } from "src/utils/validationSchemas";
 // ** Icon Imports
 import Icon from "src/@core/components/icon";
+import { useRouter } from "next/router";
+import CredentialsWithQrCodeComponent from "src/views/provenAI/registration-components/CredentialsWithQrCodeComponent";
 
 const UserInformation = ({
   onSubmit,
   handleBack,
   userData,
   setUserData,
+  userOrganizations,  
   activeOrganization,
-  activeAgent,
-  userOrganizations,
+  secondFieldOnUrl,
+  getVcOfferUrl
 }) => {
   const theme = useTheme();
+
   const {
     control,
     handleSubmit,
@@ -41,9 +46,14 @@ const UserInformation = ({
     resolver: yupResolver(userSchema),
   });
 
+  const router = useRouter();
   const selectedOrganizationType = watch("selectedOrganizationType");
+  const [openCredentials, setOpenCredentials] = useState(false);
 
-  console.log("userData2", userData);
+  // Handle Edit dialog
+  const handleCredentialsOpen = () => setOpenCredentials(true);
+  const handleCredentialsClose = () => setOpenCredentials(false);
+
 
   useEffect(() => {
     Object.keys(userData).forEach((key) => {
@@ -55,10 +65,10 @@ const UserInformation = ({
     if (activeOrganization?.id) {
       const activeOrgName =
         userOrganizations.find((org) => org.id === activeOrganization.id)
-          ?.name || "";
-      setValue("selectedUserOrganization", activeOrgName);
+          ?.name || "new-organization";
+      setValue("organizationName", activeOrgName);
     }
-  }, [activeOrganization, userOrganizations, setValue]);
+  }, [activeOrganization, userOrganizations]);
 
   useEffect(() => {
     Object.keys(userData).forEach((key) => {
@@ -77,13 +87,36 @@ const UserInformation = ({
     onSubmit();
   };
 
+  const handleMenuItemClick = (org) => {
+    setUserData((prevData) => ({
+      ...prevData,
+      organizationName: org.name,
+    }));
+    updateShallowQueryParams({ organizationId: org.id });
+    console.log(`Clicked on organization: `, org);
+  };
+
+  const updateShallowQueryParams = (params) => {
+    router.push(
+      {
+        pathname: router.pathname,
+        query: {
+          ...router.query,
+          ...params,
+        },
+      },
+      undefined,
+      { shallow: true }
+    );
+  };
+
   return (
     <form onSubmit={handleSubmit(handleFormSubmit)}>
       <Grid container spacing={5}>
-        <Grid item xs={12} sm={4}>
+        <Grid item xs={12} sm={6}>
           <Typography
             variant="h5"
-            sx={{ fontWeight: 600, color: "text.primary" }}
+            sx={{ fontWeight: 800, color: "text.primary" }}
           >
             User Information
           </Typography>
@@ -91,32 +124,31 @@ const UserInformation = ({
             Enter Your Account Details
           </Typography>
         </Grid>
-
-        <Grid item xs={12} sm={5}>
-          {((!Object.keys(activeOrganization).length &&
-            !Object.keys(activeAgent).length) ||
-            (!Object.keys(activeOrganization).length &&
-              Object.keys(activeAgent).length) ||
-            (Object.keys(activeOrganization).length &&
-              !Object.keys(activeAgent).length)) && (
+        <Grid item xs={12} sm={6}>
+          {(!Object.keys(activeOrganization).length ||
+            !secondFieldOnUrl) && (
             <FormControl fullWidth>
               <InputLabel id="user-organization-label">
                 Select Organization
               </InputLabel>
               <Controller
-                name="selectedUserOrganization"
-                control={control}                
+                name="organizationName"
+                control={control}
                 render={({ field }) => (
                   <Select
                     labelId="user-organization-label"
                     {...field}
                     label="User Organization"
                   >
-                    <MenuItem value="new-organization">
+                    {/* <MenuItem value="new-organization">
                       New Organization
-                    </MenuItem>
+                    </MenuItem> */}
                     {userOrganizations.map((org) => (
-                      <MenuItem key={org.id} value={org.name}>
+                      <MenuItem
+                        key={org.id}
+                        value={org.name}
+                        onClick={() => handleMenuItemClick(org)}
+                      >
                         {org.name}
                       </MenuItem>
                     ))}
@@ -126,8 +158,8 @@ const UserInformation = ({
             </FormControl>
           )}
         </Grid>
-        <Grid item xs={12} sm={3}>
-          {watch("selectedUserOrganization") === "new-organization" && (
+        {/* <Grid item xs={12} sm={3}>
+          {watch("organizationName") === "new-organization" && (
             <Button
               variant="contained"
               onClick={() =>
@@ -137,12 +169,10 @@ const UserInformation = ({
               Create Organization
             </Button>
           )}
-        </Grid>
+        </Grid> */}
         <Grid item xs={12}>
           {" "}
         </Grid>
-
-
 
         <Grid item xs={12} sm={6}>
           <Box sx={{ display: "flex", alignItems: "center" }}>
@@ -165,7 +195,7 @@ const UserInformation = ({
             </FormControl>
           </Box>
         </Grid>
-
+        <Grid item xs={12} sm={6}></Grid>
         {selectedOrganizationType === "natural-person" && (
           <>
             <Grid item xs={12} sm={6}>
@@ -205,7 +235,28 @@ const UserInformation = ({
               </FormControl>
             </Grid>
 
-            <Grid item xs={12} sm={4}>
+            <Grid item xs={12} sm={3}>
+              <FormControl fullWidth>
+                <Controller
+                  name="personalIdentifier"
+                  control={control}
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      label="Personal Identifier"
+                      error={Boolean(errors.personalIdentifier)}
+                      helperText={
+                        errors.personalIdentifier
+                          ? "This field is required"
+                          : ""
+                      }
+                    />
+                  )}
+                />
+              </FormControl>
+            </Grid>
+
+            <Grid item xs={12} sm={3}>
               <FormControl fullWidth>
                 <Controller
                   name="dateOfBirth"
@@ -226,7 +277,7 @@ const UserInformation = ({
               </FormControl>
             </Grid>
 
-            <Grid item xs={12} sm={4}>
+            <Grid item xs={12} sm={3}>
               <FormControl fullWidth>
                 <InputLabel id="gender-label">Gender</InputLabel>
                 <Controller
@@ -252,7 +303,7 @@ const UserInformation = ({
                 )}
               </FormControl>
             </Grid>
-            <Grid item xs={12} sm={4}>
+            <Grid item xs={12} sm={3}>
               <FormControl fullWidth>
                 <InputLabel id="nationality-label">Nationality</InputLabel>
                 <Controller
@@ -415,6 +466,40 @@ const UserInformation = ({
             />
           </FormControl>
         </Grid>
+
+        <Grid item xs={8}>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              padding: "16px",
+              border: `2px solid ${theme.palette.primary.dark}`,
+              borderRadius: "4px",
+              mt: 4,
+              mb: 4,
+            }}
+          >
+            <Icon icon="mdi:account-outline" fontSize={50} />
+            <Typography sx={{ flexGrow: 1, mx: 2, textAlign: "center" }}>
+              Authenticate using W3C Verifiable ID
+            </Typography>
+            <Button variant="outlined" onClick={handleCredentialsOpen}>
+              Verifiable ID
+            </Button>
+          </Box>
+        </Grid>
+        <Dialog
+          open={openCredentials}
+          onClose={handleCredentialsClose}          
+          sx={{ "& .MuiPaper-root": { width: "100%", maxWidth: 650 } }}
+        >
+          <CredentialsWithQrCodeComponent
+            handleCredentialsClose={handleCredentialsClose}
+            getURL={getVcOfferUrl}
+          />
+          
+        </Dialog>
 
         <Grid
           item

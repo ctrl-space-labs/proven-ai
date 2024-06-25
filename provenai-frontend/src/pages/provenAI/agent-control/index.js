@@ -13,7 +13,7 @@ import Box from "@mui/material/Box";
 import organizationService from "src/provenAI-sdk/organizationService";
 import agentService from "src/provenAI-sdk/agentService";
 
-import AgentStepperLinearWithValidation from "src/views/provenAI/agent-control/AgentStepperLinearWithValidation";
+import AgentStepperLinearWithValidation from "src/views/provenAI/agent-control/AgentStepper";
 
 const StyledCardContent = styled(CardContent)(({ theme }) => ({
   paddingTop: `${theme.spacing(10)} !important`,
@@ -26,29 +26,26 @@ const StyledCardContent = styled(CardContent)(({ theme }) => ({
 
 const AgentControl = () => {
   const router = useRouter();
-  const { organizationId, agentId } = router.query;
+  const { organizationId, agentId, vcOfferSessionId } = router.query;
   const auth = useAuth();
-
   const userOrganizations = auth?.user?.organizations;
   const [activeOrganization, setActiveOrganization] = useState({});
   const [activeAgent, setActiveAgent] = useState({});
   const [agentPolicies, setAgentPolicies] = useState({});
+  const [userAgents, setUserAgents] = useState([]);
+  const [activeStep, setActiveStep] = useState(0);
 
   const storedToken = window.localStorage.getItem(
     authConfig.storageTokenKeyName
   );
 
-  console.log("activeOrganization00", activeOrganization);
-  console.log("activeAgent00", activeAgent);
-  console.log("agentPolicies00", agentPolicies);
+  useEffect(() => {
+    setActiveStep(0);
+  }, [organizationId]);
 
   useEffect(() => {
     if (!organizationId) {
       setActiveOrganization({});
-    }
-
-    if (!agentId) {
-      setActiveAgent({});
     }
 
     const fetchOrganization = async () => {
@@ -61,8 +58,35 @@ const AgentControl = () => {
         setActiveOrganization(organization.data);
       } catch (error) {
         console.error("Error fetching organization:", error);
+        if (error.response.status === 404) {
+          setActiveOrganization({});
+          setActiveAgent({});
+          setAgentPolicies({});
+        }
+      }
+
+      // TODO: get organizations agents
+
+      try {
+        const userAgents = await agentService.getUserAgentsByOrganizationId(
+          organizationId,
+          storedToken
+        );
+        setUserAgents(userAgents.data.content);
+      } catch (error) {
+        console.error("Error fetching user agents:", error);
       }
     };
+
+    if (organizationId) {
+      fetchOrganization();
+    }
+  }, [organizationId, storedToken]);
+
+  useEffect(() => {
+    if (!agentId) {
+      setActiveAgent({});
+    }
 
     const fetchAgent = async () => {
       try {
@@ -70,6 +94,9 @@ const AgentControl = () => {
         setActiveAgent(agent.data);
       } catch (error) {
         console.error("Error fetching agent:", error);
+        if (error.response.status === 404) {
+          setActiveAgent({});
+        }
       }
     };
 
@@ -81,19 +108,17 @@ const AgentControl = () => {
         );
         setAgentPolicies(agent.data.content);
       } catch (error) {
-        console.error("Error fetching data pod:", error);
+        console.error("Error fetching Agent Policies:", error);
+        if (error.response.status === 404) {
+          setAgentPolicies({});
+        }
       }
     };
-
-    if (organizationId) {
-      fetchOrganization();
-    }
 
     if (agentId) {
       fetchAgent();
       fetchAgentPolicies();
     }
-    
   }, [storedToken, organizationId, agentId]);
 
   return (
@@ -121,6 +146,12 @@ const AgentControl = () => {
         activeOrganization={activeOrganization}
         activeAgent={activeAgent}
         agentPolicies={agentPolicies}
+        userAgents={userAgents}
+        activeStep={activeStep}
+        setActiveStep={setActiveStep}
+        organizationId={organizationId}
+        agentId={agentId}
+        vcOfferSessionId={vcOfferSessionId}
       />
     </Card>
   );

@@ -28,6 +28,9 @@ const ReviewAndComplete = ({ onSubmit, handleBack, userData, agentData }) => {
           </Typography>
           {userData.selectedOrganizationType === "natural-person" ? (
             <>
+            <Typography variant="body1">
+                Organization: {userData.organizationName || "N/A"}
+              </Typography>
               <Typography variant="body1">
                 First Name: {userData.firstName}
               </Typography>
@@ -77,6 +80,10 @@ const ReviewAndComplete = ({ onSubmit, handleBack, userData, agentData }) => {
           >
             Agent Information
           </Typography>
+          <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2, mb: 3 }}>
+            <Typography variant="body1">Agent:</Typography>
+            {agentData.agentName || "N/A"}
+          </Box>
           <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2, mb: 3 }}>
             <Typography variant="body1">Agent Purpose:</Typography>
             {agentData.agentPurpose?.map((p) => (

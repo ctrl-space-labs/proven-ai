@@ -15,6 +15,8 @@ import java.util.UUID;
 @Repository
 public interface AgentRepository extends JpaRepository<Agent, UUID>, QuerydslPredicateExecutor<Agent> {
 
+    boolean existsByAgentUsername(String agentUsername);
+
     @Transactional
     @Modifying
     @Query("update Agent a set a.agentVcJwt = :agentVcJwt where a.id = :id")
