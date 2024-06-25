@@ -13,7 +13,7 @@ import Box from "@mui/material/Box";
 import organizationService from "src/provenAI-sdk/organizationService";
 import agentService from "src/provenAI-sdk/agentService";
 
-import AgentStepperLinearWithValidation from "src/views/provenAI/agent-control/AgentStepperLinearWithValidation";
+import AgentStepperLinearWithValidation from "src/views/provenAI/agent-control/AgentStepper";
 
 const StyledCardContent = styled(CardContent)(({ theme }) => ({
   paddingTop: `${theme.spacing(10)} !important`,

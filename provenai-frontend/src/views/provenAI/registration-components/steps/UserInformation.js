@@ -16,11 +16,11 @@ import {
 } from "@mui/material";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { userSchema, defaultUserInformation } from "../utils/validationSchemas";
+import { userSchema } from "src/utils/validationSchemas";
 // ** Icon Imports
 import Icon from "src/@core/components/icon";
 import { useRouter } from "next/router";
-import CredentialsWithQrCodeComponent from "src/views/provenAI/data-pods-control/CredentialsWithQrCodeComponent";
+import CredentialsWithQrCodeComponent from "src/views/provenAI/registration-components/CredentialsWithQrCodeComponent";
 
 const UserInformation = ({
   onSubmit,
@@ -29,7 +29,7 @@ const UserInformation = ({
   setUserData,
   userOrganizations,  
   activeOrganization,
-  activeAgent,
+  secondFieldOnUrl,
   getVcOfferUrl
 }) => {
   const theme = useTheme();
@@ -126,7 +126,7 @@ const UserInformation = ({
         </Grid>
         <Grid item xs={12} sm={6}>
           {(!Object.keys(activeOrganization).length ||
-            !Object.keys(activeAgent).length) && (
+            !secondFieldOnUrl) && (
             <FormControl fullWidth>
               <InputLabel id="user-organization-label">
                 Select Organization

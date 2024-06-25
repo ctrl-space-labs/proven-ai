@@ -11,7 +11,7 @@ import Card from "@mui/material/Card";
 import Box from "@mui/material/Box";
 import organizationService from "src/provenAI-sdk/organizationService";
 import dataPodsService from "src/provenAI-sdk/dataPodsService";
-import DataPodStepperLinearWithValidation from "src/views/provenAI/data-pods-control/DataPodStepperLinearWithValidation";
+import DataPodStepperLinearWithValidation from "src/views/provenAI/data-pods-control/DataPodStepper";
 
 const StyledCardContent = styled(CardContent)(({ theme }) => ({
   paddingTop: `${theme.spacing(10)} !important`,
