@@ -54,15 +54,6 @@ const UserInformation = ({
   const handleCredentialsOpen = () => setOpenCredentials(true);
   const handleCredentialsClose = () => setOpenCredentials(false);
 
-  // console.log("active organization222", activeOrganization);
-  // console.log("active data pod2222", activeDataPod);
-  // console.log("USER ORGANIZATIONS2222", userOrganizations);
-  // console.log(
-  //   "aaa",
-  //   activeOrganization.id
-  //     ? userOrganizations.find((org) => org.id === activeOrganization.id)?.name
-  //     : ""
-  // );
 
   useEffect(() => {
     Object.keys(userData).forEach((key) => {

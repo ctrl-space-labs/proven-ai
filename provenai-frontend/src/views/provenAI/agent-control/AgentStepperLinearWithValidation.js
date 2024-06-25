@@ -35,38 +35,53 @@ import {
   defaultUserInformation,
   defaultAgentInformation,
 } from "src/views/provenAI/agent-control/utils/defaultValues";
+import ssiService from "../../../provenAI-sdk/ssiService";
 
 const AgentStepperLinearWithValidation = ({
   userOrganizations,
   activeOrganization,
   activeAgent,
-  agentPolicies
-}
-) => {
+  agentPolicies,
+  activeStep,
+  setActiveStep,
+  organizationId,
+  agentId,
+  userAgents,
+  vcOfferSessionId,
+}) => {
   const theme = useTheme();
   const router = useRouter();
   const storedToken = window.localStorage.getItem(
     authConfig.storageTokenKeyName
   );
 
-  const [activeStep, setActiveStep] = useState(0);
-
   // Form data states
   const [userData, setUserData] = useState(defaultUserInformation);
   const [agentData, setAgentData] = useState(defaultAgentInformation);
 
-  console.log("activeOrganization11", activeOrganization);
-  console.log("activeAgent11", activeAgent);
-  console.log("agentPolicies11", agentPolicies);
+  // console.log("USER AGENTS", userAgents);
+  // console.log("User Data", userData);
+  // console.log("Agent Data", agentData);
+  // console.log("User Agents--->", userAgents);
+  // console.log("Active Agent--->", activeAgent);
 
-  
+  useEffect(() => {
+    if (vcOfferSessionId) {
+      handleVcOfferFlow();
+    }
+  }, [vcOfferSessionId]);
 
   useEffect(() => {
     if (Object.keys(activeOrganization).length !== 0) {
       const userInfo =
         converterToStepperData.toUserInformation(activeOrganization);
-        console.log("userInfo@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@", userInfo);
       setUserData(userInfo);
+    } else {
+      // new organization
+      setUserData((prevData) => ({
+        ...defaultUserInformation,
+        organizationName: prevData.organizationName,
+      }));
     }
   }, [activeOrganization]);
 
@@ -77,20 +92,63 @@ const AgentStepperLinearWithValidation = ({
       setAgentData((prevAgentData) => ({
         ...agentDataPolicies,
       }));
+    } else {
+      setAgentData((prevAgentData) => ({
+        ...defaultAgentInformation,
+        agentName: prevAgentData.agentName,
+        agentUserId: prevAgentData.agentUserId,
+      }));
     }
   }, [agentPolicies]);
-
-  // console.log("userData106", userData);
-  // console.log("agentData107", agentData);
-  // console.log("ACTIVE AGENT POLICIES", agentPolicies);
 
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
 
   const refreshPage = () => {
-    const url = `/provenAI/agent-control?organizationId=${activeOrganization.id}&agentId=${activeAgent.id}`;
+    const url = `/provenAI/agent-control?organizationId=${organizationId}&agentId=${agentId}`;
     router.reload(url);
+  };
+
+  const getVcOfferUrl = async () => {
+    const offer = await organizationService.getVcOfferUrl(
+      storedToken,
+      organizationId,
+      router.asPath
+    );
+    return offer.data.credentialVerificationUrl;
+  };
+
+  /**
+   * Handle successful VC offer
+   *
+   * @param organizationId
+   * @return {Promise<boolean>}   true if VC offer flow completed successfully
+   */
+  const handleVcOfferFlow = async () => {
+    let offeredVP = await ssiService.getVcOffered(vcOfferSessionId);
+    if (offeredVP.data.policyResults.success !== true) {
+      throw new Error("VC offer failed");
+    }
+    // offeredVP.data.policyResults -> this is an array. we are looking for the element that has value .credential === "VerifiablePresentation"
+    // the in this element, has a array 'policies', we are looking for the element that has value .policy === "signature"
+    let organizationDid = ssiService.getVerifiedVcSignaturePolicy(
+      offeredVP.data
+    ).sub;
+    let vcCredentialSubject = ssiService.getVerifiedVcCredentialSubject(
+      offeredVP.data
+    );
+    console.log(
+      "VC CredentialSubject: ",
+      ssiService.getVerifiedVcCredentialSubject(offeredVP.data)
+    );
+    console.log("organizationDid", organizationDid);
+
+    setUserData((prevData) => ({
+      ...prevData,
+      organizationVpJwt: offeredVP.data.tokenResponse.vp_token,
+      organizationDid: organizationDid,
+    }));
   };
 
   const onSubmit = async () => {
@@ -98,20 +156,38 @@ const AgentStepperLinearWithValidation = ({
     if (activeStep === steps.length - 1) {
       try {
         const organizationDTO = converterToStepperData.toOrganizationDTO(
-          activeOrganization.id,
+          organizationId,
           userData
         );
-        await organizationService.updateOrganization(
-          organizationDTO,
-          storedToken
-        );
-        toast.success("Organization updated successfully!");
+        if (Object.keys(activeOrganization).length !== 0) {
+          await organizationService.updateOrganization(
+            organizationDTO,
+            storedToken
+          );
+          toast.success("Organization updated successfully!");
+        } else {
+          await organizationService.createOrganization(
+            organizationDTO,
+            storedToken
+          );
+          toast.success("Organization registration successfully!");
+        }
+
+        if (Object.keys(activeAgent).length === 0) {
+          const agentDTO = converterToStepperData.toAgentDTO(
+            agentData,
+            organizationId,
+            agentId
+          );
+          await agentService.createAgent(agentDTO, storedToken);
+          toast.success("Agent created successfully!");
+        }
 
         const { policiesToCreate, policyIdsToDelete } =
           convertToAgentPurposeOfUsePolicies.convertAndComparePolicies(
             agentData,
             agentPolicies,
-            activeAgent.id
+            agentId
           );
 
         // Create new policies
@@ -154,7 +230,8 @@ const AgentStepperLinearWithValidation = ({
             setUserData={setUserData}
             activeOrganization={activeOrganization}
             activeAgent={activeAgent}
-            userOrganizations={userOrganizations}       
+            userOrganizations={userOrganizations}
+            getVcOfferUrl={getVcOfferUrl}
           />
         );
       case 1:
@@ -165,6 +242,8 @@ const AgentStepperLinearWithValidation = ({
             agentData={agentData}
             setAgentData={setAgentData}
             activeAgent={activeAgent}
+            userAgents={userAgents}
+            organizationId={organizationId}
           />
         );
       case 2:

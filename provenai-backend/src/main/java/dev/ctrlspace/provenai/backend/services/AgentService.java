@@ -140,9 +140,16 @@ public class AgentService {
     }
 
 
-    public Agent createAgent(Agent agent, List<Policy> policies) {
-        agent.setAgentName(agent.getAgentName());
-        // Save the Agent entity first to generate its ID
+    public Agent createAgent(Agent agent, List<Policy> policies) throws ProvenAiException {
+
+        if (agentRepository.existsByAgentUsername(agent.getAgentUsername())) {
+            throw new ProvenAiException("AGENT_USERNAME_EXISTS", "Agent with the same username already exists", HttpStatus.BAD_REQUEST);
+        }
+
+        Instant now = Instant.now();
+        agent.setCreatedAt(now);
+        agent.setUpdatedAt(now);
+
         Agent savedAgent = agentRepository.save(agent);
 
         List<AgentPurposeOfUsePolicies> savedPolicies = agentPurposeOfUsePoliciesService.savePoliciesForAgent(savedAgent, policies);

@@ -1,7 +1,6 @@
 // ** React Imports
 import { Fragment, useState, useEffect } from "react";
 import { styled, useTheme } from "@mui/material/styles";
-import { useSelector } from "react-redux";
 import { useRouter } from "next/router";
 
 // ** MUI Imports

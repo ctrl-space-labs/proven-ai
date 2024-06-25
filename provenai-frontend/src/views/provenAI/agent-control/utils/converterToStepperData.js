@@ -31,6 +31,22 @@ const toUserInformation = (organization) => {
 };
 
 /**
+ * Convert agentData to agentDTO
+ * 
+ * @param {Object} agentData - The agent data to convert.
+ * @returns {Object} The converted agent DTO.
+ */
+const toAgentDTO = (agentData, organizationId, agentId) => {
+  return {
+    id: agentId,
+    organizationId: organizationId,
+    agentName: agentData.agentName,
+    agentUsername: agentData.agentName,
+    usagePolicies:[]
+  };
+};
+
+/**
  * Converts activeDataPod to agent policies.
  *
  * @param {Array} activeAgentPolicies - The active data pod to convert.
@@ -119,5 +135,6 @@ const toOrganizationDTO = (organizationId, userInfo) => {
 export default {
   toUserInformation,
   toAgentPolicies,
-  toOrganizationDTO
+  toOrganizationDTO,
+  toAgentDTO,
 };
