@@ -19,7 +19,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 
 
 @RestController
@@ -57,7 +59,7 @@ public class OrganizationsController implements OrganizationsControllerSpec {
 
 
     @PostMapping(value = "/organizations/registration", consumes = {"application/json"})
-    public Organization registerOrganization(@RequestBody OrganizationDTO organizationDTO) throws JsonProcessingException {
+    public Organization registerOrganization(@RequestBody OrganizationDTO organizationDTO) throws IOException, ExecutionException, InterruptedException, ProvenAiException {
         Organization organization = organizationConverter.toEntity(organizationDTO);
 
         return organizationsService.registerOrganization(organization);
@@ -84,8 +86,7 @@ public class OrganizationsController implements OrganizationsControllerSpec {
 
     @PostMapping("/organizations/verify-vp")
     public CredentialVerificationDTO verifyOrganizationVP(@RequestBody JsonNode vpRequest) {
-        CredentialVerificationDTO credentialVerificationDTO = organizationsService.verifyOrganizationVP(vpRequest);
-        return credentialVerificationDTO;
+        return organizationsService.verifyOrganizationVP(vpRequest);
     }
 
 }

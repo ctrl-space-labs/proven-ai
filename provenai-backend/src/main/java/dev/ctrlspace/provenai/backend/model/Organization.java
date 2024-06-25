@@ -169,7 +169,7 @@ public class Organization {
     }
 
     public void setIsNaturalPerson(Boolean isNaturalPerson) {
-        isNaturalPerson = isNaturalPerson;
+        this.isNaturalPerson = isNaturalPerson;
     }
 
     public String getLegalPersonIdentifier() {
