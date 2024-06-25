@@ -88,7 +88,11 @@ public class OrganizationsController implements OrganizationsControllerSpec {
 
     @PostMapping("/organizations/{organizationId}/verify-vp")
     public CredentialVerificationDTO verifyOrganizationVP(@RequestBody JsonNode vpRequest, @PathVariable UUID organizationId, @RequestParam(required = false, name = "redirectPath") String base64RedirectPath) throws ProvenAiException {
-        String redirectPath = new String(Base64.getDecoder().decode(base64RedirectPath));
+        String redirectPath = null;
+        if (base64RedirectPath != null) {
+            redirectPath = new String(Base64.getDecoder().decode(base64RedirectPath));
+        }
+
         if (Strings.isNotBlank(redirectPath) && redirectPath.startsWith("http")) {
             throw new ProvenAiException("INVALID_REDIRECT_URL", "Only relative path is allowed", HttpStatus.BAD_REQUEST);
         }
