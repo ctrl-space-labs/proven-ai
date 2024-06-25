@@ -4,7 +4,7 @@ const gendoxUrl = "http://localhost:5000/gendox/api/v1/"; // Local Environment
 const url = 'https://dev.gendox.ctrlspace.dev/gendox/api/v1/' // Development Environment (Hetzner)
 const provenUrl = 'http://localhost:8082/proven-ai/api/v1/' // Local Environment
 
-const verifierUrl = 'http://localhost:7003/' // Local Environment
+const verifierUrl = 'https://proven-ai-dev.ctrlspace.dev/verifier/' // Local Environment
 
 
 export default {
