@@ -37,7 +37,9 @@ export const agentSteps = [
 export const defaultUserInformation = {
   firstName: "",
   familyName: "",
-  selectedOrganizationType: "natural-person",
+  selectedOrganizationType: "",
+  organizationDid: "",
+  organizationVpJwt: "",
   organizationName: "",
   personalIdentifier: "",
   gender: "",

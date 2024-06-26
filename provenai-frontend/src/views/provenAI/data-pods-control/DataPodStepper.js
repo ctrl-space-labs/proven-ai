@@ -40,7 +40,6 @@ import {
   defaultDataPodInformation,
   defaultDataUse,
 } from "src/utils/defaultValues";
-import ssiService from "../../../provenAI-sdk/ssiService";
 
 const StepperLinearWithValidation = ({
   activeDataPod,
@@ -52,7 +51,7 @@ const StepperLinearWithValidation = ({
   dataPodId,
   activeStep,
   setActiveStep,
-  vcOfferSessionId
+  vcOfferSessionId,
 }) => {
   const router = useRouter();
   // const activeOrganization = useSelector((state) => state.activeOrganization.activeOrganization);
@@ -76,23 +75,36 @@ const StepperLinearWithValidation = ({
   // console.log("DATA POD POLICIES", dataPodPolicies);
   // console.log("USER DATA PODS", userDataPods);
   // console.log("USER ORGANIZATIONS", userOrganizations);
-  // console.log("USER DATA", userData);
+  console.log("USER DATA", userData);
   // console.log("DATA POD DATA", dataPodData);
   // console.log("USE POLICIES DATA", usePoliciesData);
+  // console.log("VC OFFER SESSION ID", vcOfferSessionId);
 
-  useEffect(() => {
-    if (vcOfferSessionId) {
-      handleVcOfferFlow();
-    }
-  }, [vcOfferSessionId]);
-
+  
   useEffect(() => {
     if (Object.keys(activeOrganization).length !== 0) {
-      const userInfo = organizationConverter.toUserInformation(activeOrganization);
-      setUserData(userInfo);
+      const userInfo =
+        organizationConverter.toUserInformation(activeOrganization);
+
+      setUserData((prevData) => {
+        const updatedUserInfo = { ...userInfo };
+
+        // check if any field is empty, if so, keep the previous value
+        Object.keys(userInfo).forEach((key) => {
+          if (
+            userInfo[key] === "" ||
+            userInfo[key] === null ||
+            userInfo[key] === undefined
+          ) {
+            updatedUserInfo[key] = prevData[key];
+          }
+        });
+
+        return updatedUserInfo;
+      });
     } else {
       // new organization
-      setUserData(prevData => ({
+      setUserData((prevData) => ({
         ...defaultUserInformation,
         organizationName: prevData.organizationName,
       }));
@@ -110,8 +122,8 @@ const StepperLinearWithValidation = ({
       setUsePoliciesData((prevUsePoliciesData) => ({
         ...usePolicies,
       }));
-    } else {      
-      setDataPodData(prevData => ({
+    } else {
+      setDataPodData((prevData) => ({
         ...defaultDataPodInformation,
         dataPodName: prevData.dataPodName,
       }));
@@ -128,38 +140,15 @@ const StepperLinearWithValidation = ({
     router.reload(url);
   };
   const getVcOfferUrl = async () => {
-    const offer = await organizationService.getVcOfferUrl(storedToken, organizationId, router.asPath);
+    const offer = await organizationService.getVcOfferUrl(
+      storedToken,
+      organizationId,
+      router.asPath
+    );
     return offer.data.credentialVerificationUrl;
-  }
+  };
 
-  /**
-   * Handle successful VC offer
-   *
-   * @param organizationId
-   * @return {Promise<boolean>}   true if VC offer flow completed successfully
-   */
-  const handleVcOfferFlow = async () => {
-
-    let offeredVP = await ssiService.getVcOffered(vcOfferSessionId);
-    if (offeredVP.data.policyResults.success !== true) {
-      throw new Error("VC offer failed");
-    }
-    // offeredVP.data.policyResults -> this is an array. we are looking for the element that has value .credential === "VerifiablePresentation"
-    // the in this element, has a array 'policies', we are looking for the element that has value .policy === "signature"
-    let organizationDid = ssiService.getVerifiedVcSignaturePolicy(offeredVP.data).sub;
-    let vcCredentialSubject = ssiService.getVerifiedVcCredentialSubject(offeredVP.data);
-    console.log("VC CredentialSubject: ", ssiService.getVerifiedVcCredentialSubject(offeredVP.data))
-    console.log("organizationDid", organizationDid);
-
-
-
-    setUserData(prevData => (
-        {
-          ...prevData,
-          organizationVpJwt: offeredVP.data.tokenResponse.vp_token,
-          organizationDid: organizationDid
-        }));
-  }
+  
 
   const onSubmit = async () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -169,7 +158,7 @@ const StepperLinearWithValidation = ({
           organizationId,
           userData
         );
-        
+
         if (Object.keys(activeOrganization).length !== 0) {
           await organizationService.updateOrganization(
             organizationDTO,
@@ -184,14 +173,13 @@ const StepperLinearWithValidation = ({
           toast.success("Organization registration successfully!");
         }
 
-        
         if (Object.keys(activeDataPod).length === 0) {
           const dataPodDTO = dataPodConverter.toDataPodDTO(
             dataPodData,
             organizationId,
             dataPodId
           );
-          
+
           await dataPodsService.createDataPod(dataPodDTO, storedToken);
           toast.success("Data Pod created successfully!");
         }
@@ -204,8 +192,6 @@ const StepperLinearWithValidation = ({
             dataPodPolicies,
             dataPodId
           );
-
-          
 
         // Create new ACL policies
         for (const aclPolicyDTO of aclPoliciesToCreate) {
@@ -240,9 +226,12 @@ const StepperLinearWithValidation = ({
             userData={userData}
             setUserData={setUserData}
             userOrganizations={userOrganizations}
-            secondFieldOnUrl={Object.keys(activeDataPod).length}
+            secondFieldOnUrl={
+              Object.keys(activeDataPod).length || vcOfferSessionId
+            }
             activeOrganization={activeOrganization}
             getVcOfferUrl={getVcOfferUrl}
+            vcOfferSessionId={vcOfferSessionId}
           />
         );
       case 1:

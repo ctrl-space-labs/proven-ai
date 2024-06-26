@@ -5,7 +5,7 @@ import {
   Grid,
   Typography,
   Box,
-  Dialog,  
+  Dialog,
   FormControl,
   InputLabel,
   Select,
@@ -21,16 +21,18 @@ import { userSchema } from "src/utils/validationSchemas";
 import Icon from "src/@core/components/icon";
 import { useRouter } from "next/router";
 import CredentialsWithQrCodeComponent from "src/views/provenAI/registration-components/CredentialsWithQrCodeComponent";
+import ssiService from "src/provenAI-sdk/ssiService";
 
 const UserInformation = ({
   onSubmit,
   handleBack,
   userData,
   setUserData,
-  userOrganizations,  
+  userOrganizations,
   activeOrganization,
   secondFieldOnUrl,
-  getVcOfferUrl
+  getVcOfferUrl,
+  vcOfferSessionId,
 }) => {
   const theme = useTheme();
 
@@ -54,12 +56,52 @@ const UserInformation = ({
   const handleCredentialsOpen = () => setOpenCredentials(true);
   const handleCredentialsClose = () => setOpenCredentials(false);
 
-
   useEffect(() => {
     Object.keys(userData).forEach((key) => {
       setValue(key, userData[key]);
     });
   }, [userData, setValue]);
+
+  useEffect(() => {
+    const fetchVcOfferFlow = async () => {
+      try {
+        if (vcOfferSessionId) {
+          const {
+            offeredVP,
+            organizationDid,
+            vcCredentialSubject,
+            vcCredentialType,
+          } = await ssiService.handleVcOfferFlow(vcOfferSessionId);
+
+          let selectedOrganizationType = "natural-person";
+          if (vcCredentialType === "LegalEntityVerifiableID") {
+            selectedOrganizationType = "legal-entity";
+          }
+
+          setUserData((prevData) => ({
+            ...prevData,
+            selectedOrganizationType: selectedOrganizationType,
+            organizationVpJwt: offeredVP.data.tokenResponse.vp_token,
+            organizationDid: organizationDid,
+            firstName: vcCredentialSubject.firstName,
+            familyName: vcCredentialSubject.familyName,
+            gender: vcCredentialSubject.gender,
+            dateOfBirth: vcCredentialSubject.dateOfBirth,
+            personalIdentifier: vcCredentialSubject.personalIdentifier,
+            legalPersonIdentifier: vcCredentialSubject.legalPersonIdentifier,
+            legalName: vcCredentialSubject.legalName,
+            legalAddress: vcCredentialSubject.legalAddress,
+            taxReference: vcCredentialSubject.taxReference,
+            vatNumber: vcCredentialSubject.VATRegistration,
+          }));
+        }
+      } catch (error) {
+        console.error("Failed to fetch VC offer flow:", error);
+      }
+    };
+
+    fetchVcOfferFlow();
+  }, [vcOfferSessionId, ssiService]);
 
   useEffect(() => {
     if (activeOrganization?.id) {
@@ -125,8 +167,7 @@ const UserInformation = ({
           </Typography>
         </Grid>
         <Grid item xs={12} sm={6}>
-          {(!Object.keys(activeOrganization).length ||
-            !secondFieldOnUrl) && (
+          {(!Object.keys(activeOrganization).length || !secondFieldOnUrl) && (
             <FormControl fullWidth>
               <InputLabel id="user-organization-label">
                 Select Organization
@@ -491,14 +532,13 @@ const UserInformation = ({
         </Grid>
         <Dialog
           open={openCredentials}
-          onClose={handleCredentialsClose}          
+          onClose={handleCredentialsClose}
           sx={{ "& .MuiPaper-root": { width: "100%", maxWidth: 650 } }}
         >
           <CredentialsWithQrCodeComponent
             handleCredentialsClose={handleCredentialsClose}
             getURL={getVcOfferUrl}
           />
-          
         </Dialog>
 
         <Grid
