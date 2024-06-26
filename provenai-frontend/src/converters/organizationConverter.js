@@ -15,6 +15,8 @@ const toUserInformation = (organization) => {
       nationality: organization.nationality,
       personalIdentifier: organization.personalIdentifier,
       organizationName: organization.name,
+      organizationDid: organization.organizationDid,
+      organizationVpJwt: organization.organizationVpJwt,
     };
   } else if (!organization.naturalPerson) {
     return {
@@ -26,7 +28,8 @@ const toUserInformation = (organization) => {
       taxReference: organization.taxReference,
       vatNumber: organization.vatNumber,
       organizationName: organization.name,
-
+      organizationDid: organization.organizationDid,
+      organizationVpJwt: organization.organizationVpJwt,
     };
   } else {
     return null;
@@ -46,7 +49,7 @@ const toOrganizationDTO = (organizationId, userData) => {
       return d.toISOString();
     } else {
       return null;
-    }  
+    }
   };
 
   if (userData.selectedOrganizationType === "natural-person") {
@@ -60,6 +63,8 @@ const toOrganizationDTO = (organizationId, userData) => {
       dateOfBirth: formatDate(userData.dateOfBirth),
       nationality: userData.nationality,
       personalIdentifier: userData.personalIdentifier,
+      organizationDid: userData.organizationDid,
+      organizationVpJwt: userData.organizationVpJwt,
     };
   } else if (userData.selectedOrganizationType === "legal-entity") {
     return {
@@ -72,15 +77,15 @@ const toOrganizationDTO = (organizationId, userData) => {
       country: userData.country,
       taxReference: userData.taxReference,
       vatNumber: userData.vatNumber,
+      organizationDid: userData.organizationDid,
+      organizationVpJwt: userData.organizationVpJwt,
     };
   } else {
     return null;
   }
 };
 
-
-
 export default {
-  toUserInformation,  
-  toOrganizationDTO,  
+  toUserInformation,
+  toOrganizationDTO,
 };

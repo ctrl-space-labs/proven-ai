@@ -27,7 +27,7 @@ const getVerifiedVcSignaturePolicy = (verifiedVP) => {
 };
 
 const getVerifiedVcCredentialType = (verifiedVP) => {
-    let credentialType = verifiedVP.presentation_submission.descriptor_map[0].id;
+    let credentialType = verifiedVP.tokenResponse.presentation_submission.descriptor_map[0].id;
 
     return credentialType;
 };
@@ -44,6 +44,33 @@ const getVerifiedVcCredentialSubject = (verifiedVP) => {
     return getVerifiedVcJwtPayload(verifiedVP).vc.credentialSubject;
 }
 
+/**
+   * Handle successful VC offer
+   *
+   * @param vcOfferSessionId
+   * @return {Promise<boolean>}   true if VC offer flow completed successfully
+   */
+const handleVcOfferFlow = async (vcOfferSessionId) => {
+    let offeredVP = await getVcOffered(vcOfferSessionId);
+    if (offeredVP.data.policyResults.success !== true) {
+      throw new Error("VC offer failed");
+    }
+    // offeredVP.data.policyResults -> this is an array. we are looking for the element that has value .credential === "VerifiablePresentation"
+    // the in this element, has a array 'policies', we are looking for the element that has value .policy === "signature"
+    let organizationDid = getVerifiedVcSignaturePolicy(
+      offeredVP.data
+    ).sub;
+    let vcCredentialSubject = getVerifiedVcCredentialSubject(
+      offeredVP.data
+    );
+    let vcCredentialType = getVerifiedVcCredentialType(offeredVP.data);
+    console.log("credentialType", vcCredentialType);
+    console.log("VC CredentialSubject: ", vcCredentialSubject);
+    console.log("organizationDid", organizationDid);
+
+    return { offeredVP, organizationDid, vcCredentialSubject, vcCredentialType}
+  };
+
 const getAiAgentIdCredentialOffer = (agentId, token) => {
     return axios.post(apiRequests.ssi.getAiAgentIdCredentialOffer(agentId), {}, {
         headers: {
@@ -59,5 +86,6 @@ export default {
     getVerifiedVcCredentialType,
     getVerifiedVcJwtPayload,
     getVerifiedVcCredentialSubject,
+    handleVcOfferFlow,
     getAiAgentIdCredentialOffer
 };
