@@ -18,7 +18,9 @@ import Icon from "src/@core/components/icon";
 import QRCodeComponent from "src/views/provenAI/gq-code-component/QRCodeComponent";
 import useClipboard from "../../../@core/hooks/useClipboard";
 
-const CredentialsWithQrCodeComponent = ({ handleCredentialsClose, getURL }) => {
+const CredentialsWithQrCodeComponent = ({ handleCredentialsClose,
+                                            getURL,
+                                        title}) => {
   const theme = useTheme();
 
   const clipboard = useClipboard()
@@ -78,7 +80,7 @@ const CredentialsWithQrCodeComponent = ({ handleCredentialsClose, getURL }) => {
             padding: 0,           
           }}
         >
-          Offer your Credential
+            {title}
         </DialogTitle>
         <IconButton
           sx={{ color: "primary.main" }}

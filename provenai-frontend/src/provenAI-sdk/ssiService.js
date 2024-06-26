@@ -44,11 +44,20 @@ const getVerifiedVcCredentialSubject = (verifiedVP) => {
     return getVerifiedVcJwtPayload(verifiedVP).vc.credentialSubject;
 }
 
+const getAiAgentIdCredentialOffer = (agentId, token) => {
+    return axios.post(apiRequests.ssi.getAiAgentIdCredentialOffer(agentId), {}, {
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+        },
+    });
+};
 
 export default {
     getVcOffered,
     getVerifiedVcSignaturePolicy,
     getVerifiedVcCredentialType,
     getVerifiedVcJwtPayload,
-    getVerifiedVcCredentialSubject
+    getVerifiedVcCredentialSubject,
+    getAiAgentIdCredentialOffer
 };

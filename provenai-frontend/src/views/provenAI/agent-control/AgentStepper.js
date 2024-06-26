@@ -37,6 +37,7 @@ import {
   defaultAgentInformation,
 } from "src/utils/defaultValues";
 import ssiService from "../../../provenAI-sdk/ssiService";
+import CredentialsWithQrCodeComponent from "../registration-components/CredentialsWithQrCodeComponent";
 
 const AgentStepperLinearWithValidation = ({
   userOrganizations,
@@ -154,6 +155,7 @@ const AgentStepperLinearWithValidation = ({
 
   const onSubmit = async () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    let agentUpdated = false;
     if (activeStep === agentSteps.length - 1) {
       try {
         const organizationDTO = organizationConverter.toOrganizationDTO(
@@ -181,6 +183,7 @@ const AgentStepperLinearWithValidation = ({
             agentId
           );
           await agentService.createAgent(agentDTO, storedToken);
+          agentUpdated = true;
           toast.success("Agent created successfully!");
         }
 
@@ -197,6 +200,7 @@ const AgentStepperLinearWithValidation = ({
             policy,
             storedToken
           );
+          agentUpdated = true;
 
           console.log("Creating policy:", policy);
           toast.success("Policy created successfully!");
@@ -208,17 +212,31 @@ const AgentStepperLinearWithValidation = ({
             policyIdsToDelete,
             storedToken
           );
+          agentUpdated = true;
           console.log("Deleting policy:", policyIdsToDelete);
           toast.success("Policy deleted successfully!");
         }
 
         toast.success("Agent purpose of use policies updated successfully!");
+        if (agentUpdated) {
+          console.log(getAgentOfferVc());
+        }
       } catch (error) {
         console.error("Error updating Agent purpose of use policies:", error);
         toast.error("Failed to update Agent purpose of use policies!");
       }
     }
   };
+
+  const getAgentOfferVc = async () => {
+    const agentOfferVcResponse = await ssiService.getAiAgentIdCredentialOffer(agentId, storedToken);
+    return agentOfferVcResponse.data;
+  }
+
+  const getAgentOfferVcUrl = async () => {
+    const agentOfferVcResponse = await ssiService.getAiAgentIdCredentialOffer(agentId, storedToken);
+    return agentOfferVcResponse.data.credentialOfferUrl;
+  }
 
   const getStepContent = (step) => {
     switch (step) {
@@ -266,6 +284,10 @@ const AgentStepperLinearWithValidation = ({
       return (
         <Fragment>
           <Typography>All steps are completed!</Typography>
+          <CredentialsWithQrCodeComponent
+              title={"Receive your Agent ID Credential"}
+              handleCredentialsClose={null}
+              getURL={getAgentOfferVcUrl} />
           <Box sx={{ mt: 4, display: "flex", justifyContent: "flex-end" }}>
             <Button size="large" variant="contained" onClick={refreshPage}>
               Back

@@ -78,6 +78,7 @@ export default {
 
   ssi: {
     getVcFromOffer: (offerId) => `${verifierUrl}openid4vc/session/${offerId}`,
+    getAiAgentIdCredentialOffer: (agentId) => `${provenUrl}agents/${agentId}/credential-offer`,
   }
 
 

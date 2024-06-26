@@ -495,6 +495,7 @@ const UserInformation = ({
           sx={{ "& .MuiPaper-root": { width: "100%", maxWidth: 650 } }}
         >
           <CredentialsWithQrCodeComponent
+            title = {"Offer your Credential"}
             handleCredentialsClose={handleCredentialsClose}
             getURL={getVcOfferUrl}
           />
