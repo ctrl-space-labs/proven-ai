@@ -9,11 +9,9 @@ import Typography from "@mui/material/Typography";
 import CardContent from "@mui/material/CardContent";
 import Card from "@mui/material/Card";
 import Box from "@mui/material/Box";
-
 import organizationService from "src/provenAI-sdk/organizationService";
 import agentService from "src/provenAI-sdk/agentService";
-
-import AgentStepperLinearWithValidation from "src/views/provenAI/agent-control/AgentStepper";
+import AgentStepper from "src/views/provenAI/agent-control/AgentStepper";
 
 const StyledCardContent = styled(CardContent)(({ theme }) => ({
   paddingTop: `${theme.spacing(10)} !important`,
@@ -65,7 +63,6 @@ const AgentControl = () => {
         }
       }
 
-      // TODO: get organizations agents
 
       try {
         const userAgents = await agentService.getUserAgentsByOrganizationId(
@@ -86,6 +83,7 @@ const AgentControl = () => {
   useEffect(() => {
     if (!agentId) {
       setActiveAgent({});
+      setAgentPolicies({});
     }
 
     const fetchAgent = async () => {
@@ -141,7 +139,7 @@ const AgentControl = () => {
       </StyledCardContent>
       <Box sx={{ height: 20 }} />
 
-      <AgentStepperLinearWithValidation
+      <AgentStepper
         userOrganizations={userOrganizations}
         activeOrganization={activeOrganization}
         activeAgent={activeAgent}

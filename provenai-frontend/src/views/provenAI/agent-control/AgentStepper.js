@@ -29,7 +29,7 @@ import agentService from "src/provenAI-sdk/agentService";
 import agentPurposeOfUsePoliciesService from "src/provenAI-sdk/agentPurposeOfUsePoliciesService";
 import organizationConverter from "src/converters/organizationConverter";
 import agentConverter from "src/converters/agentConverter";
-import convertToAgentPurposeOfUsePolicies from "src/converters/agentPurposeOfUsePoliciesConverter";
+import AgentPurposeOfUsePoliciesConverter from "src/converters/agentPurposeOfUsePoliciesConverter";
 
 import {
   agentSteps,
@@ -39,16 +39,16 @@ import {
 import ssiService from "../../../provenAI-sdk/ssiService";
 import CredentialsWithQrCodeComponent from "../registration-components/CredentialsWithQrCodeComponent";
 
-const AgentStepperLinearWithValidation = ({
-  userOrganizations,
-  activeOrganization,
+const AgentStepper = ({
   activeAgent,
+  activeOrganization,
   agentPolicies,
-  activeStep,
-  setActiveStep,
+  userAgents,
+  userOrganizations,
   organizationId,
   agentId,
-  userAgents,
+  activeStep,
+  setActiveStep,
   vcOfferSessionId,
 }) => {
   const theme = useTheme();
@@ -60,6 +60,8 @@ const AgentStepperLinearWithValidation = ({
   // Form data states
   const [userData, setUserData] = useState(defaultUserInformation);
   const [agentData, setAgentData] = useState(defaultAgentInformation);
+  const [agentUpdated, setAgentUpdated] = useState(false);
+  const [isSubmitComplete, setIsSubmitComplete] = useState(false);
 
   // console.log("USER AGENTS", userAgents);
   // console.log("User Data", userData);
@@ -68,16 +70,25 @@ const AgentStepperLinearWithValidation = ({
   // console.log("Active Agent--->", activeAgent);
 
   useEffect(() => {
-    if (vcOfferSessionId) {
-      handleVcOfferFlow();
-    }
-  }, [vcOfferSessionId]);
-
-  useEffect(() => {
     if (Object.keys(activeOrganization).length !== 0) {
       const userInfo =
-      organizationConverter.toUserInformation(activeOrganization);
-      setUserData(userInfo);
+        organizationConverter.toUserInformation(activeOrganization);
+      setUserData((prevData) => {
+        const updatedUserInfo = { ...userInfo };
+
+        // check if any field is empty, if so, keep the previous value
+        Object.keys(userInfo).forEach((key) => {
+          if (
+            userInfo[key] === "" ||
+            userInfo[key] === null ||
+            userInfo[key] === undefined
+          ) {
+            updatedUserInfo[key] = prevData[key];
+          }
+        });
+
+        return updatedUserInfo;
+      });
     } else {
       // new organization
       setUserData((prevData) => ({
@@ -89,8 +100,7 @@ const AgentStepperLinearWithValidation = ({
 
   useEffect(() => {
     if (agentPolicies && agentPolicies.length > 0) {
-      const agentDataPolicies =
-        agentConverter.toAgentPolicies(agentPolicies);
+      const agentDataPolicies = agentConverter.toAgentPolicies(agentPolicies);
       setAgentData((prevAgentData) => ({
         ...agentDataPolicies,
       }));
@@ -121,41 +131,8 @@ const AgentStepperLinearWithValidation = ({
     return offer.data.credentialVerificationUrl;
   };
 
-  /**
-   * Handle successful VC offer
-   *
-   * @param organizationId
-   * @return {Promise<boolean>}   true if VC offer flow completed successfully
-   */
-  const handleVcOfferFlow = async () => {
-    let offeredVP = await ssiService.getVcOffered(vcOfferSessionId);
-    if (offeredVP.data.policyResults.success !== true) {
-      throw new Error("VC offer failed");
-    }
-    // offeredVP.data.policyResults -> this is an array. we are looking for the element that has value .credential === "VerifiablePresentation"
-    // the in this element, has a array 'policies', we are looking for the element that has value .policy === "signature"
-    let organizationDid = ssiService.getVerifiedVcSignaturePolicy(
-      offeredVP.data
-    ).sub;
-    let vcCredentialSubject = ssiService.getVerifiedVcCredentialSubject(
-      offeredVP.data
-    );
-    console.log(
-      "VC CredentialSubject: ",
-      ssiService.getVerifiedVcCredentialSubject(offeredVP.data)
-    );
-    console.log("organizationDid", organizationDid);
-
-    setUserData((prevData) => ({
-      ...prevData,
-      organizationVpJwt: offeredVP.data.tokenResponse.vp_token,
-      organizationDid: organizationDid,
-    }));
-  };
-
   const onSubmit = async () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
-    let agentUpdated = false;
     if (activeStep === agentSteps.length - 1) {
       try {
         const organizationDTO = organizationConverter.toOrganizationDTO(
@@ -183,12 +160,13 @@ const AgentStepperLinearWithValidation = ({
             agentId
           );
           await agentService.createAgent(agentDTO, storedToken);
-          agentUpdated = true;
+          setAgentUpdated(true);
+          console.log("Creating agent:", agentDTO);
           toast.success("Agent created successfully!");
         }
 
         const { policiesToCreate, policyIdsToDelete } =
-          convertToAgentPurposeOfUsePolicies.convertAndComparePolicies(
+          AgentPurposeOfUsePoliciesConverter.convertAndComparePolicies(
             agentData,
             agentPolicies,
             agentId
@@ -200,7 +178,8 @@ const AgentStepperLinearWithValidation = ({
             policy,
             storedToken
           );
-          agentUpdated = true;
+
+          setAgentUpdated(true);
 
           console.log("Creating policy:", policy);
           toast.success("Policy created successfully!");
@@ -212,15 +191,18 @@ const AgentStepperLinearWithValidation = ({
             policyIdsToDelete,
             storedToken
           );
-          agentUpdated = true;
+          setAgentUpdated(true);
           console.log("Deleting policy:", policyIdsToDelete);
           toast.success("Policy deleted successfully!");
         }
 
-        toast.success("Agent purpose of use policies updated successfully!");
-        if (agentUpdated) {
-          console.log(getAgentOfferVc());
+        if (agentUpdated && toast.success) {
+          const agentOfferVc = await getAgentOfferVc();
+          console.log(agentOfferVc);
         }
+
+        setIsSubmitComplete(true);
+        toast.success("Agent purpose of use policies updated successfully!");
       } catch (error) {
         console.error("Error updating Agent purpose of use policies:", error);
         toast.error("Failed to update Agent purpose of use policies!");
@@ -229,14 +211,20 @@ const AgentStepperLinearWithValidation = ({
   };
 
   const getAgentOfferVc = async () => {
-    const agentOfferVcResponse = await ssiService.getAiAgentIdCredentialOffer(agentId, storedToken);
+    const agentOfferVcResponse = await ssiService.getAiAgentIdCredentialOffer(
+      agentId,
+      storedToken
+    );
     return agentOfferVcResponse.data;
-  }
+  };
 
   const getAgentOfferVcUrl = async () => {
-    const agentOfferVcResponse = await ssiService.getAiAgentIdCredentialOffer(agentId, storedToken);
+    const agentOfferVcResponse = await ssiService.getAiAgentIdCredentialOffer(
+      agentId,
+      storedToken
+    );
     return agentOfferVcResponse.data.credentialOfferUrl;
-  }
+  };
 
   const getStepContent = (step) => {
     switch (step) {
@@ -248,9 +236,12 @@ const AgentStepperLinearWithValidation = ({
             userData={userData}
             setUserData={setUserData}
             activeOrganization={activeOrganization}
-            secondFieldOnUrl={Object.keys(activeAgent).length}
+            secondFieldOnUrl={
+              Object.keys(activeAgent).length || vcOfferSessionId
+            }
             userOrganizations={userOrganizations}
             getVcOfferUrl={getVcOfferUrl}
+            vcOfferSessionId={vcOfferSessionId}
           />
         );
       case 1:
@@ -280,19 +271,35 @@ const AgentStepperLinearWithValidation = ({
   };
 
   const renderContent = () => {
-    if (activeStep === agentSteps.length) {
+    if (activeStep === agentSteps.length && isSubmitComplete) {
       return (
         <Fragment>
-          <Typography>All steps are completed!</Typography>
-          <CredentialsWithQrCodeComponent
+          <Box sx={{ textAlign: "center", mt: 4 }}>
+            <Typography variant="h4" gutterBottom>
+              All steps are completed!
+            </Typography>
+            <Typography variant="subtitle1" color="textSecondary" gutterBottom>
+              You can now receive your Agent ID Credential by scanning the QR
+              code below.
+            </Typography>
+          </Box>
+          <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
+            <CredentialsWithQrCodeComponent
               title={"Receive your Agent ID Credential"}
               handleCredentialsClose={null}
-              getURL={getAgentOfferVcUrl} />
-          <Box sx={{ mt: 4, display: "flex", justifyContent: "flex-end" }}>
-            <Button size="large" variant="contained" onClick={refreshPage}>
+              getURL={getAgentOfferVcUrl}
+            />
+          </Box>
+          <Box sx={{ mt: 4, display: "flex", justifyContent: "center" }}>
+            <Button
+              size="large"
+              variant="contained"
+              color="primary"
+              onClick={refreshPage}
+            >
               Back
             </Button>
-          </Box>
+          </Box>          
         </Fragment>
       );
     } else {
@@ -374,4 +381,4 @@ const AgentStepperLinearWithValidation = ({
   );
 };
 
-export default AgentStepperLinearWithValidation;
+export default AgentStepper;

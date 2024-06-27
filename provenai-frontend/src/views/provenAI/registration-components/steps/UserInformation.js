@@ -2,6 +2,7 @@ import React from "react";
 import { useState, useEffect } from "react";
 import { styled, useTheme } from "@mui/material/styles";
 import {
+  Autocomplete,
   Grid,
   Typography,
   Box,
@@ -22,6 +23,7 @@ import Icon from "src/@core/components/icon";
 import { useRouter } from "next/router";
 import CredentialsWithQrCodeComponent from "src/views/provenAI/registration-components/CredentialsWithQrCodeComponent";
 import ssiService from "src/provenAI-sdk/ssiService";
+import { countries } from "src/utils/countries";
 
 const UserInformation = ({
   onSubmit,
@@ -330,6 +332,11 @@ const UserInformation = ({
                       {...field}
                       label="Gender"
                       error={Boolean(errors.gender)}
+                      // Normalize the value to lowercase for comparison
+                      value={field.value ? field.value.toLowerCase() : ""}
+                      onChange={(e) =>
+                        field.onChange(e.target.value.toLowerCase())
+                      }
                     >
                       <MenuItem value="male">Male</MenuItem>
                       <MenuItem value="female">Female</MenuItem>
@@ -346,28 +353,40 @@ const UserInformation = ({
             </Grid>
             <Grid item xs={12} sm={3}>
               <FormControl fullWidth>
-                <InputLabel id="nationality-label">Nationality</InputLabel>
                 <Controller
                   name="nationality"
                   control={control}
-                  render={({ field }) => (
-                    <Select
-                      labelId="nationality-label"
-                      {...field}
-                      label="Nationality"
-                      error={Boolean(errors.nationality)}
-                    >
-                      <MenuItem value="usa">USA</MenuItem>
-                      <MenuItem value="greece">Greece</MenuItem>
-                      <MenuItem value="other">Other</MenuItem>
-                    </Select>
+                  render={({ field: { value, onChange } }) => (
+                    <Autocomplete
+                      id="autocomplete-nationality"
+                      options={countries}
+                      getOptionLabel={(option) => option.name || ""}
+                      value={
+                        countries.find((country) => country.code === value) || null
+                      }
+                      onChange={(event, newValue) =>{
+                        onChange(newValue ? newValue.code : "");
+                      }}
+                       
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label="Nationality"
+                          error={Boolean(errors.nationality)}
+                          helperText={
+                            errors.nationality ? "This field is required" : ""
+                          }
+                        />
+                      )}
+                    />
                   )}
                 />
-                {errors.nationality && (
+
+                {/* {errors.nationality && (
                   <FormHelperText sx={{ color: "error.main" }}>
                     This field is required
                   </FormHelperText>
-                )}
+                )} */}
               </FormControl>
             </Grid>
           </>
@@ -536,7 +555,7 @@ const UserInformation = ({
           sx={{ "& .MuiPaper-root": { width: "100%", maxWidth: 650 } }}
         >
           <CredentialsWithQrCodeComponent
-            title = {"Offer your Credential"}
+            title={"Offer your Credential"}
             handleCredentialsClose={handleCredentialsClose}
             getURL={getVcOfferUrl}
           />

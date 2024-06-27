@@ -41,7 +41,7 @@ import {
   defaultDataUse,
 } from "src/utils/defaultValues";
 
-const StepperLinearWithValidation = ({
+const DataPodStepper = ({
   activeDataPod,
   activeOrganization,
   dataPodPolicies,
@@ -54,7 +54,6 @@ const StepperLinearWithValidation = ({
   vcOfferSessionId,
 }) => {
   const router = useRouter();
-  // const activeOrganization = useSelector((state) => state.activeOrganization.activeOrganization);
 
   const storedToken = window.localStorage.getItem(
     authConfig.storageTokenKeyName
@@ -75,12 +74,11 @@ const StepperLinearWithValidation = ({
   // console.log("DATA POD POLICIES", dataPodPolicies);
   // console.log("USER DATA PODS", userDataPods);
   // console.log("USER ORGANIZATIONS", userOrganizations);
-  console.log("USER DATA", userData);
+  // console.log("USER DATA", userData);
   // console.log("DATA POD DATA", dataPodData);
   // console.log("USE POLICIES DATA", usePoliciesData);
   // console.log("VC OFFER SESSION ID", vcOfferSessionId);
 
-  
   useEffect(() => {
     if (Object.keys(activeOrganization).length !== 0) {
       const userInfo =
@@ -147,8 +145,6 @@ const StepperLinearWithValidation = ({
     );
     return offer.data.credentialVerificationUrl;
   };
-
-  
 
   const onSubmit = async () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -274,9 +270,22 @@ const StepperLinearWithValidation = ({
     if (activeStep === dataPodSteps.length) {
       return (
         <Fragment>
-          <Typography>All steps are completed!</Typography>
-          <Box sx={{ mt: 4, display: "flex", justifyContent: "flex-end" }}>
-            <Button size="large" variant="contained" onClick={refreshPage}>
+          <Box sx={{ textAlign: "center", mt: 4 }}>
+            <Typography variant="h4" gutterBottom>
+              All steps are completed!
+            </Typography>
+            <Typography variant="subtitle1" color="textSecondary" gutterBottom>
+              Thank you for completing all the steps. You can now proceed
+              further.
+            </Typography>
+          </Box>
+          <Box sx={{ mt: 4, display: "flex", justifyContent: "center" }}>
+            <Button
+              size="large"
+              variant="contained"
+              color="primary"
+              onClick={refreshPage}
+            >
               Back
             </Button>
           </Box>
@@ -361,4 +370,4 @@ const StepperLinearWithValidation = ({
   );
 };
 
-export default StepperLinearWithValidation;
+export default DataPodStepper;
