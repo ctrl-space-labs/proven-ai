@@ -53,9 +53,7 @@ public class AgentIDConverter {
         Json json = Json.Default;
 
         String jsonObjectString = objectMapper.writeValueAsString(agentIdCredential.getCredentialSubject());
-        JsonElement jsonElement = json.parseToJsonElement(jsonObjectString);
-        Map<String, JsonElement> map = Map.of("agent", jsonElement);
-        JsonObject jsonObject = new JsonObject(map);
+        JsonObject jsonObject = (JsonObject)json.parseToJsonElement(jsonObjectString);
 
         credentialBuilder.credentialSubject(jsonObject);
 
