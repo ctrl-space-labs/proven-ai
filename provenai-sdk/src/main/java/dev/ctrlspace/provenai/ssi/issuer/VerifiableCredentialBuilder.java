@@ -45,7 +45,7 @@ public class VerifiableCredentialBuilder {
      * Adds a type to the verifiable credential.
      *
      * @param type The type to be added. Supported types:  "VerifiableCredential", "VerifiableAttestation",
-     *                                                     "VerifiableAIAgent", "VerifiableAIAgent",
+     *                                                     "VerifiableAgentID", "VerifiableAgentID",
      *                                                     "EBSILegalEntityVerifiableID ","VerifiableId"
      *
      */

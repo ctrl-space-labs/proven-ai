@@ -43,7 +43,7 @@ public class AgentIDConverter {
 
         // Add context and type
         credentialBuilder.addContext("https://www.w3.org/2018/credentials/v1");
-        credentialBuilder.addType("VerifiableAIAgent");
+        credentialBuilder.addType("VerifiableAgentID");
 
         // Set credential ID, issuer DID, and subject DID
         credentialBuilder.setCredentialId("urn:uuid:"+ UUID.randomUUID().toString());
