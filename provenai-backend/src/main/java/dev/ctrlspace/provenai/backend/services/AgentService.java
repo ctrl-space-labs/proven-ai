@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import dev.ctrlspace.provenai.backend.adapters.GendoxWebHookAdapter;
 import dev.ctrlspace.provenai.backend.authentication.KeycloakAuthenticationService;
 import dev.ctrlspace.provenai.backend.converters.AgentConverter;
 import dev.ctrlspace.provenai.backend.exceptions.ProvenAiException;
@@ -11,6 +12,8 @@ import dev.ctrlspace.provenai.backend.model.Agent;
 import dev.ctrlspace.provenai.backend.model.AgentPurposeOfUsePolicies;
 import dev.ctrlspace.provenai.backend.model.Organization;
 import dev.ctrlspace.provenai.backend.model.dtos.AgentDTO;
+import dev.ctrlspace.provenai.backend.model.dtos.EventPayloadDTO;
+import dev.ctrlspace.provenai.backend.model.dtos.WebHookEventResponse;
 import dev.ctrlspace.provenai.backend.model.dtos.criteria.AgentCriteria;
 import dev.ctrlspace.provenai.backend.repositories.AgentRepository;
 import dev.ctrlspace.provenai.backend.repositories.OrganizationRepository;
@@ -37,6 +40,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -70,6 +74,9 @@ public class AgentService {
 
     private JWTUtils jwtUtils;
 
+    private GendoxWebHookAdapter gendoxWebHookAdapter;
+
+
 
 
     @Autowired
@@ -81,7 +88,8 @@ public class AgentService {
                         AgentConverter agentConverter,
                         KeycloakAuthenticationService keycloakAuthenticationService,
                         SSIJWTUtils ssiJwtUtils,
-                        JWTUtils jwtUtils) {
+                        JWTUtils jwtUtils,
+                        GendoxWebHookAdapter gendoxWebHookAdapter) {
         this.agentRepository = agentRepository;
         this.credentialIssuanceApi = credentialIssuanceApi;
         this.agentPurposeOfUsePoliciesService = agentPurposeOfUsePoliciesService;
@@ -91,6 +99,7 @@ public class AgentService {
         this.keycloakAuthenticationService = keycloakAuthenticationService;
         this.ssiJwtUtils = ssiJwtUtils;
         this.jwtUtils = jwtUtils;
+        this.gendoxWebHookAdapter = gendoxWebHookAdapter;
 
         WaltIdServiceInitUtils.INSTANCE.initializeWaltIdServices();
 
@@ -197,7 +206,15 @@ public class AgentService {
         AdditionalSignVCParams additionalSignVCParams = new AdditionalSignVCParams();
         Organization organization = getOrganizationByAgentId(agentId);
 
+        EventPayloadDTO eventPayload = new EventPayloadDTO();
+        eventPayload.setOrganizationDid(organization.getOrganizationDid());
+        eventPayload.setOrganizationId(organization.getId().toString());
+
+        ResponseEntity<WebHookEventResponse> responseEntity =
+                gendoxWebHookAdapter.gendoxWebHookEvent("PROVEN_AI_AGENT_REGISTRATION", eventPayload);
+
         return provenAIIssuer.generateSignedVCJwt(w3CVC, localKey, issuerDid, organization.getOrganizationDid());
+
 
     }
 

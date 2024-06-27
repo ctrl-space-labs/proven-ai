@@ -13,6 +13,7 @@ import dev.ctrlspace.provenai.backend.services.OrganizationsService;
 import dev.ctrlspace.provenai.ssi.verifier.CredentialVerificationApi;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.event.EventListener;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -46,8 +47,7 @@ public class OrganizationsController implements OrganizationsControllerSpec {
     @GetMapping("/organizations/{organizationId}")
     public Organization getOrganizationById(@PathVariable UUID organizationId) throws ProvenAiException {
 
-        Organization organization = organizationsService.getOrganizationById(organizationId);
-        return organization;
+        return organizationsService.getOrganizationById(organizationId);
     }
 
 
@@ -56,7 +56,6 @@ public class OrganizationsController implements OrganizationsControllerSpec {
 
         return organizationsService.getAllOrganizations(criteria, pageable);
     }
-
 
     @PostMapping(value = "/organizations/registration", consumes = {"application/json"})
     public Organization registerOrganization(@RequestBody OrganizationDTO organizationDTO) throws IOException, ExecutionException, InterruptedException, ProvenAiException {
@@ -67,6 +66,7 @@ public class OrganizationsController implements OrganizationsControllerSpec {
 
     @PutMapping(value = "/organizations/{organizationId}", consumes = {"application/json"})
     public Organization updateOrganization(@PathVariable UUID organizationId, @RequestBody OrganizationDTO organizationDTO) throws ProvenAiException {
+
 
         Organization organization = organizationConverter.toEntity(organizationDTO);
         organization.setId(organizationDTO.getId());
