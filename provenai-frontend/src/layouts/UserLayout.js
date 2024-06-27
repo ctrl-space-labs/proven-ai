@@ -21,7 +21,6 @@ import HorizontalAppBarContent from "./components/horizontal/AppBarContent";
 // ** Hook Import
 import { useSettings } from "src/@core/hooks/useSettings";
 
-import VerticalNavButtons from "src/navigation/vertical/VerticalNavButton";
 import { be } from "date-fns/locale";
 
 
@@ -46,9 +45,6 @@ const UserLayout = ({ children, contentHeightFixed }) => {
   if (hidden && settings.layout === "horizontal") {
     settings.layout = "vertical";
   }
-
-  const { NewDataPodButton, NewAgentButton } = VerticalNavButtons;
-
 
   
 
@@ -97,10 +93,7 @@ const UserLayout = ({ children, contentHeightFixed }) => {
       verticalLayoutProps={{
         navMenu: {
           branding: () => <AppBrand />, 
-          navItems: VerticalNavItems(),
-          afterContent: () => <NewAgentButton />,  
-          beforeContent: () => <NewDataPodButton />,
-          // content: () => <AppBrand />
+          navItems: VerticalNavItems(),               
         },
 
         appBar: {
