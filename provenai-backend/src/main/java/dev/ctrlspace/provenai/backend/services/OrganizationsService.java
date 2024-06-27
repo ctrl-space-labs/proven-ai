@@ -3,10 +3,13 @@ package dev.ctrlspace.provenai.backend.services;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import dev.ctrlspace.provenai.backend.adapters.GendoxWebHookAdapter;
 import dev.ctrlspace.provenai.backend.exceptions.ProvenAiException;
 
 import dev.ctrlspace.provenai.backend.model.Organization;
 import dev.ctrlspace.provenai.backend.model.dtos.CredentialVerificationDTO;
+import dev.ctrlspace.provenai.backend.model.dtos.EventPayloadDTO;
+import dev.ctrlspace.provenai.backend.model.dtos.WebHookEventResponse;
 import dev.ctrlspace.provenai.backend.model.dtos.criteria.OrganizationCriteria;
 import dev.ctrlspace.provenai.backend.repositories.OrganizationRepository;
 import dev.ctrlspace.provenai.backend.repositories.specifications.OrganizationPredicates;
@@ -28,6 +31,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -50,6 +54,8 @@ public class OrganizationsService {
 
     private ValidatorUtils validatorUtils;
 
+    private GendoxWebHookAdapter gendoxWebHookAdapter;
+
 
     @Autowired
     public OrganizationsService(OrganizationRepository organizationRepository,
@@ -57,13 +63,15 @@ public class OrganizationsService {
                                 CredentialVerificationApi credentialVerificationApi,
                                 JWTUtils jwtUtils,
                                 SSIJWTUtils ssiJwtUtils,
-                                ValidatorUtils validatorUtils) {
+                                ValidatorUtils validatorUtils,
+                                GendoxWebHookAdapter gendoxWebHookAdapter) {
         this.organizationRepository = organizationRepository;
         this.agentService = agentService;
         this.credentialVerificationApi = credentialVerificationApi;
         this.jwtUtils = jwtUtils;
         this.ssiJwtUtils = ssiJwtUtils;
         this.validatorUtils = validatorUtils;
+        this.gendoxWebHookAdapter = gendoxWebHookAdapter;
         WaltIdServiceInitUtils.INSTANCE.initializeWaltIdServices();
 
     }
@@ -72,6 +80,7 @@ public class OrganizationsService {
     public Optional<Organization> getOptionalOrganizationById(UUID id) {
         return organizationRepository.findById(id);
     }
+
 
     public Organization getOrganizationById(UUID id) throws ProvenAiException {
         return this.getOptionalOrganizationById(id)
@@ -86,23 +95,45 @@ public class OrganizationsService {
     }
 
     public Organization registerOrganization(Organization organization) throws ExecutionException, InterruptedException, ProvenAiException, IOException {
+        EventPayloadDTO eventPayload = new EventPayloadDTO();
 
-        ProvenAIVerifier provenAIVerifier = new ProvenAIVerifier();
+        if (organization.getOrganizationVpJwt() == null) {
 
-        Boolean verificationResult = provenAIVerifier.verifyVPJwt(organization.getOrganizationVpJwt());
-        if (!verificationResult) {
-            throw new ProvenAiException("INVALID_VP_JWT", "Invalid VP JWT", HttpStatus.BAD_REQUEST);
+            eventPayload.setOrganizationId(organization.getId().toString());
+            ResponseEntity<WebHookEventResponse> responseEntity =
+                    gendoxWebHookAdapter.gendoxWebHookEvent("PROVEN_AI_REQUEST_ORGANIZATION_DID", eventPayload);
+
+            organization.setOrganizationDid(responseEntity.getBody().getData());
+
+
+        } else if (organization.getOrganizationVpJwt() != null) {
+            ProvenAIVerifier provenAIVerifier = new ProvenAIVerifier();
+
+            Boolean verificationResult = provenAIVerifier.verifyVPJwt(organization.getOrganizationVpJwt());
+            if (!verificationResult) {
+                throw new ProvenAiException("INVALID_VP_JWT", "Invalid VP JWT", HttpStatus.BAD_REQUEST);
+            }
+
+            String OrganizationVcJwt = ssiJwtUtils.getVCJwtFromVPJwt(organization.getOrganizationVpJwt());
+
+
+            Boolean credentialSubjectValidation = validatorUtils.validateCredentialSubjectFields(OrganizationVcJwt, organization);
+            if (!credentialSubjectValidation) {
+                throw new ProvenAiException("CREDENTIAL_FIELDS_MISMATCH", "Credential fields do not match the organization fields", HttpStatus.BAD_REQUEST);
+            }
+
+            organization.setOrganizationDid(jwtUtils.getPayloadFromJwt(organization.getOrganizationVpJwt()).get("sub").toString());
+
+            eventPayload.setOrganizationDid(organization.getOrganizationDid());
+            eventPayload.setOrganizationId(organization.getId().toString());
+            ResponseEntity<WebHookEventResponse> responseEntity =
+                    gendoxWebHookAdapter.gendoxWebHookEvent("PROVEN_AI_ORGANIZATION_REGISTRATION", eventPayload);
         }
 
-        String OrganizationVcJwt = ssiJwtUtils.getVCJwtFromVPJwt(organization.getOrganizationVpJwt());
 
-
-        Boolean credentialSubjectValidation = validatorUtils.validateCredentialSubjectFields(OrganizationVcJwt, organization);
-        if (!credentialSubjectValidation) {
-            throw new ProvenAiException("CREDENTIAL_FIELDS_MISMATCH", "Credential fields do not match the organization fields", HttpStatus.BAD_REQUEST);
-        }
         organization.setCreatedAt(Instant.now());
         organization.setUpdatedAt(Instant.now());
+
         return organizationRepository.save(organization);
     }
 
