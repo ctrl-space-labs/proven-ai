@@ -50,9 +50,7 @@ public class DataPodController implements DataPodControllerSpec {
 
     @PostMapping("/data-pods")
     public DataPod createDataPod(@RequestBody DataPodDTO dataPodDto) throws ProvenAiException {
-
         DataPod dataPod = dataPodConverter.toEntity(dataPodDto);
-
         return dataPodService.createDataPod(dataPod, dataPodDto.getAclPolicies());
     }
 

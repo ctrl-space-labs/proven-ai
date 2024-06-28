@@ -14,7 +14,7 @@ public class OrganizationConverter implements ProvenAIConverter<Organization, Or
         organizationDTO.setId(organization.getId());
         organizationDTO.setName(organization.getName());
         organizationDTO.setCountry(organization.getCountry());
-        organizationDTO.setIsNaturalPerson(organization.getIsNaturalPerson());
+        organizationDTO.setNaturalPerson(organization.getNaturalPerson());
         organizationDTO.setLegalPersonIdentifier(organization.getLegalPersonIdentifier());
         organizationDTO.setLegalName(organization.getLegalName());
         organizationDTO.setLegalAddress(organization.getLegalAddress());
@@ -44,7 +44,7 @@ public class OrganizationConverter implements ProvenAIConverter<Organization, Or
         organization.setId(organizationDTO.getId());
         organization.setName(organizationDTO.getName());
         organization.setCountry(organizationDTO.getCountry());
-        organization.setIsNaturalPerson(organizationDTO.getIsNaturalPerson());
+        organization.setNaturalPerson(organizationDTO.getNaturalPerson());
         organization.setLegalPersonIdentifier(organizationDTO.getLegalPersonIdentifier());
         organization.setLegalName(organizationDTO.getLegalName());
         organization.setLegalAddress(organizationDTO.getLegalAddress());
