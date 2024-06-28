@@ -1,7 +1,10 @@
 // ** React Imports
 import React from "react";
+import { useRef, useEffect } from 'react';
+
 import { Box, Grid, Typography, Button, Chip } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
+import { useRouter } from "next/router";
 
 const ReviewAndComplete = ({
   onSubmit,
@@ -9,8 +12,20 @@ const ReviewAndComplete = ({
   userData,
   dataPodData,
   usePoliciesData,
+  setActiveStep,
 }) => {
   const theme = useTheme();
+  const router = useRouter();
+  const isFirstRender = useRef(true);
+
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }    
+      setActiveStep(0);   
+  }, [router.query.dataPodId]);
+
 
   return (
     <Box>

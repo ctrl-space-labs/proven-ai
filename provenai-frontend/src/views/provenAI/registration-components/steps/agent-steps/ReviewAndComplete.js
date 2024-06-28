@@ -1,10 +1,22 @@
 // ** React Imports
 import React from "react";
+import { useRef, useEffect } from 'react';
+import { useRouter } from "next/router";
 import { Box, Grid, Typography, Button, Chip } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 
-const ReviewAndComplete = ({ onSubmit, handleBack, userData, agentData }) => {
+const ReviewAndComplete = ({ onSubmit, handleBack, userData, agentData, setActiveStep }) => {
   const theme = useTheme();
+  const router = useRouter();
+  const isFirstRender = useRef(true);
+
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }   
+      setActiveStep(0);    
+  }, [router.query.agentId]);
 
   return (
     <Box>

@@ -1,6 +1,7 @@
 // ** React Imports
 import React from "react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
+import { useRouter } from "next/router";
 
 import {
   Grid,
@@ -26,7 +27,10 @@ const UsePolicy = ({
   handleBack,
   usePoliciesData,
   setUsePoliciesData,
+  setActiveStep,
 }) => {
+  const router = useRouter();
+  const isFirstRender = useRef(true);
 
   const [attributionDefaultPolicies, setAttributionDefaultPolicies] = useState(
     []
@@ -52,6 +56,14 @@ const UsePolicy = ({
     setUsePoliciesData(data);
     onSubmit();
   };
+
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }    
+      setActiveStep(0);    
+  }, [router.query.dataPodId]);
 
   useEffect(() => {
     const fetchAttributionPolicyOptions = async () => {

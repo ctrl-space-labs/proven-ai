@@ -48,10 +48,10 @@ export default {
     `${provenUrl}agents/${agentId}`,
 
   getPolicyOptions: (policyTypeName) =>
-    `${provenUrl}policy-options?policyTypeName=${policyTypeName}`,
+    `${provenUrl}policy-options?policyTypeName=${policyTypeName}`,  
 
-  getAgentWithoutVc: () =>
-    `${provenUrl}agents/no-vc`,
+  getAgentWithoutVc: (page = 0, size = 200) =>
+    `${provenUrl}agents/no-vc?page=${page}&size=${size}`,  
 
   getAclPoliciesByDataPod: (dataPodId) =>
     `${provenUrl}data-pods/${dataPodId}/acl-policies`,  

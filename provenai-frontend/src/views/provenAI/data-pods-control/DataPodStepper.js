@@ -68,17 +68,7 @@ const DataPodStepper = ({
   const [dataPodData, setDataPodData] = useState(defaultDataPodInformation);
   const [usePoliciesData, setUsePoliciesData] = useState(defaultDataUse);
 
-  // console.log("ACTIVE ORGANIZATION", activeOrganization);
-  // console.log("ACTIVE DATA POD", activeDataPod);
-  // console.log("DATA POD ID id id id id ", dataPodId);
-  // console.log("DATA POD POLICIES", dataPodPolicies);
-  // console.log("USER DATA PODS", userDataPods);
-  // console.log("USER ORGANIZATIONS", userOrganizations);
-  // console.log("USER DATA", userData);
-  // console.log("DATA POD DATA", dataPodData);
-  // console.log("USE POLICIES DATA", usePoliciesData);
-  // console.log("VC OFFER SESSION ID", vcOfferSessionId);
-
+  
   useEffect(() => {
     if (Object.keys(activeOrganization).length !== 0) {
       const userInfo =
@@ -240,6 +230,7 @@ const DataPodStepper = ({
             setDataPodData={setDataPodData}
             activeDataPod={activeDataPod}
             organizationId={organizationId}
+            setActiveStep={setActiveStep}
           />
         );
       case 2:
@@ -249,6 +240,7 @@ const DataPodStepper = ({
             handleBack={handleBack}
             usePoliciesData={usePoliciesData}
             setUsePoliciesData={setUsePoliciesData}
+            setActiveStep={setActiveStep}
           />
         );
       case 3:
@@ -259,6 +251,7 @@ const DataPodStepper = ({
             userData={userData}
             dataPodData={dataPodData}
             usePoliciesData={usePoliciesData}
+            setActiveStep={setActiveStep}
           />
         );
       default:

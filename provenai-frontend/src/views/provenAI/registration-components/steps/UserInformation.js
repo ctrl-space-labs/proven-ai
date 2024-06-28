@@ -18,7 +18,6 @@ import {
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { userSchema } from "src/utils/validationSchemas";
-// ** Icon Imports
 import Icon from "src/@core/components/icon";
 import { useRouter } from "next/router";
 import CredentialsWithQrCodeComponent from "src/views/provenAI/registration-components/CredentialsWithQrCodeComponent";

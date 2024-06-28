@@ -1,6 +1,8 @@
 // ** React Imports
 import React from "react";
 import { useEffect, useState } from "react";
+import { useRef } from 'react';
+
 import { useRouter } from "next/router";
 
 import {
@@ -18,6 +20,7 @@ import {
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 
+
 // ** Validation Schema and Default Values
 import { agentSchema } from "src/utils/validationSchemas";
 
@@ -34,8 +37,11 @@ const DataPodInformation = ({
   userDataPods,
   activeDataPod,
   organizationId,
+  setActiveStep,
 }) => {
   const router = useRouter();
+  const isFirstRender = useRef(true);
+
 
   const {
     control,
@@ -50,6 +56,7 @@ const DataPodInformation = ({
 
   const [usagePolicies, setUsagePolicies] = useState([]);
   const [agents, setAgents] = useState([]);
+  const [selectNewDataPod, setSelectNewDataPod] = useState(false);
 
   const storedToken = window.localStorage.getItem(
     authConfig.storageTokenKeyName
@@ -60,6 +67,16 @@ const DataPodInformation = ({
       setValue(key, dataPodData[key]);
     });
   }, [dataPodData, setValue]);
+
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+    if (!selectNewDataPod) {
+      setActiveStep(0);
+    }
+  }, [router.query.dataPodId]);
 
   useEffect(() => {
     const fetchPolicyOptions = async () => {
@@ -123,11 +140,12 @@ const DataPodInformation = ({
   };
 
   const handleMenuItemClick = (daPod) => {
+    setSelectNewDataPod(true);
     setDataPodData((prevData) => ({
       ...prevData,
       dataPodName: daPod.name,
     }));
-    set
+    set;
     updateShallowQueryParams({ organizationId, dataPodId: daPod.id });
     console.log(`Clicked on Data Pod: `, daPod);
   };
@@ -162,7 +180,7 @@ const DataPodInformation = ({
         </Grid>
 
         <Grid item xs={12} sm={6}>
-          {!Object.keys(activeDataPod).length > 0 && (
+          {(!Object.keys(activeDataPod).length > 0 || selectNewDataPod) && (
             <FormControl fullWidth>
               <InputLabel id="user-data-pod-label">Select Data Pod</InputLabel>
               <Controller

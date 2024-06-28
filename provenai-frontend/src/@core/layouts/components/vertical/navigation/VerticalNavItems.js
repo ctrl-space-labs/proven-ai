@@ -10,10 +10,12 @@ const { NewDataPodButton, NewAgentButton } = VerticalNavButton;
 
 
 const resolveNavItemComponent = item => {
+  console.log("item", item)
+  console.log(item.sectionButton === "dataPod")
   if (item.sectionTitle) return VerticalNavSectionTitle
+  if (item.sectionButton === "dataPod") return NewDataPodButton
   if (item.children) return VerticalNavGroup
   
-
   return VerticalNavLink
 }
 

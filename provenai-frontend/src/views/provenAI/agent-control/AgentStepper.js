@@ -254,6 +254,7 @@ const AgentStepper = ({
             activeAgent={activeAgent}
             userAgents={userAgents}
             organizationId={organizationId}
+            setActiveStep={setActiveStep}
           />
         );
       case 2:
@@ -263,6 +264,7 @@ const AgentStepper = ({
             handleBack={handleBack}
             userData={userData}
             agentData={agentData}
+            setActiveStep={setActiveStep}
           />
         );
       default:

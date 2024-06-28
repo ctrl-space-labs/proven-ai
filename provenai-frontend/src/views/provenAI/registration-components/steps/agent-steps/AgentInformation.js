@@ -1,6 +1,6 @@
 // ** React Imports
 import React from "react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/router";
 
 import {
@@ -36,8 +36,10 @@ const AgentInformation = ({
   activeAgent,
   userAgents,
   organizationId,
+  setActiveStep,
 }) => {
   const router = useRouter();
+  const isFirstRender = useRef(true);
 
   const {
     control,
@@ -55,6 +57,7 @@ const AgentInformation = ({
   const [selectedCompensation, setSelectedCompensation] = useState(
     agentData.compensationType
   );
+  const [selectNewAgent, setSelectNewAgent] = useState(false);
   const storedToken = window.localStorage.getItem(
     authConfig.storageTokenKeyName
   );
@@ -81,6 +84,16 @@ const AgentInformation = ({
       setValue(key, agentData[key]);
     });
   }, [agentData, setValue]);
+
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+    if (!selectNewAgent) {
+      setActiveStep(0);
+    }
+  }, [router.query.agentId]);
 
   useEffect(() => {
     const fetchUsagePolicies = async () => {
@@ -139,6 +152,7 @@ const AgentInformation = ({
   };
 
   const handleMenuItemClick = (agent) => {
+    setSelectNewAgent(true);
     setAgentData((prevData) => ({
       ...prevData,
       agentName: agent.agentName,
@@ -179,7 +193,7 @@ const AgentInformation = ({
         </Grid>
 
         <Grid item xs={12} sm={6}>
-          {!Object.keys(activeAgent).length > 0 && (
+          {(!Object.keys(activeAgent).length > 0 || selectNewAgent)&& (
             <FormControl fullWidth>
               <InputLabel id="user-agents-label">Select Agent</InputLabel>
               <Controller
