@@ -1,5 +1,5 @@
 
-export const steps = [
+export const dataPodSteps = [
   {
     title: "User",
     subtitle: "User Information",
@@ -18,10 +18,29 @@ export const steps = [
   },
 ];
 
+export const agentSteps = [
+  {
+    title: "User",
+    subtitle: "User Information",
+  },
+  {
+    title: "Agent",
+    subtitle: "Agent Information",
+  },
+  
+  {
+    title: "Review and Complete",
+    subtitle: "Review and Submit",
+  },
+];
+
 export const defaultUserInformation = {
   firstName: "",
   familyName: "",
-  selectedOrganizationType: "natural-person",
+  selectedOrganizationType: "",
+  organizationDid: "",
+  organizationVpJwt: "",
+  organizationName: "",
   personalIdentifier: "",
   gender: "",
   dateOfBirth: "",
@@ -36,6 +55,14 @@ export const defaultUserInformation = {
 };
 
 export const defaultAgentInformation = {
+  agentPurpose: [],
+  denyList: [],
+  allowList : [],
+  compensation: "",
+};
+
+export const defaultDataPodInformation = {
+  dataPodName: "",  
   agentPurpose: [],
   denyList: [],
   allowList : [],

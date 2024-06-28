@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import { useSelector } from "react-redux";
 import { useAuth } from "src/hooks/useAuth";
 import authConfig from "src/configs/auth";
 
@@ -10,19 +9,9 @@ import Typography from "@mui/material/Typography";
 import CardContent from "@mui/material/CardContent";
 import Card from "@mui/material/Card";
 import Box from "@mui/material/Box";
-import FormControl from "@mui/material/FormControl";
-import InputLabel from "@mui/material/InputLabel";
-import Select from "@mui/material/Select";
-import MenuItem from "@mui/material/MenuItem";
-
-// Custom components
-import useRedirectOr404ForHome from "src/utils/useRedirectOr404ForHome";
-
-// import StepperLinearWithValidation from "src/views/provenAI/data-pods-control/DataPodsStepperLinearWithValidation";
-import StepperLinearWithValidation from "src/views/provenAI/data-pods-control/DataPodStepperLinearWithValidation";
-
-
-
+import organizationService from "src/provenAI-sdk/organizationService";
+import dataPodsService from "src/provenAI-sdk/dataPodsService";
+import DataPodStepper from "src/views/provenAI/data-pods-control/DataPodStepper";
 
 const StyledCardContent = styled(CardContent)(({ theme }) => ({
   paddingTop: `${theme.spacing(10)} !important`,
@@ -33,46 +22,132 @@ const StyledCardContent = styled(CardContent)(({ theme }) => ({
   },
 }));
 
-const DataAccessControl = () => {
+const DataPodsControl = () => {
   const router = useRouter();
-  const { organizationId, projectId } = router.query;
+  const { organizationId, dataPodId, vcOfferSessionId } = router.query;
   const auth = useAuth();
-  const [selectedPeriod, setSelectedPeriod] = useState(["Last 24 Hours"]);
-
-  const project = useSelector((state) => state.activeProject.projectDetails);
-  useRedirectOr404ForHome(organizationId, projectId);
+  const userOrganizations = auth?.user?.organizations;
+  const [userDataPods, setUserDataPods] = useState([]);
+  const [activeOrganization, setActiveOrganization] = useState({});
+  const [activeDataPod, setActiveDataPod] = useState({});
+  const [dataPodPolicies, setDataPodPolicies] = useState({});
+  const [activeStep, setActiveStep] = useState(0);
 
   const storedToken = window.localStorage.getItem(
     authConfig.storageTokenKeyName
   );
+
+  useEffect(() => {
+    setActiveStep(0);
+  }, [organizationId]);
+
+  useEffect(() => {
+    if (!organizationId) {
+      setActiveOrganization({});
+    }
+    const fetchOrganization = async () => {
+      try {
+        const organization =
+          await organizationService.getProvenOrganizationById(
+            organizationId,
+            storedToken
+          );
+        setActiveOrganization(organization.data);
+      } catch (error) {
+        console.error("Error fetching organization:", error);
+        if (error.response.status === 404) {
+          setActiveOrganization({});
+          setActiveDataPod({});
+          setDataPodPolicies({});
+        }
+      }
+
+      const activeOrgProjects = auth.user.organizations.find(
+        (org) => org.id === organizationId
+      )?.projects;
+
+      if (activeOrgProjects) {
+        setUserDataPods(activeOrgProjects);
+      }
+    };
+
+    if (organizationId) {
+      fetchOrganization();
+    }
+  }, [storedToken, organizationId]);
+
+  useEffect(() => {
+    if (!dataPodId) {
+      setActiveDataPod({});
+      setDataPodPolicies({});
+    }
+
+    const fetchDataPod = async () => {
+      try {
+        const dataPod = await dataPodsService.getDataPodById(
+          dataPodId,
+          storedToken
+        );
+        setActiveDataPod(dataPod.data);
+      } catch (error) {
+        console.error("Error fetching data pod:", error);
+       if (error.response.status === 404) {          
+        setActiveDataPod({});       
+      }}
+    };
+
+    const fetchDataPodPolicies = async () => {
+      try {
+        const dataPodPolicies = await dataPodsService.getAclPoliciesByDataPod(
+          dataPodId,
+          storedToken
+        );
+        setDataPodPolicies(dataPodPolicies.data.content);
+      } catch (error) {
+        console.error("Error fetching data pod:", error);
+        if (error.response.status === 404) {          
+          setActiveAgent({});
+          setAgentPolicies({});
+        }
+      }
+    };
+
+    if (dataPodId) {
+      fetchDataPod();
+      fetchDataPodPolicies();
+    }
+  }, [storedToken, organizationId, dataPodId]);
 
   return (
     <Card sx={{ backgroundColor: "transparent", boxShadow: "none" }}>
       <StyledCardContent sx={{ backgroundColor: "background.paper" }}>
         <Box
           sx={{
-            display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
           }}
         >
-          <Typography
-            variant="h3"
-            sx={{ mb: 3, fontWeight: 600, textAlign: "left" }}
-          >
+          <Typography variant="h3" sx={{ fontWeight: 600, textAlign: "left" }}>
             Data Access Control Policies
           </Typography>
-
-          
         </Box>
       </StyledCardContent>
       <Box sx={{ height: 20 }} />
-      
-        <StepperLinearWithValidation />
-      
-      
+
+      <DataPodStepper
+        userOrganizations={userOrganizations}
+        userDataPods={userDataPods}
+        activeOrganization={activeOrganization}
+        activeDataPod={activeDataPod}
+        dataPodPolicies={dataPodPolicies}
+        organizationId={organizationId}
+        dataPodId={dataPodId}
+        activeStep={activeStep}
+        setActiveStep={setActiveStep}
+        vcOfferSessionId={vcOfferSessionId}
+      />
     </Card>
   );
 };
 
-export default DataAccessControl;
+export default DataPodsControl;

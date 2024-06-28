@@ -16,7 +16,7 @@ import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 
 // ** Validation Schema and Default Values
-import { dataUseSchema, defaultDataUse } from "../utils/validationSchemas";
+import { dataUseSchema } from "src/utils/validationSchemas";
 
 import policyService from "src/provenAI-sdk/policyService";
 import authConfig from "src/configs/auth";
@@ -95,7 +95,7 @@ const UsePolicy = ({
       <Grid container spacing={5}>
         <Grid item xs={12}>
           <Typography
-            variant="h4"
+            variant="h5"
             sx={{ fontWeight: 800, color: "text.primary" }}
           >
             Data Use Policy

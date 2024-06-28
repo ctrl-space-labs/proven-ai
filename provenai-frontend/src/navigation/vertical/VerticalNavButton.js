@@ -20,25 +20,6 @@ const StyledButton = styled(Button)(({ theme, variant }) => ({
   })
 }));
 
-// Button component for Chat
-const ChatButton = () => {
-  const router = useRouter();
-  const { organizationId } = router.query;
- 
-
-  return (
-    <Box mt={3} mb={3}> {/* Add margin top and bottom */}
-      <Link href={`/gendox/chat?organizationId=${organizationId}`} passHref>
-        <StyledButton           
-          variant="contained"
-          startIcon={<Icon icon="mdi:creation" />}
-        >
-          Chat
-        </StyledButton>
-      </Link>
-    </Box>
-  );
-};
 
 // Button component for New Data Pod
 const NewDataPodButton = () => {
@@ -88,8 +69,7 @@ const NewAgentButton = () => {
 };
 
 
-export default {
-  ChatButton,
+export default {  
   NewAgentButton,
   NewDataPodButton
 };

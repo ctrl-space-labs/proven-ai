@@ -8,7 +8,7 @@ import apiRequests from "src/configs/apiRequest.js";
  * @returns {Promise<axios.AxiosResponse<DataPods>>}
  */
 const getDataPodsByOrganization = async (organizationId, storedToken) => {
-  return axios.get(apiRequests.getDataPodsByOrganization(), {
+  return axios.get(apiRequests.dataPods(), {
     headers: {
       "Content-Type": "application/json",
       Authorization: "Bearer " + storedToken,
@@ -16,6 +16,21 @@ const getDataPodsByOrganization = async (organizationId, storedToken) => {
     params: {
       organizationId: organizationId,
     },
+  });
+};
+
+/**
+ * Get data pod by id
+ * @param dataPodId
+ * @param storedToken
+ * @returns {Promise<axios.AxiosResponse<DataPod>>}
+ */
+const getDataPodById = async (dataPodId, storedToken) => {
+  return axios.get(apiRequests.getDataPodById(dataPodId), {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + storedToken,
+    }    
   });
 };
 
@@ -35,7 +50,24 @@ const getAclPoliciesByDataPod = async (dataPodId, storedToken) => {
   });
 };
 
+/**
+ * Create a new data pod
+ * @param dataPodDTO 
+ * @param storedToken
+ * @returns {Promise<axios.AxiosResponse<DataPod>>}
+ */
+const createDataPod = async (dataPodDTO, storedToken) => {
+  return axios.post(apiRequests.dataPods(), dataPodDTO, {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + storedToken,
+    },
+  });
+}
+
 export default {
   getDataPodsByOrganization,
-  getAclPoliciesByDataPod
+  getAclPoliciesByDataPod,
+  getDataPodById,
+  createDataPod,
 };

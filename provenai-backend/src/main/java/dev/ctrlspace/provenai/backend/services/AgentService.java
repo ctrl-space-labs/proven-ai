@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import dev.ctrlspace.provenai.backend.adapters.GendoxWebHookAdapter;
 import dev.ctrlspace.provenai.backend.authentication.KeycloakAuthenticationService;
 import dev.ctrlspace.provenai.backend.converters.AgentConverter;
 import dev.ctrlspace.provenai.backend.exceptions.ProvenAiException;
@@ -46,7 +45,8 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.*;
-
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 @Service
 public class AgentService {
 
@@ -55,8 +55,6 @@ public class AgentService {
     private OrganizationRepository organizationRepository;
 
     private CredentialIssuanceApi credentialIssuanceApi;
-
-    private SSIJWTUtils ssiJwtUtils;
 
     private KeycloakAuthenticationService keycloakAuthenticationService;
 
@@ -71,12 +69,6 @@ public class AgentService {
 
     private PolicyTypeRepository policyTypeRepository;
     private AgentConverter agentConverter;
-
-    private JWTUtils jwtUtils;
-
-    private GendoxWebHookAdapter gendoxWebHookAdapter;
-
-
 
 
     @Autowired
@@ -149,9 +141,16 @@ public class AgentService {
     }
 
 
-    public Agent createAgent(Agent agent, List<Policy> policies) {
-        agent.setAgentName(agent.getAgentName());
-        // Save the Agent entity first to generate its ID
+    public Agent createAgent(Agent agent, List<Policy> policies) throws ProvenAiException {
+
+        if (agentRepository.existsByAgentUsername(agent.getAgentUsername())) {
+            throw new ProvenAiException("AGENT_USERNAME_EXISTS", "Agent with the same username already exists", HttpStatus.BAD_REQUEST);
+        }
+
+        Instant now = Instant.now();
+        agent.setCreatedAt(now);
+        agent.setUpdatedAt(now);
+
         Agent savedAgent = agentRepository.save(agent);
 
         List<AgentPurposeOfUsePolicies> savedPolicies = agentPurposeOfUsePoliciesService.savePoliciesForAgent(savedAgent, policies);

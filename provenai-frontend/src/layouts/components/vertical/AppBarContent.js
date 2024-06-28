@@ -62,7 +62,7 @@ const AppBarContent = (props) => {
               ml: 2,              
             }}
           >
-            Gendox
+            Proven AI
           </Typography>
         </Box>
       </Link>

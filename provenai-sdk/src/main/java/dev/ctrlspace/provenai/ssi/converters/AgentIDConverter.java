@@ -43,19 +43,17 @@ public class AgentIDConverter {
 
         // Add context and type
         credentialBuilder.addContext("https://www.w3.org/2018/credentials/v1");
-        credentialBuilder.addType("VerifiableAIAgent");
+        credentialBuilder.addType("VerifiableAgentID");
 
         // Set credential ID, issuer DID, and subject DID
-        credentialBuilder.setCredentialId("urn:uuid:"+ agentIdCredential.getCredentialSubject().getAgentId());
+        credentialBuilder.setCredentialId("urn:uuid:"+ UUID.randomUUID().toString());
         credentialBuilder.setIssuerDid("\"did:jwk:eyJrdHkiOiJPS1AiLCJjcnYiOiJFZDI1NTE5Iiwia2lkIjoiQ0ZRLU5yYTV5bnlCc2Z4d3k3YU5mOGR1QUVVQ01sTUlyUklyRGc2REl5NCIsIngiOiJoNW5idzZYOUptSTBCdnVRNU0wSlhmek84czJlRWJQZFYyOXdzSFRMOXBrIn0\"");
         credentialBuilder.setSubjectDid(agentIdCredential.getCredentialSubject().getId());
 
         Json json = Json.Default;
 
         String jsonObjectString = objectMapper.writeValueAsString(agentIdCredential.getCredentialSubject());
-        JsonElement jsonElement = json.parseToJsonElement(jsonObjectString);
-        Map<String, JsonElement> map = Map.of("agent", jsonElement);
-        JsonObject jsonObject = new JsonObject(map);
+        JsonObject jsonObject = (JsonObject)json.parseToJsonElement(jsonObjectString);
 
         credentialBuilder.credentialSubject(jsonObject);
 

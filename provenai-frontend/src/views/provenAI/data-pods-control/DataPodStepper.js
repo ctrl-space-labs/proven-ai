@@ -22,139 +22,185 @@ import StepperCustomDot from "./StepperCustomDot";
 import StepperWrapper from "src/@core/styles/mui/stepper";
 
 // ** Step Components Imports
-import UserInformation from "./steps/UserInformation";
-import AgentInformation from "./steps/AgentInformation";
-import UsePolicy from "./steps/UsePolicies";
-import ReviewAndComplete from "./steps/ReviewAndComplete";
+import UserInformation from "../registration-components/steps/UserInformation";
+import DataPodInformation from "../registration-components/steps/data-pod-steps/DataPodInformation";
+import UsePolicy from "../registration-components/steps/data-pod-steps/UsePolicies";
+import ReviewAndComplete from "../registration-components/steps/data-pod-steps/ReviewAndComplete";
 import authConfig from "src/configs/auth";
 import organizationService from "src/provenAI-sdk/organizationService";
 import dataPodsService from "src/provenAI-sdk/dataPodsService";
 import aclPoliciesService from "src/provenAI-sdk/aclPoliciesService";
-import aclPoliciesConverter from "src/views/provenAI/data-pods-control/utils/convertToAclPolicies";
-import converter from "src/views/provenAI/data-pods-control/utils/converterToStepperData";
+import aclPoliciesConverter from "src/converters/aclPoliciesConverter";
+import organizationConverter from "src/converters/organizationConverter";
+import dataPodConverter from "src/converters/dataPodConverter";
 
 import {
-  steps,
+  dataPodSteps,
   defaultUserInformation,
-  defaultAgentInformation,
+  defaultDataPodInformation,
   defaultDataUse,
-} from "src/views/provenAI/data-pods-control/utils/defaultValues";
+} from "src/utils/defaultValues";
 
-const StepperLinearWithValidation = () => {
-  const theme = useTheme();
+const DataPodStepper = ({
+  activeDataPod,
+  activeOrganization,
+  dataPodPolicies,
+  userDataPods,
+  userOrganizations,
+  organizationId,
+  dataPodId,
+  activeStep,
+  setActiveStep,
+  vcOfferSessionId,
+}) => {
   const router = useRouter();
-  const { organizationId, dataPodId } = router.query;
+
   const storedToken = window.localStorage.getItem(
     authConfig.storageTokenKeyName
   );
-  const [activeStep, setActiveStep] = useState(0);
-  const [activeOrganization, setActiveOrganization] = useState({});
-  const [activeDataPodPolicies, setActiveDataPodPolicies] = useState({});
+
   const [userErrors, setUserErrors] = useState({});
   const [agentErrors, setAgentErrors] = useState({});
   const [dataUseErrors, setDataUseErrors] = useState({});
 
   // Form data states
   const [userData, setUserData] = useState(defaultUserInformation);
-  const [agentData, setAgentData] = useState(defaultAgentInformation);
+  const [dataPodData, setDataPodData] = useState(defaultDataPodInformation);
   const [usePoliciesData, setUsePoliciesData] = useState(defaultDataUse);
 
-  useEffect(() => {
-    const fetchOrganization = async () => {
-      try {
-        const organization =
-          await organizationService.getProvenOrganizationById(
-            organizationId,
-            storedToken
-          );
-        setActiveOrganization(organization.data);
-      } catch (error) {
-        console.error("Error fetching organization:", error);
-      }
-    };
-
-    const fetchDataPodPolicies = async () => {
-      try {
-        const dataPodPolicies = await dataPodsService.getAclPoliciesByDataPod(
-          dataPodId,
-          storedToken
-        );
-        setActiveDataPodPolicies(dataPodPolicies.data.content);
-      } catch (error) {
-        console.error("Error fetching data pod:", error);
-      }
-    };
-
-    fetchOrganization();
-    fetchDataPodPolicies();
-  }, [storedToken, organizationId, dataPodId]);
+  // console.log("ACTIVE ORGANIZATION", activeOrganization);
+  // console.log("ACTIVE DATA POD", activeDataPod);
+  // console.log("DATA POD ID id id id id ", dataPodId);
+  // console.log("DATA POD POLICIES", dataPodPolicies);
+  // console.log("USER DATA PODS", userDataPods);
+  // console.log("USER ORGANIZATIONS", userOrganizations);
+  // console.log("USER DATA", userData);
+  // console.log("DATA POD DATA", dataPodData);
+  // console.log("USE POLICIES DATA", usePoliciesData);
+  // console.log("VC OFFER SESSION ID", vcOfferSessionId);
 
   useEffect(() => {
     if (Object.keys(activeOrganization).length !== 0) {
-      const userInfo = converter.toUserInformation(activeOrganization);
-      setUserData(userInfo);
+      const userInfo =
+        organizationConverter.toUserInformation(activeOrganization);
+
+      setUserData((prevData) => {
+        const updatedUserInfo = { ...userInfo };
+
+        // check if any field is empty, if so, keep the previous value
+        Object.keys(userInfo).forEach((key) => {
+          if (
+            userInfo[key] === "" ||
+            userInfo[key] === null ||
+            userInfo[key] === undefined
+          ) {
+            updatedUserInfo[key] = prevData[key];
+          }
+        });
+
+        return updatedUserInfo;
+      });
+    } else {
+      // new organization
+      setUserData((prevData) => ({
+        ...defaultUserInformation,
+        organizationName: prevData.organizationName,
+      }));
     }
   }, [activeOrganization]);
 
   useEffect(() => {
-    if (activeDataPodPolicies && activeDataPodPolicies.length > 0) {
-      const agentPolicies = converter.toAgentPolicies(activeDataPodPolicies);
-      setAgentData((prevAgentData) => ({
+    if (dataPodPolicies && dataPodPolicies.length > 0) {
+      const agentPolicies = dataPodConverter.toAgentPolicies(dataPodPolicies);
+      setDataPodData((prevAgentData) => ({
         ...agentPolicies,
       }));
 
-      const usePolicies = converter.toUsePolicies(activeDataPodPolicies);
+      const usePolicies = dataPodConverter.toUsePolicies(dataPodPolicies);
       setUsePoliciesData((prevUsePoliciesData) => ({
         ...usePolicies,
       }));
+    } else {
+      setDataPodData((prevData) => ({
+        ...defaultDataPodInformation,
+        dataPodName: prevData.dataPodName,
+      }));
+      setUsePoliciesData(defaultDataUse);
     }
-  }, [activeDataPodPolicies]);
-  
+  }, [dataPodPolicies]);
+
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
 
   const refreshPage = () => {
-    const url = `/provenAI/data-pods-control?organizationId=${organizationId}&dataPodId=${dataPodId}`;
-    router.reload(url); 
-
+    const url = `/provenAI/data-pods-control?organizationId=${activeOrganization.id}&dataPodId=${activeDataPod.id}`;
+    router.reload(url);
+  };
+  const getVcOfferUrl = async () => {
+    const offer = await organizationService.getVcOfferUrl(
+      storedToken,
+      organizationId,
+      router.asPath
+    );
+    return offer.data.credentialVerificationUrl;
   };
 
-  
   const onSubmit = async () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
-    if (activeStep === steps.length - 1) {
+    if (activeStep === dataPodSteps.length - 1) {
       try {
-        const organizationDTO = converter.toOrganizationDTO(
+        const organizationDTO = organizationConverter.toOrganizationDTO(
           organizationId,
           userData
         );
-        await organizationService.updateOrganization(
-          organizationDTO,
-          storedToken
-        );
-        toast.success("Organization updated successfully!");
+
+        if (Object.keys(activeOrganization).length !== 0) {
+          await organizationService.updateOrganization(
+            organizationDTO,
+            storedToken
+          );
+          toast.success("Organization updated successfully!");
+        } else {
+          await organizationService.createOrganization(
+            organizationDTO,
+            storedToken
+          );
+          toast.success("Organization registration successfully!");
+        }
+
+        if (Object.keys(activeDataPod).length === 0) {
+          const dataPodDTO = dataPodConverter.toDataPodDTO(
+            dataPodData,
+            organizationId,
+            dataPodId
+          );
+
+          await dataPodsService.createDataPod(dataPodDTO, storedToken);
+          toast.success("Data Pod created successfully!");
+        }
 
         // Convert and compare policies
         const { aclPoliciesToCreate, aclPolicyIdsToDelete } =
           aclPoliciesConverter.convertAndComparePolicies(
-            agentData,
+            dataPodData,
             usePoliciesData,
-            activeDataPodPolicies,
+            dataPodPolicies,
             dataPodId
           );
 
         // Create new ACL policies
         for (const aclPolicyDTO of aclPoliciesToCreate) {
           await aclPoliciesService.createAclPolicy(aclPolicyDTO, storedToken);
-          console.log("Creating new ACL policy:", aclPolicyDTO);
           toast.success("Policy created successfully!");
         }
 
         // Delete obsolete ACL policies
         if (aclPolicyIdsToDelete.length > 0) {
-          await aclPoliciesService.deleteAclPolicies(aclPolicyIdsToDelete, storedToken);
-          console.log("Deleting obsolete ACL policies:", aclPolicyIdsToDelete);
+          await aclPoliciesService.deleteAclPolicies(
+            aclPolicyIdsToDelete,
+            storedToken
+          );
           toast.success("Policies deleted successfully!");
         }
 
@@ -175,15 +221,25 @@ const StepperLinearWithValidation = () => {
             handleBack={handleBack}
             userData={userData}
             setUserData={setUserData}
+            userOrganizations={userOrganizations}
+            secondFieldOnUrl={
+              Object.keys(activeDataPod).length || vcOfferSessionId
+            }
+            activeOrganization={activeOrganization}
+            getVcOfferUrl={getVcOfferUrl}
+            vcOfferSessionId={vcOfferSessionId}
           />
         );
       case 1:
         return (
-          <AgentInformation
+          <DataPodInformation
             onSubmit={onSubmit}
             handleBack={handleBack}
-            agentData={agentData}
-            setAgentData={setAgentData}
+            dataPodData={dataPodData}
+            userDataPods={userDataPods}
+            setDataPodData={setDataPodData}
+            activeDataPod={activeDataPod}
+            organizationId={organizationId}
           />
         );
       case 2:
@@ -201,7 +257,7 @@ const StepperLinearWithValidation = () => {
             onSubmit={onSubmit}
             handleBack={handleBack}
             userData={userData}
-            agentData={agentData}
+            dataPodData={dataPodData}
             usePoliciesData={usePoliciesData}
           />
         );
@@ -211,12 +267,25 @@ const StepperLinearWithValidation = () => {
   };
 
   const renderContent = () => {
-    if (activeStep === steps.length) {
+    if (activeStep === dataPodSteps.length) {
       return (
         <Fragment>
-          <Typography>All steps are completed!</Typography>
-          <Box sx={{ mt: 4, display: "flex", justifyContent: "flex-end" }}>
-            <Button size="large" variant="contained" onClick={refreshPage}>
+          <Box sx={{ textAlign: "center", mt: 4 }}>
+            <Typography variant="h4" gutterBottom>
+              All steps are completed!
+            </Typography>
+            <Typography variant="subtitle1" color="textSecondary" gutterBottom>
+              Thank you for completing all the steps. You can now proceed
+              further.
+            </Typography>
+          </Box>
+          <Box sx={{ mt: 4, display: "flex", justifyContent: "center" }}>
+            <Button
+              size="large"
+              variant="contained"
+              color="primary"
+              onClick={refreshPage}
+            >
               Back
             </Button>
           </Box>
@@ -232,7 +301,7 @@ const StepperLinearWithValidation = () => {
       <CardContent>
         <StepperWrapper>
           <Stepper activeStep={activeStep}>
-            {steps.map((step, index) => {
+            {dataPodSteps.map((step, index) => {
               const labelProps = {};
               // if (index === activeStep) {
               //   labelProps.error = false;
@@ -301,4 +370,4 @@ const StepperLinearWithValidation = () => {
   );
 };
 
-export default StepperLinearWithValidation;
+export default DataPodStepper;

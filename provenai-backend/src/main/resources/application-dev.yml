@@ -8,4 +8,6 @@ proven-ai:
   domains:
     gendox:
       base-url: https://dev.gendox.ctrlspace.dev
+    proven-ai-frontend:
+      base-url: https://dev.proven-ai.ctrlspace.dev
 

@@ -1,6 +1,7 @@
 // ** React Imports
 import React from "react";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/router";
 
 import {
   Grid,
@@ -20,18 +21,35 @@ import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 
 // ** Validation Schema and Default Values
-import { agentSchema } from "../utils/validationSchemas";
+import { agentSchema } from "src/utils/validationSchemas";
 
 import policyService from "src/provenAI-sdk/policyService";
 import authConfig from "src/configs/auth";
-import { gridColumnsTotalWidthSelector } from "@mui/x-data-grid";
+import { set } from "nprogress";
+
 
 const AgentInformation = ({
   onSubmit,
   handleBack,
   agentData,
   setAgentData,
+  activeAgent,
+  userAgents,
+  organizationId,
 }) => {
+  const router = useRouter();
+
+  const {
+    control,
+    handleSubmit,
+    watch,
+    setValue,
+    formState: { errors },
+  } = useForm({
+    defaultValues: agentData,
+    resolver: yupResolver(agentSchema),
+  });
+
   const [usagePolicies, setUsagePolicies] = useState([]);
   const [compensationPolicies, setCompensationPolicies] = useState([]);
   const [selectedCompensation, setSelectedCompensation] = useState(
@@ -40,15 +58,6 @@ const AgentInformation = ({
   const storedToken = window.localStorage.getItem(
     authConfig.storageTokenKeyName
   );
-
-  const {
-    control,
-    handleSubmit,
-    formState: { errors },
-  } = useForm({
-    defaultValues: agentData,
-    resolver: yupResolver(agentSchema),
-  });
 
   const compensationTypes = [
     {
@@ -66,6 +75,12 @@ const AgentInformation = ({
       iconProps: { fontSize: "2rem", style: { marginBottom: 8 } },
     },
   ];
+
+  useEffect(() => {
+    Object.keys(agentData).forEach((key) => {
+      setValue(key, agentData[key]);
+    });
+  }, [agentData, setValue]);
 
   useEffect(() => {
     const fetchUsagePolicies = async () => {
@@ -104,6 +119,16 @@ const AgentInformation = ({
     fetchCompensationPolicies();
   }, [storedToken]);
 
+  useEffect(() => {
+    if (activeAgent?.id) {
+      const activeAgentName =
+        userAgents.find((agent) => agent.id === activeAgent.id)?.agentName ||
+        "";
+      setValue("agentName", activeAgentName);
+      setValue("agentUserId", activeAgent.userId);
+    }
+  }, [activeAgent, userAgents, setValue]);
+
   const handleCompensationChange = (value) => {
     setSelectedCompensation(value);
   };
@@ -113,22 +138,85 @@ const AgentInformation = ({
     onSubmit();
   };
 
-  
+  const handleMenuItemClick = (agent) => {
+    setAgentData((prevData) => ({
+      ...prevData,
+      agentName: agent.agentName,
+      agentUserId: agent.userId,
+    }));
+    set
+    updateShallowQueryParams({ organizationId, agentId: agent.id });
+    console.log(`Clicked on Agent: `, agent);
+  };
 
+  const updateShallowQueryParams = (params) => {
+    router.push(
+      {
+        pathname: router.pathname,
+        query: {
+          ...router.query,
+          ...params,
+        },
+      },
+      undefined,
+      { shallow: true }
+    );
+  };
 
   return (
     <form onSubmit={handleSubmit(handleFormSubmit)}>
       <Grid container spacing={5}>
-        <Grid item xs={12}>
+        <Grid item xs={12} sm={6}>
           <Typography
-            variant="h4"
+            variant="h5"
             sx={{ fontWeight: 800, color: "text.primary" }}
           >
             Agent Information
           </Typography>
           <Typography variant="subtitle2" component="p">
-            Enter Your Agent Details
+            Enter your references to sort your agents
           </Typography>
+        </Grid>
+
+        <Grid item xs={12} sm={6}>
+          {!Object.keys(activeAgent).length > 0 && (
+            <FormControl fullWidth>
+              <InputLabel id="user-agents-label">Select Agent</InputLabel>
+              <Controller
+                name="agentName"
+                control={control}
+                render={({ field }) => (
+                  <Select labelId="user-agent-label" {...field} label="Agent">
+                    {/* <MenuItem value="new-agent">New Agent</MenuItem> */}
+                    {userAgents.map((agent) => (
+                      <MenuItem
+                        key={agent.id}
+                        value={agent.agentName}
+                        onClick={() => handleMenuItemClick(agent)}
+                      >
+                        {agent.agentName}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                )}
+              />
+            </FormControl>
+          )}
+        </Grid>
+        {/* <Grid item xs={12} sm={3}>
+          {watch("selectedAgent") === "new-agent" && (
+            <Button
+              variant="contained"
+              onClick={() =>
+                (window.location.href = "https://your-new-site.com")
+              }
+            >
+              Create Agent
+            </Button>
+          )}
+        </Grid> */}
+        <Grid item xs={12}>
+          {" "}
         </Grid>
 
         <Grid item xs={12}>

@@ -1,24 +1,16 @@
 // ** React Imports
 import React from "react";
-import {
-  Box,
-  Grid,
-  Typography,
-  Button,
-  Chip,
-} from "@mui/material";
+import { Box, Grid, Typography, Button, Chip } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
-
 
 const ReviewAndComplete = ({
   onSubmit,
   handleBack,
   userData,
-  agentData,
+  dataPodData,
   usePoliciesData,
 }) => {
-  const theme = useTheme(); 
-
+  const theme = useTheme();
 
   return (
     <Box>
@@ -31,9 +23,26 @@ const ReviewAndComplete = ({
       <Typography variant="subtitle2" component="p" sx={{ mb: 4 }}>
         Review all the information you provided and click Submit to complete.
       </Typography>
-      <Grid container spacing={5} sx={{ mt: 2 }}>
+
+      
+      <Grid container spacing={5} sx={{ mt: 2 }}>  
+
+        {/* Organization Section */}      
+        {/* <Grid item xs={12} sx={{ p: 2, mb: 2 }}>
+          <Typography
+            variant="h5"
+            sx={{ fontWeight: 700, color: theme.palette.primary.light, mb: 2 }}
+          >
+            Organization
+          </Typography>
+          <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2 }}>
+            <Typography variant="body1">Organization Name:</Typography>
+            {userData.organizationName || "N/A"}
+          </Box>
+        </Grid> */}
+
         {/* User Information Section */}
-        <Grid item xs={12} sx={{ p: 4, mb: 4 }}>
+        <Grid item xs={12} sx={{ p: 2, mb: 2 }}>
           <Typography
             variant="h5"
             sx={{ fontWeight: 700, color: theme.palette.primary.light, mb: 2 }}
@@ -42,6 +51,9 @@ const ReviewAndComplete = ({
           </Typography>
           {userData.selectedOrganizationType === "natural-person" ? (
             <>
+            <Typography variant="body1">
+                Organization: {userData.organizationName || "N/A"}
+              </Typography>
               <Typography variant="body1">
                 First Name: {userData.firstName}
               </Typography>
@@ -84,22 +96,26 @@ const ReviewAndComplete = ({
         </Grid>
 
         {/* Agent Information Section */}
-        <Grid item xs={12} sx={{ p: 4, mb: 4 }}>
+        <Grid item xs={12} sx={{ p: 2, mb: 2 }}>
           <Typography
             variant="h5"
             sx={{ fontWeight: 700, color: theme.palette.primary.light, mb: 3 }}
           >
-            Agent Information
+            Data Pod Information
           </Typography>
           <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2, mb: 3 }}>
+            <Typography variant="body1">Data Pod:</Typography>
+            {dataPodData.dataPodName || "N/A"}
+          </Box>
+          <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2, mb: 3 }}>
             <Typography variant="body1">Agent Purpose:</Typography>
-            {agentData.agentPurpose?.map((p) => (
+            {dataPodData.agentPurpose?.map((p) => (
               <Chip key={p.name} label={p.name} />
             ))}
           </Box>
           <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2, mb: 3 }}>
             <Typography variant="body1">Deny List:</Typography>
-            {agentData.denyList.map((agent) => (
+            {dataPodData.denyList.map((agent) => (
               <Chip
                 key={agent.agentId}
                 label={agent.name}
@@ -111,7 +127,7 @@ const ReviewAndComplete = ({
           </Box>
           <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2, mb: 2 }}>
             <Typography variant="body1">Allow List:</Typography>
-            {agentData.allowList.map((agent) => (
+            {dataPodData.allowList.map((agent) => (
               <Chip
                 key={agent.agentId}
                 label={agent.name}
@@ -134,13 +150,23 @@ const ReviewAndComplete = ({
           <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mb: 1 }}>
             <Typography variant="body1">Attribution Policies:</Typography>
             {usePoliciesData.attributionPolicies?.map((p) => (
-              <Chip key={p.name} label={p.name} color='primary' variant='outlined'/>
+              <Chip
+                key={p.name}
+                label={p.name}
+                color="primary"
+                variant="outlined"
+              />
             ))}
           </Box>
           <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mb: 1 }}>
             <Typography variant="body1">Compensation Policies:</Typography>
             {usePoliciesData.compensationPolicies?.map((p) => (
-              <Chip key={p.name} label={p.name} color='secondary' variant='outlined'/>
+              <Chip
+                key={p.name}
+                label={p.name}
+                color="secondary"
+                variant="outlined"
+              />
             ))}
           </Box>
         </Grid>

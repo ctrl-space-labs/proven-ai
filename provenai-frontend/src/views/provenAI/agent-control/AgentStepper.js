@@ -20,89 +20,98 @@ import toast from "react-hot-toast";
 // ** Custom Components Imports
 import StepperCustomDot from "./StepperCustomDot";
 import StepperWrapper from "src/@core/styles/mui/stepper";
-import UserInformation from "./steps/UserInformation";
-import AgentInformation from "./steps/AgentInformation";
-import ReviewAndComplete from "./steps/ReviewAndComplete";
+import UserInformation from "../registration-components/steps/UserInformation";
+import AgentInformation from "../registration-components/steps/agent-steps/AgentInformation";
+import ReviewAndComplete from "../registration-components/steps/agent-steps/ReviewAndComplete";
 import authConfig from "src/configs/auth";
 import organizationService from "src/provenAI-sdk/organizationService";
 import agentService from "src/provenAI-sdk/agentService";
 import agentPurposeOfUsePoliciesService from "src/provenAI-sdk/agentPurposeOfUsePoliciesService";
-import converterToStepperData from "src/views/provenAI/agent-control/utils/converterToStepperData";
-import convertToAgentPurposeOfUsePolicies from "src/views/provenAI/agent-control/utils/convertToAgentPurposeOfUsePolicies";
+import organizationConverter from "src/converters/organizationConverter";
+import agentConverter from "src/converters/agentConverter";
+import AgentPurposeOfUsePoliciesConverter from "src/converters/agentPurposeOfUsePoliciesConverter";
 
 import {
-  steps,
+  agentSteps,
   defaultUserInformation,
   defaultAgentInformation,
-} from "src/views/provenAI/agent-control/utils/defaultValues";
+} from "src/utils/defaultValues";
+import ssiService from "../../../provenAI-sdk/ssiService";
+import CredentialsWithQrCodeComponent from "../registration-components/CredentialsWithQrCodeComponent";
 
-const StepperLinearWithValidation = () => {
+const AgentStepper = ({
+  activeAgent,
+  activeOrganization,
+  agentPolicies,
+  userAgents,
+  userOrganizations,
+  organizationId,
+  agentId,
+  activeStep,
+  setActiveStep,
+  vcOfferSessionId,
+}) => {
   const theme = useTheme();
   const router = useRouter();
-  const { organizationId, agentId } = router.query;
   const storedToken = window.localStorage.getItem(
     authConfig.storageTokenKeyName
   );
 
-  const [activeStep, setActiveStep] = useState(0);
-  const [activeOrganization, setActiveOrganization] = useState({});
-  const [activeAgentPolicies, setActiveAgentPolicies] = useState({});
-
   // Form data states
   const [userData, setUserData] = useState(defaultUserInformation);
   const [agentData, setAgentData] = useState(defaultAgentInformation);
+  const [agentUpdated, setAgentUpdated] = useState(false);
+  const [isSubmitComplete, setIsSubmitComplete] = useState(false);
 
-  useEffect(() => {
-    const fetchOrganization = async () => {
-      try {
-        const organization =
-          await organizationService.getProvenOrganizationById(
-            organizationId,
-            storedToken
-          );
-        setActiveOrganization(organization.data);
-      } catch (error) {
-        console.error("Error fetching organization:", error);
-      }
-    };
-
-    const fetchAgentPolicies = async () => {
-      try {
-        const agent = await agentService.getPoliciesByAgent(
-          agentId,
-          storedToken
-        );
-        setActiveAgentPolicies(agent.data.content);
-      } catch (error) {
-        console.error("Error fetching data pod:", error);
-      }
-    };
-
-    fetchOrganization();
-    fetchAgentPolicies();
-  }, [storedToken, organizationId, agentId]);
+  // console.log("USER AGENTS", userAgents);
+  // console.log("User Data", userData);
+  // console.log("Agent Data", agentData);
+  // console.log("User Agents--->", userAgents);
+  // console.log("Active Agent--->", activeAgent);
 
   useEffect(() => {
     if (Object.keys(activeOrganization).length !== 0) {
       const userInfo =
-        converterToStepperData.toUserInformation(activeOrganization);
-      setUserData(userInfo);
+        organizationConverter.toUserInformation(activeOrganization);
+      setUserData((prevData) => {
+        const updatedUserInfo = { ...userInfo };
+
+        // check if any field is empty, if so, keep the previous value
+        Object.keys(userInfo).forEach((key) => {
+          if (
+            userInfo[key] === "" ||
+            userInfo[key] === null ||
+            userInfo[key] === undefined
+          ) {
+            updatedUserInfo[key] = prevData[key];
+          }
+        });
+
+        return updatedUserInfo;
+      });
+    } else {
+      // new organization
+      setUserData((prevData) => ({
+        ...defaultUserInformation,
+        organizationName: prevData.organizationName,
+      }));
     }
   }, [activeOrganization]);
 
   useEffect(() => {
-    if (activeAgentPolicies && activeAgentPolicies.length > 0) {
-      const agentPolicies =
-        converterToStepperData.toAgentPolicies(activeAgentPolicies);
+    if (agentPolicies && agentPolicies.length > 0) {
+      const agentDataPolicies = agentConverter.toAgentPolicies(agentPolicies);
       setAgentData((prevAgentData) => ({
-        ...agentPolicies,
+        ...agentDataPolicies,
+      }));
+    } else {
+      setAgentData((prevAgentData) => ({
+        ...defaultAgentInformation,
+        agentName: prevAgentData.agentName,
+        agentUserId: prevAgentData.agentUserId,
       }));
     }
-  }, [activeAgentPolicies]);
-
-  // console.log("userData106", userData);
-  // console.log("agentData107", agentData);
-  // console.log("ACTIVE AGENT POLICIES", activeAgentPolicies);
+  }, [agentPolicies]);
 
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
@@ -113,24 +122,53 @@ const StepperLinearWithValidation = () => {
     router.reload(url);
   };
 
+  const getVcOfferUrl = async () => {
+    const offer = await organizationService.getVcOfferUrl(
+      storedToken,
+      organizationId,
+      router.asPath
+    );
+    return offer.data.credentialVerificationUrl;
+  };
+
   const onSubmit = async () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
-    if (activeStep === steps.length - 1) {
+    if (activeStep === agentSteps.length - 1) {
       try {
-        const organizationDTO = converterToStepperData.toOrganizationDTO(
+        const organizationDTO = organizationConverter.toOrganizationDTO(
           organizationId,
           userData
         );
-        await organizationService.updateOrganization(
-          organizationDTO,
-          storedToken
-        );
-        toast.success("Organization updated successfully!");
+        if (Object.keys(activeOrganization).length !== 0) {
+          await organizationService.updateOrganization(
+            organizationDTO,
+            storedToken
+          );
+          toast.success("Organization updated successfully!");
+        } else {
+          await organizationService.createOrganization(
+            organizationDTO,
+            storedToken
+          );
+          toast.success("Organization registration successfully!");
+        }
+
+        if (Object.keys(activeAgent).length === 0) {
+          const agentDTO = agentConverter.toAgentDTO(
+            agentData,
+            organizationId,
+            agentId
+          );
+          await agentService.createAgent(agentDTO, storedToken);
+          setAgentUpdated(true);
+          console.log("Creating agent:", agentDTO);
+          toast.success("Agent created successfully!");
+        }
 
         const { policiesToCreate, policyIdsToDelete } =
-          convertToAgentPurposeOfUsePolicies.convertAndComparePolicies(
+          AgentPurposeOfUsePoliciesConverter.convertAndComparePolicies(
             agentData,
-            activeAgentPolicies,
+            agentPolicies,
             agentId
           );
 
@@ -140,6 +178,8 @@ const StepperLinearWithValidation = () => {
             policy,
             storedToken
           );
+
+          setAgentUpdated(true);
 
           console.log("Creating policy:", policy);
           toast.success("Policy created successfully!");
@@ -151,16 +191,39 @@ const StepperLinearWithValidation = () => {
             policyIdsToDelete,
             storedToken
           );
+          setAgentUpdated(true);
           console.log("Deleting policy:", policyIdsToDelete);
           toast.success("Policy deleted successfully!");
         }
 
+        if (agentUpdated && toast.success) {
+          const agentOfferVc = await getAgentOfferVc();
+          console.log(agentOfferVc);
+        }
+
+        setIsSubmitComplete(true);
         toast.success("Agent purpose of use policies updated successfully!");
       } catch (error) {
         console.error("Error updating Agent purpose of use policies:", error);
         toast.error("Failed to update Agent purpose of use policies!");
       }
     }
+  };
+
+  const getAgentOfferVc = async () => {
+    const agentOfferVcResponse = await ssiService.getAiAgentIdCredentialOffer(
+      agentId,
+      storedToken
+    );
+    return agentOfferVcResponse.data;
+  };
+
+  const getAgentOfferVcUrl = async () => {
+    const agentOfferVcResponse = await ssiService.getAiAgentIdCredentialOffer(
+      agentId,
+      storedToken
+    );
+    return agentOfferVcResponse.data.credentialOfferUrl;
   };
 
   const getStepContent = (step) => {
@@ -172,6 +235,13 @@ const StepperLinearWithValidation = () => {
             handleBack={handleBack}
             userData={userData}
             setUserData={setUserData}
+            activeOrganization={activeOrganization}
+            secondFieldOnUrl={
+              Object.keys(activeAgent).length || vcOfferSessionId
+            }
+            userOrganizations={userOrganizations}
+            getVcOfferUrl={getVcOfferUrl}
+            vcOfferSessionId={vcOfferSessionId}
           />
         );
       case 1:
@@ -181,6 +251,9 @@ const StepperLinearWithValidation = () => {
             handleBack={handleBack}
             agentData={agentData}
             setAgentData={setAgentData}
+            activeAgent={activeAgent}
+            userAgents={userAgents}
+            organizationId={organizationId}
           />
         );
       case 2:
@@ -198,15 +271,35 @@ const StepperLinearWithValidation = () => {
   };
 
   const renderContent = () => {
-    if (activeStep === steps.length) {
+    if (activeStep === agentSteps.length && isSubmitComplete) {
       return (
         <Fragment>
-          <Typography>All steps are completed!</Typography>
-          <Box sx={{ mt: 4, display: "flex", justifyContent: "flex-end" }}>
-            <Button size="large" variant="contained" onClick={refreshPage}>
+          <Box sx={{ textAlign: "center", mt: 4 }}>
+            <Typography variant="h4" gutterBottom>
+              All steps are completed!
+            </Typography>
+            <Typography variant="subtitle1" color="textSecondary" gutterBottom>
+              You can now receive your Agent ID Credential by scanning the QR
+              code below.
+            </Typography>
+          </Box>
+          <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
+            <CredentialsWithQrCodeComponent
+              title={"Receive your Agent ID Credential"}
+              handleCredentialsClose={null}
+              getURL={getAgentOfferVcUrl}
+            />
+          </Box>
+          <Box sx={{ mt: 4, display: "flex", justifyContent: "center" }}>
+            <Button
+              size="large"
+              variant="contained"
+              color="primary"
+              onClick={refreshPage}
+            >
               Back
             </Button>
-          </Box>
+          </Box>          
         </Fragment>
       );
     } else {
@@ -219,7 +312,7 @@ const StepperLinearWithValidation = () => {
       <CardContent>
         <StepperWrapper>
           <Stepper activeStep={activeStep}>
-            {steps.map((step, index) => {
+            {agentSteps.map((step, index) => {
               const labelProps = {};
               // if (index === activeStep) {
               //   labelProps.error = false;
@@ -288,4 +381,4 @@ const StepperLinearWithValidation = () => {
   );
 };
 
-export default StepperLinearWithValidation;
+export default AgentStepper;

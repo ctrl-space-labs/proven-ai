@@ -36,8 +36,6 @@ const OrganizationsDropdown = ({ settings }) => {
     authConfig.storageTokenKeyName
   );
 
-  
-
   useEffect(() => {
     const { organizationId } = router.query;
     if (organizationId) {
@@ -75,7 +73,13 @@ const OrganizationsDropdown = ({ settings }) => {
       localStorage.setItem(authConfig.selectedOrganizationId, organization.id);
       localStorage.setItem(authConfig.selectedProjectId, newProjectId);
       setActiveOrganizationId(organization.id);
-      const newPath = `/provenAI/home?organizationId=${organization.id}`;
+
+      const newPath =
+        router.pathname === "/provenAI/data-pods-control"
+          ? `/provenAI/data-pods-control?organizationId=${organization.id}`
+          : router.pathname === "/provenAI/agent-control"
+          ? `/provenAI/agent-control?organizationId=${organization.id}`
+          : `/provenAI/home?organizationId=${organization.id}`;
       router.push(newPath);
     },
     [dispatch, handleDropdownClose, router]
@@ -169,49 +173,48 @@ const OrganizationsDropdown = ({ settings }) => {
       >
         {auth.user.provenOrgs.map((organization) => {
           const href = `/provenAI/home?organizationId=${organization.id}`;
-        return (
-          <Link
-            href={href}
-            passHref
-            key={organization.id}
-            style={{ textDecoration: "none" }}
-          >
-            <MenuItem              
-              sx={{ p: 0 }}              
-              onClick={(e) => {
-                e.preventDefault();
-                handleOrganizations(organization);
-              }}
-              selected={organization.id === activeOrganizationId}
-              
+          return (
+            <Link
+              href={href}
+              passHref
+              key={organization.id}
+              style={{ textDecoration: "none" }}
             >
-              <Box
-                sx={{
-                  py: 2,
-                  px: 4,
-                  width: "100%",
-                  display: "flex",
-                  alignItems: "center",
-                  textDecoration: "none",
-                  backgroundColor:
-                    organization.id === activeOrganizationId
-                      ? "primary.light"
-                      : "inherit",
-                  "& svg": {
-                    mr: 2,
-                    fontSize: "1.375rem",
-                  },
+              <MenuItem
+                sx={{ p: 0 }}
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleOrganizations(organization);
                 }}
+                selected={organization.id === activeOrganizationId}
               >
-                <ListItemIcon sx={{ color: "primary.main" }}>
-                  <Icon icon="mdi:domain" fontSize={20} />
-                </ListItemIcon>
-                <ListItemText primary={organization.name} />
-              </Box>
-            </MenuItem>
-          </Link>
-        );
-      })}
+                <Box
+                  sx={{
+                    py: 2,
+                    px: 4,
+                    width: "100%",
+                    display: "flex",
+                    alignItems: "center",
+                    textDecoration: "none",
+                    backgroundColor:
+                      organization.id === activeOrganizationId
+                        ? "primary.light"
+                        : "inherit",
+                    "& svg": {
+                      mr: 2,
+                      fontSize: "1.375rem",
+                    },
+                  }}
+                >
+                  <ListItemIcon sx={{ color: "primary.main" }}>
+                    <Icon icon="mdi:domain" fontSize={20} />
+                  </ListItemIcon>
+                  <ListItemText primary={organization.name} />
+                </Box>
+              </MenuItem>
+            </Link>
+          );
+        })}
       </Menu>
     </Fragment>
   );

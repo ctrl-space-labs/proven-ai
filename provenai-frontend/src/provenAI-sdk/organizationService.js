@@ -19,13 +19,43 @@ const getOrganizationsByCriteria = async (organizationIds, storedToken) => {
 
 
 /**
+ * Get VC Offer URL
+ * @param storedToken
+ * @param organizationId
+ * @returns {Promise<axios.AxiosResponse<{credentialVerificationUrl: string}>>}
+ */
+const getVcOfferUrl = async (storedToken, organizationId, redirectURL) => {
+    return axios.post(apiRequests.provenGetVcOfferUrl(organizationId, redirectURL), {
+      "vc_policies": [
+        "expired",
+        "not-before"
+      ],
+      "request_credentials": [
+        "NaturalPersonVerifiableID",
+        "VerifiableID",
+        "VerifiableId",
+        "eIDAS2PID",
+        "LegalEntityVerifiableID",
+        "VerifiablePID"
+      ]
+    }, {
+        headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + storedToken,
+        }
+    });
+
+}
+
+
+/**
  * Get all organization users
  * @param organizationId 
  * @param storedToken
  * @returns {Promise<axios.AxiosResponse<Organization>>}
  */
 const getProvenOrganizationById = async (organizationId, storedToken) => {
-  return axios.get(apiRequests.provenOrganization(organizationId), {
+  return axios.get(apiRequests.provenOrganizationById(organizationId), {
       headers: {
           'Content-Type': 'application/json',
           Authorization: 'Bearer ' + storedToken
@@ -43,17 +73,36 @@ const getProvenOrganizationById = async (organizationId, storedToken) => {
  *  @returns {Promise<axios.AxiosResponse<Organization>>}
  */ 
   const updateOrganization = async (organizationDTO, storedToken) => {
-    return axios.put(apiRequests.provenOrganization(organizationDTO.id), organizationDTO, {
+    return axios.put(apiRequests.provenOrganizationById(organizationDTO.id), organizationDTO, {
       headers: {
         "Content-Type": "application/json",
         Authorization: "Bearer " + storedToken,
       },
     });
   };
+
+
+  /**
+   * Registration a new organization
+   * @param organizationDTO
+   * @param storedToken
+   * @returns {Promise<axios.AxiosResponse<Organization>>}
+   
+   */
+  const createOrganization = async (organizationDTO, storedToken) => {
+    return axios.post(apiRequests.organizationRegistration(), organizationDTO, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + storedToken,
+      },
+    });
+  }
  
 
 export default {
   getOrganizationsByCriteria,
   getProvenOrganizationById,
-  updateOrganization
+  updateOrganization,
+  createOrganization,
+  getVcOfferUrl
 };

@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import dev.ctrlspace.provenai.backend.controller.specs.AgentsControllerSpec;
 import dev.ctrlspace.provenai.backend.converters.AgentConverter;
 import dev.ctrlspace.provenai.backend.exceptions.ProvenAiException;
-import dev.ctrlspace.provenai.backend.model.AclPolicies;
 import dev.ctrlspace.provenai.backend.model.Agent;
 import dev.ctrlspace.provenai.backend.model.AgentPurposeOfUsePolicies;
 import dev.ctrlspace.provenai.backend.model.dtos.AgentDTO;
@@ -44,6 +43,7 @@ public class AgentsController implements AgentsControllerSpec {
     }
 
 
+    // TODO: Authorization check that you can access only yours
     @GetMapping("/agents")
     public Page<Agent> getAllAgents(@Valid AgentCriteria criteria, Pageable pageable) throws ProvenAiException {
 
@@ -64,7 +64,7 @@ public class AgentsController implements AgentsControllerSpec {
 
 
     @PostMapping("/agents")
-    public Agent createAgent(@RequestBody AgentDTO agentDTO) {
+    public Agent createAgent(@RequestBody AgentDTO agentDTO) throws ProvenAiException {
         Agent agent = agentConverter.toEntity(agentDTO);
 
         return agentService.createAgent(agent, agentDTO.getUsagePolicies());

@@ -36,6 +36,7 @@ const navigation = () => {
                 title: dataPod.podUniqueName,
                 icon: "mdi:server",
                 path: `/provenAI/data-pods-control?organizationId=${activeOrganization.id}&dataPodId=${dataPod.id}`,
+
               };
             });
 
@@ -56,10 +57,12 @@ const navigation = () => {
                 sectionTitle: "DATA PODS",
               },
               ...dataPods,
+              
               {
                 sectionTitle: "AI AGENTS",
               },
-              ...agents,              
+              ...agents,   
+                      
             ]);
           }
         } catch (error) {
