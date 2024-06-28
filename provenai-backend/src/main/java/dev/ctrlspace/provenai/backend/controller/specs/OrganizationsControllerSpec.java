@@ -19,6 +19,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.IOException;
 import java.util.UUID;
@@ -121,7 +122,9 @@ public interface OrganizationsControllerSpec {
                             examples = @ExampleObject(value = "{\"vc_policies\": [\"expired\", \"not-before\"], \"request_credentials\": [\"NaturalPersonVerifiableID\"]}")
                     )
             )
-            JsonNode vpRequest);
+            JsonNode vpRequest,
+            @PathVariable UUID organizationId,
+            @RequestParam(required = false, name = "redirectPath") String base64RedirectPath) throws ProvenAiException;
 }
 
 

@@ -39,9 +39,9 @@ public class ValidatorUtils {
     public Boolean validateCredentialSubjectFields(String jwt, Organization organization) throws IOException, ProvenAiException {
         JsonNode payload = jwtUtils.getPayloadFromJwt(jwt);
 
-        if (organization.getIsNaturalPerson().equals(true)) {
+        if (organization.getNaturalPerson().equals(true)) {
             return validateNaturalPersonCredentialSubject(payload, organization);
-        } else if (organization.getIsNaturalPerson().equals(false)) {
+        } else if (organization.getNaturalPerson().equals(false)) {
             return validateLegalEntityCredentialSubject(payload, organization);
         } else {
             throw new ProvenAiException("UNSUPPORTED_CREDENTIAL_TYPE", "Unsupported credential type in VC", HttpStatus.UNSUPPORTED_MEDIA_TYPE);

@@ -123,7 +123,7 @@ public class OrganizationsService {
             organization.setOrganizationDid(responseEntity.getBody().getData());
 
 
-        } else if (organization.getOrganizationVpJwt() != null) {
+        } else if (organization.getOrganizationVpJwt() != null && organization.getOrganizationVpJwt() != "") {
             ProvenAIVerifier provenAIVerifier = new ProvenAIVerifier();
 
             Boolean verificationResult = provenAIVerifier.verifyVPJwt(organization.getOrganizationVpJwt());
