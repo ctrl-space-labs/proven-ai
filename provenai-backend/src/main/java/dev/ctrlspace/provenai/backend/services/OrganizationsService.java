@@ -117,10 +117,10 @@ public class OrganizationsService {
             String OrganizationVcJwt = ssiJwtUtils.getVCJwtFromVPJwt(organization.getOrganizationVpJwt());
 
 
-            Boolean credentialSubjectValidation = validatorUtils.validateCredentialSubjectFields(OrganizationVcJwt, organization);
-            if (!credentialSubjectValidation) {
-                throw new ProvenAiException("CREDENTIAL_FIELDS_MISMATCH", "Credential fields do not match the organization fields", HttpStatus.BAD_REQUEST);
-            }
+//            Boolean credentialSubjectValidation = validatorUtils.validateCredentialSubjectFields(OrganizationVcJwt, organization);
+//            if (!credentialSubjectValidation) {
+//                throw new ProvenAiException("CREDENTIAL_FIELDS_MISMATCH", "Credential fields do not match the organization fields", HttpStatus.BAD_REQUEST);
+//            }
 
             organization.setOrganizationDid(jwtUtils.getPayloadFromJwt(organization.getOrganizationVpJwt()).get("sub").toString());
 

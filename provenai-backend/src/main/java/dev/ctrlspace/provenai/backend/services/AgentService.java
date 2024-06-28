@@ -208,6 +208,7 @@ public class AgentService {
 
         EventPayloadDTO eventPayload = new EventPayloadDTO();
         eventPayload.setOrganizationDid(organization.getOrganizationDid());
+        eventPayload.setProjectAgentId(String.valueOf(agentId));
         eventPayload.setOrganizationId(organization.getId().toString());
 
         ResponseEntity<WebHookEventResponse> responseEntity =
