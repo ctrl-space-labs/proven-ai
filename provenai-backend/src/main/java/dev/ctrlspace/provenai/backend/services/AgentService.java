@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import dev.ctrlspace.provenai.backend.adapters.GendoxWebHookAdapter;
 import dev.ctrlspace.provenai.backend.authentication.KeycloakAuthenticationService;
 import dev.ctrlspace.provenai.backend.converters.AgentConverter;
 import dev.ctrlspace.provenai.backend.exceptions.ProvenAiException;
@@ -69,6 +70,12 @@ public class AgentService {
 
     private PolicyTypeRepository policyTypeRepository;
     private AgentConverter agentConverter;
+
+    private SSIJWTUtils ssiJwtUtils;
+
+    private GendoxWebHookAdapter gendoxWebHookAdapter;
+
+    private JWTUtils jwtUtils;
 
 
     @Autowired
@@ -220,7 +227,7 @@ public class AgentService {
 
     public String createAgentVCOffer(W3CVC w3CVC) {
 
-        WaltIdCredentialIssuanceRequest request = WaltIdCredentialIssuanceRequest.builder().issuerDid(issuerDid).issuerKey(IssuerKey.builder().jwk(issuerPrivateJwk).type("jwk").build()).vc(w3CVC).build();
+        WaltIdCredentialIssuanceRequest request = WaltIdCredentialIssuanceRequest.builder().issuerDid(issuerDid).issuerKey(IssuerKey.builder().jwk(issuerPrivateJwk).type("jwk").build()).credentialData(w3CVC).build();
         return credentialIssuanceApi.issueCredential(request);
     }
 

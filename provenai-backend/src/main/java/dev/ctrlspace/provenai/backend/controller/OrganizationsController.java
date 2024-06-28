@@ -88,9 +88,6 @@ public class OrganizationsController implements OrganizationsControllerSpec {
         organizationsService.deleteOrganization(organizationId);
     }
 
-    @PostMapping("/organizations/verify-vp")
-    public CredentialVerificationDTO verifyOrganizationVP(@RequestBody JsonNode vpRequest) {
-        return organizationsService.verifyOrganizationVP(vpRequest);
     @PostMapping("/organizations/{organizationId}/verify-vp")
     public CredentialVerificationDTO verifyOrganizationVP(@RequestBody JsonNode vpRequest, @PathVariable UUID organizationId, @RequestParam(required = false, name = "redirectPath") String base64RedirectPath) throws ProvenAiException {
         String redirectPath = null;
