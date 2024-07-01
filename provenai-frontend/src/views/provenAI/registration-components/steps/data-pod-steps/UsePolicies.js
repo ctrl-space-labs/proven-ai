@@ -2,7 +2,6 @@
 import React from "react";
 import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/router";
-
 import {
   Grid,
   Typography,
@@ -15,10 +14,7 @@ import {
 } from "@mui/material";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-
-// ** Validation Schema and Default Values
 import { dataUseSchema } from "src/utils/validationSchemas";
-
 import policyService from "src/provenAI-sdk/policyService";
 import authConfig from "src/configs/auth";
 
@@ -28,10 +24,10 @@ const UsePolicy = ({
   usePoliciesData,
   setUsePoliciesData,
   setActiveStep,
+  setUsePoliciesErrors
 }) => {
   const router = useRouter();
   const isFirstRender = useRef(true);
-
   const [attributionDefaultPolicies, setAttributionDefaultPolicies] = useState(
     []
   );
@@ -48,9 +44,7 @@ const UsePolicy = ({
   } = useForm({
     defaultValues: usePoliciesData,
     resolver: yupResolver(dataUseSchema),
-  });
-
- 
+  }); 
 
   const handleFormSubmit = (data) => {
     setUsePoliciesData(data);
@@ -64,6 +58,10 @@ const UsePolicy = ({
     }    
       setActiveStep(0);    
   }, [router.query.dataPodId]);
+
+  useEffect(() => {
+    setUsePoliciesErrors(errors);
+  }, [errors, setUsePoliciesErrors]);
 
   useEffect(() => {
     const fetchAttributionPolicyOptions = async () => {

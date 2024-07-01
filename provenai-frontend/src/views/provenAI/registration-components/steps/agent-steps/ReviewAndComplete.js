@@ -1,11 +1,17 @@
 // ** React Imports
 import React from "react";
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect } from "react";
 import { useRouter } from "next/router";
 import { Box, Grid, Typography, Button, Chip } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 
-const ReviewAndComplete = ({ onSubmit, handleBack, userData, agentData, setActiveStep }) => {
+const ReviewAndComplete = ({
+  onSubmit,
+  handleBack,
+  userData,
+  agentData,
+  setActiveStep,
+}) => {
   const theme = useTheme();
   const router = useRouter();
   const isFirstRender = useRef(true);
@@ -14,8 +20,8 @@ const ReviewAndComplete = ({ onSubmit, handleBack, userData, agentData, setActiv
     if (isFirstRender.current) {
       isFirstRender.current = false;
       return;
-    }   
-      setActiveStep(0);    
+    }
+    setActiveStep(0);
   }, [router.query.agentId]);
 
   return (
@@ -40,7 +46,7 @@ const ReviewAndComplete = ({ onSubmit, handleBack, userData, agentData, setActiv
           </Typography>
           {userData.selectedOrganizationType === "natural-person" ? (
             <>
-            <Typography variant="body1">
+              <Typography variant="body1">
                 Organization: {userData.organizationName || "N/A"}
               </Typography>
               <Typography variant="body1">
@@ -59,6 +65,9 @@ const ReviewAndComplete = ({ onSubmit, handleBack, userData, agentData, setActiv
             </>
           ) : (
             <>
+              <Typography variant="body1">
+                Organization: {userData.organizationName || "N/A"}
+              </Typography>
               <Typography variant="body1">
                 Legal Person Identifier: {userData.legalPersonIdentifier}
               </Typography>
@@ -109,10 +118,10 @@ const ReviewAndComplete = ({ onSubmit, handleBack, userData, agentData, setActiv
           </Box>
           {agentData.compensationType === "paid" && (
             <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2, mb: 3 }}>
-            <Typography variant="body1">
-              Paid method: {agentData.compensation.name}
-            </Typography>
-          </Box>
+              <Typography variant="body1">
+                Paid method: {agentData.compensation.name}
+              </Typography>
+            </Box>
           )}
         </Grid>
 

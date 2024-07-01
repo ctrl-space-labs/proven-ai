@@ -9,9 +9,7 @@ import VerticalNavButton from 'src/navigation/vertical/VerticalNavButton'
 const { NewDataPodButton, NewAgentButton } = VerticalNavButton;
 
 
-const resolveNavItemComponent = item => {
-  console.log("item", item)
-  console.log(item.sectionButton === "dataPod")
+const resolveNavItemComponent = item => {  
   if (item.sectionTitle) return VerticalNavSectionTitle
   if (item.sectionButton === "dataPod") return NewDataPodButton
   if (item.children) return VerticalNavGroup

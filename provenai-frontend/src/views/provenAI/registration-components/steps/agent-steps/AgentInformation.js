@@ -15,6 +15,7 @@ import {
   Button,
   Chip,
   Autocomplete,
+  FormHelperText,
 } from "@mui/material";
 import CustomRadioIcons from "src/@core/components/custom-radio/icons";
 import { useForm, Controller } from "react-hook-form";
@@ -27,7 +28,6 @@ import policyService from "src/provenAI-sdk/policyService";
 import authConfig from "src/configs/auth";
 import { set } from "nprogress";
 
-
 const AgentInformation = ({
   onSubmit,
   handleBack,
@@ -37,6 +37,7 @@ const AgentInformation = ({
   userAgents,
   organizationId,
   setActiveStep,
+  setAgentErrors,
 }) => {
   const router = useRouter();
   const isFirstRender = useRef(true);
@@ -94,6 +95,10 @@ const AgentInformation = ({
       setActiveStep(0);
     }
   }, [router.query.agentId]);
+
+  useEffect(() => {
+    setAgentErrors(errors);
+  }, [errors, setAgentErrors]);
 
   useEffect(() => {
     const fetchUsagePolicies = async () => {
@@ -158,7 +163,7 @@ const AgentInformation = ({
       agentName: agent.agentName,
       agentUserId: agent.userId,
     }));
-    set
+    set;
     updateShallowQueryParams({ organizationId, agentId: agent.id });
     console.log(`Clicked on Agent: `, agent);
   };
@@ -193,7 +198,7 @@ const AgentInformation = ({
         </Grid>
 
         <Grid item xs={12} sm={6}>
-          {(!Object.keys(activeAgent).length > 0 || selectNewAgent)&& (
+          {(!Object.keys(activeAgent).length > 0 || selectNewAgent) && (
             <FormControl fullWidth>
               <InputLabel id="user-agents-label">Select Agent</InputLabel>
               <Controller
@@ -201,7 +206,6 @@ const AgentInformation = ({
                 control={control}
                 render={({ field }) => (
                   <Select labelId="user-agent-label" {...field} label="Agent">
-                    {/* <MenuItem value="new-agent">New Agent</MenuItem> */}
                     {userAgents.map((agent) => (
                       <MenuItem
                         key={agent.id}
@@ -214,21 +218,15 @@ const AgentInformation = ({
                   </Select>
                 )}
               />
+              {errors.agentName && (
+                <FormHelperText error>
+                  {errors.agentName.message}
+                </FormHelperText>
+              )}
             </FormControl>
           )}
         </Grid>
-        {/* <Grid item xs={12} sm={3}>
-          {watch("selectedAgent") === "new-agent" && (
-            <Button
-              variant="contained"
-              onClick={() =>
-                (window.location.href = "https://your-new-site.com")
-              }
-            >
-              Create Agent
-            </Button>
-          )}
-        </Grid> */}
+
         <Grid item xs={12}>
           {" "}
         </Grid>
@@ -301,23 +299,30 @@ const AgentInformation = ({
               name="compensationType"
               control={control}
               render={({ field: { value, onChange } }) => (
-                <Grid container spacing={4} item xs={12} sm={12} mt={2}>
-                  {compensationTypes.map((type, index) => (
-                    <CustomRadioIcons
-                      key={index}
-                      icon={type.icon}
-                      name="custom-radios-icons"
-                      data={compensationTypes[index]}
-                      selected={selectedCompensation}
-                      handleChange={(selectedValue) => {
-                        handleCompensationChange(selectedValue);
-                        onChange(selectedValue === "paid" ? "paid" : "free");
-                      }}
-                      gridProps={{ sm: 4, xs: 12 }}
-                      iconProps={type.iconProps}
-                    />
-                  ))}
-                </Grid>
+                <>
+                  <Grid container spacing={4} item xs={12} sm={12} mt={2}>
+                    {compensationTypes.map((type, index) => (
+                      <CustomRadioIcons
+                        key={index}
+                        icon={type.icon}
+                        name="custom-radios-icons"
+                        data={compensationTypes[index]}
+                        selected={selectedCompensation}
+                        handleChange={(selectedValue) => {
+                          handleCompensationChange(selectedValue);
+                          onChange(selectedValue === "paid" ? "paid" : "free");
+                        }}
+                        gridProps={{ sm: 4, xs: 12 }}
+                        iconProps={type.iconProps}
+                      />
+                    ))}
+                  </Grid>
+                  {errors.compensationType && (
+                    <FormHelperText error>
+                      {errors.compensationType.message}
+                    </FormHelperText>
+                  )}
+                </>
               )}
             />
           </FormControl>
@@ -336,23 +341,30 @@ const AgentInformation = ({
                 name="compensation"
                 control={control}
                 render={({ field: { value, onChange } }) => (
-                  <Select
-                    labelId="compensation-type"
-                    value={value?.name || ""}
-                    onChange={(event) => {
-                      const selectedPolicy = compensationPolicies.find(
-                        (policy) => policy.name === event.target.value
-                      );
-                      onChange(selectedPolicy);
-                    }}
-                    label="Compensation Type"
-                  >
-                    {compensationPolicies.map((policy) => (
-                      <MenuItem key={policy.id} value={policy.name}>
-                        {policy.name}
-                      </MenuItem>
-                    ))}
-                  </Select>
+                  <>
+                    <Select
+                      labelId="compensation-type"
+                      value={value?.name || ""}
+                      onChange={(event) => {
+                        const selectedPolicy = compensationPolicies.find(
+                          (policy) => policy.name === event.target.value
+                        );
+                        onChange(selectedPolicy);
+                      }}
+                      label="Compensation Type"
+                    >
+                      {compensationPolicies.map((policy) => (
+                        <MenuItem key={policy.id} value={policy.name}>
+                          {policy.name}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                    {errors.compensation && (
+                      <FormHelperText error>
+                        {errors.compensation.message}
+                      </FormHelperText>
+                    )}
+                  </>
                 )}
               />
             </FormControl>

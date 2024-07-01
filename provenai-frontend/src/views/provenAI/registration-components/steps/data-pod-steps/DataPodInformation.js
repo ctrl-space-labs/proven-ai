@@ -1,10 +1,8 @@
 // ** React Imports
 import React from "react";
 import { useEffect, useState } from "react";
-import { useRef } from 'react';
-
+import { useRef } from "react";
 import { useRouter } from "next/router";
-
 import {
   Grid,
   Typography,
@@ -16,14 +14,11 @@ import {
   MenuItem,
   InputLabel,
   Select,
+  FormHelperText,
 } from "@mui/material";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-
-
-// ** Validation Schema and Default Values
-import { agentSchema } from "src/utils/validationSchemas";
-
+import { dataPodSchema } from "src/utils/validationSchemas";
 import policyService from "src/provenAI-sdk/policyService";
 import agentService from "src/provenAI-sdk/agentService";
 import authConfig from "src/configs/auth";
@@ -38,10 +33,17 @@ const DataPodInformation = ({
   activeDataPod,
   organizationId,
   setActiveStep,
+  setDataPodErrors
 }) => {
   const router = useRouter();
   const isFirstRender = useRef(true);
+  const [usagePolicies, setUsagePolicies] = useState([]);
+  const [agents, setAgents] = useState([]);
+  const [selectNewDataPod, setSelectNewDataPod] = useState(false);
 
+  const storedToken = window.localStorage.getItem(
+    authConfig.storageTokenKeyName
+  );
 
   const {
     control,
@@ -51,22 +53,18 @@ const DataPodInformation = ({
     formState: { errors },
   } = useForm({
     defaultValues: dataPodData,
-    resolver: yupResolver(agentSchema),
+    resolver: yupResolver(dataPodSchema),
   });
-
-  const [usagePolicies, setUsagePolicies] = useState([]);
-  const [agents, setAgents] = useState([]);
-  const [selectNewDataPod, setSelectNewDataPod] = useState(false);
-
-  const storedToken = window.localStorage.getItem(
-    authConfig.storageTokenKeyName
-  );
 
   useEffect(() => {
     Object.keys(dataPodData).forEach((key) => {
       setValue(key, dataPodData[key]);
     });
   }, [dataPodData, setValue]);
+
+  useEffect(() => {
+    setDataPodErrors(errors);
+  }, [errors, setDataPodErrors]);
 
   useEffect(() => {
     if (isFirstRender.current) {
@@ -192,7 +190,6 @@ const DataPodInformation = ({
                     {...field}
                     label="Data Pod"
                   >
-                    {/* <MenuItem value="new-data-pod">New Data Pod</MenuItem> */}
                     {userDataPods.map((dp) => (
                       <MenuItem
                         key={dp.id}
@@ -205,21 +202,15 @@ const DataPodInformation = ({
                   </Select>
                 )}
               />
+              {errors.dataPodName && (
+                <FormHelperText error>
+                  {errors.dataPodName.message}
+                </FormHelperText>
+              )}
             </FormControl>
           )}
         </Grid>
-        {/* <Grid item xs={12} sm={3}>
-          {watch("dataPodName") === "new-data-pod" && (
-            <Button
-              variant="contained"
-              onClick={() =>
-                (window.location.href = "https://your-new-site.com")
-              }
-            >
-              Create Data Pod
-            </Button>
-          )}
-        </Grid> */}
+        
         <Grid item xs={12}>
           {" "}
         </Grid>
@@ -310,7 +301,6 @@ const DataPodInformation = ({
                     },
                   }}
                   id="autocomplete-multiple-filled-deny"
-                  // value={value? value.map((deny) => deny.name) : []}
                   value={
                     value
                       ? value.map(
@@ -337,6 +327,10 @@ const DataPodInformation = ({
                       {...params}
                       sx={{ mb: 2, mt: 2 }}
                       placeholder="Select agents"
+                      error={!!errors.denyList}
+                      helperText={
+                        errors.denyList ? errors.denyList.message : ""
+                      }
                     />
                   )}
                   renderTags={(value, getTagProps) =>
@@ -418,6 +412,10 @@ const DataPodInformation = ({
                       {...params}
                       sx={{ mb: 2, mt: 2 }}
                       placeholder="Select agents"
+                      error={!!errors.allowList}
+                      helperText={
+                        errors.allowList ? errors.allowList.message : ""
+                      }
                     />
                   )}
                   renderTags={(value, getTagProps) =>
