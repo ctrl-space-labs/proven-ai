@@ -5,8 +5,8 @@ export const dataPodSteps = [
     subtitle: "User Information",
   },
   {
-    title: "Agent",
-    subtitle: "Agent Information",
+    title: "Data Pod",
+    subtitle: "Data Pod Information",
   },
   {
     title: "Data Use",
@@ -55,6 +55,7 @@ export const defaultUserInformation = {
 };
 
 export const defaultAgentInformation = {
+  agentName: "",
   agentPurpose: [],
   denyList: [],
   allowList : [],

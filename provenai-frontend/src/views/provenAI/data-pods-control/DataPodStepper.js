@@ -102,7 +102,7 @@ const DataPodStepper = ({
 
   useEffect(() => {
     if (dataPodPolicies && dataPodPolicies.length > 0) {
-      const agentPolicies = dataPodConverter.toAgentPolicies(dataPodPolicies);
+      const agentPolicies = dataPodConverter.toDataPodPolicies(dataPodPolicies);
       setDataPodData((prevAgentData) => ({
         ...agentPolicies,
       }));
@@ -146,7 +146,6 @@ const DataPodStepper = ({
           userData
         );
 
-        console.log("organizationDTO", organizationDTO);
         if (Object.keys(activeOrganization).length !== 0) {
           await organizationService.updateOrganization(
             organizationDTO,

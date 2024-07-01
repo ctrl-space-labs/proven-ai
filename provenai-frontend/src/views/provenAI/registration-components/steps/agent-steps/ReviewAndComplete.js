@@ -16,6 +16,8 @@ const ReviewAndComplete = ({
   const router = useRouter();
   const isFirstRender = useRef(true);
 
+  console.log("AGENT DATA", agentData);
+
   useEffect(() => {
     if (isFirstRender.current) {
       isFirstRender.current = false;
@@ -123,6 +125,30 @@ const ReviewAndComplete = ({
               </Typography>
             </Box>
           )}
+          <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2, mb: 3 }}>
+            <Typography variant="body1">Deny List:</Typography>
+            {agentData.denyList.map((pod) => (
+              <Chip
+                key={pod.dataPodId}
+                label={pod.name}
+                sx={{
+                  backgroundColor: "red",
+                }}
+              />
+            ))}
+          </Box>
+          <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2, mb: 2 }}>
+            <Typography variant="body1">Allow List:</Typography>
+            {agentData.allowList.map((pod) => (
+              <Chip
+                key={pod.dataPodId}
+                label={pod.name}
+                sx={{
+                  backgroundColor: "green",
+                }}
+              />
+            ))}
+          </Box>
         </Grid>
 
         {/* Action Buttons */}

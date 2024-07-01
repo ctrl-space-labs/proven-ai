@@ -95,7 +95,7 @@ const ReviewAndComplete = ({
           </Typography>
         </Grid>
 
-        {/* Agent Information Section */}
+        {/* Data POD Information Section */}
         <Grid item xs={12} sx={{ p: 2, mb: 2 }}>
           <Typography
             variant="h5"
