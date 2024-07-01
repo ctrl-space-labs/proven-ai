@@ -12,10 +12,7 @@ const getPolicyOptions = async (policyTypeName, storedToken) => {
     headers: {
       "Content-Type": "application/json",
       Authorization: "Bearer " + storedToken,
-    },
-    // params: {
-    //   policyTypeName: policyTypeName
-    // },
+    },    
     
   });
 };

@@ -1,12 +1,10 @@
 
 import * as yup from "yup";
 
-
-
-const listNotInOtherList = (listAName, listBName) => {
+const listNotInOtherList = (listAName, listBName, idKey) => {
   return yup.array().of(
     yup.object().shape({
-      agentId: yup.string(),
+      [idKey]: yup.string(),
       name: yup.string(),
     })
   ).test(`${listAName}-not-in-${listBName}`, function (listA) {
@@ -14,12 +12,12 @@ const listNotInOtherList = (listAName, listBName) => {
     if (!Array.isArray(listA) || !Array.isArray(listB)) {
       return true;
     }
-    const listBIds = listB.map(item => item.agentId);
-    const duplicateAgents = listA.filter(item => listBIds.includes(item.agentId));
+    const listBIds = listB.map(item => item[idKey]);
+    const duplicateItems = listA.filter(item => listBIds.includes(item[idKey]));
     
-    if (duplicateAgents.length > 0) {
-      const duplicateNames = duplicateAgents.map(agent => agent.name).join(", ");
-      return this.createError({ path: `${listAName}`, message: `Duplicate agents found in both lists: ${duplicateNames}` });
+    if (duplicateItems.length > 0) {
+      const duplicateNames = duplicateItems.map(item => item.name).join(", ");
+      return this.createError({ path: `${listAName}`, message: `Duplicate items found in both lists: ${duplicateNames}` });
     }
 
     return true;
@@ -95,8 +93,8 @@ export const userSchema = yup.object().shape({
 export const dataPodSchema = yup.object().shape({
   dataPodName: yup.string().required("Data pod name is required"),
   agentPurpose: yup.array().min(1, "At least one purpose is required").required("Purpose is required"),
-  denyList: listNotInOtherList('denyList', 'allowList'),
-  allowList: listNotInOtherList('allowList', 'denyList'),
+  denyList: listNotInOtherList('denyList', 'allowList', 'agentId'),
+  allowList: listNotInOtherList('allowList', 'denyList', 'agentId'),
 });
 
 export const dataUseSchema = yup.object().shape({
@@ -114,7 +112,8 @@ export const agentSchema = yup.object().shape({
     then: agentSchema => agentSchema.required("Compensation is required"),
     otherwise: agentSchema => agentSchema.nullable().notRequired()
   }), 
-  
+  denyList: listNotInOtherList('denyList', 'allowList', 'dataPodId'),
+  allowList: listNotInOtherList('allowList', 'denyList', 'dataPodId'),
   
 });
 

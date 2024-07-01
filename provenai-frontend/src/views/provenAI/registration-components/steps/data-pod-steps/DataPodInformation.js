@@ -33,7 +33,7 @@ const DataPodInformation = ({
   activeDataPod,
   organizationId,
   setActiveStep,
-  setDataPodErrors
+  setDataPodErrors,
 }) => {
   const router = useRouter();
   const isFirstRender = useRef(true);
@@ -114,25 +114,65 @@ const DataPodInformation = ({
     }
   }, [activeDataPod, userDataPods, setValue]);
 
-  const updateAgentDataWithNames = (data) => {
+  const updateAgentData = async (data) => {
     if (agents.length > 0) {
+      let allowPolicies, denyPolicies;
+      try {
+        allowPolicies = await policyService.getPolicyOptions(
+          "ALLOW_LIST",
+          storedToken
+        );        
+      } catch (error) {
+        console.error("Error fetching allow policy options:", error);
+      }
+
+      try {
+        denyPolicies = await policyService.getPolicyOptions(
+          "DENY_LIST",
+          storedToken
+        );        
+      } catch (error) {
+        console.error("Error fetching deny policy options:", error);
+      }
+
+      const allowAgentPolicy = allowPolicies?.data.find(
+        (policy) => policy.name === "ALLOW_AGENT_NAME"
+      );
+      const denyAgentPolicy = denyPolicies?.data.find(
+        (policy) => policy.name === "DENY_AGENT_NAME"
+      );
+
       const updatedAgentData = {
         ...data,
         allowList: data.allowList.map((allow) => {
           const agent = agents.find((agent) => agent.id === allow.agentId);
-          return agent ? { ...allow, name: agent.agentName } : allow;
+          return agent
+            ? {
+                ...allow,
+                name: agent.agentName,
+                policyOptionId: allowAgentPolicy?.id || "",
+                policyTypeId: allowAgentPolicy?.policyTypeId || "",
+              }
+            : allow;
         }),
         denyList: data.denyList.map((deny) => {
           const agent = agents.find((agent) => agent.id === deny.agentId);
-          return agent ? { ...deny, name: agent.agentName } : deny;
+          return agent
+            ? {
+                ...deny,
+                name: agent.agentName,
+                policyOptionId: denyAgentPolicy?.id || "",
+                policyTypeId: denyAgentPolicy?.policyTypeId || "",
+              }
+            : deny;
         }),
       };
       return updatedAgentData;
     }
   };
 
-  const handleFormSubmit = (data) => {
-    const updatedData = updateAgentDataWithNames(data);
+  const handleFormSubmit = async (data) => {
+    const updatedData = await updateAgentData(data);
     setDataPodData(updatedData);
     onSubmit();
   };
@@ -210,7 +250,7 @@ const DataPodInformation = ({
             </FormControl>
           )}
         </Grid>
-        
+
         <Grid item xs={12}>
           {" "}
         </Grid>
