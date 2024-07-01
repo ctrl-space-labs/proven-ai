@@ -42,6 +42,7 @@ const AgentInformation = ({
   const router = useRouter();
   const isFirstRender = useRef(true);
 
+
   const {
     control,
     handleSubmit,
@@ -51,7 +52,7 @@ const AgentInformation = ({
   } = useForm({
     defaultValues: agentData,
     resolver: yupResolver(agentSchema),
-  });
+  });  
 
   const [usagePolicies, setUsagePolicies] = useState([]);
   const [compensationPolicies, setCompensationPolicies] = useState([]);

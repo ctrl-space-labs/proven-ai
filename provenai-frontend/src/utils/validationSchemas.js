@@ -6,8 +6,8 @@ import * as yup from "yup";
 const listNotInOtherList = (listAName, listBName) => {
   return yup.array().of(
     yup.object().shape({
-      agentId: yup.string().required(),
-      name: yup.string().required(),
+      agentId: yup.string(),
+      name: yup.string(),
     })
   ).test(`${listAName}-not-in-${listBName}`, function (listA) {
     const listB = this.parent[listBName];
@@ -108,10 +108,14 @@ export const agentSchema = yup.object().shape({
   agentName: yup.string().required("Agent name is required"),
   agentPurpose: yup.array().min(1, "At least one purpose is required").required("Purpose is required"),
   compensationType: yup.string().required("Compensation type is required"),
+  
   compensation: yup.object().when('compensationType', {
     is: "paid",
     then: agentSchema => agentSchema.required("Compensation is required"),
-  }),
+    otherwise: agentSchema => agentSchema.nullable().notRequired()
+  }), 
+  
+  
 });
 
 

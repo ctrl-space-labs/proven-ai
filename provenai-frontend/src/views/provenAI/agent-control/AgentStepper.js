@@ -66,6 +66,8 @@ const AgentStepper = ({
   const [userErrors, setUserErrors] = useState({});
   const [agentErrors, setAgentErrors] = useState({});
 
+  console.log("Agent data:", agentData);
+
   useEffect(() => {
     if (Object.keys(activeOrganization).length !== 0) {
       const userInfo =
@@ -340,7 +342,7 @@ const AgentStepper = ({
                 }
 
                 // Agent information errors
-                if (activeStep === 1 && agentErrors.agentPurpose ) {
+                if (activeStep === 1 && agentErrors.agentPurpose || agentErrors.compensationType) {
                   labelProps.error = true;
                 }
                 
