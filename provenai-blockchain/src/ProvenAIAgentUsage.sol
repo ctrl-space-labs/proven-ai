@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity 0.8.20;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 
@@ -12,6 +12,12 @@ contract ProvenAIAgentUsage is Ownable {
     mapping(address => mapping(uint256 => DailyUsageRoot)) private usageData;
 
     event DailyUsageDataUpdated(address indexed agent, uint256 date, bytes32 rootHash, uint256 tokenSum);
+
+    /**
+     * @dev Constructor that initializes the contract.
+     */
+    constructor() Ownable(msg.sender) {}
+
 
     /**
         * @dev Record daily usage data for an agent.
