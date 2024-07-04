@@ -40,13 +40,25 @@ forge build
 forge script script/Counter.s.sol:CounterScript --rpc-url $RPC_URL --private-key $PRIVATE_KEY --broadcast
 ```
 
-5. Get the smart contract address and verify the deployment
+## Useful commands
+
+1. Get the smart contract address and verify the deployment
 ```
 <!-- Call method -->
 cast call 0x703fAD8Fccb141ceCb64c06f8CC284A93e720E97 "getNumber()" --rpc-url $RPC_URL
 
 <!-- send transaction -->
 cast send $SMART_CONTRACT_ADDRESS "setNumber(uint256)" 17 --rpc-url $RPC_URL --private-key $PRIVATE_KEY
+```
+
+2. Send ETH to an address
+```
+cast send <recipient_address> --value <amount_in_wei> --rpc-url <rpc_url> --private-key <private_key>
+```
+
+3. Estimate gas
+```
+cast estimate --to $SMART_CONTRACT_ADDRESS --data $(cast calldata "setNumber(uint256)" 17) --rpc-url $RPC_URL
 ```
 
 
