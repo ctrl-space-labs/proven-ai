@@ -5,15 +5,19 @@ import dev.ctrlspace.provenai.backend.converters.DataPodConverter;
 import dev.ctrlspace.provenai.backend.exceptions.ProvenAiException;
 import dev.ctrlspace.provenai.backend.model.AclPolicies;
 import dev.ctrlspace.provenai.backend.model.DataPod;
+import dev.ctrlspace.provenai.backend.model.authentication.OrganizationUserDTO;
+import dev.ctrlspace.provenai.backend.model.authentication.UserProfile;
 import dev.ctrlspace.provenai.backend.model.dtos.DataPodDTO;
 import dev.ctrlspace.provenai.backend.model.dtos.criteria.DataPodCriteria;
 import dev.ctrlspace.provenai.backend.services.DataPodService;
+import dev.ctrlspace.provenai.backend.utils.SecurityUtils;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -26,16 +30,27 @@ public class DataPodController implements DataPodControllerSpec {
 
     private DataPodConverter dataPodConverter;
 
+    private SecurityUtils securityUtils;
+
     @Autowired
     public DataPodController(DataPodService dataPodService,
-                             DataPodConverter dataPodConverter) {
+                             DataPodConverter dataPodConverter,
+                             SecurityUtils securityUtils) {
         this.dataPodService = dataPodService;
         this.dataPodConverter = dataPodConverter;
+        this.securityUtils = securityUtils;
     }
 
     @GetMapping("/data-pods")
-    public Page<DataPod> getAllDataPods(@Valid DataPodCriteria criteria, Pageable pageable) throws ProvenAiException {
+    public Page<DataPod> getAllDataPods(@Valid DataPodCriteria criteria, Pageable pageable, Authentication authentication) throws ProvenAiException {
+//        if (securityUtils.isUser()) {
+//            UserProfile userProfile = (UserProfile) authentication.getPrincipal();
+//            OrganizationUserDTO organizationUserDTO = userProfile.getOrganizations().stream().filter(org -> org.getId().equals(organizationId)).findFirst().orElseThrow(() -> new GendoxException("ORGANIZATION_NOT_FOUND", "Organization not found", HttpStatus.NOT_FOUND));
+//
+//            organizationUserDTO.getProjects().stream().map(ProjectOrganizationDTO::getId).forEach(projectId -> criteria.getProjectIdIn().add(projectId));
+//        }
         return dataPodService.getAllDataPods(criteria, pageable);
+
     }
 
     @PreAuthorize("@securityUtils.hasAuthority('OP_READ_PROVEN_AI_DATAPOD', 'getRequestedDataPodIdFromPathVariable')")

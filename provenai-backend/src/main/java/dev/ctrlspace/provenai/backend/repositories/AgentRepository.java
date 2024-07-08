@@ -27,7 +27,7 @@ public interface AgentRepository extends JpaRepository<Agent, UUID>, QuerydslPre
 
     Optional<Agent> findByAgentUsername(String agentUsername);
 
-    public boolean existsByIdAndOrganizationIdIn(UUID id, List<UUID> organizationId);
+    public boolean existsByIdAndOrganizationIdIn(UUID id, List<String> organizationId);
 
 
 
