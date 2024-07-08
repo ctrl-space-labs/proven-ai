@@ -239,7 +239,6 @@ const AgentInformation = ({
     }));
     set;
     updateShallowQueryParams({ organizationId, agentId: agent.id });
-    console.log(`Clicked on Agent: `, agent);
   };
 
   const updateShallowQueryParams = (params) => {

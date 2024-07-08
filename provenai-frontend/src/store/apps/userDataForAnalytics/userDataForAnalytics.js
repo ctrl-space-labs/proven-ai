@@ -37,13 +37,12 @@ export const fetchUserDataForAnalytics = createAsyncThunk(
       dataPodIdInResponse,
     ] = await Promise.all(promises);
 
-
     const providedByOwnerDataPods = toApexChartData(
       "dataPod",
       dataPodsByOrgResponse.data.content,
       permissionOfUseAnalytics.graphData.providedDataTokensByOwnerDataPod
     );
-    
+
     const providedByProcessorAgents = toApexChartData(
       "agent",
       agentsByOrgResponse.data.content,
@@ -62,6 +61,8 @@ export const fetchUserDataForAnalytics = createAsyncThunk(
       permissionOfUseAnalytics.graphData.consumedDataTokensByProcessorAgent
     );
 
+    console.log("Provided by processor agents", providedByProcessorAgents);
+
     return {
       userData: {
         agentsByOrgId: agentsByOrgResponse.data,
@@ -74,7 +75,7 @@ export const fetchUserDataForAnalytics = createAsyncThunk(
         providedByProcessorAgents,
         consumedByOwnerDataPods,
         consumedByProcessorAgents,
-      }
+      },
     };
   }
 );
@@ -84,7 +85,12 @@ const toApexChartData = (type, userData, graphData) => {
     .filter((data) => Object.keys(graphData).includes(data.id))
     .map((data) => ({
       id: data.id,
-      name: type === 'dataPod' ? data.podUniqueName : type === 'agent' ? data.agentName : "",
+      name:
+        type === "dataPod"
+          ? data.podUniqueName
+          : type === "agent"
+          ? data.agentName
+          : "",
       data: [graphData[data.id]?.totalSumTokens || 0],
       active: true,
     }));
@@ -110,12 +116,24 @@ const userDataForAnalyticsSlice = createSlice({
     },
     status: "idle",
     error: null,
-    
   },
   reducers: {
     setOrganizationId: (state, action) => {
       state.organizationId = action.payload;
     },
+    updateProvidedByProcessorAgents: (state, action) => {
+      state.analyticsData.providedByProcessorAgents = action.payload;
+    },
+    updateConsumedByProcessorAgents: (state, action) => {
+      state.analyticsData.consumedByProcessorAgents = action.payload;
+    },
+    updateProvidedByOwnerDataPods: (state, action) => {
+      state.analyticsData.providedByOwnerDataPods = action.payload;
+    },
+    updateConsumedByOwnerDataPods: (state, action) => {
+      state.analyticsData.consumedByOwnerDataPods = action.payload;
+    },
+
   },
   extraReducers: (builder) => {
     builder
@@ -126,7 +144,6 @@ const userDataForAnalyticsSlice = createSlice({
         state.status = "succeeded";
         state.userData = action.payload.userData;
         state.analyticsData = action.payload.analyticsData;
-        
       })
       .addCase(fetchUserDataForAnalytics.rejected, (state, action) => {
         state.status = "failed";
@@ -135,6 +152,12 @@ const userDataForAnalyticsSlice = createSlice({
   },
 });
 
-export const { setOrganizationId } = userDataForAnalyticsSlice.actions;
+export const {
+  setOrganizationId,
+  updateProvidedByProcessorAgents,
+  updateConsumedByProcessorAgents,
+  updateProvidedByOwnerDataPods,
+  updateConsumedByOwnerDataPods,
+} = userDataForAnalyticsSlice.actions;
 
 export default userDataForAnalyticsSlice.reducer;

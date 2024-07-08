@@ -23,9 +23,7 @@ const ProvidedByDateTimeBucket = () => {
     (state) => state.permissionOfUseAnalytics.graphData
   );
 
-  // console.log ('permissionOfUseAnalytics', permissionOfUseAnalytics);
   const { providedDataTokensByDateTimeBucket } = permissionOfUseAnalytics || {};
-  // console.log('providedDataTokensByDateTimeBucket', providedDataTokensByDateTimeBucket);
 
   const filterDataByTimeRange = () => {
     const filteredData = [];

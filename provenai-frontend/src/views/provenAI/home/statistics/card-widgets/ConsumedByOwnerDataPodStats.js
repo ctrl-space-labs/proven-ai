@@ -1,101 +1,156 @@
-// ** MUI Imports
 import Card from "@mui/material/Card";
 import { useTheme } from "@mui/material/styles";
 import CardHeader from "@mui/material/CardHeader";
 import CardContent from "@mui/material/CardContent";
-
-// ** Custom Components Imports
 import OptionsMenu from "src/@core/components/option-menu";
 import ReactApexcharts from "src/@core/components/react-apexcharts";
+import { updateConsumedByOwnerDataPods } from "src/store/apps/userDataForAnalytics/userDataForAnalytics";
 
-// ** Util Import
 import { hexToRGBA } from "src/@core/utils/hex-to-rgba";
 import { useEffect } from "react";
 import { useState } from "react";
-import { useSelector } from "react-redux";
-import dataPodsService from "src/provenAI-sdk/dataPodsService";
-import authConfig from "src/configs/auth";
+import { useSelector, useDispatch } from "react-redux";
+
 
 const ConsumedByOwnerDataPodsStats = () => {
   // ** Hook
   const theme = useTheme();
-
+  const dispatch = useDispatch();
   const [tokensPerOwnerDataPod, setTokensPerOwnerDataPod] = useState([]);
   const [dataPods, setDataPods] = useState([]);
   const [totalTokensConsumed, setTotalTokensConsumed] = useState(0);
-  const storedToken = window.localStorage.getItem(
-    authConfig.storageTokenKeyName
-  );
-  const permissionOfUseAnalytics = useSelector(
-    (state) => state.permissionOfUseAnalytics
+  const consumedByOwnerDataPods = useSelector(
+    (state) => state.userDataForAnalytics.analyticsData.consumedByOwnerDataPods
   );
 
   useEffect(() => {
-    console.log("graph data updated! ", permissionOfUseAnalytics.graphData);
-    if (!permissionOfUseAnalytics.graphData) {
+    if (!consumedByOwnerDataPods) {
       return;
     }
 
-    const ids = Object.keys(
-      permissionOfUseAnalytics.graphData.consumedDataTokensByOwnerDataPod
-    );
-
-    const fetchUserDataPods = async () => {
-      try {
-        const idsParam = ids.join(",");
-        const userDataPodsResponse = await dataPodsService.getDataPodsByIdIn(
-          idsParam,
-          storedToken
-        );
-        setDataPods(userDataPodsResponse.data.content);
-      } catch (error) {
-        console.error("Error fetching user data pods: ", error);
-      }
-    };
-
-    fetchUserDataPods();
-  }, [permissionOfUseAnalytics.graphData, storedToken]);
-
-  useEffect(() => {
-    if (!permissionOfUseAnalytics.graphData || dataPods.length === 0) {
-      return;
-    }
+    setDataPods(consumedByOwnerDataPods);
 
     const dataPodsStatsData = [
       {
         name: "Tokens",
-        data: dataPods.map(
-          (dataPod) =>
-            permissionOfUseAnalytics.graphData.consumedDataTokensByOwnerDataPod[
-              dataPod.id
-            ]?.totalSumTokens || 0
-        ),
+        data: consumedByOwnerDataPods
+          .filter((dataPod) => dataPod.active)
+          .map((dataPod) => dataPod?.data[0] || 0),
       },
     ];
 
-    const totalTokens = dataPodsStatsData[0].data.reduce(
-      (acc, item) => acc + item,
-      0
-    );
+    const tokensData = consumedByOwnerDataPods
+      .filter((dataPod) => dataPod.active)
+      .reduce((acc, dataPod) => acc + (dataPod.data[0] || 0), 0);
 
-    setTotalTokensConsumed(totalTokens);
     setTokensPerOwnerDataPod(dataPodsStatsData);
-  }, [dataPods, permissionOfUseAnalytics.graphData]);
+    setTotalTokensConsumed(tokensData);
+  }, [consumedByOwnerDataPods]);
+
+  const handleLegendClick = ( chartContext, seriesIndex, config) => {    
+    const updatedDataPods = dataPods.map((dataPod, index) => {
+      if (index === seriesIndex) {
+        return { ...dataPod, active: !dataPod.active };
+      }
+      return dataPod;
+    });
+    
+    dispatch(updateConsumedByOwnerDataPods(updatedDataPods));
+  };
+
+  const colorPalette = dataPods.map((dataPod, index) => {
+    if (dataPod.active) {
+      const colors = [
+        hexToRGBA(theme.palette.primary.light, 1),
+        hexToRGBA(theme.palette.success.light, 1),
+        hexToRGBA(theme.palette.warning.light, 1),
+        hexToRGBA(theme.palette.info.light, 1),
+        hexToRGBA(theme.palette.error.light, 1),
+      ];
+      return colors[index % colors.length]; // Cycle through colors
+    } else {
+      return hexToRGBA(theme.palette.grey[400], 1);
+    }
+  });
 
   const options = {
     chart: {
       parentHeightOffset: 0,
-      toolbar: { show: false },
+      // events: {
+      //   legendClick: function (chartContext, seriesIndex, config) {
+      //     console.log("legendClick: ", chartContext, seriesIndex, config);
+      //   },
+      // },
+
+      events: {
+        legendClick: handleLegendClick,
+      },
+
+      toolbar: {
+        show: true,
+        offsetX: 0,
+        offsetY: -70,
+        tools: {
+          download: true,
+          selection: true,          
+        },
+        export: {
+          csv: {
+            filename: undefined,
+            columnDelimiter: ",",
+            headerCategory: "category",
+            headerValue: "value",
+            dateFormatter(timestamp) {
+              return new Date(timestamp).toDateString();
+            },
+          },
+          svg: {
+            filename: undefined,
+          },
+          png: {
+            filename: undefined,
+          },
+        },
+        autoSelected: "zoom",
+      },
+
+      
     },
     plotOptions: {
       bar: {
         borderRadius: 8,
-        barHeight: "60%",
+        barHeight: "40%",
         horizontal: true,
         distributed: true,
         startingShape: "rounded",
       },
     },
+
+
+    legend: {
+      show: true,
+      position: "top",
+      horizontalAlign: "center",
+      labels: {
+        colors: theme.palette.text.secondary,
+      },
+      markers: {
+        offsetX: -3,
+      },
+      itemMargin: {
+        vertical: 3,
+        horizontal: 10,
+      },
+     
+
+      // onItemClick: {
+      //   toggleDataSeries: true,
+      // },
+      // onItemHover: {
+      //   highlightDataSeries: true,
+      // },
+    },
+
     dataLabels: {
       offsetY: 8,
       style: {
@@ -103,6 +158,16 @@ const ConsumedByOwnerDataPodsStats = () => {
         fontSize: "0.875rem",
       },
     },
+
+    states: {
+      normal: {
+        filter: {
+          type: "none",
+          value: 0,
+        },
+      },
+    },
+
     grid: {
       strokeDashArray: 8,
       borderColor: theme.palette.divider,
@@ -119,26 +184,13 @@ const ConsumedByOwnerDataPodsStats = () => {
         bottom: 10,
       },
     },
-    colors: [
-      hexToRGBA(theme.palette.primary.light, 1),
-      hexToRGBA(theme.palette.success.light, 1),
-      hexToRGBA(theme.palette.warning.light, 1),
-      hexToRGBA(theme.palette.info.light, 1),
-      hexToRGBA(theme.palette.error.light, 1),
-    ],
-    legend: { show: false },
-    states: {
-      hover: {
-        filter: { type: "none" },
-      },
-      active: {
-        filter: { type: "none" },
-      },
-    },
+    colors: colorPalette,
+    
     xaxis: {
       axisTicks: { show: false },
       axisBorder: { show: false },
-      categories: dataPods.map((dataPod) => dataPod.podUniqueName),
+      categories: dataPods.filter((dataPod) => dataPod.active).map((dataPod) => dataPod.name),
+      // categories: dataPods.map((dataPod) => dataPod.name),
 
       labels: {
         formatter: (val) => `${Number(val) / 1000}k`,
@@ -167,12 +219,12 @@ const ConsumedByOwnerDataPodsStats = () => {
         subheader={`Total ${totalTokensConsumed} Tokens Consumed from others!`}
         subheaderTypographyProps={{ sx: { lineHeight: 1.429 } }}
         titleTypographyProps={{ sx: { letterSpacing: "0.15px" } }}
-        action={
-          <OptionsMenu
-            options={["Last 28 Days", "Last Month", "Last Year"]}
-            iconButtonProps={{ size: "small", className: "card-more-options" }}
-          />
-        }
+        // action={
+        //   <OptionsMenu
+        //     options={["Last 28 Days", "Last Month", "Last Year"]}
+        //     iconButtonProps={{ size: "small", className: "card-more-options" }}
+        //   />
+        // }
       />
       <CardContent sx={{ p: "0 !important" }}>
         <ReactApexcharts

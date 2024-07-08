@@ -1,19 +1,21 @@
 import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { useTheme } from "@mui/material/styles";
 import Card from "@mui/material/Card";
 import CardHeader from "@mui/material/CardHeader";
 import CardContent from "@mui/material/CardContent";
-import Box from "@mui/material/Box";
-import Chip from "@mui/material/Chip";
+
 
 import OptionsMenu from "src/@core/components/option-menu";
 import ReactApexcharts from "src/@core/components/react-apexcharts";
 
 import { hexToRGBA } from "src/@core/utils/hex-to-rgba";
+import { updateProvidedByOwnerDataPods } from "src/store/apps/userDataForAnalytics/userDataForAnalytics";
+
 
 const ProvidedByOwnerDataPodsStats = () => {
   const theme = useTheme();
+  const dispatch = useDispatch();
   const [tokensPerOwnerDataPod, setTokensPerOwnerDataPod] = useState([]);
   const [dataPods, setDataPods] = useState([]);
   const [totalTokensProvided, setTotalTokensProvided] = useState(0);
@@ -21,26 +23,41 @@ const ProvidedByOwnerDataPodsStats = () => {
   const providedByOwnerDataPods = useSelector(
     (state) => state.userDataForAnalytics.analyticsData.providedByOwnerDataPods
   );
-
-  console.log("providedByOwnerDataPods: ", providedByOwnerDataPods);
+  
 
   useEffect(() => {
     if (!providedByOwnerDataPods) {
       return;
     }
 
-    setDataPods(providedByOwnerDataPods);    
+    setDataPods(providedByOwnerDataPods); 
+    
+    const dataPodsStatsData = [
+      {
+        name: "Tokens",
+        data: providedByOwnerDataPods.filter((dataPod) => dataPod.active).map(
+          (dataPod) =>
+            dataPod?.data[0] || 0
+        ),
+      },
+    ];
+
+    
 
     const tokensData = providedByOwnerDataPods
       .filter((dataPod) => dataPod.active)
-      .map((dataPod) => dataPod.data || 0);      
+      .reduce((acc, dataPod) => acc + (dataPod.data[0] || 0), 0);
 
-    setTokensPerOwnerDataPod([{ name: "Tokens", data: tokensData }]);
-    setTotalTokensProvided(tokensData.reduce((acc, tokens) => acc + tokens, 0));
+    setTokensPerOwnerDataPod(dataPodsStatsData);
+    setTotalTokensProvided(tokensData);
   }, [providedByOwnerDataPods]);
 
+
+  
+  
+
+
   const handleLegendClick = ( chartContext, seriesIndex, config) => {    
-    console.log("seriesIndex: ", seriesIndex);      
     const updatedDataPods = dataPods.map((dataPod, index) => {
       if (index === seriesIndex) {
         return { ...dataPod, active: !dataPod.active };
@@ -48,22 +65,23 @@ const ProvidedByOwnerDataPodsStats = () => {
       return dataPod;
     });
     
-    console.log("updatedDataPods: ", updatedDataPods);    
-    setDataPods(updatedDataPods);
-
-    console.log("updatedDataPods: ", updatedDataPods);
-    const activeTokensData = updatedDataPods
-      .filter((dataPod) => dataPod.active)
-      .map((dataPod) => dataPod.totalSumTokens || 0);
-    setTokensPerOwnerDataPod([{ name: "Tokens", data: activeTokensData }]);
-    setTotalTokensProvided(activeTokensData.reduce((acc, tokens) => acc + tokens, 0));
+    dispatch(updateProvidedByOwnerDataPods(updatedDataPods));
   };
 
-  const colorPalette = dataPods.map((dataPod) =>
-    dataPod.active
-      ? hexToRGBA(theme.palette.primary.light, 1)
-      : hexToRGBA(theme.palette.grey[400], 1)
-  );
+  const colorPalette = dataPods.map((dataPod, index) => {
+    if (dataPod.active) {
+      const colors = [
+        hexToRGBA(theme.palette.primary.light, 1),
+        hexToRGBA(theme.palette.success.light, 1),
+        hexToRGBA(theme.palette.warning.light, 1),
+        hexToRGBA(theme.palette.info.light, 1),
+        hexToRGBA(theme.palette.error.light, 1),
+      ];
+      return colors[index % colors.length]; // Cycle through colors
+    } else {
+      return hexToRGBA(theme.palette.grey[400], 1);
+    }
+  });
 
   const options = {
     chart: {
@@ -118,6 +136,7 @@ const ProvidedByOwnerDataPodsStats = () => {
       },
     },
 
+
     legend: {
       show: true,
       position: "top",
@@ -132,21 +151,14 @@ const ProvidedByOwnerDataPodsStats = () => {
         vertical: 3,
         horizontal: 10,
       },
+     
 
-      // events: {
-      //   click: function (event, chartContext, config) {
-      //     const podIndex = config.dataPointIndex;
-      //     handlePodClick(podIndex);
-      //     console.log("podIndex: &&&&&&&&&&&&&&&&&&", podIndex);
-      //   },
+      // onItemClick: {
+      //   toggleDataSeries: true,
       // },
-
-      onItemClick: {
-        toggleDataSeries: true,
-      },
-      onItemHover: {
-        highlightDataSeries: true,
-      },
+      // onItemHover: {
+      //   highlightDataSeries: true,
+      // },
     },
 
     dataLabels: {
@@ -188,6 +200,8 @@ const ProvidedByOwnerDataPodsStats = () => {
       axisTicks: { show: false },
       axisBorder: { show: false },
       categories: dataPods.filter((dataPod) => dataPod.active).map((dataPod) => dataPod.name),
+      // categories: dataPods.map((dataPod) => dataPod.name),
+
       labels: {
         formatter: (val) => `${Number(val) / 1000}k`,
         style: {
@@ -216,12 +230,12 @@ const ProvidedByOwnerDataPodsStats = () => {
         subheader={`Total ${totalTokensProvided} Tokens Provided to others!`}
         subheaderTypographyProps={{ sx: { lineHeight: 1.429 } }}
         titleTypographyProps={{ sx: { letterSpacing: "0.15px" } }}
-        action={
-          <OptionsMenu
-            options={["Last 28 Days", "Last Month", "Last Year"]}
-            iconButtonProps={{ size: "small", className: "card-more-options" }}
-          />
-        }
+        // action={
+        //   <OptionsMenu
+        //     options={["Last 28 Days", "Last Month", "Last Year"]}
+        //     iconButtonProps={{ size: "small", className: "card-more-options" }}
+        //   />
+        // }
       />
 
       <CardContent sx={{ p: "0 !important" }}>        
@@ -229,7 +243,7 @@ const ProvidedByOwnerDataPodsStats = () => {
         <ReactApexcharts
           type="bar"
           height={294}
-          series={dataPods}
+          series={tokensPerOwnerDataPod}
           options={options}
         />
       </CardContent>

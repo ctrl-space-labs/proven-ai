@@ -5,150 +5,135 @@ import Avatar from "@mui/material/Avatar";
 import Typography from "@mui/material/Typography";
 import CardHeader from "@mui/material/CardHeader";
 import CardContent from "@mui/material/CardContent";
-
-// ** Custom Components
+import Grid from "@mui/material/Grid";
+import Checkbox from "@mui/material/Checkbox";
 import CustomChip from "src/@core/components/mui/chip";
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { updateProvidedByProcessorAgents } from "src/store/apps/userDataForAnalytics/userDataForAnalytics";
 
 const ProvidedByProcessorAgent = () => {
+  const dispatch = useDispatch();
+
   const [agents, setAgents] = useState([]);
   const [totalTokensProvided, setTotalTokensProvided] = useState(0);
-  const [graphData, setGraphData] = useState([]);
 
-  // import permissionOfUseAnalytics redux state here
-  const permissionOfUseAnalytics = useSelector(
-    (state) => state.permissionOfUseAnalytics
+  const providedByProcessorAgents = useSelector(
+    (state) =>
+      state.userDataForAnalytics.analyticsData.providedByProcessorAgents
   );
-  const userAgents = useSelector(
-    (state) => state.userDataForAnalytics.userData.agentsByOrgId.content
-  );
+
 
   useEffect(() => {
-    console.log("graph data updated! ", permissionOfUseAnalytics.graphData);
-
-    if (!permissionOfUseAnalytics.graphData) {
+    if (!providedByProcessorAgents) {
       return;
     }
 
-    if (userAgents) {
-      const myAgents = userAgents
-        .filter((userAgent) =>
-          Object.keys(
-            permissionOfUseAnalytics.graphData
-              .providedDataTokensByProcessorAgent
-          ).includes(userAgent.id)
-        )
-        .map((userAgent) => ({
-          ...userAgent,
-          totalSumTokens:
-            permissionOfUseAnalytics.graphData
-              .providedDataTokensByProcessorAgent[userAgent.id]
-              ?.totalSumTokens || 0,
-        }));
-      setAgents(myAgents);
+    setAgents(providedByProcessorAgents);
 
-      // Calculate total tokens consumed
-      const totalTokens = myAgents.reduce(
-        (sum, agent) => sum + agent.totalSumTokens,
-        0
-      );
-      setTotalTokensProvided(totalTokens);
+    const totalTokens = providedByProcessorAgents
+      .filter((agent) => agent.active)
+      .reduce((acc, agent) => acc + (agent.data[0] || 0), 0);
 
-      const transformedData = myAgents.map((agent) => ({
-        imgWidth: 44,
-        imgHeight: 44,
-        chipText: `${agent.totalSumTokens}`,
-        title: agent.agentName,
-        imgAlt: "image-alt",
-        // subtitle: 'some-subtitle',
-        src: "/images/avatars/2.png",
-      }));
+    setTotalTokensProvided(totalTokens);
+  }, [providedByProcessorAgents]);
 
-      setGraphData(transformedData);
-    }
-  }, [permissionOfUseAnalytics.graphData, userAgents, useSelector]);
+  const handleCheckboxChange = (id) => {
+    const updatedAgents = agents.map((agent) =>
+      agent.id === id ? { ...agent, active: !agent.active } : agent
+    );
+    
+    dispatch(updateProvidedByProcessorAgents(updatedAgents));
+    
+  };
 
   return (
     <Card>
       <CardHeader
         title="Your Agents Provided Data"
         subheader={`Total ${totalTokensProvided} Tokens Provided to other agents!`}
-       
       />
       <CardContent>
         <Box
           sx={{
-            mb: 5,
+            mb: 2,
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
           }}
-        >         
-        </Box>
+        ></Box>
 
-        {graphData.map((item, index) => {
-          return (
-            <Box
-              key={item.title}
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                mb: index !== graphData.length - 1 ? 5.5 : undefined,
-              }}
-            >
-              <Avatar
-                variant="rounded"
-                sx={{
-                  mr: 3,
-                  width: 50,
-                  height: 42,
-                  backgroundColor: "background.default",
-                }}
-              >
-                <img
-                  alt="avatar"
-                  src={item.src}
-                  width={item.imgWidth}
-                  height={item.imgHeight}
-                />
-              </Avatar>
+        <Grid container spacing={2}>
+          {agents?.map((item, index) => {
+            return (
               <Box
+                key={item.name}
                 sx={{
-                  width: "100%",
                   display: "flex",
-                  flexWrap: "wrap",
                   alignItems: "center",
-                  justifyContent: "space-between",
+                  mb: index !== agents.length - 1 ? 5.5 : undefined,
+                  opacity: item.active ? 1 : 0.5, // Change opacity for inactive agents 
+                  borderRadius: '4px', // Optional: add some border radius for better visual appearance
+               
                 }}
               >
-                <Box
+                <Checkbox
+                  checked={item.active}
+                  onChange={() => handleCheckboxChange(item.id)}
+                />
+
+                <Avatar
+                  variant="rounded"
                   sx={{
-                    mr: 2,
-                    display: "flex",
-                    mb: 0.4,
-                    flexDirection: "column",
+                    mr: 3,
+                    width: 50,
+                    height: 42,
+                    backgroundColor: "background.default",
                   }}
                 >
-                  <Typography
-                    variant="body2"
-                    sx={{ mb: 0.5, fontWeight: 600, color: "text.primary" }}
+                  <img
+                    alt="avatar"
+                    src={"/images/avatars/3.png"}
+                    width={44}
+                    height={44}
+                  />
+                </Avatar>
+                <Box
+                  sx={{
+                    width: "100%",
+                    display: "flex",
+                    flexWrap: "wrap",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <Box
+                    sx={{
+                      mr: 2,
+                      display: "flex",
+                      mb: 0.4,
+                      flexDirection: "column",
+                    }}
                   >
-                    {item.title}
-                  </Typography>
-                  <Typography variant="caption">{item.subtitle}</Typography>
+                    <Typography
+                      variant="body2"
+                      sx={{ mb: 0.5, fontWeight: 600, color: "text.primary" }}
+                    >
+                      {item.name}
+                    </Typography>
+                  </Box>
+                  <CustomChip
+                    skin="light"
+                    size="small"
+                    color="primary"
+                    label={`${item.data[0] || 0} Tokens`}
+                    sx={{ height: 20, fontSize: "0.75rem", fontWeight: 500 }}
+                  />
                 </Box>
-                <CustomChip
-                  skin="light"
-                  size="small"
-                  color="primary"
-                  label={`${item.chipText} Tokens`}
-                  sx={{ height: 20, fontSize: "0.75rem", fontWeight: 500 }}
-                />
               </Box>
-            </Box>
-          );
-        })}
+            );
+          })}
+        </Grid>
       </CardContent>
     </Card>
   );

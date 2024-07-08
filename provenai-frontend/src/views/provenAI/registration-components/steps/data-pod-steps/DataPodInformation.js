@@ -185,7 +185,6 @@ const DataPodInformation = ({
     }));
     set;
     updateShallowQueryParams({ organizationId, dataPodId: daPod.id });
-    console.log(`Clicked on Data Pod: `, daPod);
   };
 
   const updateShallowQueryParams = (params) => {

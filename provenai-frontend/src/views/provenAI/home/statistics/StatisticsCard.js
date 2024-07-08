@@ -8,6 +8,7 @@ import ProvidedByProcessorAgent from "./card-widgets/ProvidedByProcessorAgent";
 import ConsumedByProcessorAgent from "./card-widgets/ConsumedByProcessorAgent";
 import AgentVisitStatistics from "./card-widgets/AgentVisitStatistics";
 import ApexAreaChart from "./card-widgets/ApexAreaChart";
+import ApexRadarChart from "./card-widgets/ApexRadarChart";
 import Sales from "./card-widgets/Sales";
 import MonthlyBudget from "./card-widgets/MonthlyBudget";
 import Grid from "@mui/material/Grid";
@@ -51,9 +52,7 @@ const StatisticsCard = () => {
           dataPodIdIn: dataPodIdInStr,
           permissionOfUseAnalytics: permissionOfUseAnalytics,         
         })
-      );
-    
-      console.log("am here")
+      );   
   
     
   }, [ organizationId, storedToken, permissionOfUseAnalytics.graphData, dispatch]);
@@ -70,27 +69,34 @@ const StatisticsCard = () => {
 
             
             
-            <Grid item xs={12} sm={6} md={12}>
+            <Grid item xs={12} sm={6} md={6}>
               <ApexAreaChart />
+            </Grid>
+            <Grid item xs={12} sm={6} md={6}>
+              <ApexRadarChart />
             </Grid>
 
             <Grid item xs={12} md={8}>
               <ProvidedByOwnerDataPodsStats />
             </Grid>
-            
+
             <Grid item xs={12} sm={6} md={4}>
-              <ConsumedByProcessorAgent 
-              />
+              <ProvidedByProcessorAgent />
             </Grid>
+            
+            
             <Grid item xs={12} sm={6} md={12}>
               <ProvidedByDateTimeBucket />
             </Grid>
             <Grid item xs={12} md={8}>
               <ConsumedByOwnerDataPodsStats />
             </Grid>
+
             <Grid item xs={12} sm={6} md={4}>
-              <ProvidedByProcessorAgent />
+              <ConsumedByProcessorAgent 
+              />
             </Grid>
+            
             <Grid item xs={12} sm={6} md={4}>
               <AgentVisitStatistics />
             </Grid>
