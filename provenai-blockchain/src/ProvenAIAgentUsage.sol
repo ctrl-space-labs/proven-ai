@@ -46,6 +46,22 @@ contract ProvenAIAgentUsage is Ownable {
     }
 
     /**
+     * @dev The contract onwer can record daily usage data for any agent, as part of the reconciliation process.
+     * @param agent The address of the agent.
+     * @param date The date for which the data is requested (typically as a Unix timestamp).
+     * @param rootHash The root hash of the Merkle tree containing the usage data.
+     */
+    function updateDailyUsageForAgent(address agent, uint256 date, bytes32 rootHash) public onlyOwner {
+        require(rootHash != bytes32(0), "Invalid root hash");
+
+        // Store the new usage data
+        agentUsageData[agent].dailyUsage[date] = DailyUsage({ rootHash: rootHash });
+
+        // Emit an event to log the update
+        emit DailyUsageDataUpdated(agent, date, rootHash);
+    }
+
+    /**
      * @dev Get the daily usage data for a specific agent and date.
      * @param agent The address of the agent.
      * @param date The date for which the data is requested (typically as a Unix timestamp).
