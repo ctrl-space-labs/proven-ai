@@ -14,5 +14,6 @@ import java.util.Set;
 public class AccessCriteria {
     private Set<String> orgIds;
     private Set<String> dataPodIds;
+    private String agentId;
 
 }

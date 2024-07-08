@@ -1,7 +1,8 @@
-const gendoxUrl = "http://localhost:5000/gendox/api/v1/"; // Local Environment
+// const gendoxUrl = "http://localhost:5000/gendox/api/v1/"; // Local Environment
+const gendoxUrl = "http://localhost:8080/gendox/api/v1/"; // Local Environment
 //const url= 'https://gendox-api.ctrlspace.dev/gendox/api/v1/' // Production Environment (AWS)
-// const url= 'http://localhost:8080/gendox/api/v1/' // Local Environment
-const url = 'https://dev.gendox.ctrlspace.dev/gendox/api/v1/' // Development Environment (Hetzner)
+const url= 'http://localhost:8080/gendox/api/v1/' // Local Environment
+// const url = 'https://dev.gendox.ctrlspace.dev/gendox/api/v1/' // Development Environment (Hetzner)
 const provenUrl = 'http://localhost:8082/proven-ai/api/v1/' // Local Environment
 
 const verifierUrl = 'https://proven-ai-dev.ctrlspace.dev/verifier/' // Local Environment

@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -56,9 +57,10 @@ public class AgentsController implements AgentsControllerSpec {
         return agentService.getAllAgentsWithoutVc(criteria, pageable);
     }
 
-    @GetMapping("/agents/{id}/policies")
-    public Page<AgentPurposeOfUsePolicies> getAgentPurposeOfUsePolicies(@PathVariable UUID id, Pageable pageable) throws ProvenAiException {
-        return agentService.getAgentPurposeOfUsePolicies(id, pageable);
+    @PreAuthorize("@securityUtils.hasAuthority('OP_READ_PROVEN_AI_AGENT', 'getRequestedAgentIdFromPathVariable')")
+    @GetMapping("/agents/{agentId}/policies")
+    public Page<AgentPurposeOfUsePolicies> getAgentPurposeOfUsePolicies(@PathVariable UUID agentId, Pageable pageable) throws ProvenAiException {
+        return agentService.getAgentPurposeOfUsePolicies(agentId, pageable);
     }
 
 
@@ -71,35 +73,38 @@ public class AgentsController implements AgentsControllerSpec {
     }
 
 
-    @PostMapping("/agents/{id}/credential-offer")
-    public AgentIdCredential createAgentVerifiableId(@PathVariable String id) throws ProvenAiException, JsonProcessingException, JSONException {
+    @PreAuthorize("@securityUtils.hasAuthority('OP_OFFER_PROVEN_AI_AGENT_VC', 'getRequestedAgentIdFromPathVariable')")
+    @PostMapping("/agents/{agentId}/credential-offer")
+    public AgentIdCredential createAgentVerifiableId(@PathVariable String agentId) throws ProvenAiException, JsonProcessingException, JSONException {
 //        UserProfile agentProfile = (UserProfile) authentication.getPrincipal();
         AgentIdCredential agentIdCredential = new AgentIdCredential();
-        W3CVC verifiableCredential = agentService.createAgentW3CVCByID(UUID.fromString(id));
-        Object signedVcJwt = agentService.createAgentSignedVcJwt(verifiableCredential, UUID.fromString(id));
-        agentIdCredential.setAgentId(id);
+        W3CVC verifiableCredential = agentService.createAgentW3CVCByID(UUID.fromString(agentId));
+        Object signedVcJwt = agentService.createAgentSignedVcJwt(verifiableCredential, UUID.fromString(agentId));
+        agentIdCredential.setAgentId(agentId);
         agentIdCredential.setCredentialOfferUrl(agentService.createAgentVCOffer(verifiableCredential));
         agentIdCredential.setCredentialJwt(signedVcJwt);
-        agentService.updateAgentVerifiableId(UUID.fromString(id), signedVcJwt.toString());
+        agentService.updateAgentVerifiableId(UUID.fromString(agentId), signedVcJwt.toString());
         return agentIdCredential;
     }
 
-
+    @PreAuthorize("@securityUtils.hasAuthority('OP_EDIT_PROVEN_AI_AGENT', 'getRequestedAgentIdFromPathVariable')")
     @DeleteMapping("/agents/{id}")
     public void deleteAgent(@PathVariable UUID id) throws ProvenAiException {
         agentService.deleteAgent(id);
     }
 
-    @PutMapping("/agents/{id}")
-    public Agent updateAgent(@PathVariable UUID id, @RequestBody AgentDTO agentDTO) throws ProvenAiException {
+    @PreAuthorize("@securityUtils.hasAuthority('OP_DELETE_PROVEN_AI_AGENT', 'getRequestedAgentIdFromPathVariable')")
+    @PutMapping("/agents/{agentId}")
+    public Agent updateAgent(@PathVariable UUID agentId, @RequestBody AgentDTO agentDTO) throws ProvenAiException {
         Agent agent = agentConverter.toEntity(agentDTO);
-        agent.setId(id);
+        agent.setId(agentId);
         return agentService.updateAgent(agent);
     }
 
-    @GetMapping("/agents/{id}")
-    public Agent getAgentById(@PathVariable UUID id) throws ProvenAiException {
-        return agentService.getAgentById(id);
+    @PreAuthorize("@securityUtils.hasAuthority('OP_READ_PROVEN_AI_AGENT', 'getRequestedAgentIdFromPathVariable')")
+    @GetMapping("/agents/{agentId}")
+    public Agent getAgentById(@PathVariable UUID agentId) throws ProvenAiException {
+        return agentService.getAgentById(agentId);
     }
 
 

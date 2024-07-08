@@ -6,6 +6,7 @@ import dev.ctrlspace.provenai.backend.exceptions.ProvenAiException;
 import dev.ctrlspace.provenai.backend.model.authentication.OrganizationUserDTO;
 import dev.ctrlspace.provenai.backend.model.authentication.UserProfile;
 import dev.ctrlspace.provenai.backend.model.dtos.criteria.AccessCriteria;
+import dev.ctrlspace.provenai.backend.repositories.AgentRepository;
 import dev.ctrlspace.provenai.backend.utils.constants.QueryParamNames;
 import dev.ctrlspace.provenai.backend.utils.constants.UserNamesConstants;
 import jakarta.servlet.http.HttpServletRequest;
@@ -38,14 +39,19 @@ public class SecurityUtils {
 
     private JWTUtils jwtUtils;
 
+    private AgentRepository agentRepository;
+
+
 
 
     @Autowired
     public SecurityUtils(ObjectMapper objectMapper,
-                         JWTUtils jwtUtils
+                         JWTUtils jwtUtils,
+                         AgentRepository agentRepository
                         ) {
         this.objectMapper = objectMapper;
         this.jwtUtils = jwtUtils;
+        this.agentRepository = agentRepository;
 
     }
 
@@ -86,6 +92,10 @@ public class SecurityUtils {
             return canAccessOrganizations(authority, authentication, accessCriteria.getOrgIds());
         }
 
+        if (accessCriteria.getAgentId() != null) {
+            return canAccessAgent(authority, authentication, accessCriteria.getAgentId());
+        }
+
 
 
         return false;
@@ -109,6 +119,7 @@ public class SecurityUtils {
         return true;
     }
 
+
     private static boolean canAccessOrganizations(String authority, ProvenAIAuthenticationToken authentication, Set<String> requestedOrgIds) {
         Set<String> authorizedOrgIds = authentication
                 .getPrincipal()
@@ -124,6 +135,22 @@ public class SecurityUtils {
         }
 
         return true;
+    }
+
+    private boolean canAccessAgent(String authority, ProvenAIAuthenticationToken authentication,String agentId){
+        List<String> authorizedOrgIds = authentication
+                .getPrincipal()
+                .getOrganizations()
+                .stream()
+                .filter(org -> org.getAuthorities().contains(authority))
+                .map(OrganizationUserDTO::getId)
+                .collect(Collectors.toList());
+
+        return agentRepository.existsByIdAndOrganizationIdIn(UUID.fromString(agentId),authorizedOrgIds);
+
+
+
+
     }
 
 
@@ -236,6 +263,25 @@ public class SecurityUtils {
                 .build();
     }
 
+    private AccessCriteria getRequestedAgentIdFromPathVariable() {
+        // Extract threadId from the request path
+        HttpServletRequest request = getCurrentHttpRequest();
+        Map<String, String> uriTemplateVariables = (Map<String, String>) request.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
+
+        String agentId = new String();
+
+        if (uriTemplateVariables != null) {
+            agentId = uriTemplateVariables.get(QueryParamNames.AGENT_ID);
+        }
+
+        return AccessCriteria
+                .builder()
+                .orgIds(new HashSet<>())
+                .dataPodIds(new HashSet<>())
+                .agentId(agentId)
+                .build();
+    }
+
 
 
     public class AccessCriteriaGetterFunction {
@@ -245,6 +291,8 @@ public class SecurityUtils {
 
         public static final String DATAPOD_IDS_FROM_REQUEST_PARAMS = "getRequestedDataPodsFromRequestParams";
         public static final String DATAPOD_ID_FROM_PATH_VARIABLE = "getRequestedDataPodIdFromPathVariable";
+
+        public static final String AGENT_ID_FROM_PATH_VARIABLE = "getRequestedAgentIdFromPathVariable";
 
     }
 
@@ -277,6 +325,10 @@ public class SecurityUtils {
         }
         if (AccessCriteriaGetterFunction.DATAPOD_ID_FROM_PATH_VARIABLE.equals(getterFunction)) {
             accessCriteria = getRequestedDataPodIdFromPathVariable();
+        }
+
+        if (AccessCriteriaGetterFunction.AGENT_ID_FROM_PATH_VARIABLE.equals(getterFunction)) {
+            accessCriteria = getRequestedAgentIdFromPathVariable();
         }
 
         if (accessCriteria == null) {
