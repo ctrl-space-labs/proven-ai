@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -37,14 +38,16 @@ public class DataPodController implements DataPodControllerSpec {
         return dataPodService.getAllDataPods(criteria, pageable);
     }
 
-    @GetMapping("/data-pods/{id}")
-    public DataPod getDataPodById(@PathVariable UUID id) throws ProvenAiException {
-        return dataPodService.getDataPodById(id);
+    @PreAuthorize("@securityUtils.hasAuthority('OP_READ_PROVEN_AI_DATAPOD', 'getRequestedDataPodIdFromPathVariable')")
+    @GetMapping("/data-pods/{dataPodId}")
+    public DataPod getDataPodById(@PathVariable UUID dataPodId) throws ProvenAiException {
+        return dataPodService.getDataPodById(dataPodId);
     }
 
-    @GetMapping("/data-pods/{id}/acl-policies")
-    public Page<AclPolicies> getAclPoliciesByDataPodId(@PathVariable UUID id, Pageable pageable) throws ProvenAiException {
-        return dataPodService.getAclPoliciesByDataPodId(id, pageable);
+    @PreAuthorize("@securityUtils.hasAuthority('OP_READ_PROVEN_AI_DATAPOD', 'getRequestedDataPodIdFromPathVariable')")
+    @GetMapping("/data-pods/{dataPodId}/acl-policies")
+    public Page<AclPolicies> getAclPoliciesByDataPodId(@PathVariable UUID dataPodId, Pageable pageable) throws ProvenAiException {
+        return dataPodService.getAclPoliciesByDataPodId(dataPodId, pageable);
     }
 
 
@@ -64,21 +67,22 @@ public class DataPodController implements DataPodControllerSpec {
 //                .credentialJwt("eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsIm5hbWUiOiJKb2huIERvZSIsImVtYWlsIjoiam9obkBkb2UuY29tIn0.7J1Gzv")
 //                .build();
 
-
-    @DeleteMapping("/data-pods/{id}")
-    public void deleteDataPod(@PathVariable UUID id) throws ProvenAiException {
-        dataPodService.deleteDataPodById(id);
+    @PreAuthorize("@securityUtils.hasAuthority('OP_DELETE_PROVEN_AI_AGENT', 'getRequestedDataPodIdFromPathVariable')")
+    @DeleteMapping("/data-pods/{dataPodId}")
+    public void deleteDataPod(@PathVariable UUID dataPodId) throws ProvenAiException {
+        dataPodService.deleteDataPodById(dataPodId);
     }
 
 
-    @PutMapping("/data-pods/{id}")
-    public DataPod updateDataPod(@PathVariable UUID id, @RequestBody DataPodDTO dataPodDTO) throws ProvenAiException {
+    @PreAuthorize("@securityUtils.hasAuthority('OP_EDIT_PROVEN_AI_DATAPOD', 'getRequestedDataPodIdFromPathVariable')")
+    @PutMapping("/data-pods/{dataPodId}")
+    public DataPod updateDataPod(@PathVariable UUID dataPodId, @RequestBody DataPodDTO dataPodDTO) throws ProvenAiException {
         UUID updatedDataPodId = dataPodDTO.getId();
 
         DataPod dataPod = dataPodConverter.toEntity(dataPodDTO);
         dataPod.setId(updatedDataPodId);
 
-        if (!id.equals(dataPodDTO.getId())) {
+        if (!dataPodId.equals(dataPodDTO.getId())) {
             throw new ProvenAiException("DATA_POD_ID_MISMATCH", "ID in path and ID in body are not the same", HttpStatus.BAD_REQUEST);
         }
 
