@@ -98,7 +98,8 @@ public class ProvenAIBlockchainUtil {
 
     /**
      * Function to record daily usage for the account/agent address and date
-     * @param date the date for which to record the daily usage
+     *
+     * @param date     the date for which to record the daily usage
      * @param rootHash the Merkle Root hash of the daily usage
      * @return the transaction hash
      * @throws Exception
@@ -114,7 +115,7 @@ public class ProvenAIBlockchainUtil {
         return transactionReceipt.getTransactionHash();
     }
 
-    public String updateDailyUsage(String agentAddress,  BigInteger date, byte[] rootHash) throws Exception {
+    public String updateDailyUsage(String agentAddress, BigInteger date, byte[] rootHash) throws Exception {
         TransactionReceipt transactionReceipt = provenAIAgentUsageContract.updateDailyUsageForAgent(agentAddress, date, rootHash).send();
 
         return transactionReceipt.getTransactionHash();
@@ -124,7 +125,7 @@ public class ProvenAIBlockchainUtil {
      * Function to get the daily usage for a given agent address and date
      *
      * @param agentAddress the address of the agent
-     * @param date the date for which to get the daily usage
+     * @param date         the date for which to get the daily usage
      * @return the Merkle Root hash of the daily usage
      * @throws Exception
      */
