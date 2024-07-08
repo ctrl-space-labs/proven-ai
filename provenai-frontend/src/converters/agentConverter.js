@@ -22,6 +22,8 @@ const toAgentDTO = (agentData, organizationId, agentId) => {
  */
 const toAgentPolicies = (activeAgentPolicies) => {
   const agentPurpose = new Map();
+  const allowList = new Map();
+  const denyList = new Map();
   let compensation = null;
   let compensationType = "free";
 
@@ -33,6 +35,24 @@ const toAgentPolicies = (activeAgentPolicies) => {
           policyOptionId: item.policyOption.id,
           name: item.policyOption.name,
           description: item.policyOption.description,
+        });
+      }
+    } else if (item.policyType.name === "ALLOW_LIST" && item.value) {
+      if (!allowList.has(item.value)) {
+        allowList.set(item.value, {
+          policyTypeId: item.policyType.id || null,
+          policyOptionId: item.policyOption.id || null,
+          dataPodId: item.value || null,
+          name: "",
+        });
+      }
+    } else if (item.policyType.name === "DENY_LIST" && item.value) {
+      if (!denyList.has(item.value)) {
+        denyList.set(item.value, {
+          policyTypeId: item.policyType.id,
+          policyOptionId: item.policyOption.id,
+          dataPodId: item.value,
+          name: "",
         });
       }
     }
@@ -55,6 +75,8 @@ const toAgentPolicies = (activeAgentPolicies) => {
 
   return {
     agentPurpose: Array.from(agentPurpose.values()),
+    allowList: Array.from(allowList.values()),
+    denyList: Array.from(denyList.values()),
     compensation: compensation,
     compensationType: compensationType,
   };

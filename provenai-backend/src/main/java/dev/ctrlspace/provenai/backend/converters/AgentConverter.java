@@ -1,7 +1,10 @@
 package dev.ctrlspace.provenai.backend.converters;
 
 import dev.ctrlspace.provenai.backend.model.Agent;
+import dev.ctrlspace.provenai.backend.model.DataPod;
 import dev.ctrlspace.provenai.backend.model.dtos.AgentDTO;
+import dev.ctrlspace.provenai.backend.model.dtos.AgentPublicDTO;
+import dev.ctrlspace.provenai.backend.model.dtos.DataPodPublicDTO;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -42,4 +45,12 @@ public class AgentConverter implements ProvenAIConverter<Agent, AgentDTO> {
 
         return agent;
     }
+
+    public AgentPublicDTO toPublicDTO(Agent agent) {
+        return AgentPublicDTO.builder()
+                .id(agent.getId())
+                .agentName(agent.getAgentName())
+                .build();
+    }
+
 }

@@ -1,7 +1,9 @@
 // ** React Imports
 import React from "react";
+import { useRef, useEffect } from "react";
 import { Box, Grid, Typography, Button, Chip } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
+import { useRouter } from "next/router";
 
 const ReviewAndComplete = ({
   onSubmit,
@@ -9,8 +11,19 @@ const ReviewAndComplete = ({
   userData,
   dataPodData,
   usePoliciesData,
+  setActiveStep,
 }) => {
   const theme = useTheme();
+  const router = useRouter();
+  const isFirstRender = useRef(true);
+
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+    setActiveStep(0);
+  }, [router.query.dataPodId]);
 
   return (
     <Box>
@@ -24,23 +37,7 @@ const ReviewAndComplete = ({
         Review all the information you provided and click Submit to complete.
       </Typography>
 
-      
-      <Grid container spacing={5} sx={{ mt: 2 }}>  
-
-        {/* Organization Section */}      
-        {/* <Grid item xs={12} sx={{ p: 2, mb: 2 }}>
-          <Typography
-            variant="h5"
-            sx={{ fontWeight: 700, color: theme.palette.primary.light, mb: 2 }}
-          >
-            Organization
-          </Typography>
-          <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2 }}>
-            <Typography variant="body1">Organization Name:</Typography>
-            {userData.organizationName || "N/A"}
-          </Box>
-        </Grid> */}
-
+      <Grid container spacing={5} sx={{ mt: 2 }}>
         {/* User Information Section */}
         <Grid item xs={12} sx={{ p: 2, mb: 2 }}>
           <Typography
@@ -51,7 +48,7 @@ const ReviewAndComplete = ({
           </Typography>
           {userData.selectedOrganizationType === "natural-person" ? (
             <>
-            <Typography variant="body1">
+              <Typography variant="body1">
                 Organization: {userData.organizationName || "N/A"}
               </Typography>
               <Typography variant="body1">
@@ -70,6 +67,9 @@ const ReviewAndComplete = ({
             </>
           ) : (
             <>
+              <Typography variant="body1">
+                Organization: {userData.organizationName || "N/A"}
+              </Typography>
               <Typography variant="body1">
                 Legal Person Identifier: {userData.legalPersonIdentifier}
               </Typography>
@@ -95,7 +95,7 @@ const ReviewAndComplete = ({
           </Typography>
         </Grid>
 
-        {/* Agent Information Section */}
+        {/* Data POD Information Section */}
         <Grid item xs={12} sx={{ p: 2, mb: 2 }}>
           <Typography
             variant="h5"

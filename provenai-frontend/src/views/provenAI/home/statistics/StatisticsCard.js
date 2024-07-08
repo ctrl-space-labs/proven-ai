@@ -1,52 +1,95 @@
 import React, { useState, useEffect } from "react";
-import { formatDistanceToNow, parseISO } from "date-fns";
-import ApexChartWrapper from 'src/@core/styles/libs/react-apexcharts'
-import DataPodsStats from "./card-widgets/DataPodsStats";
-import WeeklyOverview from "./card-widgets/WeeklyOverview";
-import AgentWordStatistics from "./card-widgets/AgentWordStatistics";
+import { useAuth } from "src/hooks/useAuth";
+import ApexChartWrapper from "src/@core/styles/libs/react-apexcharts";
+import ProvidedByOwnerDataPodsStats from "./card-widgets/ProvidedByOwnerDataPodStats";
+import ConsumedByOwnerDataPodsStats from "./card-widgets/ConsumedByOwnerDataPodStats";
+import ProvidedByDateTimeBucket from "./card-widgets/ProvidedByDateTimeBucket";
+import ProvidedByProcessorAgent from "./card-widgets/ProvidedByProcessorAgent";
+import ConsumedByProcessorAgent from "./card-widgets/ConsumedByProcessorAgent";
 import AgentVisitStatistics from "./card-widgets/AgentVisitStatistics";
+import ApexAreaChart from "./card-widgets/ApexAreaChart";
 import Sales from "./card-widgets/Sales";
 import MonthlyBudget from "./card-widgets/MonthlyBudget";
-
-
-
-// ** MUI Imports
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
 import Grid from "@mui/material/Grid";
-import { styled } from "@mui/material/styles";
-import { Button } from "@mui/material";
-import Divider from "@mui/material/Divider";
-
-// ** Next Import
-import Link from "next/link";
-
-// ** Icon Imports
-import Icon from "src/@core/components/icon";
-import CustomAvatar from "src/@core/components/mui/avatar";
-
 import { useSelector, useDispatch } from "react-redux";
+import { fetchUserDataForAnalytics } from "src/store/apps/userDataForAnalytics/userDataForAnalytics";
 import { useRouter } from "next/router";
-import { formatDocumentTitle } from "src/utils/documentUtils";
 import authConfig from "src/configs/auth";
 
-const Documents = ({ documents }) => {
+
+
+const StatisticsCard = () => {
   const router = useRouter();
+  const { organizationId } = router.query;
+  const auth = useAuth();
+  const storedToken = window.localStorage.getItem(
+    authConfig.storageTokenKeyName
+  );
   const dispatch = useDispatch();
+
+  const permissionOfUseAnalytics = useSelector(
+    (state) => state.permissionOfUseAnalytics
+  );
+
+  useEffect(() => {
+    if (!permissionOfUseAnalytics.graphData) {
+      return;
+    }
+   
+      const { consumedDataTokensByOwnerDataPod, consumedDataTokensByProcessorAgent } = permissionOfUseAnalytics.graphData || {};
+      const agentIdIn = Object.keys(consumedDataTokensByProcessorAgent || {});
+      const dataPodIdIn = Object.keys(consumedDataTokensByOwnerDataPod || {});
+      const agentIdInStr = agentIdIn.join(",");
+      const dataPodIdInStr = dataPodIdIn.join(",");
+      
+      
+      dispatch(
+        fetchUserDataForAnalytics({
+          organizationId,
+          token: storedToken,
+          agentIdIn: agentIdInStr,
+          dataPodIdIn: dataPodIdInStr,
+          permissionOfUseAnalytics: permissionOfUseAnalytics,         
+        })
+      );
+    
+      console.log("am here")
+  
+    
+  }, [ organizationId, storedToken, permissionOfUseAnalytics.graphData, dispatch]);
+
+ 
+
+  
 
   return (
     <Grid container spacing={6}>
       <Grid item xs={12} style={{ textAlign: "center" }}>
         <ApexChartWrapper>
           <Grid container spacing={6}>
+
+            
+            
+            <Grid item xs={12} sm={6} md={12}>
+              <ApexAreaChart />
+            </Grid>
+
             <Grid item xs={12} md={8}>
-              <DataPodsStats />
+              <ProvidedByOwnerDataPodsStats />
+            </Grid>
+            
+            <Grid item xs={12} sm={6} md={4}>
+              <ConsumedByProcessorAgent 
+              />
+            </Grid>
+            <Grid item xs={12} sm={6} md={12}>
+              <ProvidedByDateTimeBucket />
+            </Grid>
+            <Grid item xs={12} md={8}>
+              <ConsumedByOwnerDataPodsStats />
             </Grid>
             <Grid item xs={12} sm={6} md={4}>
-              <WeeklyOverview />
-            </Grid>
-            <Grid item xs={12} sm={6} md={4}>
-              <AgentWordStatistics />
+              <ProvidedByProcessorAgent />
             </Grid>
             <Grid item xs={12} sm={6} md={4}>
               <AgentVisitStatistics />
@@ -57,7 +100,6 @@ const Documents = ({ documents }) => {
             <Grid item xs={12} md={8}>
               <MonthlyBudget />
             </Grid>
-            
           </Grid>
         </ApexChartWrapper>
       </Grid>
@@ -65,4 +107,4 @@ const Documents = ({ documents }) => {
   );
 };
 
-export default Documents;
+export default StatisticsCard;

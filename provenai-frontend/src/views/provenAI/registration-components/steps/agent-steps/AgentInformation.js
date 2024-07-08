@@ -1,6 +1,6 @@
 // ** React Imports
 import React from "react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/router";
 
 import {
@@ -15,6 +15,7 @@ import {
   Button,
   Chip,
   Autocomplete,
+  FormHelperText,
 } from "@mui/material";
 import CustomRadioIcons from "src/@core/components/custom-radio/icons";
 import { useForm, Controller } from "react-hook-form";
@@ -24,9 +25,9 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { agentSchema } from "src/utils/validationSchemas";
 
 import policyService from "src/provenAI-sdk/policyService";
+import dataPodsService from "src/provenAI-sdk/dataPodsService";
 import authConfig from "src/configs/auth";
 import { set } from "nprogress";
-
 
 const AgentInformation = ({
   onSubmit,
@@ -36,8 +37,11 @@ const AgentInformation = ({
   activeAgent,
   userAgents,
   organizationId,
+  setActiveStep,
+  setAgentErrors,
 }) => {
   const router = useRouter();
+  const isFirstRender = useRef(true);
 
   const {
     control,
@@ -51,10 +55,12 @@ const AgentInformation = ({
   });
 
   const [usagePolicies, setUsagePolicies] = useState([]);
+  const [dataPods, setDataPods] = useState([]);
   const [compensationPolicies, setCompensationPolicies] = useState([]);
   const [selectedCompensation, setSelectedCompensation] = useState(
     agentData.compensationType
   );
+  const [selectNewAgent, setSelectNewAgent] = useState(false);
   const storedToken = window.localStorage.getItem(
     authConfig.storageTokenKeyName
   );
@@ -81,6 +87,20 @@ const AgentInformation = ({
       setValue(key, agentData[key]);
     });
   }, [agentData, setValue]);
+
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+    if (!selectNewAgent) {
+      setActiveStep(0);
+    }
+  }, [router.query.agentId]);
+
+  useEffect(() => {
+    setAgentErrors(errors);
+  }, [errors, setAgentErrors]);
 
   useEffect(() => {
     const fetchUsagePolicies = async () => {
@@ -115,8 +135,21 @@ const AgentInformation = ({
       }
     };
 
+    const fetchDataPods = async () => {
+      try {
+        const dataPods = await dataPodsService.getDataPodsByOrganization(
+          organizationId,
+          storedToken
+        );
+        setDataPods(dataPods.data.content);
+      } catch (error) {
+        console.error("Error fetching data pods:", error);
+      }
+    };
+
     fetchUsagePolicies();
     fetchCompensationPolicies();
+    fetchDataPods();
   }, [storedToken]);
 
   useEffect(() => {
@@ -133,18 +166,78 @@ const AgentInformation = ({
     setSelectedCompensation(value);
   };
 
-  const handleFormSubmit = (data) => {
-    setAgentData(data);
+  const updateDataPod = async (data) => {
+    if (dataPods.length > 0) {
+      let allowPolicies, denyPolicies;
+
+      try {
+        allowPolicies = await policyService.getPolicyOptions(
+          "ALLOW_LIST",
+          storedToken
+        );
+      } catch (error) {
+        console.error("Error fetching allow policy options:", error);
+      }
+
+      try {
+        denyPolicies = await policyService.getPolicyOptions(
+          "DENY_LIST",
+          storedToken
+        );
+      } catch (error) {
+        console.error("Error fetching deny policy options:", error);
+      }
+
+      const allowAgentPolicy = allowPolicies?.data.find(
+        (policy) => policy.name === "ALLOW_DATA_POD_NAME"
+      );
+      const denyAgentPolicy = denyPolicies?.data.find(
+        (policy) => policy.name === "DENY_DATA_POD_NAME"
+      );
+
+      const updatedDataPods = {
+        ...data,
+        allowList: data.allowList.map((allow) => {
+          const dataPod = dataPods.find((pod) => pod.id === allow.dataPodId);
+          return dataPod
+            ? {
+                ...allow,
+                name: dataPod.podUniqueName,
+                policyOptionId: allowAgentPolicy?.id || "",
+                policyTypeId: allowAgentPolicy?.policyTypeId || "",
+              }
+            : allow;
+        }),
+        denyList: data.denyList.map((deny) => {
+          const dataPod = dataPods.find((pod) => pod.id === deny.dataPodId);
+          return dataPod
+            ? {
+                ...deny,
+                name: dataPod.podUniqueName,
+                policyOptionId: denyAgentPolicy?.id || "",
+                policyTypeId: denyAgentPolicy?.policyTypeId || "",
+              }
+            : deny;
+        }),
+      };
+      return updatedDataPods;
+    }
+  };
+
+  const handleFormSubmit = async (data) => {
+    const updatedData = await updateDataPod(data);
+    setAgentData(updatedData);
     onSubmit();
   };
 
   const handleMenuItemClick = (agent) => {
+    setSelectNewAgent(true);
     setAgentData((prevData) => ({
       ...prevData,
       agentName: agent.agentName,
       agentUserId: agent.userId,
     }));
-    set
+    set;
     updateShallowQueryParams({ organizationId, agentId: agent.id });
     console.log(`Clicked on Agent: `, agent);
   };
@@ -179,7 +272,7 @@ const AgentInformation = ({
         </Grid>
 
         <Grid item xs={12} sm={6}>
-          {!Object.keys(activeAgent).length > 0 && (
+          {(!Object.keys(activeAgent).length > 0 || selectNewAgent) && (
             <FormControl fullWidth>
               <InputLabel id="user-agents-label">Select Agent</InputLabel>
               <Controller
@@ -187,7 +280,6 @@ const AgentInformation = ({
                 control={control}
                 render={({ field }) => (
                   <Select labelId="user-agent-label" {...field} label="Agent">
-                    {/* <MenuItem value="new-agent">New Agent</MenuItem> */}
                     {userAgents.map((agent) => (
                       <MenuItem
                         key={agent.id}
@@ -200,21 +292,15 @@ const AgentInformation = ({
                   </Select>
                 )}
               />
+              {errors.agentName && (
+                <FormHelperText error>
+                  {errors.agentName.message}
+                </FormHelperText>
+              )}
             </FormControl>
           )}
         </Grid>
-        {/* <Grid item xs={12} sm={3}>
-          {watch("selectedAgent") === "new-agent" && (
-            <Button
-              variant="contained"
-              onClick={() =>
-                (window.location.href = "https://your-new-site.com")
-              }
-            >
-              Create Agent
-            </Button>
-          )}
-        </Grid> */}
+
         <Grid item xs={12}>
           {" "}
         </Grid>
@@ -287,30 +373,36 @@ const AgentInformation = ({
               name="compensationType"
               control={control}
               render={({ field: { value, onChange } }) => (
-                <Grid container spacing={4} item xs={12} sm={12} mt={2}>
-                  {compensationTypes.map((type, index) => (
-                    <CustomRadioIcons
-                      key={index}
-                      icon={type.icon}
-                      name="custom-radios-icons"
-                      data={compensationTypes[index]}
-                      selected={selectedCompensation}
-                      handleChange={(selectedValue) => {
-                        handleCompensationChange(selectedValue);
-                        onChange(selectedValue === "paid" ? "paid" : "free");
-                      }}
-                      gridProps={{ sm: 4, xs: 12 }}
-                      iconProps={type.iconProps}
-                    />
-                  ))}
-                </Grid>
+                <>
+                  <Grid container spacing={4} item xs={12} sm={12} mt={2}>
+                    {compensationTypes.map((type, index) => (
+                      <CustomRadioIcons
+                        key={index}
+                        icon={type.icon}
+                        name="custom-radios-icons"
+                        data={compensationTypes[index]}
+                        selected={selectedCompensation}
+                        handleChange={(selectedValue) => {
+                          handleCompensationChange(selectedValue);
+                          onChange(selectedValue === "paid" ? "paid" : "free");
+                        }}
+                        gridProps={{ sm: 4, xs: 12 }}
+                        iconProps={type.iconProps}
+                      />
+                    ))}
+                  </Grid>
+                  {errors.compensationType && (
+                    <FormHelperText error>
+                      {errors.compensationType.message}
+                    </FormHelperText>
+                  )}
+                </>
               )}
             />
           </FormControl>
         </Grid>
-
-        {selectedCompensation === "paid" && (
-          <Grid item xs={12} sm={6}>
+        <Grid item xs={12} sm={6}>
+          {selectedCompensation === "paid" && (
             <FormControl fullWidth>
               <Typography
                 variant="filled"
@@ -322,28 +414,205 @@ const AgentInformation = ({
                 name="compensation"
                 control={control}
                 render={({ field: { value, onChange } }) => (
-                  <Select
-                    labelId="compensation-type"
-                    value={value?.name || ""}
-                    onChange={(event) => {
-                      const selectedPolicy = compensationPolicies.find(
-                        (policy) => policy.name === event.target.value
-                      );
-                      onChange(selectedPolicy);
-                    }}
-                    label="Compensation Type"
-                  >
-                    {compensationPolicies.map((policy) => (
-                      <MenuItem key={policy.id} value={policy.name}>
-                        {policy.name}
-                      </MenuItem>
-                    ))}
-                  </Select>
+                  <>
+                    <Select
+                      labelId="compensation-type"
+                      value={value?.name || ""}
+                      onChange={(event) => {
+                        const selectedPolicy = compensationPolicies.find(
+                          (policy) => policy.name === event.target.value
+                        );
+                        onChange(selectedPolicy);
+                      }}
+                      label="Compensation Type"
+                    >
+                      {compensationPolicies.map((policy) => (
+                        <MenuItem key={policy.id} value={policy.name}>
+                          {policy.name}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                    {errors.compensation && (
+                      <FormHelperText error>
+                        {errors.compensation.message}
+                      </FormHelperText>
+                    )}
+                  </>
                 )}
               />
             </FormControl>
-          </Grid>
-        )}
+          )}
+        </Grid>
+
+        <Grid item xs={12} sm={6}>
+          <FormControl fullWidth>
+            <Typography
+              variant="body2"
+              sx={{ fontWeight: 600, color: "text.primary" }}
+            >
+              Deny list
+            </Typography>
+
+            <Controller
+              name="denyList"
+              control={control}
+              render={({ field: { value, onChange } }) => (
+                <Autocomplete
+                  multiple
+                  sx={{
+                    width: "80%",
+                    mt: 2,
+                    "& .MuiOutlinedInput-root": {
+                      "& fieldset": {
+                        borderColor: "red",
+                      },
+                      "&:hover fieldset": {
+                        borderColor: "red",
+                      },
+                      "&.Mui-focused fieldset": {
+                        borderColor: "red",
+                      },
+                    },
+                  }}
+                  id="autocomplete-multiple-filled-deny"
+                  value={
+                    value
+                      ? value.map(
+                          (deny) =>
+                            dataPods.find((pod) => pod.id === deny.dataPodId)
+                              ?.podUniqueName || deny.name
+                        )
+                      : []
+                  }
+                  onChange={(event, newValue) => {
+                    const updatedValues = newValue.map((name) => {
+                      const dataPod = dataPods.find(
+                        (pod) => pod.podUniqueName === name
+                      );
+                      return dataPod
+                        ? { dataPodId: dataPod.id, name: dataPod.podUniqueName }
+                        : { dataPodId: name, name };
+                    });
+                    onChange(updatedValues);
+                  }}
+                  options={dataPods.map((pod) => pod.podUniqueName)}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      sx={{ mb: 2, mt: 2 }}
+                      placeholder="Select data pods"
+                      error={!!errors.denyList}
+                      helperText={
+                        errors.denyList ? errors.denyList.message : ""
+                      }
+                    />
+                  )}
+                  renderTags={(value, getTagProps) =>
+                    value.map((dataPod, index) => (
+                      <Chip
+                        variant="outlined"
+                        label={dataPod}
+                        {...getTagProps({ index })}
+                        key={index}
+                        sx={{
+                          mr: 1,
+                          mb: 1,
+                          mt: 1,
+                          backgroundColor: "red",
+                        }}
+                      />
+                    ))
+                  }
+                />
+              )}
+            />
+          </FormControl>
+        </Grid>
+
+        <Grid item xs={12} sm={6}>
+          <FormControl fullWidth>
+            <Typography
+              variant="body2"
+              sx={{ fontWeight: 600, color: "text.primary" }}
+            >
+              Allow list
+            </Typography>
+
+            <Controller
+              name="allowList"
+              control={control}
+              render={({ field: { value, onChange } }) => (
+                <Autocomplete
+                  multiple
+                  sx={{
+                    width: "80%",
+                    mt: 2,
+                    "& .MuiOutlinedInput-root": {
+                      "& fieldset": {
+                        borderColor: "green",
+                      },
+                      "&:hover fieldset": {
+                        borderColor: "green",
+                      },
+                      "&.Mui-focused fieldset": {
+                        borderColor: "green",
+                      },
+                    },
+                  }}
+                  id="autocomplete-multiple-filled-allow"
+                  value={
+                    value
+                      ? value.map(
+                          (allow) =>
+                            dataPods.find((pod) => pod.id === allow.dataPodId)
+                              ?.podUniqueName || allow.name
+                        )
+                      : []
+                  }
+                  onChange={(event, newValue) => {
+                    const updatedValues = newValue.map((name) => {
+                      const dataPod = dataPods.find(
+                        (pod) => pod.podUniqueName === name
+                      );
+                      return dataPod
+                        ? { dataPodId: dataPod.id, name: dataPod.podUniqueName }
+                        : { dataPodId: name, name };
+                    });
+                    onChange(updatedValues);
+                  }}
+                  options={dataPods.map((pod) => pod.podUniqueName)}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      sx={{ mb: 2, mt: 2 }}
+                      placeholder="Select data pods"
+                      error={!!errors.allowList}
+                      helperText={
+                        errors.allowList ? errors.allowList.message : ""
+                      }
+                    />
+                  )}
+                  renderTags={(value, getTagProps) =>
+                    value.map((dataPod, index) => (
+                      <Chip
+                        variant="outlined"
+                        label={dataPod}
+                        {...getTagProps({ index })}
+                        key={index}
+                        sx={{
+                          mr: 1,
+                          mb: 1,
+                          mt: 1,
+                          backgroundColor: "green",
+                        }}
+                      />
+                    ))
+                  }
+                />
+              )}
+            />
+          </FormControl>
+        </Grid>
 
         <Grid
           item

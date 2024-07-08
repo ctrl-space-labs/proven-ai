@@ -60,24 +60,14 @@ const DataPodStepper = ({
   );
 
   const [userErrors, setUserErrors] = useState({});
-  const [agentErrors, setAgentErrors] = useState({});
-  const [dataUseErrors, setDataUseErrors] = useState({});
+  const [dataPodErrors, setDataPodErrors] = useState({});
+  const [usePoliciesErrors, setUsePoliciesErrors] = useState({});
 
   // Form data states
   const [userData, setUserData] = useState(defaultUserInformation);
   const [dataPodData, setDataPodData] = useState(defaultDataPodInformation);
   const [usePoliciesData, setUsePoliciesData] = useState(defaultDataUse);
 
-  // console.log("ACTIVE ORGANIZATION", activeOrganization);
-  // console.log("ACTIVE DATA POD", activeDataPod);
-  // console.log("DATA POD ID id id id id ", dataPodId);
-  // console.log("DATA POD POLICIES", dataPodPolicies);
-  // console.log("USER DATA PODS", userDataPods);
-  // console.log("USER ORGANIZATIONS", userOrganizations);
-  // console.log("USER DATA", userData);
-  // console.log("DATA POD DATA", dataPodData);
-  // console.log("USE POLICIES DATA", usePoliciesData);
-  // console.log("VC OFFER SESSION ID", vcOfferSessionId);
 
   useEffect(() => {
     if (Object.keys(activeOrganization).length !== 0) {
@@ -111,7 +101,7 @@ const DataPodStepper = ({
 
   useEffect(() => {
     if (dataPodPolicies && dataPodPolicies.length > 0) {
-      const agentPolicies = dataPodConverter.toAgentPolicies(dataPodPolicies);
+      const agentPolicies = dataPodConverter.toDataPodPolicies(dataPodPolicies);
       setDataPodData((prevAgentData) => ({
         ...agentPolicies,
       }));
@@ -228,6 +218,7 @@ const DataPodStepper = ({
             activeOrganization={activeOrganization}
             getVcOfferUrl={getVcOfferUrl}
             vcOfferSessionId={vcOfferSessionId}
+            setUserErrors={setUserErrors}
           />
         );
       case 1:
@@ -240,6 +231,8 @@ const DataPodStepper = ({
             setDataPodData={setDataPodData}
             activeDataPod={activeDataPod}
             organizationId={organizationId}
+            setActiveStep={setActiveStep}
+            setDataPodErrors={setDataPodErrors}
           />
         );
       case 2:
@@ -249,6 +242,8 @@ const DataPodStepper = ({
             handleBack={handleBack}
             usePoliciesData={usePoliciesData}
             setUsePoliciesData={setUsePoliciesData}
+            setActiveStep={setActiveStep}
+            setUsePoliciesErrors={setUsePoliciesErrors}
           />
         );
       case 3:
@@ -259,6 +254,7 @@ const DataPodStepper = ({
             userData={userData}
             dataPodData={dataPodData}
             usePoliciesData={usePoliciesData}
+            setActiveStep={setActiveStep}
           />
         );
       default:
@@ -303,41 +299,39 @@ const DataPodStepper = ({
           <Stepper activeStep={activeStep}>
             {dataPodSteps.map((step, index) => {
               const labelProps = {};
-              // if (index === activeStep) {
-              //   labelProps.error = false;
-              //   if (userInfo.selectedOrganizationType === "natural-person") {
-              //     if (
-              //       userErrors.firstName ||
-              //       userErrors.familyName
-              //       // ||
-              //       // userErrors.dateOfBirth ||
-              //       // userErrors.gender ||
-              //       // userErrors.nationality ||
-              //       // userErrors.profileLink
-              //     ) {
-              //       labelProps.error = true;
-              //     }
-              //   } else if (userInfo.selectedOrganizationType === "legal-entity") {
-              //     if (
-              //       userErrors.legalPersonIdentifier ||
-              //       userErrors.legalName
-              //       // ||
-              //       // userErrors.legalAddress ||
-              //       // userErrors.country ||
-              //       // userErrors.taxReference ||
-              //       // userErrors.vatNumber ||
-              //       // userErrors.profileLink
-              //     ) {
-              //       labelProps.error = true;
-              //     }
-              //   } else if (agentErrors.agentPurpose && activeStep === 1) {
-              //     labelProps.error = true;
-              //   } else if (dataUseErrors.dataPurpose && activeStep === 2) {
-              //     labelProps.error = true;
-              //   } else {
-              //     labelProps.error = false;
-              //   }
-              // }
+              if (index === activeStep) {
+                labelProps.error = false;
+
+                // User information errors
+                if (activeStep === 0) {
+                  if (
+                    userErrors.firstName ||
+                    userErrors.familyName ||
+                    userErrors.dateOfBirth ||
+                    userErrors.gender ||
+                    userErrors.nationality ||
+                    userErrors.profileLink ||
+                    userErrors.legalPersonIdentifier ||
+                    userErrors.legalName ||
+                    userErrors.legalAddress ||
+                    userErrors.country ||
+                    userErrors.taxReference ||
+                    userErrors.vatNumber
+                  ) {
+                    labelProps.error = true;
+                  }
+                }
+
+                // Data Pod information errors
+                if (activeStep === 1 && dataPodErrors.agentPurpose ) {
+                  labelProps.error = true;
+                }
+
+                // Data use policy errors
+                if (activeStep === 2 && usePoliciesErrors.compensationPolicies || usePoliciesErrors.attributionPolicies) {
+                  labelProps.error = true;
+                }
+              }
               return (
                 <Step key={index}>
                   <StepLabel

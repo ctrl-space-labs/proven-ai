@@ -8,6 +8,7 @@ import dev.ctrlspace.provenai.backend.model.QAgent;
 import dev.ctrlspace.provenai.backend.model.dtos.criteria.AgentCriteria;
 import dev.ctrlspace.provenai.ssi.model.vc.attestation.Policy;
 
+import java.util.List;
 import java.util.UUID;
 
 public class AgentPredicates {
@@ -15,15 +16,17 @@ public class AgentPredicates {
     private static QAgent qAgent = QAgent.agent;
 
     public static Predicate build(AgentCriteria criteria) {
-        if (criteria == null || areAllCriteriaFieldsNull(criteria)) {
-            return qAgent.isNotNull(); // Return all agents if criteria is null or all fields are null
+
+        // If fetchAll is true, return a predicate that always evaluates to true
+        if (criteria.isFetchAll()) {
+            return qAgent.isNotNull();
         }
 
         return ExpressionUtils.allOf(
                 organizationId(criteria.getOrganizationId()),
                 agentName(criteria.getAgentName()),
-                agentVcJwt(criteria.getAgentVcJwt())
-
+                agentVcJwt(criteria.getAgentVcJwt()),
+                agentIdIn(criteria.getAgentIdIn())
 
         );
     }
@@ -42,22 +45,18 @@ public class AgentPredicates {
         return qAgent.agentName.eq(agentName);
     }
 
-    //TODO remove this. Criteria in Agents have mandatory fields
-    private static boolean areAllCriteriaFieldsNull(AgentCriteria criteria) {
-        return criteria.getOrganizationId() == null &&
-                criteria.getAgentName() == null &&
-                criteria.getAgentPurposeOfUsePolicies() == null &&
-                criteria.getPolicyIn() == null &&
-                criteria.getPolicy() == null &&
-                criteria.getAgentVcJwt() == null;
-    }
-
-
     private static Predicate agentVcJwt(String agentVcJwt) {
         if (agentVcJwt == null) {
             return null;
         }
         return qAgent.agentVcJwt.eq(agentVcJwt);
+    }
+
+    private static Predicate agentIdIn(List<UUID> agentIdIn) {
+        if (agentIdIn == null || agentIdIn.isEmpty()) {
+            return null;
+        }
+        return qAgent.id.in(agentIdIn);
     }
 
 }

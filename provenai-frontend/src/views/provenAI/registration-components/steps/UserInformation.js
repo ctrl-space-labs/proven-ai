@@ -1,6 +1,7 @@
 import React from "react";
 import { useState, useEffect } from "react";
 import { styled, useTheme } from "@mui/material/styles";
+
 import {
   Autocomplete,
   Grid,
@@ -18,7 +19,6 @@ import {
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { userSchema } from "src/utils/validationSchemas";
-// ** Icon Imports
 import Icon from "src/@core/components/icon";
 import { useRouter } from "next/router";
 import CredentialsWithQrCodeComponent from "src/views/provenAI/registration-components/CredentialsWithQrCodeComponent";
@@ -35,8 +35,12 @@ const UserInformation = ({
   secondFieldOnUrl,
   getVcOfferUrl,
   vcOfferSessionId,
+  //userErrors,
+  setUserErrors,
 }) => {
   const theme = useTheme();
+  const router = useRouter();
+  const [openCredentials, setOpenCredentials] = useState(false);
 
   const {
     control,
@@ -50,9 +54,7 @@ const UserInformation = ({
     resolver: yupResolver(userSchema),
   });
 
-  const router = useRouter();
   const selectedOrganizationType = watch("selectedOrganizationType");
-  const [openCredentials, setOpenCredentials] = useState(false);
 
   // Handle Edit dialog
   const handleCredentialsOpen = () => setOpenCredentials(true);
@@ -63,6 +65,10 @@ const UserInformation = ({
       setValue(key, userData[key]);
     });
   }, [userData, setValue]);
+
+  useEffect(() => {
+    setUserErrors(errors);
+  }, [errors, setUserErrors]);
 
   useEffect(() => {
     const fetchVcOfferFlow = async () => {
@@ -183,9 +189,6 @@ const UserInformation = ({
                     {...field}
                     label="User Organization"
                   >
-                    {/* <MenuItem value="new-organization">
-                      New Organization
-                    </MenuItem> */}
                     {userOrganizations.map((org) => (
                       <MenuItem
                         key={org.id}
@@ -198,21 +201,15 @@ const UserInformation = ({
                   </Select>
                 )}
               />
+              {errors.organizationName && (
+                <FormHelperText error>
+                  {errors.organizationName.message}
+                </FormHelperText>
+              )}
             </FormControl>
           )}
         </Grid>
-        {/* <Grid item xs={12} sm={3}>
-          {watch("organizationName") === "new-organization" && (
-            <Button
-              variant="contained"
-              onClick={() =>
-                (window.location.href = "https://your-new-site.com")
-              }
-            >
-              Create Organization
-            </Button>
-          )}
-        </Grid> */}
+
         <Grid item xs={12}>
           {" "}
         </Grid>
@@ -236,6 +233,11 @@ const UserInformation = ({
                 )}
               />
             </FormControl>
+            {errors.selectedOrganizationType && (
+              <FormHelperText error>
+                {errors.selectedOrganizationType.message}
+              </FormHelperText>
+            )}
           </Box>
         </Grid>
         <Grid item xs={12} sm={6}></Grid>
@@ -252,7 +254,7 @@ const UserInformation = ({
                       label="First Name"
                       error={Boolean(errors.firstName)}
                       helperText={
-                        errors.firstName ? "This field is required" : ""
+                        errors.firstName ? errors.firstName.message : ""
                       }
                     />
                   )}
@@ -270,7 +272,7 @@ const UserInformation = ({
                       label="Last Name"
                       error={Boolean(errors.familyName)}
                       helperText={
-                        errors.familyName ? "This field is required" : ""
+                        errors.familyName ? errors.familyName.message : ""
                       }
                     />
                   )}
@@ -290,7 +292,7 @@ const UserInformation = ({
                       error={Boolean(errors.personalIdentifier)}
                       helperText={
                         errors.personalIdentifier
-                          ? "This field is required"
+                          ? errors.personalIdentifier.message
                           : ""
                       }
                     />
@@ -312,7 +314,7 @@ const UserInformation = ({
                       InputLabelProps={{ shrink: true }}
                       error={Boolean(errors.dateOfBirth)}
                       helperText={
-                        errors.dateOfBirth ? "This field is required" : ""
+                        errors.dateOfBirth ? errors.dateOfBirth.message : ""
                       }
                     />
                   )}
@@ -345,9 +347,7 @@ const UserInformation = ({
                   )}
                 />
                 {errors.gender && (
-                  <FormHelperText sx={{ color: "error.main" }}>
-                    This field is required
-                  </FormHelperText>
+                  <FormHelperText error>{errors.gender.message}</FormHelperText>
                 )}
               </FormControl>
             </Grid>
@@ -362,31 +362,25 @@ const UserInformation = ({
                       options={countries}
                       getOptionLabel={(option) => option.name || ""}
                       value={
-                        countries.find((country) => country.code === value) || null
+                        countries.find((country) => country.code === value) ||
+                        null
                       }
-                      onChange={(event, newValue) =>{
+                      onChange={(event, newValue) => {
                         onChange(newValue ? newValue.code : "");
                       }}
-                       
                       renderInput={(params) => (
                         <TextField
                           {...params}
                           label="Nationality"
                           error={Boolean(errors.nationality)}
                           helperText={
-                            errors.nationality ? "This field is required" : ""
+                            errors.nationality ? errors.nationality.message : ""
                           }
                         />
                       )}
                     />
                   )}
                 />
-
-                {/* {errors.nationality && (
-                  <FormHelperText sx={{ color: "error.main" }}>
-                    This field is required
-                  </FormHelperText>
-                )} */}
               </FormControl>
             </Grid>
           </>
@@ -406,7 +400,7 @@ const UserInformation = ({
                       error={Boolean(errors.legalPersonIdentifier)}
                       helperText={
                         errors.legalPersonIdentifier
-                          ? "This field is required"
+                          ? errors.legalPersonIdentifier.message
                           : ""
                       }
                     />
@@ -425,7 +419,7 @@ const UserInformation = ({
                       label="Legal Name"
                       error={Boolean(errors.legalName)}
                       helperText={
-                        errors.legalName ? "This field is required" : ""
+                        errors.legalName ? errors.legalName.message : ""
                       }
                     />
                   )}
@@ -443,7 +437,7 @@ const UserInformation = ({
                       label="Legal Address"
                       error={Boolean(errors.legalAddress)}
                       helperText={
-                        errors.legalAddress ? "This field is required" : ""
+                        errors.legalAddress ? errors.legalAddress.message : ""
                       }
                     />
                   )}
@@ -455,17 +449,32 @@ const UserInformation = ({
                 <Controller
                   name="country"
                   control={control}
-                  render={({ field }) => (
-                    <TextField
-                      {...field}
-                      label="Country"
-                      error={Boolean(errors.country)}
-                      helperText={
-                        errors.country ? "This field is required" : ""
+                  render={({ field: {value, onChange} }) => (
+                    <Autocomplete
+                      id="autocomplete-countries"
+                      options={countries}
+                      getOptionLabel={(option) => option.name || ""}
+                      value={
+                        countries.find((country) => country.code === value) ||
+                        null
                       }
+                      onChange={(event, newValue) => {
+                        onChange(newValue ? newValue.code : "");
+                      }}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label="Country"
+                          error={Boolean(errors.country)}
+                          helperText={
+                            errors.country ? errors.country.message : ""
+                          }
+                        />
+                      )}
                     />
                   )}
-                />
+                />                   
+                 
               </FormControl>
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -479,7 +488,7 @@ const UserInformation = ({
                       label="Tax Reference"
                       error={Boolean(errors.taxReference)}
                       helperText={
-                        errors.taxReference ? "This field is required" : ""
+                        errors.taxReference ? errors.taxReference.message : ""
                       }
                     />
                   )}
@@ -497,7 +506,7 @@ const UserInformation = ({
                       label="VAT Number"
                       error={Boolean(errors.vatNumber)}
                       helperText={
-                        errors.vatNumber ? "This field is required" : ""
+                        errors.vatNumber ? errors.vatNumber.message : ""
                       }
                     />
                   )}
@@ -519,7 +528,7 @@ const UserInformation = ({
                   placeholder="https://yourprofilelink.com"
                   error={Boolean(errors.profileLink)}
                   helperText={
-                    errors.profileLink ? "This field is required" : ""
+                    errors.profileLink ? errors.profileLink.message : ""
                   }
                 />
               )}

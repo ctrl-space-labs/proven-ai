@@ -39,20 +39,25 @@ export default {
    return `${provenUrl}data-pods`;
   },
 
+  publicDataPods: (page = 0, size = 200) => {
+    return `${provenUrl}data-pods/public?page=${page}&size=${size}`;
+  },
+
   getDataPodById: (dataPodId) =>
     `${provenUrl}data-pods/${dataPodId}`,
 
   agents: () =>
     `${provenUrl}agents`,
 
+  publicAgents: (page = 0, size = 200) => {
+   return `${provenUrl}agents/public?page=${page}&size=${size}`;
+  },
+
   getAgentById: (agentId) =>
     `${provenUrl}agents/${agentId}`,
 
   getPolicyOptions: (policyTypeName) =>
-    `${provenUrl}policy-options?policyTypeName=${policyTypeName}`,
-
-  getAgentWithoutVc: () =>
-    `${provenUrl}agents/no-vc`,
+    `${provenUrl}policy-options?policyTypeName=${policyTypeName}`,  
 
   getAclPoliciesByDataPod: (dataPodId) =>
     `${provenUrl}data-pods/${dataPodId}/acl-policies`,  

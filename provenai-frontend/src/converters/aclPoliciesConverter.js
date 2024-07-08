@@ -1,3 +1,6 @@
+
+
+
 const convertToAclPolicies = (data, dataPodId) => {
   return data.map(item => ({
     dataPodId: dataPodId,
@@ -10,8 +13,8 @@ const convertToAclPolicies = (data, dataPodId) => {
 const convertToAllowListAclPolicies = (data, dataPodId) => {
   return data.map(item => ({
     dataPodId: dataPodId,
-    policyTypeId: "adb70b6d-cfc6-4cd0-b89b-353bd00cf53f",
-    policyOptionId: "e00a6abf-0bc1-4128-9dbe-91907ffb3d9f",
+    policyTypeId: item.policyTypeId,
+    policyOptionId: item.policyOptionId,
     value: item.agentId, 
   }));
 };
@@ -19,8 +22,8 @@ const convertToAllowListAclPolicies = (data, dataPodId) => {
 const convertToDenyListAclPolicies = (data, dataPodId) => {
   return data.map(item => ({
     dataPodId: dataPodId,
-    policyTypeId: "5838bac5-193c-47bb-8a6c-c47e0b1a2d75",
-    policyOptionId: "86504a0c-9038-4c27-9a1a-520948a8e8dc",
+    policyTypeId: item.policyTypeId,
+    policyOptionId: item.policyOptionId,
     value: item.agentId, 
   }));
 };

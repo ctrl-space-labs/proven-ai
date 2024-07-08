@@ -8,6 +8,7 @@ import dev.ctrlspace.provenai.backend.model.DataPod;
 import dev.ctrlspace.provenai.backend.model.authentication.OrganizationUserDTO;
 import dev.ctrlspace.provenai.backend.model.authentication.UserProfile;
 import dev.ctrlspace.provenai.backend.model.dtos.DataPodDTO;
+import dev.ctrlspace.provenai.backend.model.dtos.DataPodPublicDTO;
 import dev.ctrlspace.provenai.backend.model.dtos.criteria.DataPodCriteria;
 import dev.ctrlspace.provenai.backend.services.DataPodService;
 import dev.ctrlspace.provenai.backend.utils.SecurityUtils;
@@ -53,6 +54,14 @@ public class DataPodController implements DataPodControllerSpec {
 
     }
 
+    @GetMapping("/data-pods/public")
+    public Page<DataPodPublicDTO> getAllPublicDataPods(@Valid DataPodCriteria criteria, Pageable pageable) throws ProvenAiException {
+        return dataPodService.getAllPublicDataPods(criteria, pageable);
+    }
+
+    @GetMapping("/data-pods/{id}")
+    public DataPod getDataPodById(@PathVariable UUID id) throws ProvenAiException {
+        return dataPodService.getDataPodById(id);
     @PreAuthorize("@securityUtils.hasAuthority('OP_READ_PROVEN_AI_DATAPOD', 'getRequestedDataPodIdFromPathVariable')")
     @GetMapping("/data-pods/{dataPodId}")
     public DataPod getDataPodById(@PathVariable UUID dataPodId) throws ProvenAiException {
