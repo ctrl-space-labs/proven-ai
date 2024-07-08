@@ -37,7 +37,8 @@ forge build
 
 4. Deploy the smart contracts
 ```
-forge script script/Counter.s.sol:CounterScript --rpc-url $RPC_URL --private-key $PRIVATE_KEY --broadcast
+forge script script/ProvenAIAgentUsageScript.s.sol:ProvenAIAgentUsageScript --rpc-url $RPC_URL --private-key $PRIVATE_KEY --gas-limit 500000 --gas-price 3200000
+0000 --broadcast
 ```
 
 ## Useful commands
@@ -45,10 +46,10 @@ forge script script/Counter.s.sol:CounterScript --rpc-url $RPC_URL --private-key
 1. Get the smart contract address and verify the deployment
 ```
 <!-- Call method -->
-cast call 0x703fAD8Fccb141ceCb64c06f8CC284A93e720E97 "getNumber()" --rpc-url $RPC_URL
+cast call 0x2cEd717C09C6F79B6314F6A8F36792A67Ba861dA "getDailyUsage(address,uint256)" 0x7f2Ab1BfaEb0A312c89E09e4691000Be9cA14d4a 1720396800000 --rpc-url $AMOY_POLYGON_RPC_URL
 
 <!-- send transaction -->
-cast send $SMART_CONTRACT_ADDRESS "setNumber(uint256)" 17 --rpc-url $RPC_URL --private-key $PRIVATE_KEY
+cast send 0x2cEd717C09C6F79B6314F6A8F36792A67Ba861dA "recordDailyUsage(uint256,bytes32)" 1720396800000 0x5468317320abcdef1234567890abcdef1234567890abcdef1234567890abcdef --rpc-url $RPC_URL --private-key $PRIVATE_KEY --gas-limit 50000 --gas-price 200000000000
 ```
 
 2. Send ETH to an address
@@ -58,7 +59,7 @@ cast send <recipient_address> --value <amount_in_wei> --rpc-url <rpc_url> --priv
 
 3. Estimate gas
 ```
-cast estimate --to $SMART_CONTRACT_ADDRESS --data $(cast calldata "setNumber(uint256)" 17) --rpc-url $RPC_URL
+cast estimate 0x2cEd717C09C6F79B6314F6A8F36792A67Ba861dA "recordDailyUsage(uint256,bytes32)" 1720396800000 0x5468317320abcdef1234567890abcdef1234567890abcdef1234567890abcdef --rpc-url $AMOY_POLYGON_RPC_URL
 ```
 
 
