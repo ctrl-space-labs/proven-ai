@@ -11,6 +11,7 @@ import dev.ctrlspace.provenai.backend.exceptions.ProvenAiException;
 import dev.ctrlspace.provenai.backend.model.Agent;
 import dev.ctrlspace.provenai.backend.model.AgentPurposeOfUsePolicies;
 import dev.ctrlspace.provenai.backend.model.Organization;
+import dev.ctrlspace.provenai.backend.model.dtos.AgentPublicDTO;
 import dev.ctrlspace.provenai.backend.model.dtos.AgentDTO;
 import dev.ctrlspace.provenai.backend.model.dtos.EventPayloadDTO;
 import dev.ctrlspace.provenai.backend.model.dtos.WebHookEventResponse;
@@ -127,17 +128,15 @@ public class AgentService {
         return agentRepository.findAll(AgentPredicates.build(criteria), pageable);
     }
 
-    public Page<AgentDTO> getAllAgentsWithoutVc(AgentCriteria criteria, Pageable pageable) throws ProvenAiException {
+
+
+    public Page<AgentPublicDTO> getPublicAgentByCriteria(AgentCriteria criteria, Pageable pageable) throws ProvenAiException {
         if (pageable == null) {
             throw new ProvenAiException("Pageable cannot be null", "pageable.null", HttpStatus.BAD_REQUEST);
         }
 
-        Page<Agent> agentsPage = agentRepository.findAll(AgentPredicates.build(criteria), pageable);
-        return agentsPage.map(agent -> {
-            AgentDTO agentDTO = agentConverter.toDTO(agent);
-            agentDTO.setAgentVcJwt(null); // Remove the agentVcJwt
-            return agentDTO;
-        });
+        Page<Agent> agents = agentRepository.findAll(AgentPredicates.build(criteria), pageable);
+        return agents.map(agentConverter::toPublicDTO);
     }
 
     public Page<AgentPurposeOfUsePolicies> getAgentPurposeOfUsePolicies(UUID id, Pageable pageable) throws ProvenAiException {
