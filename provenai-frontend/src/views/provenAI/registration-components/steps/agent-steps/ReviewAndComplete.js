@@ -16,7 +16,6 @@ const ReviewAndComplete = ({
   const router = useRouter();
   const isFirstRender = useRef(true);
 
-  console.log("AGENT DATA", agentData);
 
   useEffect(() => {
     if (isFirstRender.current) {

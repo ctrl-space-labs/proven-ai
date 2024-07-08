@@ -95,7 +95,7 @@ const DataPodInformation = ({
 
     const fetchAgents = async () => {
       try {
-        const agents = await agentService.getAgentWithoutVc(storedToken);
+        const agents = await agentService.getPublicAgents(storedToken);
         setAgents(agents.data.content);
       } catch (error) {
         console.error("Error fetching agents:", error);

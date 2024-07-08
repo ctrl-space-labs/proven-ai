@@ -26,7 +26,6 @@ const convertToDenyListAclPolicies = (data, agentId) => {
 };
 
 const convertToCompensationPolicies = (data, agentId) => {
-  console.log("data", data);
   return {
     agentId: agentId,
     policyTypeId: data.policyTypeId,

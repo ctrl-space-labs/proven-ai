@@ -20,6 +20,24 @@ const getDataPodsByOrganization = async (organizationId, storedToken) => {
 };
 
 /**
+ * Get public data pods by data pod ids in
+ * @param storedToken
+ * @Param dataPodIdIn
+ * @returns {Promise<axios.AxiosResponse<DataPods>>}
+ */
+const getDataPodsByIdIn = async (dataPodIdIn, storedToken) => {
+  return axios.get(apiRequests.publicDataPods(), {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + storedToken,
+    },
+    params: {
+      dataPodIdIn: dataPodIdIn,
+    },
+  });
+};
+
+/**
  * Get data pod by id
  * @param dataPodId
  * @param storedToken
@@ -67,6 +85,7 @@ const createDataPod = async (dataPodDTO, storedToken) => {
 
 export default {
   getDataPodsByOrganization,
+  getDataPodsByIdIn,
   getAclPoliciesByDataPod,
   getDataPodById,
   createDataPod,

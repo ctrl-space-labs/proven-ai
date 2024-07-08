@@ -6,6 +6,7 @@ import dev.ctrlspace.provenai.backend.exceptions.ProvenAiException;
 import dev.ctrlspace.provenai.backend.model.AclPolicies;
 import dev.ctrlspace.provenai.backend.model.DataPod;
 import dev.ctrlspace.provenai.backend.model.dtos.DataPodDTO;
+import dev.ctrlspace.provenai.backend.model.dtos.DataPodPublicDTO;
 import dev.ctrlspace.provenai.backend.model.dtos.criteria.DataPodCriteria;
 import dev.ctrlspace.provenai.backend.services.DataPodService;
 import jakarta.validation.Valid;
@@ -35,6 +36,11 @@ public class DataPodController implements DataPodControllerSpec {
     @GetMapping("/data-pods")
     public Page<DataPod> getAllDataPods(@Valid DataPodCriteria criteria, Pageable pageable) throws ProvenAiException {
         return dataPodService.getAllDataPods(criteria, pageable);
+    }
+
+    @GetMapping("/data-pods/public")
+    public Page<DataPodPublicDTO> getAllPublicDataPods(@Valid DataPodCriteria criteria, Pageable pageable) throws ProvenAiException {
+        return dataPodService.getAllPublicDataPods(criteria, pageable);
     }
 
     @GetMapping("/data-pods/{id}")

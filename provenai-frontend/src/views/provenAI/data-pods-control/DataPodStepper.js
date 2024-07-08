@@ -68,7 +68,6 @@ const DataPodStepper = ({
   const [dataPodData, setDataPodData] = useState(defaultDataPodInformation);
   const [usePoliciesData, setUsePoliciesData] = useState(defaultDataUse);
 
-  console.log("Data pod data", dataPodData);
 
   useEffect(() => {
     if (Object.keys(activeOrganization).length !== 0) {

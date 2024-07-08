@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.UUID;
 
 @Data
 @AllArgsConstructor
@@ -21,5 +22,7 @@ public class AgentCriteria {
     private List<Policy> policyIn;
     private Policy policy;
     private String agentVcJwt;
+    private List<UUID> agentIdIn;
+    private boolean fetchAll;
 
 }

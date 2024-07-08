@@ -1,10 +1,13 @@
 package dev.ctrlspace.provenai.backend.services;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import dev.ctrlspace.provenai.backend.converters.DataPodConverter;
 import dev.ctrlspace.provenai.backend.exceptions.ProvenAiException;
 import dev.ctrlspace.provenai.backend.model.AclPolicies;
 import dev.ctrlspace.provenai.backend.model.Agent;
 import dev.ctrlspace.provenai.backend.model.DataPod;
+import dev.ctrlspace.provenai.backend.model.dtos.DataPodDTO;
+import dev.ctrlspace.provenai.backend.model.dtos.DataPodPublicDTO;
 import dev.ctrlspace.provenai.backend.model.dtos.criteria.DataPodCriteria;
 import dev.ctrlspace.provenai.backend.repositories.DataPodRepository;
 import dev.ctrlspace.provenai.backend.repositories.specifications.DataPodPredicates;
@@ -27,14 +30,17 @@ public class DataPodService {
     private AclPoliciesService aclPoliciesService;
 
     private AgentService agentService;
+    private DataPodConverter dataPodConverter;
 
     @Autowired
     public DataPodService(DataPodRepository dataPodRepository,
                           AclPoliciesService aclPoliciesService,
-                          AgentService agentService) {
+                          AgentService agentService,
+                          DataPodConverter dataPodConverter) {
         this.dataPodRepository = dataPodRepository;
         this.aclPoliciesService = aclPoliciesService;
         this.agentService = agentService;
+        this.dataPodConverter = dataPodConverter;
     }
 
 
@@ -53,6 +59,16 @@ public class DataPodService {
             throw new ProvenAiException("Pageable cannot be null", "pageable.null", HttpStatus.BAD_REQUEST);
         }
         return dataPodRepository.findAll(DataPodPredicates.build(criteria), pageable);
+    }
+
+    public Page<DataPodPublicDTO> getAllPublicDataPods(DataPodCriteria criteria , Pageable pageable) throws ProvenAiException {
+        if (pageable == null) {
+            throw new ProvenAiException("Pageable cannot be null", "pageable.null", HttpStatus.BAD_REQUEST);
+        }
+
+        Page<DataPod> dataPods = dataPodRepository.findAll(DataPodPredicates.build(criteria), pageable);
+
+        return dataPods.map(dataPodConverter::toPublicDTO);
     }
 
     public Page<AclPolicies> getAclPoliciesByDataPodId(UUID dataPodId, Pageable pageable) throws  ProvenAiException{

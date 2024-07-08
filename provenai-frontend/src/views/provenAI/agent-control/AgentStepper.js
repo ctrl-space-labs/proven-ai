@@ -66,7 +66,6 @@ const AgentStepper = ({
   const [userErrors, setUserErrors] = useState({});
   const [agentErrors, setAgentErrors] = useState({});
 
-  console.log("Agent data:", agentData);
 
   useEffect(() => {
     if (Object.keys(activeOrganization).length !== 0) {

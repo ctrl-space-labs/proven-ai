@@ -2,6 +2,7 @@ package dev.ctrlspace.provenai.backend.converters;
 
 import dev.ctrlspace.provenai.backend.model.DataPod;
 import dev.ctrlspace.provenai.backend.model.dtos.DataPodDTO;
+import dev.ctrlspace.provenai.backend.model.dtos.DataPodPublicDTO;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -41,7 +42,12 @@ public class DataPodConverter implements ProvenAIConverter<DataPod, DataPodDTO>{
     }
 
 
-
+    public DataPodPublicDTO toPublicDTO(DataPod dataPod) {
+        return DataPodPublicDTO.builder()
+                .id(dataPod.getId())
+                .podUniqueName(dataPod.getPodUniqueName())
+                .build();
+    }
 
 
 }
