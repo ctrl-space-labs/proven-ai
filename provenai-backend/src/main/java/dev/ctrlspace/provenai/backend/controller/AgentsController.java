@@ -8,6 +8,7 @@ import dev.ctrlspace.provenai.backend.model.Agent;
 import dev.ctrlspace.provenai.backend.model.AgentPurposeOfUsePolicies;
 import dev.ctrlspace.provenai.backend.model.dtos.AgentDTO;
 import dev.ctrlspace.provenai.backend.model.dtos.AgentIdCredential;
+import dev.ctrlspace.provenai.backend.model.dtos.AgentPublicDTO;
 import dev.ctrlspace.provenai.backend.model.dtos.criteria.AgentCriteria;
 import dev.ctrlspace.provenai.backend.services.AgentService;
 import id.walt.credentials.vc.vcs.W3CVC;
@@ -49,10 +50,10 @@ public class AgentsController implements AgentsControllerSpec {
         return agentService.getAllAgents(criteria, pageable);
     }
 
-    @GetMapping("/agents/no-vc")
-    public Page<AgentDTO> getAllAgentsWithoutVc(@Valid AgentCriteria criteria, Pageable pageable) throws ProvenAiException {
+    @GetMapping("/agents/public")
+    public Page<AgentPublicDTO> getPublicAgentByCriteria(@Valid AgentCriteria criteria, Pageable pageable) throws ProvenAiException {
 
-        return agentService.getAllAgentsWithoutVc(criteria, pageable);
+        return agentService.getPublicAgentByCriteria(criteria, pageable);
     }
 
     @GetMapping("/agents/{id}/policies")

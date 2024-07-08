@@ -1,8 +1,10 @@
 package dev.ctrlspace.provenai.backend.controller.specs;
 
 import dev.ctrlspace.provenai.backend.exceptions.ProvenAiException;
+import dev.ctrlspace.provenai.backend.model.AclPolicies;
 import dev.ctrlspace.provenai.backend.model.DataPod;
 import dev.ctrlspace.provenai.backend.model.dtos.DataPodDTO;
+import dev.ctrlspace.provenai.backend.model.dtos.DataPodPublicDTO;
 import dev.ctrlspace.provenai.backend.model.dtos.criteria.DataPodCriteria;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -39,6 +41,12 @@ public interface DataPodControllerSpec {
 
     @Operation(summary = "Get a data pod by id")
     public DataPod getDataPodById(UUID id) throws ProvenAiException;
+
+    @Operation(summary = "Get all public data pods")
+    Page<DataPodPublicDTO> getAllPublicDataPods(DataPodCriteria criteria, Pageable pageable) throws ProvenAiException;
+
+    @Operation(summary = "Get all ACL policies for a data pod")
+    Page<AclPolicies> getAclPoliciesByDataPodId(UUID id, Pageable pageable) throws ProvenAiException;
 
     @Operation(summary = "Create a new data pod")
     DataPod createDataPod(@RequestBody DataPodDTO dataPodDto) throws ProvenAiException;
