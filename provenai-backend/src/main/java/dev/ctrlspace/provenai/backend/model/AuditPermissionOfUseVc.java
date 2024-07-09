@@ -183,4 +183,28 @@ public class AuditPermissionOfUseVc {
     public int hashCode() {
         return Objects.hash(permissionOfUseVcId, searchId, sectionIscc, documentIscc, ownerOrganizationDid, ownerOrganizationId, processorOrganizationDid, processorOrganizationId, ownerDataPodId, processorAgentId, embeddingModel, tokens, createdAt, updatedAt);
     }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("{");
+        sb.append("\"permissionOfUseVcId\": ").append("\"").append(permissionOfUseVcId).append("\"").append(",");
+        sb.append("\"searchId\": ").append("\"").append(searchId).append("\"").append(",");
+        sb.append("\"sectionIscc\": ").append("\"").append(sectionIscc).append("\"").append(",");
+        sb.append("\"documentIscc\": ").append("\"").append(documentIscc).append("\"").append(",");
+        sb.append("\"ownerOrganizationDid\": ").append("\"").append(ownerOrganizationDid).append("\"").append(",");
+        sb.append("\"ownerOrganizationId\": ").append("\"").append(ownerOrganizationId).append("\"").append(",");
+        sb.append("\"processorOrganizationDid\": ").append("\"").append(processorOrganizationDid).append("\"").append(",");
+        sb.append("\"processorOrganizationId\": ").append("\"").append(processorOrganizationId).append("\"").append(",");
+        sb.append("\"ownerDataPodId\": ").append("\"").append(ownerDataPodId).append("\"").append(",");
+        sb.append("\"processorAgentId\": ").append("\"").append(processorAgentId).append("\"").append(",");
+        sb.append("\"embeddingModel\": ").append("\"").append(embeddingModel).append("\"").append(",");
+        sb.append("\"tokens\": ").append("\"").append(tokens).append("\"").append(",");
+        sb.append("\"createdAt\": ").append("\"").append(createdAt).append("\"").append(",");
+        sb.append("\"updatedAt\": ").append("\"").append(updatedAt).append("\"");
+        sb.append("}");
+        return sb.toString();
+    }
+
+
 }
