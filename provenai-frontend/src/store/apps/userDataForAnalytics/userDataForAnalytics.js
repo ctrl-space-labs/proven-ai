@@ -45,7 +45,7 @@ export const fetchUserDataForAnalytics = createAsyncThunk(
 
     const providedByProcessorAgents = toApexChartData(
       "agent",
-      agentsByOrgResponse.data.content,
+      agentsIdInResponse.data.content,
       permissionOfUseAnalytics.graphData.providedDataTokensByProcessorAgent
     );
 
@@ -57,11 +57,26 @@ export const fetchUserDataForAnalytics = createAsyncThunk(
 
     const consumedByProcessorAgents = toApexChartData(
       "agent",
-      agentsIdInResponse.data.content,
+      agentsByOrgResponse.data.content,
       permissionOfUseAnalytics.graphData.consumedDataTokensByProcessorAgent
     );
 
-    console.log("Provided by processor agents", providedByProcessorAgents);
+    const transformDateTimeBuckets = (buckets) => {
+      return Object.keys(buckets).map((key) => ({
+        date: key,
+        ...buckets[key],
+        updatedTotalTokens: buckets[key].totalSumTokens,
+      }));
+    };
+
+    const providedByDateTimeBuckets = transformDateTimeBuckets(
+      permissionOfUseAnalytics.graphData.providedDataTokensByDateTimeBucket ||
+        {}
+    );
+    const consumedByDateTimeBuckets = transformDateTimeBuckets(
+      permissionOfUseAnalytics.graphData.consumedDataTokensByDateTimeBucket ||
+        {}
+    );
 
     return {
       userData: {
@@ -73,8 +88,10 @@ export const fetchUserDataForAnalytics = createAsyncThunk(
       analyticsData: {
         providedByOwnerDataPods,
         providedByProcessorAgents,
+        providedByDateTimeBuckets,
         consumedByOwnerDataPods,
         consumedByProcessorAgents,
+        consumedByDateTimeBuckets,
       },
     };
   }
@@ -93,7 +110,82 @@ const toApexChartData = (type, userData, graphData) => {
           : "",
       data: [graphData[data.id]?.totalSumTokens || 0],
       active: true,
+      items: graphData[data.id]?.items || [],
     }));
+};
+
+const updateAnalyticsData = (state, providedData, key, relatedKey) => {
+  state.analyticsData[key] = providedData;
+
+  state.analyticsData[relatedKey] = state.analyticsData[relatedKey].map(
+    (item) => {
+      const allItems = item.items.map((subItem) => {
+        const isActive = providedData.some((data) =>
+          {
+            if (key.endsWith("ProcessorAgents")) {
+              return data.id === subItem.processorAgentId && data.active;
+            } else if (key.endsWith("OwnerDataPods")) {
+              return data.id === subItem.ownerDatapodId && data.active;
+            }
+            return false;
+          }
+        );
+
+        return {
+          ...subItem,
+          active: isActive,
+        };
+      });
+
+      const activeItems = allItems.filter((subItem) => subItem.active);
+      const newTotalSumTokens = activeItems.reduce(
+        (sum, subItem) => sum + subItem.sumTokens,
+        0
+      );
+
+      return {
+        ...item,
+        items: allItems,
+        data: [newTotalSumTokens],
+        active: newTotalSumTokens > 0,
+      };
+    }
+  );
+
+  let dateTimeBucket;
+
+  if (key.startsWith("provided")) {
+    dateTimeBucket = "providedByDateTimeBuckets";
+  } else if (key.startsWith("consumed")) {
+    dateTimeBucket = "consumedByDateTimeBuckets";
+  }
+
+  state.analyticsData[dateTimeBucket] =
+    state.analyticsData[dateTimeBucket].map((bucket) => {
+      const updatedTotalSumTokens = bucket.items.reduce((sum, item) => {
+        let isItemActive = false;
+
+        if (key.endsWith("ProcessorAgents")) {
+          isItemActive = providedData.some(
+            (data) => data.id === item.processorAgentId && data.active
+          );
+        } else if (key.endsWith("OwnerDataPods")) {
+          isItemActive = providedData.some(
+          (data) => data.id === item.ownerDatapodId && data.active
+        );
+      }
+
+        if ( isItemActive) {
+          return sum + item.sumTokens;
+        }
+        return sum;
+      }, 0);
+
+      return {
+        ...bucket,
+        updatedTotalTokens: updatedTotalSumTokens,
+      };
+    });
 };
 
 const userDataForAnalyticsSlice = createSlice({
@@ -117,24 +209,45 @@ const userDataForAnalyticsSlice = createSlice({
     status: "idle",
     error: null,
   },
+
   reducers: {
     setOrganizationId: (state, action) => {
       state.organizationId = action.payload;
     },
     updateProvidedByProcessorAgents: (state, action) => {
-      state.analyticsData.providedByProcessorAgents = action.payload;
+      updateAnalyticsData(
+        state,
+        action.payload,
+        "providedByProcessorAgents",
+        "providedByOwnerDataPods"
+      );
     },
     updateConsumedByProcessorAgents: (state, action) => {
-      state.analyticsData.consumedByProcessorAgents = action.payload;
+      updateAnalyticsData(
+        state,
+        action.payload,
+        "consumedByProcessorAgents",
+        "consumedByOwnerDataPods"
+      );
     },
     updateProvidedByOwnerDataPods: (state, action) => {
-      state.analyticsData.providedByOwnerDataPods = action.payload;
+      updateAnalyticsData(
+        state,
+        action.payload,
+        "providedByOwnerDataPods",
+        "providedByProcessorAgents"
+      );
     },
     updateConsumedByOwnerDataPods: (state, action) => {
-      state.analyticsData.consumedByOwnerDataPods = action.payload;
+      updateAnalyticsData(
+        state,
+        action.payload,
+        "consumedByOwnerDataPods",
+        "consumedByProcessorAgents"
+      );
     },
-
   },
+
   extraReducers: (builder) => {
     builder
       .addCase(fetchUserDataForAnalytics.pending, (state) => {

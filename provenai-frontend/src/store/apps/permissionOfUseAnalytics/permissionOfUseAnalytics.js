@@ -4,6 +4,7 @@ import permissionOfUseAnalyticsService from "src/provenAI-sdk/permissionOfUseAna
 const aggregateDataByKey = (data, key) => {
     return data.reduce((acc, item) => {
         const keyValue = item[key];
+        if (keyValue === null) return acc;
         if (!acc[keyValue]) {
             acc[keyValue] = {
                 totalSumTokens: 0,
@@ -86,6 +87,7 @@ export const fetchAnalytics = createAsyncThunk(
             let data = { providedDataTokens: providedData.data, consumedDataTokens: consumedData.data };
 
             await dispatch(updateGraphData(data));
+
 
             // Return combined data
             return data;

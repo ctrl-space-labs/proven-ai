@@ -50,7 +50,7 @@ const ProvidedByProcessorAgent = () => {
   return (
     <Card>
       <CardHeader
-        title="Your Agents Provided Data"
+        title="Agents Provided Data To my Data pods "
         subheader={`Total ${totalTokensProvided} Tokens Provided to other agents!`}
       />
       <CardContent>

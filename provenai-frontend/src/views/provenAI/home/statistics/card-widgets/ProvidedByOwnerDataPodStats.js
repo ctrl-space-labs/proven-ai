@@ -18,12 +18,12 @@ const ProvidedByOwnerDataPodsStats = () => {
   const dispatch = useDispatch();
   const [tokensPerOwnerDataPod, setTokensPerOwnerDataPod] = useState([]);
   const [dataPods, setDataPods] = useState([]);
-  const [totalTokensProvided, setTotalTokensProvided] = useState(0);
+  const [totalTokensProvided, setTotalTokensProvided] = useState(0); 
 
   const providedByOwnerDataPods = useSelector(
     (state) => state.userDataForAnalytics.analyticsData.providedByOwnerDataPods
-  );
-  
+  ); 
+
 
   useEffect(() => {
     if (!providedByOwnerDataPods) {
@@ -35,10 +35,9 @@ const ProvidedByOwnerDataPodsStats = () => {
     const dataPodsStatsData = [
       {
         name: "Tokens",
-        data: providedByOwnerDataPods.filter((dataPod) => dataPod.active).map(
-          (dataPod) =>
-            dataPod?.data[0] || 0
-        ),
+        data: providedByOwnerDataPods.map(
+          (dataPod) => (dataPod.active ? dataPod?.data[0] || 0 : 0)
+        ),        
       },
     ];
 
@@ -77,7 +76,7 @@ const ProvidedByOwnerDataPodsStats = () => {
         hexToRGBA(theme.palette.info.light, 1),
         hexToRGBA(theme.palette.error.light, 1),
       ];
-      return colors[index % colors.length]; // Cycle through colors
+      return colors[index % colors.length]; 
     } else {
       return hexToRGBA(theme.palette.grey[400], 1);
     }
@@ -85,17 +84,10 @@ const ProvidedByOwnerDataPodsStats = () => {
 
   const options = {
     chart: {
-      parentHeightOffset: 0,
-      // events: {
-      //   legendClick: function (chartContext, seriesIndex, config) {
-      //     console.log("legendClick: ", chartContext, seriesIndex, config);
-      //   },
-      // },
-
+      parentHeightOffset: 0,      
       events: {
         legendClick: handleLegendClick,
       },
-
       toolbar: {
         show: true,
         offsetX: 0,
@@ -150,22 +142,19 @@ const ProvidedByOwnerDataPodsStats = () => {
       itemMargin: {
         vertical: 3,
         horizontal: 10,
-      },
-     
-
-      // onItemClick: {
-      //   toggleDataSeries: true,
-      // },
-      // onItemHover: {
-      //   highlightDataSeries: true,
-      // },
+      },   
     },
 
     dataLabels: {
       offsetY: 8,
+      offsetX: -20,
+      textAnchor: 'start',
       style: {
         fontWeight: 500,
         fontSize: "0.875rem",
+      },
+      formatter: function (val, opt) {
+        return opt.w.globals.labels[opt.dataPointIndex] + ":  " + val + " Tokens";
       },
     },
 
@@ -198,9 +187,9 @@ const ProvidedByOwnerDataPodsStats = () => {
     
     xaxis: {
       axisTicks: { show: false },
-      axisBorder: { show: false },
-      categories: dataPods.filter((dataPod) => dataPod.active).map((dataPod) => dataPod.name),
-      // categories: dataPods.map((dataPod) => dataPod.name),
+      axisBorder: { show: false },            
+      categories: dataPods.map((dataPod) => dataPod.name), 
+
 
       labels: {
         formatter: (val) => `${Number(val) / 1000}k`,
@@ -212,6 +201,7 @@ const ProvidedByOwnerDataPodsStats = () => {
     },
     yaxis: {
       labels: {
+        show: false,
         align: theme.direction === "rtl" ? "right" : "left",
         style: {
           fontWeight: 600,

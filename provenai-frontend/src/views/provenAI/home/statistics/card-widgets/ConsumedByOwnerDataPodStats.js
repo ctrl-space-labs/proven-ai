@@ -19,6 +19,7 @@ const ConsumedByOwnerDataPodsStats = () => {
   const [tokensPerOwnerDataPod, setTokensPerOwnerDataPod] = useState([]);
   const [dataPods, setDataPods] = useState([]);
   const [totalTokensConsumed, setTotalTokensConsumed] = useState(0);
+
   const consumedByOwnerDataPods = useSelector(
     (state) => state.userDataForAnalytics.analyticsData.consumedByOwnerDataPods
   );
@@ -33,9 +34,9 @@ const ConsumedByOwnerDataPodsStats = () => {
     const dataPodsStatsData = [
       {
         name: "Tokens",
-        data: consumedByOwnerDataPods
-          .filter((dataPod) => dataPod.active)
-          .map((dataPod) => dataPod?.data[0] || 0),
+        data: consumedByOwnerDataPods.map(
+          (dataPod) => (dataPod.active ? dataPod?.data[0] || 0 : 0)
+        ),
       },
     ];
 
@@ -67,7 +68,7 @@ const ConsumedByOwnerDataPodsStats = () => {
         hexToRGBA(theme.palette.info.light, 1),
         hexToRGBA(theme.palette.error.light, 1),
       ];
-      return colors[index % colors.length]; // Cycle through colors
+      return colors[index % colors.length]; 
     } else {
       return hexToRGBA(theme.palette.grey[400], 1);
     }
@@ -75,17 +76,10 @@ const ConsumedByOwnerDataPodsStats = () => {
 
   const options = {
     chart: {
-      parentHeightOffset: 0,
-      // events: {
-      //   legendClick: function (chartContext, seriesIndex, config) {
-      //     console.log("legendClick: ", chartContext, seriesIndex, config);
-      //   },
-      // },
-
+      parentHeightOffset: 0,  
       events: {
         legendClick: handleLegendClick,
       },
-
       toolbar: {
         show: true,
         offsetX: 0,
@@ -141,21 +135,18 @@ const ConsumedByOwnerDataPodsStats = () => {
         vertical: 3,
         horizontal: 10,
       },
-     
-
-      // onItemClick: {
-      //   toggleDataSeries: true,
-      // },
-      // onItemHover: {
-      //   highlightDataSeries: true,
-      // },
     },
 
     dataLabels: {
       offsetY: 8,
+      offsetX: -20,
+      textAnchor: 'start',
       style: {
         fontWeight: 500,
         fontSize: "0.875rem",
+      },
+      formatter: function (val, opt) {
+        return opt.w.globals.labels[opt.dataPointIndex] + ":  " + val + " Tokens";
       },
     },
 
@@ -189,8 +180,7 @@ const ConsumedByOwnerDataPodsStats = () => {
     xaxis: {
       axisTicks: { show: false },
       axisBorder: { show: false },
-      categories: dataPods.filter((dataPod) => dataPod.active).map((dataPod) => dataPod.name),
-      // categories: dataPods.map((dataPod) => dataPod.name),
+      categories: dataPods.map((dataPod) => dataPod.name),
 
       labels: {
         formatter: (val) => `${Number(val) / 1000}k`,
@@ -202,6 +192,7 @@ const ConsumedByOwnerDataPodsStats = () => {
     },
     yaxis: {
       labels: {
+        show: false,
         align: theme.direction === "rtl" ? "right" : "left",
         style: {
           fontWeight: 600,
@@ -212,6 +203,9 @@ const ConsumedByOwnerDataPodsStats = () => {
     },
   };
 
+ 
+       
+
   return (
     <Card>
       <CardHeader
@@ -219,12 +213,7 @@ const ConsumedByOwnerDataPodsStats = () => {
         subheader={`Total ${totalTokensConsumed} Tokens Consumed from others!`}
         subheaderTypographyProps={{ sx: { lineHeight: 1.429 } }}
         titleTypographyProps={{ sx: { letterSpacing: "0.15px" } }}
-        // action={
-        //   <OptionsMenu
-        //     options={["Last 28 Days", "Last Month", "Last Year"]}
-        //     iconButtonProps={{ size: "small", className: "card-more-options" }}
-        //   />
-        // }
+        
       />
       <CardContent sx={{ p: "0 !important" }}>
         <ReactApexcharts

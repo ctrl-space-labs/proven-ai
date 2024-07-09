@@ -2,9 +2,6 @@ import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
-import Button from "@mui/material/Button";
-import Select from "@mui/material/Select";
-import MenuItem from "@mui/material/MenuItem";
 import { useTheme } from "@mui/material/styles";
 import CardHeader from "@mui/material/CardHeader";
 import Typography from "@mui/material/Typography";
@@ -13,12 +10,12 @@ import OptionsMenu from "src/@core/components/option-menu";
 import ReactApexcharts from "src/@core/components/react-apexcharts";
 import { hexToRGBA } from "src/@core/utils/hex-to-rgba";
 
-const ProvidedByDateTimeBucket = () => {
+const ConsumedByDateTimeBucket = () => {
   const theme = useTheme();
 
-  const providedByDataTimeBucket = useSelector(
+  const consumedByDataTimeBucket = useSelector(
     (state) =>
-      state.userDataForAnalytics.analyticsData.providedByDateTimeBuckets
+      state.userDataForAnalytics.analyticsData.consumedByDateTimeBuckets
   );
 
   
@@ -35,7 +32,7 @@ const ProvidedByDateTimeBucket = () => {
       const dateString = date.toISOString().split("T")[0] + "T00:00:00Z";
       const formattedDate = `${date.getDate()}/${date.getMonth() + 1}`;
       categories.unshift(formattedDate);      
-      const matchingBucket = providedByDataTimeBucket.find(
+      const matchingBucket = consumedByDataTimeBucket.find(
         (bucket) => bucket.date === dateString
       );
       filteredData.unshift(matchingBucket ? matchingBucket.totalSumTokens : 0);
@@ -163,4 +160,4 @@ const ProvidedByDateTimeBucket = () => {
   );
 };
 
-export default ProvidedByDateTimeBucket;
+export default ConsumedByDateTimeBucket;
