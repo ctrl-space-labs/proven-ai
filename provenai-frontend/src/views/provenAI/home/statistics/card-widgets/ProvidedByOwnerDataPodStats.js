@@ -214,18 +214,13 @@ const ProvidedByOwnerDataPodsStats = () => {
   
 
   return (
-    <Card>
+    <Card sx={{ backgroundColor: "transparent"}}>
       <CardHeader
         title="Your Data Pods Statistics"
         subheader={`Total ${totalTokensProvided} Tokens Provided to others!`}
         subheaderTypographyProps={{ sx: { lineHeight: 1.429 } }}
         titleTypographyProps={{ sx: { letterSpacing: "0.15px" } }}
-        // action={
-        //   <OptionsMenu
-        //     options={["Last 28 Days", "Last Month", "Last Year"]}
-        //     iconButtonProps={{ size: "small", className: "card-more-options" }}
-        //   />
-        // }
+        sx={{ textAlign: "left", p: 3}}
       />
 
       <CardContent sx={{ p: "0 !important" }}>        

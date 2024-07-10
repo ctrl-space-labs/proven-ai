@@ -207,13 +207,14 @@ const ConsumedByOwnerDataPodsStats = () => {
        
 
   return (
-    <Card>
+    <Card sx={{ backgroundColor: "transparent"}}>
       <CardHeader
         title="Data Pods consumed by you!"
         subheader={`Total ${totalTokensConsumed} Tokens Consumed from others!`}
         subheaderTypographyProps={{ sx: { lineHeight: 1.429 } }}
         titleTypographyProps={{ sx: { letterSpacing: "0.15px" } }}
-        
+        sx={{ textAlign: "left", p: 3}}
+
       />
       <CardContent sx={{ p: "0 !important" }}>
         <ReactApexcharts

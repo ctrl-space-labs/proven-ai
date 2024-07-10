@@ -78,6 +78,7 @@ export const fetchUserDataForAnalytics = createAsyncThunk(
         {}
     );
 
+
     return {
       userData: {
         agentsByOrgId: agentsByOrgResponse.data,
@@ -98,33 +99,39 @@ export const fetchUserDataForAnalytics = createAsyncThunk(
 );
 
 const toApexChartData = (type, userData, graphData) => {
-  
+  if (!graphData || Object.keys(graphData).length === 0) {
+    return [];
+  }
+
 
   const result = userData
     .filter((data) => Object.keys(graphData).includes(data.id))
     .map((data) => ({
       id: data.id,
-      name: type === "dataPod" ? data.podUniqueName : type === "agent" ? data.agentName : "",
+      name:
+        type === "dataPod"
+          ? data.podUniqueName
+          : type === "agent"
+          ? data.agentName
+          : "",
       data: [graphData[data.id]?.totalSumTokens || 0],
       active: true,
       items: graphData[data.id]?.items || [],
     }));
 
+
   // Check if there are entries with 'unknown' key in graphData and add them to the result
-  if (graphData['unknown']) {
+  if (graphData["unknown"]) {
     result.push({
-      id: 'unknown',
-      name: 'Unknown Agent',
-      data: [graphData['unknown'].totalSumTokens || 0],
+      id: "unknown",
+      name: "Unknown Agent",
+      data: [graphData["unknown"].totalSumTokens || 0],
       active: true,
-      items: graphData['unknown'].items || [],
+      items: graphData["unknown"].items || [],
     });
   }
-
   return result;
 };
-
-
 
 const updateAnalyticsData = (state, providedData, key, relatedKey) => {
   state.analyticsData[key] = providedData;
@@ -132,16 +139,22 @@ const updateAnalyticsData = (state, providedData, key, relatedKey) => {
   state.analyticsData[relatedKey] = state.analyticsData[relatedKey].map(
     (item) => {
       const allItems = item.items.map((subItem) => {
-        const isActive = providedData.some((data) =>
-          {            
-            if (key.endsWith("ProcessorAgents")) {
-              return (data.id === subItem.processorAgentId || (subItem.processorAgentId === null && data.id === 'unknown')) && data.active;
-            } else if (key.endsWith("OwnerDataPods")) {
-              return (data.id === subItem.ownerDatapodId || (subItem.ownerDatapodId === null && data.id === 'unknown')) && data.active;
-            }
-            return false;
+        const isActive = providedData.some((data) => {
+          if (key.endsWith("ProcessorAgents")) {
+            return (
+              (data.id === subItem.processorAgentId ||
+                (subItem.processorAgentId === null && data.id === "unknown")) &&
+              data.active
+            );
+          } else if (key.endsWith("OwnerDataPods")) {
+            return (
+              (data.id === subItem.ownerDatapodId ||
+                (subItem.ownerDatapodId === null && data.id === "unknown")) &&
+              data.active
+            );
           }
-        );
+          return false;
+        });
 
         return {
           ...subItem,
@@ -172,22 +185,28 @@ const updateAnalyticsData = (state, providedData, key, relatedKey) => {
     dateTimeBucket = "consumedByDateTimeBuckets";
   }
 
-  state.analyticsData[dateTimeBucket] =
-    state.analyticsData[dateTimeBucket].map((bucket) => {
+  state.analyticsData[dateTimeBucket] = state.analyticsData[dateTimeBucket].map(
+    (bucket) => {
       const updatedTotalSumTokens = bucket.items.reduce((sum, item) => {
         let isItemActive = false;
 
         if (key.endsWith("ProcessorAgents")) {
           isItemActive = providedData.some(
-            (data) => (data.id === item.processorAgentId || (item.processorAgentId === null && data.id === 'unknown')) && data.active
+            (data) =>
+              (data.id === item.processorAgentId ||
+                (item.processorAgentId === null && data.id === "unknown")) &&
+              data.active
           );
         } else if (key.endsWith("OwnerDataPods")) {
           isItemActive = providedData.some(
-            (data) => (data.id === item.ownerDatapodId || (item.ownerDatapodId === null && data.id === 'unknown')) && data.active
-        );
-      }
+            (data) =>
+              (data.id === item.ownerDatapodId ||
+                (item.ownerDatapodId === null && data.id === "unknown")) &&
+              data.active
+          );
+        }
 
-        if ( isItemActive) {
+        if (isItemActive) {
           return sum + item.sumTokens;
         }
         return sum;
@@ -197,7 +216,8 @@ const updateAnalyticsData = (state, providedData, key, relatedKey) => {
         ...bucket,
         updatedTotalTokens: updatedTotalSumTokens,
       };
-    });
+    }
+  );
 };
 
 const userDataForAnalyticsSlice = createSlice({

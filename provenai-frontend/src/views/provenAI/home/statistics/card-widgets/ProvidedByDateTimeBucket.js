@@ -12,16 +12,37 @@ import CardContent from "@mui/material/CardContent";
 import OptionsMenu from "src/@core/components/option-menu";
 import ReactApexcharts from "src/@core/components/react-apexcharts";
 import { hexToRGBA } from "src/@core/utils/hex-to-rgba";
+import { set } from "nprogress";
 
 const ProvidedByDateTimeBucket = () => {
   const theme = useTheme();
+
+  const [totalTokensProvided, setTotalTokensProvided] = useState(0);
+  const [totalTokensUpdated, setTotalTokensUpdated] = useState(0);
 
   const providedByDataTimeBucket = useSelector(
     (state) =>
       state.userDataForAnalytics.analyticsData.providedByDateTimeBuckets
   );
 
-  
+  useEffect(() => {
+    if (!providedByDataTimeBucket) {
+      return;
+    }
+
+    const totalTokens = providedByDataTimeBucket.reduce(
+      (acc, item) => acc + (item.totalSumTokens || 0),
+      0
+    );
+
+    const totalTokensUpdated = providedByDataTimeBucket.reduce(
+      (acc, item) => acc + (item.updatedTotalTokens || 0),
+      0
+    );
+
+    setTotalTokensProvided(totalTokens);
+    setTotalTokensUpdated(totalTokensUpdated);
+  }, [providedByDataTimeBucket]);
 
   const filterDataByTimeRange = () => {
     const filteredData = [];
@@ -34,22 +55,21 @@ const ProvidedByDateTimeBucket = () => {
       const date = new Date(currentDate - i * oneDay);
       const dateString = date.toISOString().split("T")[0] + "T00:00:00Z";
       const formattedDate = `${date.getDate()}/${date.getMonth() + 1}`;
-      categories.unshift(formattedDate);      
+      categories.unshift(formattedDate);
       const matchingBucket = providedByDataTimeBucket.find(
         (bucket) => bucket.date === dateString
       );
       filteredData.unshift(matchingBucket ? matchingBucket.totalSumTokens : 0);
-      filteredUpdatedData.unshift(matchingBucket ? matchingBucket.updatedTotalTokens : 0);
-
+      filteredUpdatedData.unshift(
+        matchingBucket ? matchingBucket.updatedTotalTokens : 0
+      );
     }
 
     return { filteredData, filteredUpdatedData, categories };
   };
 
-  const { filteredData, filteredUpdatedData, categories } = filterDataByTimeRange();
-
-  
-  
+  const { filteredData, filteredUpdatedData, categories } =
+    filterDataByTimeRange();
 
   const series = [
     {
@@ -139,8 +159,8 @@ const ProvidedByDateTimeBucket = () => {
   };
 
   return (
-    <Card>
-      <CardHeader title="Overview" />
+    <Card sx={{ backgroundColor: "transparent" }}>
+      <CardHeader title="Overview" sx={{ textAlign: "left"}} />
       <CardContent
         sx={{ "& .apexcharts-xcrosshairs.apexcharts-active": { opacity: 0 } }}
       >
@@ -152,10 +172,18 @@ const ProvidedByDateTimeBucket = () => {
         />
         <Box sx={{ mb: 4, display: "flex", alignItems: "center" }}>
           <Typography sx={{ mr: 4 }} variant="h5">
-            {Math.max(...filteredData)} Tokens
+            {totalTokensProvided} Tokens
           </Typography>
           <Typography variant="body2">
             Your performance over the selected period.
+          </Typography>
+        </Box>
+        <Box sx={{ mb: 4, display: "flex", alignItems: "center" }}>
+          <Typography sx={{ mr: 4 }} variant="h5">
+            {totalTokensUpdated} Tokens
+          </Typography>
+          <Typography variant="body2">
+            Your performance over the selected items.
           </Typography>
         </Box>
       </CardContent>

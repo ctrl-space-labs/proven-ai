@@ -23,8 +23,6 @@ const ProvidedByProcessorAgent = () => {
       state.userDataForAnalytics.analyticsData.providedByProcessorAgents
   );
 
-
-
   useEffect(() => {
     if (!providedByProcessorAgents) {
       return;
@@ -43,16 +41,16 @@ const ProvidedByProcessorAgent = () => {
     const updatedAgents = agents.map((agent) =>
       agent.id === id ? { ...agent, active: !agent.active } : agent
     );
-    
+
     dispatch(updateProvidedByProcessorAgents(updatedAgents));
-    
   };
 
   return (
-    <Card>
+    <Card sx={{ backgroundColor: "transparent" }}>
       <CardHeader
         title="Agents Provided Data To my Data pods "
         subheader={`Total ${totalTokensProvided} Tokens Provided to other agents!`}
+        sx={{ textAlign: "left", p: 3 }}
       />
       <CardContent>
         <Box
@@ -73,9 +71,9 @@ const ProvidedByProcessorAgent = () => {
                   display: "flex",
                   alignItems: "center",
                   mb: index !== agents.length - 1 ? 5.5 : undefined,
-                  opacity: item.active ? 1 : 0.5, // Change opacity for inactive agents 
-                  borderRadius: '4px', // Optional: add some border radius for better visual appearance
-               
+                  opacity: item.active ? 1 : 0.5, // Change opacity for inactive agents
+                  borderRadius: "4px", // Optional: add some border radius for better visual appearance
+                  textAlign: "left",
                 }}
               >
                 <Checkbox

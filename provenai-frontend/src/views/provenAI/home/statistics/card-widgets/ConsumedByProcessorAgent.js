@@ -51,11 +51,12 @@ const consumedByProcessorAgents = useSelector(
   };
 
   return (
-    <Card>
+    <Card sx={{ backgroundColor: "transparent"}}>
       <CardHeader
         title="Consumed by your Agents"
         subheader={`Total ${totalTokensConsumed} Tokens Consumed from other agents!`}
-       
+        sx={{ textAlign: "left", p: 3}}
+
       />
       <CardContent>
         <Box
@@ -79,7 +80,7 @@ const consumedByProcessorAgents = useSelector(
                   mb: index !== agents.length - 1 ? 5.5 : undefined,
                   opacity: item.active ? 1 : 0.5, // Change opacity for inactive agents 
                   borderRadius: '4px', // Optional: add some border radius for better visual appearance
-               
+               textAlign: "left"
                 }}
               >
                 <Checkbox
