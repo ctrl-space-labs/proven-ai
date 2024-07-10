@@ -7,11 +7,6 @@ import ProvidedByDateTimeBucket from "./card-widgets/ProvidedByDateTimeBucket";
 import ProvidedByProcessorAgent from "./card-widgets/ProvidedByProcessorAgent";
 import ConsumedByProcessorAgent from "./card-widgets/ConsumedByProcessorAgent";
 import ConsumedByDateTimeBucket from "./card-widgets/ConsumedByDateTimeBucker";
-import AgentVisitStatistics from "./card-widgets/AgentVisitStatistics";
-import ApexAreaChart from "./card-widgets/ApexAreaChart";
-import ApexRadarChart from "./card-widgets/ApexRadarChart";
-import Sales from "./card-widgets/Sales";
-import MonthlyBudget from "./card-widgets/MonthlyBudget";
 import Grid from "@mui/material/Grid";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchUserDataForAnalytics } from "src/store/apps/userDataForAnalytics/userDataForAnalytics";
@@ -30,7 +25,7 @@ const StatisticsCard = () => {
   const permissionOfUseAnalytics = useSelector(
     (state) => state.permissionOfUseAnalytics
   );
-  
+
 
   useEffect(() => {
     if (!permissionOfUseAnalytics.graphData) {
@@ -40,9 +35,9 @@ const StatisticsCard = () => {
     const {
       consumedDataTokensByOwnerDataPod,
       providedDataTokensByProcessorAgent,
-    } = permissionOfUseAnalytics.graphData || {};
-    const agentIdIn = Object.keys(providedDataTokensByProcessorAgent || {});
-    const dataPodIdIn = Object.keys(consumedDataTokensByOwnerDataPod || {});
+    } = permissionOfUseAnalytics.graphData || {};    
+    const agentIdIn = Object.keys(providedDataTokensByProcessorAgent || {}).filter(id => id !== 'unknown');
+    const dataPodIdIn = Object.keys(consumedDataTokensByOwnerDataPod || {}).filter(id => id !== 'unknown');    
     const agentIdInStr = agentIdIn.join(",");
     const dataPodIdInStr = dataPodIdIn.join(",");
 
@@ -67,13 +62,6 @@ const StatisticsCard = () => {
       <Grid item xs={12} style={{ textAlign: "center" }}>
         <ApexChartWrapper>
           <Grid container spacing={6}>
-            <Grid item xs={12} sm={6} md={6}>
-              <ApexAreaChart />
-            </Grid>
-            <Grid item xs={12} sm={6} md={6}>
-              <ApexRadarChart />
-            </Grid>
-
             <Grid item xs={12} md={8}>
               <ProvidedByOwnerDataPodsStats />
             </Grid>
@@ -95,16 +83,6 @@ const StatisticsCard = () => {
 
             <Grid item xs={12} sm={6} md={12}>
               <ConsumedByDateTimeBucket />
-            </Grid>
-
-            <Grid item xs={12} sm={6} md={4}>
-              <AgentVisitStatistics />
-            </Grid>
-            <Grid item xs={12} sm={6} md={4}>
-              <Sales />
-            </Grid>
-            <Grid item xs={12} md={8}>
-              <MonthlyBudget />
             </Grid>
           </Grid>
         </ApexChartWrapper>

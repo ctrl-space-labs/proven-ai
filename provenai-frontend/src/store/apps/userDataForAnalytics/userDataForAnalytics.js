@@ -98,21 +98,33 @@ export const fetchUserDataForAnalytics = createAsyncThunk(
 );
 
 const toApexChartData = (type, userData, graphData) => {
-  return userData
+  
+
+  const result = userData
     .filter((data) => Object.keys(graphData).includes(data.id))
     .map((data) => ({
       id: data.id,
-      name:
-        type === "dataPod"
-          ? data.podUniqueName
-          : type === "agent"
-          ? data.agentName
-          : "",
+      name: type === "dataPod" ? data.podUniqueName : type === "agent" ? data.agentName : "",
       data: [graphData[data.id]?.totalSumTokens || 0],
       active: true,
       items: graphData[data.id]?.items || [],
     }));
+
+  // Check if there are entries with 'unknown' key in graphData and add them to the result
+  if (graphData['unknown']) {
+    result.push({
+      id: 'unknown',
+      name: 'Unknown Agent',
+      data: [graphData['unknown'].totalSumTokens || 0],
+      active: true,
+      items: graphData['unknown'].items || [],
+    });
+  }
+
+  return result;
 };
+
+
 
 const updateAnalyticsData = (state, providedData, key, relatedKey) => {
   state.analyticsData[key] = providedData;
@@ -121,11 +133,11 @@ const updateAnalyticsData = (state, providedData, key, relatedKey) => {
     (item) => {
       const allItems = item.items.map((subItem) => {
         const isActive = providedData.some((data) =>
-          {
+          {            
             if (key.endsWith("ProcessorAgents")) {
-              return data.id === subItem.processorAgentId && data.active;
+              return (data.id === subItem.processorAgentId || (subItem.processorAgentId === null && data.id === 'unknown')) && data.active;
             } else if (key.endsWith("OwnerDataPods")) {
-              return data.id === subItem.ownerDatapodId && data.active;
+              return (data.id === subItem.ownerDatapodId || (subItem.ownerDatapodId === null && data.id === 'unknown')) && data.active;
             }
             return false;
           }
@@ -167,11 +179,11 @@ const updateAnalyticsData = (state, providedData, key, relatedKey) => {
 
         if (key.endsWith("ProcessorAgents")) {
           isItemActive = providedData.some(
-            (data) => data.id === item.processorAgentId && data.active
+            (data) => (data.id === item.processorAgentId || (item.processorAgentId === null && data.id === 'unknown')) && data.active
           );
         } else if (key.endsWith("OwnerDataPods")) {
           isItemActive = providedData.some(
-          (data) => data.id === item.ownerDatapodId && data.active
+            (data) => (data.id === item.ownerDatapodId || (item.ownerDatapodId === null && data.id === 'unknown')) && data.active
         );
       }
 

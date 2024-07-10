@@ -3,8 +3,7 @@ import permissionOfUseAnalyticsService from "src/provenAI-sdk/permissionOfUseAna
 
 const aggregateDataByKey = (data, key) => {
     return data.reduce((acc, item) => {
-        const keyValue = item[key];
-        if (keyValue === null) return acc;
+        const keyValue = item[key] || 'unknown';        
         if (!acc[keyValue]) {
             acc[keyValue] = {
                 totalSumTokens: 0,
