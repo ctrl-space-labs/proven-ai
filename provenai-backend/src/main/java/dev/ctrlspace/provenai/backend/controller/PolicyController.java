@@ -21,21 +21,11 @@ import java.util.UUID;
 public class PolicyController {
 
     private PolicyService policyService;
-    private AclPoliciesService aclPoliciesService;
-    private AclPoliciesConverter aclPoliciesConverter;
-    private AgentPurposeOfUsePoliciesService agentPurposeOfUsePoliciesService;
-    private AgentPurposeOfUsePoliciesConverter agentPurposeOfUsePoliciesConverter;
 
-    public PolicyController(PolicyService policyService,
-                            AclPoliciesService aclPoliciesService,
-                            AclPoliciesConverter aclPoliciesConverter,
-                            AgentPurposeOfUsePoliciesService agentPurposeOfUsePoliciesService,
-                            AgentPurposeOfUsePoliciesConverter agentPurposeOfUsePoliciesConverter) {
+
+    public PolicyController(PolicyService policyService) {
         this.policyService = policyService;
-        this.aclPoliciesService = aclPoliciesService;
-        this.aclPoliciesConverter = aclPoliciesConverter;
-        this.agentPurposeOfUsePoliciesService = agentPurposeOfUsePoliciesService;
-        this.agentPurposeOfUsePoliciesConverter = agentPurposeOfUsePoliciesConverter;
+
     }
 
     @GetMapping("/policy-options")
@@ -44,46 +34,5 @@ public class PolicyController {
         return policyService.getPolicyOptionsByPolicyTypeId(policyService.getPolicyTypeByName(policyTypeName).getId());
 
     }
-
-
-    @PostMapping(value = "/acl-policies", consumes = {"application/json"})
-    public AclPolicies createAclPolicy(@RequestBody AclPoliciesDTO aclPoliciesDTO) throws ProvenAiException {
-        AclPolicies aclPolicies = aclPoliciesConverter.toEntity(aclPoliciesDTO);
-        return aclPoliciesService.createAclPolicy(aclPolicies);
-    }
-
-    @PostMapping(value = "/agent-purpose-of-use-policies", consumes = {"application/json"})
-    public AgentPurposeOfUsePolicies createAgentPurposeOfUsePolicy(@RequestBody AgentPurposeOfUsePoliciesDTO agentPurposeOfUsePoliciesDTO) throws ProvenAiException {
-        AgentPurposeOfUsePolicies agentPurposeOfUsePolicies = agentPurposeOfUsePoliciesConverter.toEntity(agentPurposeOfUsePoliciesDTO);
-        return agentPurposeOfUsePoliciesService.createAgentPurposeOfUsePolicy(agentPurposeOfUsePolicies);
-    }
-
-
-    @DeleteMapping("/acl-policies/{aclPolicyId}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteAclPolicy(@PathVariable UUID aclPolicyId) throws ProvenAiException {
-        aclPoliciesService.deleteAclPolicy(aclPolicyId);
-    }
-
-    @DeleteMapping("/acl-policies")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteAclPolicies(@RequestParam List<UUID> aclPolicyIds) throws ProvenAiException {
-        aclPoliciesService.deleteAclPolicies(aclPolicyIds);
-    }
-
-    @DeleteMapping("/agent-purpose-of-use-policies")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteAgentPurposeOfUsePolicies(@RequestParam List<UUID> agentPurposeOfUsePolicyIds) throws ProvenAiException {
-        agentPurposeOfUsePoliciesService.deleteAgentPurposeOfUsePolicies(agentPurposeOfUsePolicyIds);
-    }
-
-
-
-
-
-
-
-
-
 
 }

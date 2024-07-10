@@ -60,7 +60,6 @@ public class OrganizationsController implements OrganizationsControllerSpec {
 
     }
 
-//    @CustomPreAuthorize(authority = "OP_READ_DOCUMENT", getterFunction = "getRequestedOrgIdFromPathVariable")
     @PreAuthorize("@securityUtils.hasAuthority('OP_READ_DOCUMENT', 'getRequestedOrgIdFromPathVariable')")
     @GetMapping("/organizations/{organizationId}")
     public Organization getOrganizationById(@PathVariable UUID organizationId) throws ProvenAiException {
@@ -68,11 +67,13 @@ public class OrganizationsController implements OrganizationsControllerSpec {
     return organizationsService.getOrganizationById(organizationId);
 }
 
+    @PreAuthorize("@securityUtils.hasAuthority('OP_READ_DOCUMENT', 'getRequestedOrgsFromRequestParams')")
     @GetMapping("/organizations")
     public Page<Organization> getAllOrganizations(@Valid OrganizationCriteria criteria, Pageable pageable) throws ProvenAiException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        if (securityUtils.isUser()) {
+        if (securityUtils.isUser() &&
+                criteria.getOrganizationIdIn().isEmpty()) {
             UserProfile userProfile = (UserProfile) authentication.getPrincipal();
 
             List<String> organizationIds = userProfile.getOrganizations().stream()
@@ -81,8 +82,10 @@ public class OrganizationsController implements OrganizationsControllerSpec {
 
             criteria.setOrganizationIdIn(organizationIds);
         }
+
         return organizationsService.getAllOrganizations(criteria, pageable);
     }
+
 
     @PostMapping(value = "/organizations/registration", consumes = {"application/json"})
     public Organization registerOrganization(@RequestBody OrganizationDTO organizationDTO) throws IOException, ExecutionException, InterruptedException, ProvenAiException {

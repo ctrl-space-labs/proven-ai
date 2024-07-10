@@ -186,6 +186,7 @@ const AgentStepper = ({
         // Delete obsolete policies
         if (policyIdsToDelete.length > 0) {
           await agentPurposeOfUsePoliciesService.deleteAgentPurposeOfUsePolicies(
+            agentId,
             policyIdsToDelete,
             storedToken
           );

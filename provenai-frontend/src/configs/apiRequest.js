@@ -65,11 +65,11 @@ export default {
   getPoliciesByAgent: (agentId) =>
     `${provenUrl}agents/${agentId}/policies`,
 
-  aclPolicies:() =>
-    `${provenUrl}acl-policies`,
+  aclPolicies: (dataPodId) =>
+    `${provenUrl}data-pods/${dataPodId}/acl-policies`,
 
-  agentPurposeOfUsePolicies:() =>
-    `${provenUrl}agent-purpose-of-use-policies`,
+  agentPurposeOfUsePolicies:(agentId) =>
+    `${provenUrl}agents/${agentId}/agent-purpose-of-use-policies`,
 
   userAgents: () => {
     return `${gendoxUrl}project-agents`;

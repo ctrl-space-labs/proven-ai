@@ -188,6 +188,7 @@ const DataPodStepper = ({
         // Delete obsolete ACL policies
         if (aclPolicyIdsToDelete.length > 0) {
           await aclPoliciesService.deleteAclPolicies(
+            dataPodId,
             aclPolicyIdsToDelete,
             storedToken
           );
