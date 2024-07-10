@@ -14,6 +14,11 @@ import java.util.Set;
 public class AccessCriteria {
     private Set<String> orgIds;
     private Set<String> dataPodIds;
-    private String agentId;
+    private Set<String> agentIds;
 
+    public boolean isEmpty() {
+        return (orgIds == null || orgIds.isEmpty()) &&
+                (dataPodIds == null || dataPodIds.isEmpty()) &&
+                (agentIds == null || agentIds.isEmpty());
+    }
 }

@@ -46,6 +46,7 @@ public class DataPodConverter implements ProvenAIConverter<DataPod, DataPodDTO>{
         return DataPodPublicDTO.builder()
                 .id(dataPod.getId())
                 .podUniqueName(dataPod.getPodUniqueName())
+                .organizationId(dataPod.getOrganizationId())
                 .build();
     }
 

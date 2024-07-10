@@ -19,6 +19,7 @@ import org.json.JSONException;
 import org.keycloak.representations.AccessTokenResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -45,7 +46,8 @@ public interface AgentsControllerSpec {
             @Parameter(description = "Filtering criteria for Agents", required = false, schema = @Schema(implementation = AgentCriteria.class))
             AgentCriteria criteria,
             @Parameter(description = "Pagination information", required = false, schema = @Schema(implementation = Pageable.class))
-            Pageable pageable) throws ProvenAiException;
+            Pageable pageable,
+            Authentication authentication) throws ProvenAiException;
 
 
     @Operation(summary = "Get agent by ID")

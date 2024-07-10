@@ -50,6 +50,7 @@ public class AgentConverter implements ProvenAIConverter<Agent, AgentDTO> {
         return AgentPublicDTO.builder()
                 .id(agent.getId())
                 .agentName(agent.getAgentName())
+                .organizationId(agent.getOrganizationId())
                 .build();
     }
 

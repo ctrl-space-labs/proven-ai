@@ -14,4 +14,5 @@ import java.util.UUID;
 public class DataPodPublicDTO {
     private UUID id;
     private String podUniqueName;
+        private UUID organizationId;
 }

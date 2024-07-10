@@ -45,7 +45,7 @@ public interface DataPodControllerSpec {
     public DataPod getDataPodById(UUID id) throws ProvenAiException;
 
     @Operation(summary = "Get all public data pods")
-    Page<DataPodPublicDTO> getAllPublicDataPods(DataPodCriteria criteria, Pageable pageable) throws ProvenAiException;
+    Page<DataPodPublicDTO> getAllPublicDataPods(DataPodCriteria criteria, Pageable pageable, Authentication authentication) throws ProvenAiException;
 
     @Operation(summary = "Get all ACL policies for a data pod")
     Page<AclPolicies> getAclPoliciesByDataPodId(UUID id, Pageable pageable) throws ProvenAiException;

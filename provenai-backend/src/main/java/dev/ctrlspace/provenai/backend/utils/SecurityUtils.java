@@ -6,7 +6,10 @@ import dev.ctrlspace.provenai.backend.exceptions.ProvenAiException;
 import dev.ctrlspace.provenai.backend.model.authentication.OrganizationUserDTO;
 import dev.ctrlspace.provenai.backend.model.authentication.UserProfile;
 import dev.ctrlspace.provenai.backend.model.dtos.criteria.AccessCriteria;
+import dev.ctrlspace.provenai.backend.repositories.AclPoliciesRepository;
+import dev.ctrlspace.provenai.backend.repositories.AgentPurposeOfUsePoliciesRepository;
 import dev.ctrlspace.provenai.backend.repositories.AgentRepository;
+import dev.ctrlspace.provenai.backend.repositories.DataPodRepository;
 import dev.ctrlspace.provenai.backend.utils.constants.QueryParamNames;
 import dev.ctrlspace.provenai.backend.utils.constants.UserNamesConstants;
 import jakarta.servlet.http.HttpServletRequest;
@@ -17,13 +20,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.HandlerMapping;
-
+import  dev.ctrlspace.provenai.backend.repositories.OrganizationRepository;
 import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -41,32 +43,47 @@ public class SecurityUtils {
 
     private AgentRepository agentRepository;
 
+    private DataPodRepository dataPodRepository;
+
+    private AclPoliciesRepository aclPoliciesRepository;
+
+    private AgentPurposeOfUsePoliciesRepository agentPurposeOfUsePoliciesRepository;
+
+    private OrganizationRepository organizationRepository;
+
+
+
 
 
 
     @Autowired
     public SecurityUtils(ObjectMapper objectMapper,
                          JWTUtils jwtUtils,
-                         AgentRepository agentRepository
-                        ) {
+                         AgentRepository agentRepository,
+                         DataPodRepository dataPodRepository,
+                         AclPoliciesRepository aclPoliciesRepository,
+                         AgentPurposeOfUsePoliciesRepository agentPurposeOfUsePoliciesRepository) {
         this.objectMapper = objectMapper;
         this.jwtUtils = jwtUtils;
         this.agentRepository = agentRepository;
+        this.dataPodRepository = dataPodRepository;
+        this.aclPoliciesRepository = aclPoliciesRepository;
+        this.agentPurposeOfUsePoliciesRepository = agentPurposeOfUsePoliciesRepository;
 
     }
 
 
 
-//    public boolean isSuperAdmin() {
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        return isSuperAdmin(authentication);
-//
-//    }
-//
-//    public boolean isSuperAdmin(Authentication authentication) {
-//        return authentication != null && authentication.getAuthorities().stream()
-//                .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().startsWith(UserNamesConstants.GENDOX_SUPER_ADMIN));
-//    }
+    public boolean isSuperAdmin() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return isSuperAdmin(authentication);
+
+    }
+
+    public boolean isSuperAdmin(Authentication authentication) {
+        return authentication != null && authentication.getAuthorities().stream()
+                .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().startsWith(UserNamesConstants.GENDOX_SUPER_ADMIN));
+    }
 //
     public boolean isUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -92,9 +109,10 @@ public class SecurityUtils {
             return canAccessOrganizations(authority, authentication, accessCriteria.getOrgIds());
         }
 
-        if (accessCriteria.getAgentId() != null) {
-            return canAccessAgent(authority, authentication, accessCriteria.getAgentId());
+        if (accessCriteria.getAgentIds() != null) {
+            return canAccessAgent(authority, authentication, accessCriteria.getAgentIds());
         }
+
 
 
 
@@ -120,6 +138,8 @@ public class SecurityUtils {
     }
 
 
+
+
     private static boolean canAccessOrganizations(String authority, ProvenAIAuthenticationToken authentication, Set<String> requestedOrgIds) {
         Set<String> authorizedOrgIds = authentication
                 .getPrincipal()
@@ -137,7 +157,7 @@ public class SecurityUtils {
         return true;
     }
 
-    private boolean canAccessAgent(String authority, ProvenAIAuthenticationToken authentication,String agentId){
+    private boolean canAccessAgent(String authority, ProvenAIAuthenticationToken authentication, Set<String> agentIds) {
         List<String> authorizedOrgIds = authentication
                 .getPrincipal()
                 .getOrganizations()
@@ -146,40 +166,50 @@ public class SecurityUtils {
                 .map(OrganizationUserDTO::getId)
                 .collect(Collectors.toList());
 
-        return agentRepository.existsByIdAndOrganizationIdIn(UUID.fromString(agentId),authorizedOrgIds);
+        for (String agentId : agentIds) {
+            if (agentRepository.existsByIdAndOrganizationIdIn(UUID.fromString(agentId), authorizedOrgIds)) {
+                return true;
+            }
+        }
 
-
-
-
+        return false;
     }
-
-
 
 
     private AccessCriteria getRequestedOrgsFromRequestParams() {
         HttpServletRequest request = getCurrentHttpRequest();
-        //get request param with name "organizationId"
+        //get request param with name "projectId"
         String organizationId = request.getParameter(QueryParamNames.ORGANIZATION_ID);
         String[] orgStrings = request.getParameterValues(QueryParamNames.ORGANIZATION_ID_IN);
+        // 'splitProjectStrings' now contains individual elements, split by commas
+        // You can now use 'splitProjectStrings' as required
+        if (orgStrings != null) {
+            orgStrings = Arrays.stream(orgStrings)
+                    .flatMap(s -> Arrays.stream(s.split(",")))
+                    .toArray(String[]::new);
 
+        }
 
         if (organizationId == null && orgStrings == null) {
             return new AccessCriteria();
         }
 
         Set<String> requestedOrgIds = new HashSet<>();
-
         if (orgStrings != null) {
             requestedOrgIds.addAll(Set.of(orgStrings));
         }
         if (organizationId != null) {
             requestedOrgIds.add(organizationId);
         }
-        return AccessCriteria.builder()
+        return AccessCriteria
+                .builder()
                 .orgIds(requestedOrgIds)
                 .dataPodIds(new HashSet<>())
                 .build();
     }
+
+
+
 
 
     @Nullable
@@ -240,6 +270,40 @@ public class SecurityUtils {
                 .build();
     }
 
+    private AccessCriteria getRequestedAgentsFromRequestParams() {
+        HttpServletRequest request = getCurrentHttpRequest();
+        //get request param with name "projectId"
+        String agentId = request.getParameter(QueryParamNames.AGENT_ID);
+        String[] agentStrings = request.getParameterValues(QueryParamNames.AGENT_ID_IN);
+        // 'splitProjectStrings' now contains individual elements, split by commas
+        // You can now use 'splitProjectStrings' as required
+        if (agentStrings != null) {
+            agentStrings = Arrays.stream(agentStrings)
+                    .flatMap(s -> Arrays.stream(s.split(",")))
+                    .toArray(String[]::new);
+
+
+        }
+
+        if (agentId == null && agentStrings == null) {
+            new AccessCriteria();
+        }
+
+        Set<String> requestedAgentIds = new HashSet<>();
+        if (agentStrings != null) {
+            requestedAgentIds.addAll(Set.of(agentStrings));
+        }
+        if (agentId != null) {
+            requestedAgentIds.add(agentId);
+        }
+        return AccessCriteria
+                .builder()
+                .orgIds(new HashSet<>())
+                .dataPodIds(new HashSet<>())
+                .agentIds(requestedAgentIds)
+                .build();
+    }
+
     @Nullable
     private AccessCriteria getRequestedDataPodIdFromPathVariable() {
         // Extract organizationId from the request path
@@ -274,13 +338,25 @@ public class SecurityUtils {
             agentId = uriTemplateVariables.get(QueryParamNames.AGENT_ID);
         }
 
+        Set<String> requestedAgentIds = new HashSet<>();
+
+        if (agentId != null) {
+            requestedAgentIds.add(agentId);
+        }
+
+
         return AccessCriteria
                 .builder()
                 .orgIds(new HashSet<>())
                 .dataPodIds(new HashSet<>())
-                .agentId(agentId)
+                .agentIds(requestedAgentIds)
                 .build();
     }
+
+
+
+
+
 
 
 
@@ -293,6 +369,10 @@ public class SecurityUtils {
         public static final String DATAPOD_ID_FROM_PATH_VARIABLE = "getRequestedDataPodIdFromPathVariable";
 
         public static final String AGENT_ID_FROM_PATH_VARIABLE = "getRequestedAgentIdFromPathVariable";
+
+        public static final String AGENT_IDS_FROM_REQUEST_PARAMS = "getRequestedAgentsFromRequestParams";
+
+
 
     }
 
@@ -308,12 +388,13 @@ public class SecurityUtils {
     public boolean hasAuthority(String authority, String getterFunction) throws IOException {
         ProvenAIAuthenticationToken authentication = (ProvenAIAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
 
-
+        boolean fromRequestParams = false;
         AccessCriteria accessCriteria = new AccessCriteria();
 
 
         if (AccessCriteriaGetterFunction.ORG_IDS_FROM_REQUEST_PARAMS.equals(getterFunction)) {
             accessCriteria = getRequestedOrgsFromRequestParams();
+            fromRequestParams = true;
         }
         if (AccessCriteriaGetterFunction.ORG_ID_FROM_PATH_VARIABLE.equals(getterFunction)) {
             accessCriteria = getRequestedOrgIdFromPathVariable();
@@ -322,6 +403,7 @@ public class SecurityUtils {
 
         if (AccessCriteriaGetterFunction.DATAPOD_IDS_FROM_REQUEST_PARAMS.equals(getterFunction)) {
             accessCriteria = getRequestedDataPodsFromRequestParams();
+            fromRequestParams = true;
         }
         if (AccessCriteriaGetterFunction.DATAPOD_ID_FROM_PATH_VARIABLE.equals(getterFunction)) {
             accessCriteria = getRequestedDataPodIdFromPathVariable();
@@ -329,10 +411,17 @@ public class SecurityUtils {
 
         if (AccessCriteriaGetterFunction.AGENT_ID_FROM_PATH_VARIABLE.equals(getterFunction)) {
             accessCriteria = getRequestedAgentIdFromPathVariable();
+
         }
 
-        if (accessCriteria == null) {
-            return false;
+        if (AccessCriteriaGetterFunction.AGENT_IDS_FROM_REQUEST_PARAMS.equals(getterFunction)) {
+            accessCriteria = getRequestedAgentsFromRequestParams();
+            fromRequestParams = true;
+        }
+
+
+        if (accessCriteria == null|| accessCriteria.isEmpty()) {
+            return fromRequestParams;
         }
         return can(authority, authentication, accessCriteria);
     }
@@ -386,4 +475,6 @@ public class SecurityUtils {
             throw new ProvenAiException("HASHING_ERROR", "An error occurred while hashing the text", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+
 }
