@@ -11,7 +11,6 @@ import { useEffect } from "react";
 import { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 
-
 const ConsumedByOwnerDataPodsStats = () => {
   // ** Hook
   const theme = useTheme();
@@ -34,8 +33,8 @@ const ConsumedByOwnerDataPodsStats = () => {
     const dataPodsStatsData = [
       {
         name: "Tokens",
-        data: consumedByOwnerDataPods.map(
-          (dataPod) => (dataPod.active ? dataPod?.data[0] || 0 : 0)
+        data: consumedByOwnerDataPods.map((dataPod) =>
+          dataPod.active ? dataPod?.data[0] || 0 : 0
         ),
       },
     ];
@@ -48,14 +47,14 @@ const ConsumedByOwnerDataPodsStats = () => {
     setTotalTokensConsumed(tokensData);
   }, [consumedByOwnerDataPods]);
 
-  const handleLegendClick = ( chartContext, seriesIndex, config) => {    
+  const handleLegendClick = (chartContext, seriesIndex, config) => {
     const updatedDataPods = dataPods.map((dataPod, index) => {
       if (index === seriesIndex) {
         return { ...dataPod, active: !dataPod.active };
       }
       return dataPod;
     });
-    
+
     dispatch(updateConsumedByOwnerDataPods(updatedDataPods));
   };
 
@@ -68,7 +67,7 @@ const ConsumedByOwnerDataPodsStats = () => {
         hexToRGBA(theme.palette.info.light, 1),
         hexToRGBA(theme.palette.error.light, 1),
       ];
-      return colors[index % colors.length]; 
+      return colors[index % colors.length];
     } else {
       return hexToRGBA(theme.palette.grey[400], 1);
     }
@@ -76,7 +75,7 @@ const ConsumedByOwnerDataPodsStats = () => {
 
   const options = {
     chart: {
-      parentHeightOffset: 0,  
+      parentHeightOffset: 0,
       events: {
         legendClick: handleLegendClick,
       },
@@ -86,7 +85,7 @@ const ConsumedByOwnerDataPodsStats = () => {
         offsetY: -70,
         tools: {
           download: true,
-          selection: true,          
+          selection: true,
         },
         export: {
           csv: {
@@ -107,8 +106,6 @@ const ConsumedByOwnerDataPodsStats = () => {
         },
         autoSelected: "zoom",
       },
-
-      
     },
     plotOptions: {
       bar: {
@@ -119,7 +116,6 @@ const ConsumedByOwnerDataPodsStats = () => {
         startingShape: "rounded",
       },
     },
-
 
     legend: {
       show: true,
@@ -140,13 +136,15 @@ const ConsumedByOwnerDataPodsStats = () => {
     dataLabels: {
       offsetY: 8,
       offsetX: -20,
-      textAnchor: 'start',
+      textAnchor: "start",
       style: {
         fontWeight: 500,
         fontSize: "0.875rem",
       },
       formatter: function (val, opt) {
-        return opt.w.globals.labels[opt.dataPointIndex] + ":  " + val + " Tokens";
+        return (
+          opt.w.globals.labels[opt.dataPointIndex] + ":  " + val + " Tokens"
+        );
       },
     },
 
@@ -176,7 +174,7 @@ const ConsumedByOwnerDataPodsStats = () => {
       },
     },
     colors: colorPalette,
-    
+
     xaxis: {
       axisTicks: { show: false },
       axisBorder: { show: false },
@@ -203,18 +201,24 @@ const ConsumedByOwnerDataPodsStats = () => {
     },
   };
 
- 
-       
-
   return (
-    <Card sx={{ backgroundColor: "transparent"}}>
+    <Card sx={{ backgroundColor: "transparent" }}>
       <CardHeader
         title="Data Pods consumed by you!"
-        subheader={`Total ${totalTokensConsumed} Tokens Consumed from others!`}
+        subheader={
+          <span>
+            Total{" "}
+            <span
+              style={{ fontWeight: "bold", color: theme.palette.primary.main }}
+            >
+              {totalTokensConsumed}
+            </span>{" "}
+            Tokens Consumed from others!
+          </span>
+        }
         subheaderTypographyProps={{ sx: { lineHeight: 1.429 } }}
         titleTypographyProps={{ sx: { letterSpacing: "0.15px" } }}
-        sx={{ textAlign: "left", p: 3}}
-
+        sx={{ textAlign: "left", p: 3 }}
       />
       <CardContent sx={{ p: "0 !important" }}>
         <ReactApexcharts

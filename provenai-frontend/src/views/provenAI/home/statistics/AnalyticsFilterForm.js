@@ -1,22 +1,20 @@
-// src/components/AnalyticsFilterForm.js
-import React, { useState } from "react";
+import React, { useState, forwardRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { styled } from "@mui/material/styles";
-import { useTheme } from "@mui/material/styles";
+import { styled, useTheme } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
-import Typography from "@mui/material/Typography";
 import FormControl from "@mui/material/FormControl";
-
 import InputLabel from "@mui/material/InputLabel";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import TextField from "@mui/material/TextField";
-import Button from "@mui/material/Button";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 import {
   fetchAnalytics,
   updateFilters,
 } from "src/store/apps/permissionOfUseAnalytics/permissionOfUseAnalytics";
+import { useSettings } from "src/@core/hooks/useSettings";
 
 const periodOptions = [
   { label: "Last 1 Hour", value: 60 * 60 },
@@ -41,24 +39,26 @@ const getDefaultDates = (periodInSeconds) => {
     : null;
 
   return {
-    startDate: startDate ? startDate.toISOString().split("T")[0] : null,
-    endDate: endDate.toISOString().split("T")[0],
+    startDate: startDate,
+    endDate: endDate,
   };
 };
 
-const CustomFormControl = styled(FormControl)(({ theme }) => ({
-  minWidth: 150,
-  marginRight: theme.spacing(2),
-}));
-
-const CustomButton = styled(Button)(({ theme }) => ({
-  marginTop: theme.spacing(2),
-  height: 40,
-}));
+const CustomInput = forwardRef(({ value, onClick, label }, ref) => (
+  <TextField
+    inputRef={ref}
+    label={label || ""}
+    value={value}
+    onClick={onClick}
+    readOnly
+  />
+));
 
 const AnalyticsFilterForm = ({ organizationId, storedToken }) => {
   const theme = useTheme();
+  const { settings } = useSettings();
   const dispatch = useDispatch();
+  const { direction } = theme;
   const filters = useSelector(
     (state) => state.permissionOfUseAnalytics.filters
   );
@@ -69,8 +69,12 @@ const AnalyticsFilterForm = ({ organizationId, storedToken }) => {
   const [selectedPeriod, setSelectedPeriod] = useState(
     periodOptions[DEFAULT_PERIOD_INDEX].value
   );
-  const [customStartDate, setCustomStartDate] = useState(initialStartDate);
-  const [customEndDate, setCustomEndDate] = useState(initialEndDate);
+
+  const [customStartDate, setCustomStartDate] = useState(
+    new Date(initialStartDate)
+  );
+  const [customEndDate, setCustomEndDate] = useState(new Date(initialEndDate));
+  const popperPlacement = direction === "ltr" ? "bottom-start" : "bottom-end";
 
   const handlePeriodChange = (event) => {
     const selectedValue = event.target.value;
@@ -100,13 +104,18 @@ const AnalyticsFilterForm = ({ organizationId, storedToken }) => {
     );
   };
 
-  const handleCustomDateChange = () => {
-    if (customStartDate && customEndDate) {
-      const startDate = new Date(customStartDate);
-      const endDate = new Date(customEndDate);
+  const handleCustomDateChange = (dates) => {
+    const [start, end] = dates;
+    setCustomStartDate(start);
+    setCustomEndDate(end);
+
+    if (start && end) {
+      const startDate = new Date(start);
+      const endDate = new Date(end);
 
       // Set the end date to the end of the selected day
       endDate.setHours(23, 59, 59, 999);
+
       dispatch(
         updateFilters({
           ...filters,
@@ -128,11 +137,12 @@ const AnalyticsFilterForm = ({ organizationId, storedToken }) => {
   };
 
   return (
-    <Grid container spacing={2} alignItems="center">
-      <Grid item xs={12} md={6}>
-        <CustomFormControl fullWidth>
+    <Grid container spacing={2} alignItems={"center"} justifyContent="flex-end">
+      <Grid>
+        <FormControl>
           <InputLabel id="period-name-label">Period</InputLabel>
           <Select
+            id="period-name-label"
             labelId="period-name-label"
             value={selectedPeriod}
             onChange={handlePeriodChange}
@@ -144,53 +154,31 @@ const AnalyticsFilterForm = ({ organizationId, storedToken }) => {
               </MenuItem>
             ))}
           </Select>
-        </CustomFormControl>
-      </Grid>
-      <Grid item xs={12} md={6}>
-      <Box
-        sx={{
-          border: '1px solid #08B68D',
-          borderRadius: '8px',
-          padding: 4,
-        }}
-      >
-        <Grid container spacing={2} alignItems="center">
-          <Grid item xs={12} sm={12} >
-          <Box mb={4}>
-            <TextField
-              id="custom-start-date"
-              label="Start Date"
-              type="date"
-              value={customStartDate || ""}
-              onChange={(e) => setCustomStartDate(e.target.value)}
-              InputLabelProps={{
-                shrink: true,
-              }}
-              fullWidth
+        </FormControl>
+
+        <Box
+          mt={4}
+          sx={{
+            display: "flex",
+            justifyContent: "flex-start",
+            flexWrap: "wrap",
+          }}
+        >
+          <div>
+            <DatePicker
+              selectsRange
+              monthsShown={2}
+              endDate={customEndDate}
+              selected={customStartDate}
+              startDate={customStartDate}
+              shouldCloseOnSelect={true}
+              id="date-range-picker-months"
+              onChange={handleCustomDateChange}
+              popperPlacement={popperPlacement}
+              customInput={<CustomInput label="Date Range" />}
+              dateFormat="dd/MM/yyyy"
             />
-          </Box>
-          <Box mb={2}>
-            <TextField
-              id="custom-end-date"
-              label="End Date"
-              type="date"
-              value={customEndDate || ""}
-              onChange={(e) => setCustomEndDate(e.target.value)}
-              InputLabelProps={{
-                shrink: true,
-              }}
-              fullWidth
-            />
-          </Box>
-            <CustomButton
-              variant="contained"
-              onClick={handleCustomDateChange}
-              fullWidth
-            >
-              Apply
-            </CustomButton>
-          </Grid>
-        </Grid>
+          </div>
         </Box>
       </Grid>
     </Grid>

@@ -10,9 +10,11 @@ import Checkbox from "@mui/material/Checkbox";
 import CustomChip from "src/@core/components/mui/chip";
 import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { useTheme } from "@mui/material/styles";
 import { updateProvidedByProcessorAgents } from "src/store/apps/userDataForAnalytics/userDataForAnalytics";
 
 const ProvidedByProcessorAgent = () => {
+  const theme = useTheme();
   const dispatch = useDispatch();
 
   const [agents, setAgents] = useState([]);
@@ -49,7 +51,18 @@ const ProvidedByProcessorAgent = () => {
     <Card sx={{ backgroundColor: "transparent" }}>
       <CardHeader
         title="Agents Provided Data To my Data pods "
-        subheader={`Total ${totalTokensProvided} Tokens Provided to other agents!`}
+        subheader={
+          <span>
+            Total{" "}
+            <span
+              style={{ fontWeight: "bold", color: theme.palette.primary.main }}
+            >
+              {totalTokensProvided}
+            </span>{" "}
+            Tokens Provided to other agents!
+          </span>
+        }
+        
         sx={{ textAlign: "left", p: 3 }}
       />
       <CardContent>

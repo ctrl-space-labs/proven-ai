@@ -10,23 +10,23 @@ import Checkbox from "@mui/material/Checkbox";
 import CustomChip from "src/@core/components/mui/chip";
 import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { useTheme } from "@mui/material/styles";
 import { updateConsumedByProcessorAgents } from "src/store/apps/userDataForAnalytics/userDataForAnalytics";
 
-
 const ConsumedByProcessorAgent = () => {
+  const theme = useTheme();
   const dispatch = useDispatch();
 
   const [agents, setAgents] = useState([]);
   const [totalTokensConsumed, setTotalTokensConsumed] = useState(0);
-  
-const consumedByProcessorAgents = useSelector(
+
+  const consumedByProcessorAgents = useSelector(
     (state) =>
       state.userDataForAnalytics.analyticsData.consumedByProcessorAgents
   );
 
-
   useEffect(() => {
-   if (!consumedByProcessorAgents) {
+    if (!consumedByProcessorAgents) {
       return;
     }
 
@@ -35,28 +35,34 @@ const consumedByProcessorAgents = useSelector(
     const totalTokens = consumedByProcessorAgents
       .filter((agent) => agent.active)
       .reduce((acc, agent) => acc + (agent.data[0] || 0), 0);
-    
-      setTotalTokensConsumed(totalTokens);     
 
-    
+    setTotalTokensConsumed(totalTokens);
   }, [consumedByProcessorAgents]);
 
   const handleCheckboxChange = (id) => {
     const updatedAgents = agents.map((agent) =>
       agent.id === id ? { ...agent, active: !agent.active } : agent
     );
-    
+
     dispatch(updateConsumedByProcessorAgents(updatedAgents));
-    
   };
 
   return (
-    <Card sx={{ backgroundColor: "transparent"}}>
+    <Card sx={{ backgroundColor: "transparent" }}>
       <CardHeader
-        title="Consumed by your Agents"
-        subheader={`Total ${totalTokensConsumed} Tokens Consumed from other agents!`}
-        sx={{ textAlign: "left", p: 3}}
-
+        title="Consumed by your Agents"        
+        subheader={
+          <span>
+            Total{" "}
+            <span
+              style={{ fontWeight: "bold", color: theme.palette.primary.main }}
+            >
+              {totalTokensConsumed}
+            </span>{" "}
+            Tokens Consumed from other agents!
+          </span>
+        }
+        sx={{ textAlign: "left", p: 3 }}
       />
       <CardContent>
         <Box
@@ -66,9 +72,8 @@ const consumedByProcessorAgents = useSelector(
             alignItems: "center",
             justifyContent: "space-between",
           }}
-        >         
-        </Box>
-        
+        ></Box>
+
         <Grid container spacing={2}>
           {agents?.map((item, index) => {
             return (
@@ -78,9 +83,9 @@ const consumedByProcessorAgents = useSelector(
                   display: "flex",
                   alignItems: "center",
                   mb: index !== agents.length - 1 ? 5.5 : undefined,
-                  opacity: item.active ? 1 : 0.5, // Change opacity for inactive agents 
-                  borderRadius: '4px', // Optional: add some border radius for better visual appearance
-               textAlign: "left"
+                  opacity: item.active ? 1 : 0.5, // Change opacity for inactive agents
+                  borderRadius: "4px", // Optional: add some border radius for better visual appearance
+                  textAlign: "left",
                 }}
               >
                 <Checkbox

@@ -4,44 +4,36 @@ import { useTheme } from "@mui/material/styles";
 import Card from "@mui/material/Card";
 import CardHeader from "@mui/material/CardHeader";
 import CardContent from "@mui/material/CardContent";
-
-
-import OptionsMenu from "src/@core/components/option-menu";
 import ReactApexcharts from "src/@core/components/react-apexcharts";
-
 import { hexToRGBA } from "src/@core/utils/hex-to-rgba";
 import { updateProvidedByOwnerDataPods } from "src/store/apps/userDataForAnalytics/userDataForAnalytics";
-
 
 const ProvidedByOwnerDataPodsStats = () => {
   const theme = useTheme();
   const dispatch = useDispatch();
   const [tokensPerOwnerDataPod, setTokensPerOwnerDataPod] = useState([]);
   const [dataPods, setDataPods] = useState([]);
-  const [totalTokensProvided, setTotalTokensProvided] = useState(0); 
+  const [totalTokensProvided, setTotalTokensProvided] = useState(0);
 
   const providedByOwnerDataPods = useSelector(
     (state) => state.userDataForAnalytics.analyticsData.providedByOwnerDataPods
-  ); 
-
+  );
 
   useEffect(() => {
     if (!providedByOwnerDataPods) {
       return;
     }
 
-    setDataPods(providedByOwnerDataPods); 
-    
+    setDataPods(providedByOwnerDataPods);
+
     const dataPodsStatsData = [
       {
         name: "Tokens",
-        data: providedByOwnerDataPods.map(
-          (dataPod) => (dataPod.active ? dataPod?.data[0] || 0 : 0)
-        ),        
+        data: providedByOwnerDataPods.map((dataPod) =>
+          dataPod.active ? dataPod?.data[0] || 0 : 0
+        ),
       },
     ];
-
-    
 
     const tokensData = providedByOwnerDataPods
       .filter((dataPod) => dataPod.active)
@@ -51,19 +43,14 @@ const ProvidedByOwnerDataPodsStats = () => {
     setTotalTokensProvided(tokensData);
   }, [providedByOwnerDataPods]);
 
-
-  
-  
-
-
-  const handleLegendClick = ( chartContext, seriesIndex, config) => {    
+  const handleLegendClick = (chartContext, seriesIndex, config) => {
     const updatedDataPods = dataPods.map((dataPod, index) => {
       if (index === seriesIndex) {
         return { ...dataPod, active: !dataPod.active };
       }
       return dataPod;
     });
-    
+
     dispatch(updateProvidedByOwnerDataPods(updatedDataPods));
   };
 
@@ -76,7 +63,7 @@ const ProvidedByOwnerDataPodsStats = () => {
         hexToRGBA(theme.palette.info.light, 1),
         hexToRGBA(theme.palette.error.light, 1),
       ];
-      return colors[index % colors.length]; 
+      return colors[index % colors.length];
     } else {
       return hexToRGBA(theme.palette.grey[400], 1);
     }
@@ -84,7 +71,7 @@ const ProvidedByOwnerDataPodsStats = () => {
 
   const options = {
     chart: {
-      parentHeightOffset: 0,      
+      parentHeightOffset: 0,
       events: {
         legendClick: handleLegendClick,
       },
@@ -94,7 +81,7 @@ const ProvidedByOwnerDataPodsStats = () => {
         offsetY: -70,
         tools: {
           download: true,
-          selection: true,          
+          selection: true,
         },
         export: {
           csv: {
@@ -115,8 +102,6 @@ const ProvidedByOwnerDataPodsStats = () => {
         },
         autoSelected: "zoom",
       },
-
-      
     },
     plotOptions: {
       bar: {
@@ -127,7 +112,6 @@ const ProvidedByOwnerDataPodsStats = () => {
         startingShape: "rounded",
       },
     },
-
 
     legend: {
       show: true,
@@ -142,19 +126,21 @@ const ProvidedByOwnerDataPodsStats = () => {
       itemMargin: {
         vertical: 3,
         horizontal: 10,
-      },   
+      },
     },
 
     dataLabels: {
       offsetY: 8,
       offsetX: -20,
-      textAnchor: 'start',
+      textAnchor: "start",
       style: {
         fontWeight: 500,
         fontSize: "0.875rem",
       },
       formatter: function (val, opt) {
-        return opt.w.globals.labels[opt.dataPointIndex] + ":  " + val + " Tokens";
+        return (
+          opt.w.globals.labels[opt.dataPointIndex] + ":  " + val + " Tokens"
+        );
       },
     },
 
@@ -184,12 +170,11 @@ const ProvidedByOwnerDataPodsStats = () => {
       },
     },
     colors: colorPalette,
-    
+
     xaxis: {
       axisTicks: { show: false },
-      axisBorder: { show: false },            
-      categories: dataPods.map((dataPod) => dataPod.name), 
-
+      axisBorder: { show: false },
+      categories: dataPods.map((dataPod) => dataPod.name),
 
       labels: {
         formatter: (val) => `${Number(val) / 1000}k`,
@@ -206,25 +191,33 @@ const ProvidedByOwnerDataPodsStats = () => {
         style: {
           fontWeight: 600,
           fontSize: "0.875rem",
-          colors: theme.palette.text.primary,
+          colors: theme.palette.primary.main,
         },
       },
     },
   };
-  
 
   return (
-    <Card sx={{ backgroundColor: "transparent"}}>
+    <Card sx={{ backgroundColor: "transparent" }}>
       <CardHeader
         title="Your Data Pods Statistics"
-        subheader={`Total ${totalTokensProvided} Tokens Provided to others!`}
+        subheader={
+          <span>
+            Total{" "}
+            <span
+              style={{ fontWeight: "bold", color: theme.palette.primary.main }}
+            >
+              {totalTokensProvided}
+            </span>{" "}
+            Tokens Provided to others!
+          </span>
+        }
         subheaderTypographyProps={{ sx: { lineHeight: 1.429 } }}
         titleTypographyProps={{ sx: { letterSpacing: "0.15px" } }}
-        sx={{ textAlign: "left", p: 3}}
+        sx={{ textAlign: "left", p: 3 }}
       />
 
-      <CardContent sx={{ p: "0 !important" }}>        
-
+      <CardContent sx={{ p: "0 !important" }}>
         <ReactApexcharts
           type="bar"
           height={294}

@@ -23,7 +23,13 @@ const ProvidedByDateTimeBucket = () => {
   const providedByDataTimeBucket = useSelector(
     (state) =>
       state.userDataForAnalytics.analyticsData.providedByDateTimeBuckets
+  ); 
+
+  const filteredDates = useSelector(
+    (state) => state.permissionOfUseAnalytics.filters.apiFilters
   );
+  
+  console.log("------>",filteredDates);
 
   useEffect(() => {
     if (!providedByDataTimeBucket) {
@@ -45,27 +51,58 @@ const ProvidedByDateTimeBucket = () => {
   }, [providedByDataTimeBucket]);
 
   const filterDataByTimeRange = () => {
-    const filteredData = [];
-    const filteredUpdatedData = [];
-    const categories = [];
-    const currentDate = new Date();
-    const oneDay = 24 * 60 * 60 * 1000;
+    // if (!filteredDates || !providedByDataTimeBucket) {
+    //   return { filteredData: [], filteredUpdatedData: [], categories: [] };
+    // }
 
-    for (let i = 0; i < 30; i++) {
-      const date = new Date(currentDate - i * oneDay);
-      const dateString = date.toISOString().split("T")[0] + "T00:00:00Z";
-      const formattedDate = `${date.getDate()}/${date.getMonth() + 1}`;
-      categories.unshift(formattedDate);
-      const matchingBucket = providedByDataTimeBucket.find(
-        (bucket) => bucket.date === dateString
-      );
-      filteredData.unshift(matchingBucket ? matchingBucket.totalSumTokens : 0);
-      filteredUpdatedData.unshift(
-        matchingBucket ? matchingBucket.updatedTotalTokens : 0
-      );
-    }
+    const { from, to, timeIntervalInSeconds } = filteredDates;
+  const startDate = new Date(from);
+  const endDate = new Date(to);
+  const timeDiff = endDate - startDate;
+  const oneDay = 24 * 60 * 60 * 1000;
 
-    return { filteredData, filteredUpdatedData, categories };
+  let interval, formatCategory;
+
+  if (timeDiff <= oneDay) {
+    // Interval is less than or equal to one day
+    interval = 60 * 60 * 1000; // 1 hour in milliseconds
+    formatCategory = (date) => `${date.getHours()}:00`;
+  } else if (timeDiff <= 30 * oneDay) {
+    // Interval is less than or equal to 30 days
+    interval = oneDay;
+    formatCategory = (date) => `${date.getDate()}/${date.getMonth() + 1}`;
+  } else if (timeDiff <= 365 * oneDay) {
+    // Interval is less than or equal to 1 year
+    interval = 30 * oneDay; // 1 month approximation
+    formatCategory = (date) => `${date.getMonth() + 1}/${date.getFullYear()}`;
+  } else {
+    // Interval is more than 1 year
+    interval = 365 * oneDay; // 1 year approximation
+    formatCategory = (date) => `${date.getFullYear()}`;
+  }
+
+  const filteredData = [];
+  const filteredUpdatedData = [];
+  const categories = [];
+
+  for (let date = startDate; date <= endDate; date = new Date(date.getTime() + interval)) {
+    const dateString = date.toISOString().split("T")[0] + "T00:00:00Z";
+    const formattedDate = formatCategory(date);
+
+    categories.push(formattedDate);
+
+    const matchingBucket = providedByDataTimeBucket.find(
+      (bucket) => bucket.date === dateString
+    );
+
+    filteredData.push(matchingBucket ? matchingBucket.totalSumTokens : 0);
+    filteredUpdatedData.push(
+      matchingBucket ? matchingBucket.updatedTotalTokens : 0
+    );
+  }
+
+  return { filteredData, filteredUpdatedData, categories };
+
   };
 
   const { filteredData, filteredUpdatedData, categories } =
@@ -78,7 +115,7 @@ const ProvidedByDateTimeBucket = () => {
       data: filteredData,
     },
     {
-      name: "Selected DataPods and Agents Tokens",
+      name: "Selected Tokens",
       type: "line",
       data: filteredUpdatedData,
     },
@@ -89,8 +126,40 @@ const ProvidedByDateTimeBucket = () => {
       offsetY: -9,
       offsetX: -16,
       parentHeightOffset: 0,
-      toolbar: { show: false },
+
+      toolbar: {
+        show: true,
+        offsetX: 0,
+        offsetY: -40,
+        tools: {
+          download: true,
+          selection: false,
+          zoom: false,
+          zoomin: true,
+          zoomout: true,
+          pan: false,
+        },
+        export: {
+          csv: {
+            filename: undefined,
+            columnDelimiter: ",",
+            headerCategory: "category",
+            headerValue: "value",
+            dateFormatter(timestamp) {
+              return new Date(timestamp).toDateString();
+            },
+          },
+          svg: {
+            filename: undefined,
+          },
+          png: {
+            filename: undefined,
+          },
+        },
+        autoSelected: "zoom",
+      },
     },
+
     plotOptions: {
       bar: {
         borderRadius: 9,
@@ -149,7 +218,7 @@ const ProvidedByDateTimeBucket = () => {
       tickAmount: 3,
       labels: {
         formatter: (value) =>
-          `${value > 999 ? `${(value / 1000).toFixed(0)}` : value}k`,
+          `${value > 999 ? `${(value / 1000).toFixed(0)}k` : value}`,
         style: {
           fontSize: "0.75rem",
           colors: theme.palette.text.disabled,
@@ -160,7 +229,28 @@ const ProvidedByDateTimeBucket = () => {
 
   return (
     <Card sx={{ backgroundColor: "transparent" }}>
-      <CardHeader title="Overview" sx={{ textAlign: "left"}} />
+      <CardHeader
+        title="Overview"
+        subheader={
+          <span>
+            Total{" "}
+            <span
+              style={{ fontWeight: "bold", color: theme.palette.primary.main }}
+            >
+              {totalTokensProvided}
+            </span> 
+            {" "} Tokens From all DataPods and Agents in the selected period.
+            <br/> Total {" "}
+            <span
+              style={{ fontWeight: "bold", color: theme.palette.primary.main }}
+            >
+              {totalTokensUpdated}
+            </span>{" "}
+            Tokens From selected DataPods and Agents
+          </span>
+        }
+        sx={{ textAlign: "left" }}
+      />
       <CardContent
         sx={{ "& .apexcharts-xcrosshairs.apexcharts-active": { opacity: 0 } }}
       >
@@ -170,22 +260,7 @@ const ProvidedByDateTimeBucket = () => {
           series={series}
           options={options}
         />
-        <Box sx={{ mb: 4, display: "flex", alignItems: "center" }}>
-          <Typography sx={{ mr: 4 }} variant="h5">
-            {totalTokensProvided} Tokens
-          </Typography>
-          <Typography variant="body2">
-            Your performance over the selected period.
-          </Typography>
-        </Box>
-        <Box sx={{ mb: 4, display: "flex", alignItems: "center" }}>
-          <Typography sx={{ mr: 4 }} variant="h5">
-            {totalTokensUpdated} Tokens
-          </Typography>
-          <Typography variant="body2">
-            Your performance over the selected items.
-          </Typography>
-        </Box>
+        
       </CardContent>
     </Card>
   );

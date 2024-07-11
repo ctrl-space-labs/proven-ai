@@ -83,7 +83,37 @@ const ConsumedByDateTimeBucket = () => {
       offsetY: -9,
       offsetX: -16,
       parentHeightOffset: 0,
-      toolbar: { show: false },
+      toolbar: {
+        show: true,
+        offsetX: 0,
+        offsetY: -40,
+        tools: {
+          download: true,
+          selection: false,
+          zoom: false,
+          zoomin: true,
+          zoomout: true,
+          pan: false,
+        },
+        export: {
+          csv: {
+            filename: undefined,
+            columnDelimiter: ",",
+            headerCategory: "category",
+            headerValue: "value",
+            dateFormatter(timestamp) {
+              return new Date(timestamp).toDateString();
+            },
+          },
+          svg: {
+            filename: undefined,
+          },
+          png: {
+            filename: undefined,
+          },
+        },
+        autoSelected: "zoom",
+      },
     },
     plotOptions: {
       bar: {
@@ -154,7 +184,28 @@ const ConsumedByDateTimeBucket = () => {
 
   return (
     <Card sx={{ backgroundColor: "transparent" }}>
-      <CardHeader title="Overview" sx={{ textAlign: "left"}} />
+      <CardHeader
+        title="Overview"
+        subheader={
+          <span>
+            Total{" "}
+            <span
+              style={{ fontWeight: "bold", color: theme.palette.primary.main }}
+            >
+              {totalTokensProvided}
+            </span>{" "}
+            Tokens From all DataPods and Agents in the selected period.
+            <br /> Total{" "}
+            <span
+              style={{ fontWeight: "bold", color: theme.palette.primary.main }}
+            >
+              {totalTokensUpdated}
+            </span>{" "}
+            Tokens From selected DataPods and Agents
+          </span>
+        }
+        sx={{ textAlign: "left" }}
+      />
       <CardContent
         sx={{ "& .apexcharts-xcrosshairs.apexcharts-active": { opacity: 0 } }}
       >
@@ -164,22 +215,7 @@ const ConsumedByDateTimeBucket = () => {
           series={series}
           options={options}
         />
-        <Box sx={{ mb: 4, display: "flex", alignItems: "center" }}>
-          <Typography sx={{ mr: 4 }} variant="h5">
-            {totalTokensProvided} Tokens
-          </Typography>
-          <Typography variant="body2">
-            Your performance over the selected period.
-          </Typography>
-        </Box>
-        <Box sx={{ mb: 4, display: "flex", alignItems: "center" }}>
-          <Typography sx={{ mr: 4 }} variant="h5">
-            {totalTokensUpdated} Tokens
-          </Typography>
-          <Typography variant="body2">
-            Your performance over the selected items.
-          </Typography>
-        </Box>
+        
       </CardContent>
     </Card>
   );
