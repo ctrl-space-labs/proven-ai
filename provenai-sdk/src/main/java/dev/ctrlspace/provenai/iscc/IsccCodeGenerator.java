@@ -1,6 +1,9 @@
 package dev.ctrlspace.provenai.iscc;
 
 
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 public interface IsccCodeGenerator {
 
