@@ -8,7 +8,7 @@ import apiRequests from "src/configs/apiRequest.js";
  *  @returns {Promise<axios.AxiosResponse<AgentPurposeOfUsePolicy>>}
  */
 const createAgentPurposeOfUsePolicy = async (agentPurposeOfUsePolicyDTO, storedToken) => {
-  return axios.post(apiRequests.agentPurposeOfUsePolicies(), agentPurposeOfUsePolicyDTO, {
+  return axios.post(apiRequests.agentPurposeOfUsePolicies(agentPurposeOfUsePolicyDTO.agentId), agentPurposeOfUsePolicyDTO, {
     headers: {
       "Content-Type": "application/json",
       Authorization: "Bearer " + storedToken,
@@ -18,13 +18,14 @@ const createAgentPurposeOfUsePolicy = async (agentPurposeOfUsePolicyDTO, storedT
 
 /**
  * Delete Agent Purpose Of Use policies
+ * @param UUID agentId
  * @param {Array<UUID>} agentPurposeOfUsePolicyIds
  * @param storedToken
  * @returns {Promise<axios.AxiosResponse>}
  */
-const deleteAgentPurposeOfUsePolicies = async (agentPurposeOfUsePolicyIds, storedToken) => {
+const deleteAgentPurposeOfUsePolicies = async (agentId, agentPurposeOfUsePolicyIds, storedToken) => {
   const queryParams = agentPurposeOfUsePolicyIds.map(id => `agentPurposeOfUsePolicyIds=${id}`).join('&');
-  const url = `${apiRequests.agentPurposeOfUsePolicies()}?${queryParams}`;
+  const url = `${apiRequests.agentPurposeOfUsePolicies(agentId)}?${queryParams}`;
 
   return axios.delete(url, {
     headers: {

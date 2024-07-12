@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import dev.ctrlspace.provenai.backend.adapters.GendoxWebHookAdapter;
 import dev.ctrlspace.provenai.backend.authentication.KeycloakAuthenticationService;
 import dev.ctrlspace.provenai.backend.converters.AgentConverter;
 import dev.ctrlspace.provenai.backend.exceptions.ProvenAiException;
@@ -11,11 +12,15 @@ import dev.ctrlspace.provenai.backend.model.Agent;
 import dev.ctrlspace.provenai.backend.model.AgentPurposeOfUsePolicies;
 import dev.ctrlspace.provenai.backend.model.Organization;
 import dev.ctrlspace.provenai.backend.model.dtos.AgentPublicDTO;
+import dev.ctrlspace.provenai.backend.model.dtos.AgentDTO;
+import dev.ctrlspace.provenai.backend.model.dtos.EventPayloadDTO;
+import dev.ctrlspace.provenai.backend.model.dtos.WebHookEventResponse;
 import dev.ctrlspace.provenai.backend.model.dtos.criteria.AgentCriteria;
 import dev.ctrlspace.provenai.backend.repositories.AgentRepository;
 import dev.ctrlspace.provenai.backend.repositories.OrganizationRepository;
 import dev.ctrlspace.provenai.backend.repositories.PolicyTypeRepository;
 import dev.ctrlspace.provenai.backend.repositories.specifications.AgentPredicates;
+import dev.ctrlspace.provenai.backend.utils.JWTUtils;
 import dev.ctrlspace.provenai.ssi.issuer.CredentialIssuanceApi;
 import dev.ctrlspace.provenai.ssi.issuer.ProvenAIIssuer;
 import dev.ctrlspace.provenai.ssi.model.dto.IssuerKey;
@@ -24,15 +29,9 @@ import dev.ctrlspace.provenai.ssi.model.vc.AdditionalSignVCParams;
 import dev.ctrlspace.provenai.ssi.model.vc.VerifiableCredential;
 import dev.ctrlspace.provenai.ssi.model.vc.attestation.AIAgentCredentialSubject;
 import dev.ctrlspace.provenai.ssi.model.vc.attestation.Policy;
-import dev.ctrlspace.provenai.ssi.verifier.PresentationVerifier;
+import dev.ctrlspace.provenai.utils.SSIJWTUtils;
 import dev.ctrlspace.provenai.utils.WaltIdServiceInitUtils;
 import id.walt.credentials.vc.vcs.W3CVC;
-import id.walt.credentials.verification.models.PolicyRequest;
-import id.walt.credentials.verification.models.PresentationVerificationResponse;
-import id.walt.credentials.verification.policies.ExpirationDatePolicy;
-import id.walt.credentials.verification.policies.JwtSignaturePolicy;
-import id.walt.credentials.verification.policies.NotBeforeDatePolicy;
-import id.walt.credentials.verification.policies.vp.HolderBindingPolicy;
 import id.walt.crypto.keys.LocalKey;
 import jakarta.annotation.Nullable;
 import org.json.JSONException;
@@ -42,6 +41,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -49,7 +49,6 @@ import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-
 @Service
 public class AgentService {
 
@@ -73,6 +72,12 @@ public class AgentService {
     private PolicyTypeRepository policyTypeRepository;
     private AgentConverter agentConverter;
 
+    private SSIJWTUtils ssiJwtUtils;
+
+    private GendoxWebHookAdapter gendoxWebHookAdapter;
+
+    private JWTUtils jwtUtils;
+
 
     @Autowired
     public AgentService(AgentRepository agentRepository,
@@ -81,7 +86,10 @@ public class AgentService {
                         PolicyTypeRepository policyTypeRepository,
                         OrganizationRepository organizationRepository,
                         AgentConverter agentConverter,
-                        KeycloakAuthenticationService keycloakAuthenticationService) {
+                        KeycloakAuthenticationService keycloakAuthenticationService,
+                        SSIJWTUtils ssiJwtUtils,
+                        JWTUtils jwtUtils,
+                        GendoxWebHookAdapter gendoxWebHookAdapter) {
         this.agentRepository = agentRepository;
         this.credentialIssuanceApi = credentialIssuanceApi;
         this.agentPurposeOfUsePoliciesService = agentPurposeOfUsePoliciesService;
@@ -89,6 +97,9 @@ public class AgentService {
         this.organizationRepository = organizationRepository;
         this.agentConverter = agentConverter;
         this.keycloakAuthenticationService = keycloakAuthenticationService;
+        this.ssiJwtUtils = ssiJwtUtils;
+        this.jwtUtils = jwtUtils;
+        this.gendoxWebHookAdapter = gendoxWebHookAdapter;
 
         WaltIdServiceInitUtils.INSTANCE.initializeWaltIdServices();
 
@@ -200,7 +211,16 @@ public class AgentService {
         AdditionalSignVCParams additionalSignVCParams = new AdditionalSignVCParams();
         Organization organization = getOrganizationByAgentId(agentId);
 
+        EventPayloadDTO eventPayload = new EventPayloadDTO();
+        eventPayload.setOrganizationDid(organization.getOrganizationDid());
+        eventPayload.setProjectAgentId(String.valueOf(agentId));
+        eventPayload.setOrganizationId(organization.getId().toString());
+
+        ResponseEntity<WebHookEventResponse> responseEntity =
+                gendoxWebHookAdapter.gendoxWebHookEvent("PROVEN_AI_AGENT_REGISTRATION", eventPayload);
+
         return provenAIIssuer.generateSignedVCJwt(w3CVC, localKey, issuerDid, organization.getOrganizationDid());
+
 
     }
 
@@ -231,39 +251,6 @@ public class AgentService {
         agentRepository.updateAgentVerifiableId(agentId, verifiableId);
     }
 
-    public Boolean verifyAgentVP(String vpJwt) throws InterruptedException, ExecutionException {
-//      Initialize presentationVerifier
-        PresentationVerifier presentationVerifier = new PresentationVerifier();
-
-//        Initialize Policies to be checked
-        HolderBindingPolicy holderBindingPolicy = new HolderBindingPolicy();
-        JwtSignaturePolicy jwtSignaturePolicy = new JwtSignaturePolicy();
-        NotBeforeDatePolicy notBeforeDatePolicy = new NotBeforeDatePolicy();
-        ExpirationDatePolicy expirationDatePolicy = new ExpirationDatePolicy();
-//        pass null for args
-//      Initialize Policy Types
-        List<PolicyRequest> vpPolicies = new ArrayList<>();
-        List<PolicyRequest> globalVcPolicies = new ArrayList<>();
-        HashMap<String, List<PolicyRequest>> specificCredentialPolicies = new HashMap<>();
-        HashMap<String, Object> presentationContext = new HashMap<>();
-
-        vpPolicies.add(new PolicyRequest(holderBindingPolicy, null));
-        vpPolicies.add(new PolicyRequest(holderBindingPolicy, null));
-//        globalVcPolicies.add(new PolicyRequest(jwtSignaturePolicy, null));
-
-        globalVcPolicies.add(new PolicyRequest(expirationDatePolicy, null));
-        globalVcPolicies.add(new PolicyRequest(notBeforeDatePolicy, null));
-//        globalVcPolicies.add(new PolicyRequest(jwtSignaturePolicy, null));
-
-
-        CompletableFuture<PresentationVerificationResponse> verificationFuture = presentationVerifier.verifyPresentationAsync(vpJwt, vpPolicies,
-                globalVcPolicies, specificCredentialPolicies, presentationContext);
-
-        PresentationVerificationResponse response = verificationFuture.get();
-
-        return response.overallSuccess();
-    }
-
 
     public AccessTokenResponse getAgentAccessToken(String agentUsername, @Nullable String scope) throws ProvenAiException {
 
@@ -271,17 +258,10 @@ public class AgentService {
 
     }
 
-    public List<Policy> getAgentUsagePolicies(String jwt) throws JsonProcessingException {
-        String[] chunks = jwt.split("\\.");
-        Base64.Decoder decoder = Base64.getUrlDecoder();
-        // Decode payload
-        String payload = new String(decoder.decode(chunks[1]));
-
+    public List<Policy> getAgentUsagePolicies(String jwt) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
-        JsonNode payloadNode = mapper.readTree(payload);
 
-        // Extract usagePolicies JSON node
-        JsonNode usagePoliciesNode = payloadNode
+        JsonNode usagePoliciesNode = jwtUtils.getPayloadFromJwt(jwt)
                 .path("vc")
                 .path("credentialSubject")
                 .path("agent")
@@ -294,21 +274,7 @@ public class AgentService {
     }
 
     public String getAgentVcJwt(String vpToken) throws IOException, JsonProcessingException {
-        String[] vpChunks = vpToken.split("\\.");
 
-        // Base64Url decoder
-        Base64.Decoder decoder = Base64.getUrlDecoder();
-
-        // Decode the VP payload
-        String vpPayload = new String(decoder.decode(vpChunks[1]));
-
-        // Parse the VP payload
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode vpNode = mapper.readTree(vpPayload);
-
-        // Extract the VC token from the VP payload
-        String vcToken = vpNode.get("vp").get("verifiableCredential").get(0).asText();
-
-        return vcToken;
+       return ssiJwtUtils.getVCJwtFromVPJwt(vpToken);
     }
 }

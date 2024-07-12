@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -37,13 +38,14 @@ public interface DataPodControllerSpec {
             @Parameter(description = "Filtering criteria for Data Pods", required = false, schema = @Schema(implementation = DataPodCriteria.class))
             DataPodCriteria criteria,
             @Parameter(description = "Pagination information", required = false, schema = @Schema(implementation = Pageable.class))
-            Pageable pageable) throws ProvenAiException;
+            Pageable pageable,
+            Authentication authentication) throws ProvenAiException;
 
     @Operation(summary = "Get a data pod by id")
     public DataPod getDataPodById(UUID id) throws ProvenAiException;
 
     @Operation(summary = "Get all public data pods")
-    Page<DataPodPublicDTO> getAllPublicDataPods(DataPodCriteria criteria, Pageable pageable) throws ProvenAiException;
+    Page<DataPodPublicDTO> getAllPublicDataPods(DataPodCriteria criteria, Pageable pageable, Authentication authentication) throws ProvenAiException;
 
     @Operation(summary = "Get all ACL policies for a data pod")
     Page<AclPolicies> getAclPoliciesByDataPodId(UUID id, Pageable pageable) throws ProvenAiException;

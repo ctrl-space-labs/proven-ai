@@ -1,22 +1,36 @@
 package dev.ctrlspace.provenai.backend.controller;
 
+import dev.ctrlspace.provenai.backend.authentication.ProvenAIAuthenticationToken;
 import dev.ctrlspace.provenai.backend.controller.specs.DataPodControllerSpec;
+import dev.ctrlspace.provenai.backend.converters.AclPoliciesConverter;
 import dev.ctrlspace.provenai.backend.converters.DataPodConverter;
 import dev.ctrlspace.provenai.backend.exceptions.ProvenAiException;
 import dev.ctrlspace.provenai.backend.model.AclPolicies;
 import dev.ctrlspace.provenai.backend.model.DataPod;
+import dev.ctrlspace.provenai.backend.model.authentication.OrganizationUserDTO;
+import dev.ctrlspace.provenai.backend.model.authentication.UserProfile;
+import dev.ctrlspace.provenai.backend.model.dtos.AclPoliciesDTO;
 import dev.ctrlspace.provenai.backend.model.dtos.DataPodDTO;
 import dev.ctrlspace.provenai.backend.model.dtos.DataPodPublicDTO;
+import dev.ctrlspace.provenai.backend.model.dtos.criteria.AccessCriteria;
 import dev.ctrlspace.provenai.backend.model.dtos.criteria.DataPodCriteria;
+import dev.ctrlspace.provenai.backend.services.AclPoliciesService;
 import dev.ctrlspace.provenai.backend.services.DataPodService;
+import dev.ctrlspace.provenai.backend.utils.SecurityUtils;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RestController
 public class DataPodController implements DataPodControllerSpec {
@@ -26,31 +40,63 @@ public class DataPodController implements DataPodControllerSpec {
 
     private DataPodConverter dataPodConverter;
 
+    private SecurityUtils securityUtils;
+
+    private AclPoliciesService aclPoliciesService;
+    private AclPoliciesConverter aclPoliciesConverter;
+
     @Autowired
     public DataPodController(DataPodService dataPodService,
-                             DataPodConverter dataPodConverter) {
+                             DataPodConverter dataPodConverter,
+                             SecurityUtils securityUtils,
+                             AclPoliciesService aclPoliciesService,
+                             AclPoliciesConverter aclPoliciesConverter) {
         this.dataPodService = dataPodService;
         this.dataPodConverter = dataPodConverter;
+        this.securityUtils = securityUtils;
+        this.aclPoliciesService = aclPoliciesService;
+        this.aclPoliciesConverter = aclPoliciesConverter;
     }
 
+    @PreAuthorize("@securityUtils.hasAuthority('OP_READ_PROVEN_AI_DATAPOD', 'getRequestedDataPodsFromRequestParams')")
     @GetMapping("/data-pods")
-    public Page<DataPod> getAllDataPods(@Valid DataPodCriteria criteria, Pageable pageable) throws ProvenAiException {
+    public Page<DataPod> getAllDataPods(@Valid DataPodCriteria criteria, Pageable pageable, Authentication authentication) throws ProvenAiException {
+
+        if (securityUtils.isUser() &&
+                criteria.getDataPodIdIn().isEmpty()) {
+            UserProfile userProfile = (UserProfile) authentication.getPrincipal();
+
+            List<UUID> authorizedDataPodIds = userProfile
+                    .getOrganizations()
+                    .stream()
+                    .filter(org -> org.getAuthorities().contains("OP_READ_PROVEN_AI_DATAPOD"))
+                    .flatMap(org -> org.getProjects().stream())
+                    .map(proj -> UUID.fromString(proj.getId()))
+                    .collect(Collectors.toList());
+
+            criteria.setDataPodIdIn(authorizedDataPodIds);
+
+        }
+
         return dataPodService.getAllDataPods(criteria, pageable);
     }
 
+
     @GetMapping("/data-pods/public")
-    public Page<DataPodPublicDTO> getAllPublicDataPods(@Valid DataPodCriteria criteria, Pageable pageable) throws ProvenAiException {
-        return dataPodService.getAllPublicDataPods(criteria, pageable);
+        public Page<DataPodPublicDTO> getAllPublicDataPods(@Valid DataPodCriteria criteria, Pageable pageable, Authentication authentication) throws ProvenAiException {
+        return  dataPodService.getAllPublicDataPods(criteria, pageable);
+
+    }
+    @PreAuthorize("@securityUtils.hasAuthority('OP_READ_PROVEN_AI_DATAPOD', 'getRequestedDataPodIdFromPathVariable')")
+    @GetMapping("/data-pods/{dataPodId}")
+    public DataPod getDataPodById(@PathVariable UUID dataPodId) throws ProvenAiException {
+        return dataPodService.getDataPodById(dataPodId);
     }
 
-    @GetMapping("/data-pods/{id}")
-    public DataPod getDataPodById(@PathVariable UUID id) throws ProvenAiException {
-        return dataPodService.getDataPodById(id);
-    }
-
-    @GetMapping("/data-pods/{id}/acl-policies")
-    public Page<AclPolicies> getAclPoliciesByDataPodId(@PathVariable UUID id, Pageable pageable) throws ProvenAiException {
-        return dataPodService.getAclPoliciesByDataPodId(id, pageable);
+    @PreAuthorize("@securityUtils.hasAuthority('OP_READ_PROVEN_AI_DATAPOD', 'getRequestedDataPodIdFromPathVariable')")
+    @GetMapping("/data-pods/{dataPodId}/acl-policies")
+    public Page<AclPolicies> getAclPoliciesByDataPodId(@PathVariable UUID dataPodId, Pageable pageable) throws ProvenAiException {
+        return dataPodService.getAclPoliciesByDataPodId(dataPodId, pageable);
     }
 
 
@@ -70,26 +116,51 @@ public class DataPodController implements DataPodControllerSpec {
 //                .credentialJwt("eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsIm5hbWUiOiJKb2huIERvZSIsImVtYWlsIjoiam9obkBkb2UuY29tIn0.7J1Gzv")
 //                .build();
 
-
-    @DeleteMapping("/data-pods/{id}")
-    public void deleteDataPod(@PathVariable UUID id) throws ProvenAiException {
-        dataPodService.deleteDataPodById(id);
+    @PreAuthorize("@securityUtils.hasAuthority('OP_DELETE_PROVEN_AI_AGENT', 'getRequestedDataPodIdFromPathVariable')")
+    @DeleteMapping("/data-pods/{dataPodId}")
+    public void deleteDataPod(@PathVariable UUID dataPodId) throws ProvenAiException {
+        dataPodService.deleteDataPodById(dataPodId);
     }
 
 
-    @PutMapping("/data-pods/{id}")
-    public DataPod updateDataPod(@PathVariable UUID id, @RequestBody DataPodDTO dataPodDTO) throws ProvenAiException {
+    @PreAuthorize("@securityUtils.hasAuthority('OP_EDIT_PROVEN_AI_DATAPOD', 'getRequestedDataPodIdFromPathVariable')")
+    @PutMapping("/data-pods/{dataPodId}")
+    public DataPod updateDataPod(@PathVariable UUID dataPodId, @RequestBody DataPodDTO dataPodDTO) throws ProvenAiException {
         UUID updatedDataPodId = dataPodDTO.getId();
 
         DataPod dataPod = dataPodConverter.toEntity(dataPodDTO);
         dataPod.setId(updatedDataPodId);
 
-        if (!id.equals(dataPodDTO.getId())) {
+        if (!dataPodId.equals(dataPodDTO.getId())) {
             throw new ProvenAiException("DATA_POD_ID_MISMATCH", "ID in path and ID in body are not the same", HttpStatus.BAD_REQUEST);
         }
 
         return dataPodService.updateDataPod(dataPod);
     }
 
+    @PreAuthorize("@securityUtils.hasAuthority('OP_EDIT_PROVEN_AI_DATAPOD', 'getRequestedDataPodIdFromPathVariable')")
+    @PostMapping(value = "/data-pods/{dataPodId}/acl-policies", consumes = {"application/json"})
+    public AclPolicies createAclPolicy(@PathVariable UUID dataPodId, @RequestBody AclPoliciesDTO aclPoliciesDTO) throws ProvenAiException {
+        AclPolicies aclPolicies = aclPoliciesConverter.toEntity(aclPoliciesDTO);
+
+        if (!dataPodId.equals(aclPoliciesDTO.getDataPodId())) {
+            throw new ProvenAiException("DATA_POD_ID_MISMATCH", "ID in path and ID in body are not the same", HttpStatus.BAD_REQUEST);
+        }
+        return aclPoliciesService.createAclPolicy(aclPolicies);
+    }
+
+    @PreAuthorize("@securityUtils.hasAuthority('OP_EDIT_PROVEN_AI_DATAPOD', 'getRequestedDataPodIdFromPathVariable')")
+    @DeleteMapping("data-pods/{dataPodId}/acl-policies/{aclPolicyId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteAclPolicy(@PathVariable UUID aclPolicyId) throws ProvenAiException {
+        aclPoliciesService.deleteAclPolicy(aclPolicyId);
+    }
+
+    @PreAuthorize("@securityUtils.hasAuthority('OP_EDIT_PROVEN_AI_DATAPOD', 'getRequestedDataPodIdFromPathVariable')")
+    @DeleteMapping("data-pods/{dataPodId}/acl-policies")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteAclPolicies(@RequestParam List<UUID> aclPolicyIds) throws ProvenAiException {
+        aclPoliciesService.deleteAclPolicies(aclPolicyIds);
+    }
 
 }
