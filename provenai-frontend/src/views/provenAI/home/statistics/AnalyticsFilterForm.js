@@ -17,7 +17,7 @@ import {
 import { useSettings } from "src/@core/hooks/useSettings";
 
 const periodOptions = [
-  { label: "Last 1 Hour", value: 60 * 60 },
+  // { label: "Last 1 Hour", value: 60 * 60 },
   { label: "Last 8 Hours", value: 8 * 60 * 60 },
   { label: "Last 24 Hours", value: 24 * 60 * 60 },
   { label: "Last 7 Days", value: 7 * 24 * 60 * 60 },
@@ -27,10 +27,10 @@ const periodOptions = [
   { label: "Last 365 Days", value: 365 * 24 * 60 * 60 },
   { label: "Last 2 Years", value: 2 * 365 * 24 * 60 * 60 },
   { label: "Last 5 Years", value: 5 * 365 * 24 * 60 * 60 },
-  { label: "All Time", value: Infinity },
+  // { label: "All Time", value: Infinity },
 ];
 
-const DEFAULT_PERIOD_INDEX = 4; // Index of "Last 30 Days"
+const DEFAULT_PERIOD_INDEX = 3; // Index of "Last 30 Days"
 
 const getDefaultDates = (periodInSeconds) => {
   const endDate = new Date();

@@ -1,12 +1,9 @@
 import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
 import { useTheme } from "@mui/material/styles";
 import CardHeader from "@mui/material/CardHeader";
-import Typography from "@mui/material/Typography";
 import CardContent from "@mui/material/CardContent";
-import OptionsMenu from "src/@core/components/option-menu";
 import ReactApexcharts from "src/@core/components/react-apexcharts";
 import { hexToRGBA } from "src/@core/utils/hex-to-rgba";
 
@@ -14,9 +11,13 @@ const ConsumedByDateTimeBucket = () => {
   const theme = useTheme();
   const [totalTokensProvided, setTotalTokensProvided] = useState(0);
   const [totalTokensUpdated, setTotalTokensUpdated] = useState(0);
+
   const consumedByDataTimeBucket = useSelector(
     (state) =>
       state.userDataForAnalytics.analyticsData.consumedByDateTimeBuckets
+  );
+  const filteredDates = useSelector(
+    (state) => state.permissionOfUseAnalytics.filters.apiFilters
   );
 
   useEffect(() => {
@@ -38,29 +39,97 @@ const ConsumedByDateTimeBucket = () => {
     setTotalTokensUpdated(totalTokensUpdated);
   }, [consumedByDataTimeBucket]);
 
-  const filterDataByTimeRange = () => {
-    const filteredData = [];
-    const filteredUpdatedData = [];
+  const aggregateDataByInterval = (startDate, endDate, interval, formatCategory) => {
+    const aggregatedData = {};
     const categories = [];
-    const currentDate = new Date();
-    const oneDay = 24 * 60 * 60 * 1000;
+  
+    // Initialize the dates and loop through each interval
+    for (let date = new Date(startDate); date <= endDate; date = new Date(date.getTime() + interval)) {
+      const category = formatCategory(date);
+      categories.push(category);
+  
+      aggregatedData[category] = {
+        totalSumTokens: 0,
+        updatedTotalTokens: 0,
+      };
+    }
+  
+    // Aggregate the data based on the provided buckets
+    consumedByDataTimeBucket.forEach((bucket) => {
+      const date = new Date(bucket.date);
+      const category = formatCategory(date);
+  
+      if (aggregatedData[category]) {
+        aggregatedData[category].totalSumTokens += bucket.totalSumTokens;
+        aggregatedData[category].updatedTotalTokens += bucket.updatedTotalTokens;
+      }
+    });
+  
+    return {
+      filteredData: categories.map((category) => aggregatedData[category].totalSumTokens),
+      filteredUpdatedData: categories.map((category) => aggregatedData[category].updatedTotalTokens),
+      categories,
+    };
+  };
 
-    for (let i = 0; i < 30; i++) {
-      const date = new Date(currentDate - i * oneDay);
-      const dateString = date.toISOString().split("T")[0] + "T00:00:00Z";
-      const formattedDate = `${date.getDate()}/${date.getMonth() + 1}`;
-      categories.unshift(formattedDate);
-      const matchingBucket = consumedByDataTimeBucket.find(
-        (bucket) => bucket.date === dateString
-      );
-      filteredData.unshift(matchingBucket ? matchingBucket.totalSumTokens : 0);
-      filteredUpdatedData.unshift(
-        matchingBucket ? matchingBucket.updatedTotalTokens : 0
-      );
+
+  const filterDataByTimeRange = () => {
+    if (!filteredDates || !consumedByDataTimeBucket) {
+      return { filteredData: [], filteredUpdatedData: [], categories: [] };
     }
 
-    return { filteredData, filteredUpdatedData, categories };
+    const { from, to } = filteredDates;
+    const startDate = new Date(from);
+    const endDate = new Date(to);
+    const timeDiff = endDate - startDate;
+    const oneDay = 24 * 60 * 60 * 1000;
+
+    if (timeDiff <= oneDay) {
+      return aggregateDataByInterval(
+        startDate, endDate, 
+        60 * 60 * 1000, // 1 hour in milliseconds
+        (date) => `${date.getHours()}:00`
+      );
+    } else if (timeDiff <= 30 * oneDay) {
+      return aggregateDataByInterval(
+        startDate, endDate, 
+        oneDay,
+        (date) => `${date.getDate()}/${date.getMonth() + 1}`
+      );
+    } else if (timeDiff <= 90 * oneDay) {
+      return aggregateDataByInterval(
+        startDate, endDate, 
+         oneDay,
+        (date) => `${date.getDate()}/${date.getMonth() + 1}`
+      );
+    } else if (timeDiff <= 180 * oneDay) {
+      return aggregateDataByInterval(
+        startDate, endDate, 
+         oneDay,
+        (date) => `${date.getDate()}/${date.getMonth() + 1}`
+      );
+    } else if (timeDiff <= 365 * oneDay) {
+      return aggregateDataByInterval(
+        startDate, endDate, 
+        30 * oneDay,
+        (date) => `${date.getMonth() + 1}/${date.getFullYear()}`
+      );
+    } else if (timeDiff <= 2 * 365 * oneDay) {
+      return aggregateDataByInterval(
+        startDate, endDate, 
+        30 * oneDay,
+        (date) => `${date.getMonth() + 1}/${date.getFullYear()}`
+      );
+    } else {
+      return aggregateDataByInterval(
+        startDate, endDate, 
+        30 * oneDay,
+        (date) => `${date.getMonth() + 1}/${date.getFullYear()}`
+      );
+    }
   };
+
+
 
   const { filteredData, filteredUpdatedData, categories } =
     filterDataByTimeRange();
@@ -89,8 +158,8 @@ const ConsumedByDateTimeBucket = () => {
         offsetY: -40,
         tools: {
           download: true,
-          selection: false,
-          zoom: false,
+          selection: true,
+          zoom: true,
           zoomin: true,
           zoomout: true,
           pan: false,
