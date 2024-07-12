@@ -3,6 +3,7 @@ package dev.ctrlspace.provenai.backend.model;
 import dev.ctrlspace.provenai.backend.model.dtos.AuditPermissionOfUseDTO;
 import jakarta.persistence.*;
 
+import java.io.Serializable;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.Objects;
@@ -24,7 +25,7 @@ import java.util.UUID;
                 }
         )
 )
-public class AuditPermissionOfUseVc {
+public class AuditPermissionOfUseVc implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "permission_of_use_vc_id")
