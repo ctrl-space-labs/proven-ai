@@ -9,6 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -21,9 +22,11 @@ public class AuditPermissionOfUseVcCriteria {
     private String searchId;
     private String documentIscc;
     private String ownerOrganizationId;
+    private String ownerOrganizationDid;
     private String processorOrganizationId;
-    private List<String> ownerDataPodIdIn;
-    private List<String> processorAgentIdIn;
+    private String processorOrganizationDid;
+    private List<String> ownerDataPodIdIn = new ArrayList<>();
+    private List<String> processorAgentIdIn = new ArrayList<>();
     private String embeddingModel;
 
     @NotNull(message = "TimeIntervalInSeconds cannot be null")
