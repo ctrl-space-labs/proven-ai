@@ -88,6 +88,7 @@ proven-ai:
         user-profile: /profile
         semantic-search: /messages/semantic-search
         completion: /messages/semantic-completion
+        web-hook: /proven-ai/web-hook
     proven-ai-frontend:
       base-url: https://proven-ai.ctrlspace.dev
       context-path: ${server.servlet.context-path}
