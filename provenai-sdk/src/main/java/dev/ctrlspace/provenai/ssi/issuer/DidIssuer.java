@@ -2,9 +2,9 @@ package dev.ctrlspace.provenai.ssi.issuer;
 
 import dev.ctrlspace.provenai.utils.ContinuationObjectUtils;
 import dev.ctrlspace.provenai.utils.WaltIdServiceInitUtils;
+import id.walt.crypto.keys.Key;
 import id.walt.crypto.keys.KeyType;
-import id.walt.crypto.keys.LocalKey;
-import id.walt.crypto.keys.LocalKeyMetadata;
+import id.walt.crypto.keys.jwk.JWKKey;
 import id.walt.did.dids.DidService;
 import id.walt.did.dids.registrar.DidResult;
 import id.walt.did.dids.registrar.LocalRegistrar;
@@ -40,17 +40,15 @@ public class DidIssuer {
          * @param localKey The key pair to use for the DID
          * @return The DID result
          */
-        public DidResult createDidFromKey(KeyType keyType, LocalKey localKey) {
+        public DidResult createDidFromKey(KeyType keyType, Key localKey) {
                 DidKeyCreateOptions options = new DidKeyCreateOptions(keyType,false);
-                DidResult didResult = (DidResult) DidService.INSTANCE.registerByKey("key", localKey,options, continuationSuper);
-                return  didResult;
+                return (DidResult) DidService.INSTANCE.registerByKey("key", localKey,options, continuationSuper);
 
         }
 
         public DidResult createDidFromAutoKey(KeyType keyType) {
                 DidKeyCreateOptions options = new DidKeyCreateOptions(keyType,false);
-                DidResult didResult = (DidResult) DidService.INSTANCE.register(options, continuationSuper);
-                return  didResult;
+                return (DidResult) DidService.INSTANCE.registerBlocking(options);
 
         }
 
@@ -64,7 +62,7 @@ public class DidIssuer {
 
         public DidResult createDidFromWeb(String domain, String path, KeyType keyType) {
                 DidWebCreateOptions options = new DidWebCreateOptions(domain, path, keyType);
-                return (DidResult) DidService.INSTANCE.register(options, continuationSuper);
+                return DidService.INSTANCE.registerBlocking(options);
         }
 
         /**
@@ -72,16 +70,16 @@ public class DidIssuer {
          * @param keyType algorithm to produce cryptographic key
          * @param useJwkJcsPub When useJwkJcsPub is set to true
          *                     the EBSI implementation jwk_jcs-pub encoding is performed
-         * @param localKey that the did will be resolved to
+         * @param jwkKey that the did will be resolved to
          * @return DidResult
          */
 
-        public DidResult resolveKeyDidToKey(KeyType keyType, Boolean useJwkJcsPub, LocalKey localKey) {
+        public DidResult resolveKeyDidToKey(KeyType keyType, Boolean useJwkJcsPub, JWKKey jwkKey) {
                 DidKeyCreateOptions keyDidOptions = new DidKeyCreateOptions(keyType, useJwkJcsPub);
 
                 LocalRegistrar localRegistrar = new LocalRegistrar();
 
-                return (DidResult) localRegistrar.createByKey(localKey, keyDidOptions,continuationSuper);
+                return (DidResult) localRegistrar.createByKeyBlocking(jwkKey, keyDidOptions);
         }
 
 
@@ -90,19 +88,15 @@ public class DidIssuer {
          * @param domain domain to serve did document
          * @param path path where did is located
          * @param keyType algorithm to produce cryptographic key
-         * @param localKey that the did will be resolved to
+         * @param jwkKey that the did will be resolved to
          * @return DidResult
          */
 
-        public DidResult resolveWebDidToKey(KeyType keyType, String domain, String path, LocalKey localKey) {
+        public DidResult resolveWebDidToKey(KeyType keyType, String domain, String path, JWKKey jwkKey) {
                 DidWebCreateOptions webDidOptions = new DidWebCreateOptions(domain, path, keyType);
                 LocalRegistrar localRegistrar = new LocalRegistrar();
-                return (DidResult) localRegistrar.createByKey(localKey, webDidOptions,continuationSuper);
+                return (DidResult) localRegistrar.createByKeyBlocking(jwkKey, webDidOptions);
         }
 
-
-        public LocalKey generateKey(KeyType keyType) {
-                return (LocalKey) LocalKey.Companion.generate(keyType, new LocalKeyMetadata(),continuationSuper);
-        }
 
 }
