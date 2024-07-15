@@ -169,7 +169,7 @@ const UserDropdown = (props) => {
           }
         >
           <Box sx={styles}>
-            <Icon icon="mdi:account-outline" />
+            <Icon icon="mdi:arrow-up-bold-hexagon-outline" />
             Go to Gendox
           </Box>
         </MenuItem>

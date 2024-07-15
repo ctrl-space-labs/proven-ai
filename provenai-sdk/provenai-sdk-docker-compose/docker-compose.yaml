@@ -46,6 +46,7 @@ services:
       - .env
     volumes:
       - ./issuer-api/config:/waltid-issuer-api/config
+
   verifier-api:
     platform: linux/x86_64
     image: docker.io/waltid/verifier-api:${VERSION_TAG:-latest}
