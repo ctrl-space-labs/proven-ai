@@ -8,6 +8,8 @@ import ReactApexcharts from "src/@core/components/react-apexcharts";
 import { hexToRGBA } from "src/@core/utils/hex-to-rgba";
 import { updateProvidedByOwnerDataPods } from "src/store/apps/userDataForAnalytics/userDataForAnalytics";
 
+
+
 const ProvidedByOwnerDataPodsStats = () => {
   const theme = useTheme();
   const dispatch = useDispatch();
@@ -18,6 +20,34 @@ const ProvidedByOwnerDataPodsStats = () => {
   const providedByOwnerDataPods = useSelector(
     (state) => state.userDataForAnalytics.analyticsData.providedByOwnerDataPods
   );
+
+   // Inject custom CSS for ApexCharts toolbar this works for all charts
+ const menuColors =() =>{
+  const style = document.createElement('style');
+  style.innerHTML = `
+    .apexcharts-menu {
+      background-color: ${theme.palette.mode === 'light' ? '#fff' : '#333'};
+      color: ${theme.palette.mode === 'light' ? '#000' : '#fff'};
+    }
+    .apexcharts-menu-item {
+      color: ${theme.palette.mode === 'light' ? '#000' : '#fff'};
+    }
+    .apexcharts-menu-item:hover {
+      background-color: ${theme.palette.action.hover};
+    }
+  `;
+  document.head.appendChild(style);
+  return () => {
+    document.head.removeChild(style);
+  };
+}
+
+  menuColors();
+  
+  useEffect(() => {
+    menuColors();
+  }, [theme.palette.mode]);
+
 
   useEffect(() => {
     if (!providedByOwnerDataPods) {
@@ -216,26 +246,10 @@ const ProvidedByOwnerDataPodsStats = () => {
     },
   };
 
-  // Inject custom CSS for ApexCharts toolbar this works for all charts
-  useEffect(() => {
-    const style = document.createElement('style');
-    style.innerHTML = `
-      .apexcharts-menu {
-        background-color: ${theme.palette.mode === 'light' ? '#fff' : '#333'};
-        color: ${theme.palette.mode === 'light' ? '#000' : '#fff'};
-      }
-      .apexcharts-menu-item {
-        color: ${theme.palette.mode === 'light' ? '#000' : '#fff'};
-      }
-      .apexcharts-menu-item:hover {
-        background-color: ${theme.palette.action.hover};
-      }
-    `;
-    document.head.appendChild(style);
-    return () => {
-      document.head.removeChild(style);
-    };
-  }, [theme.palette.mode]);
+   
+
+
+ 
 
   return (
     <Card sx={{ backgroundColor: "transparent" }}>
