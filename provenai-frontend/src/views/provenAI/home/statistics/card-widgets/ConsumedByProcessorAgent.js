@@ -1,7 +1,6 @@
 // ** MUI Imports
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
-import Avatar from "@mui/material/Avatar";
 import Typography from "@mui/material/Typography";
 import CardHeader from "@mui/material/CardHeader";
 import CardContent from "@mui/material/CardContent";
@@ -12,6 +11,7 @@ import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useTheme } from "@mui/material/styles";
 import { updateConsumedByProcessorAgents } from "src/store/apps/userDataForAnalytics/userDataForAnalytics";
+import Icon from "src/@core/components/icon";
 
 const ConsumedByProcessorAgent = () => {
   const theme = useTheme();
@@ -50,7 +50,7 @@ const ConsumedByProcessorAgent = () => {
   return (
     <Card sx={{ backgroundColor: "transparent" }}>
       <CardHeader
-        title="Consumed by your Agents"        
+        title="Consumed by your Agents"
         subheader={
           <span>
             Total{" "}
@@ -93,22 +93,12 @@ const ConsumedByProcessorAgent = () => {
                   onChange={() => handleCheckboxChange(item.id)}
                 />
 
-                <Avatar
-                  variant="rounded"
-                  sx={{
-                    mr: 3,
-                    width: 50,
-                    height: 42,
-                    backgroundColor: "background.default",
-                  }}
-                >
-                  <img
-                    alt="avatar"
-                    src={"/images/avatars/2.png"}
-                    width={44}
-                    height={44}
-                  />
-                </Avatar>
+                <Icon
+                  icon="mdi:robot-happy-outline"
+                  fontSize={40}
+                  color={theme.palette.primary.main}
+                />
+
                 <Box
                   sx={{
                     width: "100%",
@@ -116,6 +106,7 @@ const ConsumedByProcessorAgent = () => {
                     flexWrap: "wrap",
                     alignItems: "center",
                     justifyContent: "space-between",
+                    ml: 2,
                   }}
                 >
                   <Box

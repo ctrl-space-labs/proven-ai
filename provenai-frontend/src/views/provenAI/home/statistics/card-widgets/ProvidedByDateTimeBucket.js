@@ -21,8 +21,6 @@ const ProvidedByDateTimeBucket = () => {
     (state) => state.permissionOfUseAnalytics.filters.apiFilters
   );
 
-  
-
   useEffect(() => {
     if (!providedByDataTimeBucket) {
       return;
@@ -42,40 +40,52 @@ const ProvidedByDateTimeBucket = () => {
     setTotalTokensUpdated(totalTokensUpdated);
   }, [providedByDataTimeBucket]);
 
-
-  const aggregateDataByInterval = (startDate, endDate, interval, formatCategory) => {
+  const aggregateDataByInterval = (
+    startDate,
+    endDate,
+    interval,
+    formatCategory
+  ) => {
     const aggregatedData = {};
     const categories = [];
-  
+
     // Initialize the dates and loop through each interval
-    for (let date = new Date(startDate); date <= endDate; date = new Date(date.getTime() + interval)) {
+    for (
+      let date = new Date(startDate);
+      date <= endDate;
+      date = new Date(date.getTime() + interval)
+    ) {
       const category = formatCategory(date);
       categories.push(category);
-  
+
       aggregatedData[category] = {
         totalSumTokens: 0,
         updatedTotalTokens: 0,
       };
     }
-  
+
     // Aggregate the data based on the provided buckets
     providedByDataTimeBucket.forEach((bucket) => {
       const date = new Date(bucket.date);
       const category = formatCategory(date);
-  
+
       if (aggregatedData[category]) {
         aggregatedData[category].totalSumTokens += bucket.totalSumTokens;
-        aggregatedData[category].updatedTotalTokens += bucket.updatedTotalTokens;
+        aggregatedData[category].updatedTotalTokens +=
+          bucket.updatedTotalTokens;
       }
     });
-  
+
     return {
-      filteredData: categories.map((category) => aggregatedData[category].totalSumTokens),
-      filteredUpdatedData: categories.map((category) => aggregatedData[category].updatedTotalTokens),
+      filteredData: categories.map(
+        (category) => aggregatedData[category].totalSumTokens
+      ),
+      filteredUpdatedData: categories.map(
+        (category) => aggregatedData[category].updatedTotalTokens
+      ),
       categories,
     };
   };
-
 
   const filterDataByTimeRange = () => {
     if (!filteredDates || !providedByDataTimeBucket) {
@@ -90,50 +100,55 @@ const ProvidedByDateTimeBucket = () => {
 
     if (timeDiff <= oneDay) {
       return aggregateDataByInterval(
-        startDate, endDate, 
+        startDate,
+        endDate,
         60 * 60 * 1000, // 1 hour in milliseconds
         (date) => `${date.getHours()}:00`
       );
     } else if (timeDiff <= 30 * oneDay) {
       return aggregateDataByInterval(
-        startDate, endDate, 
+        startDate,
+        endDate,
         oneDay,
         (date) => `${date.getDate()}/${date.getMonth() + 1}`
       );
     } else if (timeDiff <= 90 * oneDay) {
       return aggregateDataByInterval(
-        startDate, endDate, 
-         oneDay,
+        startDate,
+        endDate,
+        oneDay,
         (date) => `${date.getDate()}/${date.getMonth() + 1}`
       );
     } else if (timeDiff <= 180 * oneDay) {
       return aggregateDataByInterval(
-        startDate, endDate, 
-         oneDay,
+        startDate,
+        endDate,
+        oneDay,
         (date) => `${date.getDate()}/${date.getMonth() + 1}`
       );
     } else if (timeDiff <= 365 * oneDay) {
       return aggregateDataByInterval(
-        startDate, endDate, 
+        startDate,
+        endDate,
         30 * oneDay,
         (date) => `${date.getMonth() + 1}/${date.getFullYear()}`
       );
     } else if (timeDiff <= 2 * 365 * oneDay) {
       return aggregateDataByInterval(
-        startDate, endDate, 
+        startDate,
+        endDate,
         30 * oneDay,
         (date) => `${date.getMonth() + 1}/${date.getFullYear()}`
       );
     } else {
       return aggregateDataByInterval(
-        startDate, endDate, 
+        startDate,
+        endDate,
         30 * oneDay,
         (date) => `${date.getMonth() + 1}/${date.getFullYear()}`
       );
     }
   };
-
-
 
   const { filteredData, filteredUpdatedData, categories } =
     filterDataByTimeRange();
@@ -221,10 +236,10 @@ const ProvidedByDateTimeBucket = () => {
     },
     legend: { show: false },
     dataLabels: { enabled: false },
-    colors: [hexToRGBA(theme.palette.customColors.trackBg, 1)],
+    colors: [hexToRGBA(theme.palette.grey[300], 1)],
     grid: {
       strokeDashArray: 7,
-      borderColor: theme.palette.divider,
+      borderColor: theme.palette.primary.dark,
     },
     states: {
       hover: {
@@ -240,6 +255,12 @@ const ProvidedByDateTimeBucket = () => {
       labels: { show: true },
       axisTicks: { show: false },
       axisBorder: { show: false },
+      labels: {
+        style: {
+          fontSize: "0.75rem",
+          colors: theme.palette.primary.dark,
+        },
+      },
     },
     yaxis: {
       min: 0,

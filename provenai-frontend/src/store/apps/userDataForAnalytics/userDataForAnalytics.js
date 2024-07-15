@@ -13,6 +13,10 @@ export const fetchUserDataForAnalytics = createAsyncThunk(
     dataPodIdIn,
     permissionOfUseAnalytics,
   }) => {
+    
+    if(!organizationId) {
+      return;
+    }
     const promises = [
       agentService.getAgentsByOrganization(organizationId, token),
       dataPodsService.getDataPodsByOrganization(organizationId, token),
@@ -35,7 +39,10 @@ export const fetchUserDataForAnalytics = createAsyncThunk(
       dataPodsByOrgResponse,
       agentsIdInResponse,
       dataPodIdInResponse,
-    ] = await Promise.all(promises);
+    ] = await Promise.all(promises).catch(error => {
+      console.error('Error in API call:', error);
+      throw error;
+    });
 
     const providedByOwnerDataPods = toApexChartData(
       "dataPod",
@@ -79,7 +86,7 @@ export const fetchUserDataForAnalytics = createAsyncThunk(
     );
 
 
-    return {
+    const result = {
       userData: {
         agentsByOrgId: agentsByOrgResponse.data,
         dataPodsByOrgId: dataPodsByOrgResponse.data,
@@ -95,6 +102,7 @@ export const fetchUserDataForAnalytics = createAsyncThunk(
         consumedByDateTimeBuckets,
       },
     };
+    return result;
   }
 );
 
@@ -287,8 +295,12 @@ const userDataForAnalyticsSlice = createSlice({
       })
       .addCase(fetchUserDataForAnalytics.fulfilled, (state, action) => {
         state.status = "succeeded";
-        state.userData = action.payload.userData;
-        state.analyticsData = action.payload.analyticsData;
+        if (action.payload) {
+          state.userData = action.payload.userData || {};
+          state.analyticsData = action.payload.analyticsData || {};
+        } else {
+          console.warn('No payload received in fetchUserDataForAnalytics.fulfilled');
+        }
       })
       .addCase(fetchUserDataForAnalytics.rejected, (state, action) => {
         state.status = "failed";

@@ -71,6 +71,9 @@ export const updateGraphData = createAsyncThunk(
 export const fetchAnalytics = createAsyncThunk(
   "permissionOfUseAnalytics/fetchAnalytics",
   async ({ organizationId, storedToken }, thunkAPI) => {
+    if (!organizationId) {
+      return thunkAPI.rejectWithValue("Organization ID is required");
+    }
     try {
       const { dispatch, getState } = thunkAPI;
 

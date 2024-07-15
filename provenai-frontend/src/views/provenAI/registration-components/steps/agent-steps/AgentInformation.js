@@ -225,6 +225,7 @@ const AgentInformation = ({
   };
 
   const handleFormSubmit = async (data) => {
+    console.log("data", data);
     const updatedData = await updateDataPod(data);
     setAgentData(updatedData);
     onSubmit();

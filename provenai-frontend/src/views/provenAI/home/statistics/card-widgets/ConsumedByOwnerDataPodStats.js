@@ -58,16 +58,26 @@ const ConsumedByOwnerDataPodsStats = () => {
     dispatch(updateConsumedByOwnerDataPods(updatedDataPods));
   };
 
+  const lightPalette = [      
+    theme.palette.warning.light,
+    theme.palette.info.light,
+    theme.palette.error.light,
+    theme.palette.primary.light,
+    theme.palette.success.light,
+  ];
+
+  const darkPalette = [        
+    theme.palette.warning.dark,
+    theme.palette.info.dark,
+    theme.palette.error.dark,
+    theme.palette.primary.dark,
+    theme.palette.success.dark,
+  ];
+
   const colorPalette = dataPods.map((dataPod, index) => {
+    const colors = theme.palette.mode === 'light' ? lightPalette : darkPalette;
     if (dataPod.active) {
-      const colors = [
-        hexToRGBA(theme.palette.primary.light, 1),
-        hexToRGBA(theme.palette.success.light, 1),
-        hexToRGBA(theme.palette.warning.light, 1),
-        hexToRGBA(theme.palette.info.light, 1),
-        hexToRGBA(theme.palette.error.light, 1),
-      ];
-      return colors[index % colors.length];
+      return hexToRGBA(colors[index % colors.length], 1);
     } else {
       return hexToRGBA(theme.palette.grey[400], 1);
     }
@@ -122,7 +132,7 @@ const ConsumedByOwnerDataPodsStats = () => {
       position: "top",
       horizontalAlign: "center",
       labels: {
-        colors: theme.palette.text.secondary,
+        colors: theme.palette.mode === 'light' ? theme.palette.text.primary : theme.palette.grey[400], 
       },
       markers: {
         offsetX: -3,
@@ -140,6 +150,9 @@ const ConsumedByOwnerDataPodsStats = () => {
       style: {
         fontWeight: 500,
         fontSize: "0.875rem",
+        colors: [function(opts) {
+          return theme.palette.mode === 'light' ? theme.palette.primary.dark : theme.palette.common.white;
+        }],
       },
       formatter: function (val, opt) {
         return (

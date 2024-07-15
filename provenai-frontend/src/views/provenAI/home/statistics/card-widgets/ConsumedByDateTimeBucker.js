@@ -215,10 +215,10 @@ const ConsumedByDateTimeBucket = () => {
     },
     legend: { show: false },
     dataLabels: { enabled: false },
-    colors: [hexToRGBA(theme.palette.customColors.trackBg, 1)],
+    colors: [hexToRGBA(theme.palette.grey[300], 1)],
     grid: {
       strokeDashArray: 7,
-      borderColor: theme.palette.divider,
+      borderColor: theme.palette.primary.dark,
     },
     states: {
       hover: {
@@ -234,6 +234,12 @@ const ConsumedByDateTimeBucket = () => {
       labels: { show: true },
       axisTicks: { show: false },
       axisBorder: { show: false },
+      labels: {
+        style: {
+          fontSize: "0.75rem",
+          colors: theme.palette.primary.dark,
+        },
+      },
     },
     yaxis: {
       min: 0,
