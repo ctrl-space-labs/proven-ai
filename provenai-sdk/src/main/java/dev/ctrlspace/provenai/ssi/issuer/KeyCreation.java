@@ -1,10 +1,9 @@
 package dev.ctrlspace.provenai.ssi.issuer;
 
 import dev.ctrlspace.provenai.utils.ContinuationObjectUtils;
-import id.walt.crypto.keys.Key;
+import id.walt.crypto.keys.JwkKeyMeta;
 import id.walt.crypto.keys.KeyType;
-import id.walt.crypto.keys.LocalKey;
-import id.walt.crypto.keys.LocalKeyMetadata;
+import id.walt.crypto.keys.jwk.JWKKey;
 import kotlin.coroutines.Continuation;
 
 public class KeyCreation {
@@ -24,14 +23,14 @@ public class KeyCreation {
      * @param characterLength The length of the key in characters, should be greater than 2048
      * @return The generated key
      */
-    public static LocalKey generateKey(KeyType keyType, int characterLength) {
+    public static JWKKey generateKey(KeyType keyType, int characterLength) {
         // Create a continuation object
         Continuation<? super Object> continuation = ContinuationObjectUtils.createSuperContinuation();
 
         // Create an instance of LocalKeyMetadata
-        LocalKeyMetadata metadata = new LocalKeyMetadata(characterLength);
+        JwkKeyMeta metadata = new JwkKeyMeta("JWKKey",characterLength);
         // Generate a key using the generate function from the companion object
-        return (LocalKey) LocalKey.Companion.generate(keyType, metadata, continuation);
+        return  JWKKey.Companion.generateBlocking(keyType,metadata);
     }
 
 }

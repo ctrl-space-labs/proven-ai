@@ -65,7 +65,7 @@ public class ProvenAIIssuer {
         Map<String, String> additionalJwtHeaders = new HashMap<>(); // Provide additional JWT headers if needed
         Map<String, JsonElement> additionalJwtOptions = new HashMap<>(); // Provide additional JWT options if needed
 
-        return w3cVC.signJws(issuerKey, issuerDid, subjectDid,additionalJwtHeaders ,additionalJwtOptions, continuationSuper);
+        return w3cVC.signJwsBlocking(issuerKey, issuerDid, subjectDid,additionalJwtHeaders ,additionalJwtOptions, continuationSuper);
     }
 
 

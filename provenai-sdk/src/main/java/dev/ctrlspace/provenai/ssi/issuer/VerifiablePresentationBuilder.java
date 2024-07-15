@@ -31,7 +31,7 @@ public class VerifiablePresentationBuilder {
     public VerifiablePresentationBuilder() {
         this.continuationPlain = ContinuationObjectUtils.createPlainContinuation();
         this.continuationSuper = ContinuationObjectUtils.createSuperContinuation();
-        WaltidServices.INSTANCE.minimalInit(continuationPlain);
+        WaltidServices.INSTANCE.initBlocking();
         // Initialize the presentation builder with default settings
         presentationBuilder = new PresentationBuilder();
     }

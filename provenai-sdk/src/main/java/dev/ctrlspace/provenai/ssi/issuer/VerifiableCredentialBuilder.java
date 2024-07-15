@@ -144,7 +144,7 @@ public class VerifiableCredentialBuilder {
 
         Continuation<? super Object> continuationSuper = ContinuationObjectUtils.createSuperContinuation();
 
-        return vc.signJws(issuerKey, issuerDid, subjectDid,
+        return vc.signJwsBlocking(issuerKey, issuerDid, subjectDid,
                                     additionalJwtHeaders, jsonElementAdditionalJwtOptions, continuationSuper);
     }
 }
