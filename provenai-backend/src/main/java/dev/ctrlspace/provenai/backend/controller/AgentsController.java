@@ -98,11 +98,16 @@ public class AgentsController implements AgentsControllerSpec {
     }
 
     @PreAuthorize("@securityUtils.hasAuthority('OP_READ_PROVEN_AI_AGENT', 'getRequestedAgentIdFromPathVariable')")
+    @GetMapping("/agents/{agentId}")
+    public Agent getAgentById(@PathVariable UUID agentId) throws ProvenAiException {
+        return agentService.getAgentById(agentId);
+    }
+
+    @PreAuthorize("@securityUtils.hasAuthority('OP_READ_PROVEN_AI_AGENT', 'getRequestedAgentIdFromPathVariable')")
     @GetMapping("/agents/{agentId}/policies")
     public Page<AgentPurposeOfUsePolicies> getAgentPurposeOfUsePolicies(@PathVariable UUID agentId, Pageable pageable) throws ProvenAiException {
         return agentService.getAgentPurposeOfUsePolicies(agentId, pageable);
     }
-
 
 
     @PostMapping("/agents")
@@ -139,12 +144,6 @@ public class AgentsController implements AgentsControllerSpec {
         Agent agent = agentConverter.toEntity(agentDTO);
         agent.setId(agentId);
         return agentService.updateAgent(agent);
-    }
-
-    @PreAuthorize("@securityUtils.hasAuthority('OP_READ_PROVEN_AI_AGENT', 'getRequestedAgentIdFromPathVariable')")
-    @GetMapping("/agents/{agentId}")
-    public Agent getAgentById(@PathVariable UUID agentId) throws ProvenAiException {
-        return agentService.getAgentById(agentId);
     }
 
 
