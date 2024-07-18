@@ -39,7 +39,6 @@ const navigation = () => {
                 itemId: dataPod.id,                
               };
             });
-
             const agentResponse = await agentService.getAgentsByOrganization(
               activeOrganization.id,
               storedToken

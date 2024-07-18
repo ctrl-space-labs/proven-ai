@@ -1,9 +1,9 @@
 
 spring:
   datasource:
-    url: ${DATABASE_URL}
-    username: ${DATABASE_USERNAME}
-    password: ${DATABASE_PASSWORD}
+    url: ${DEV_DATABASE_URL}
+    username: ${DEV_DATABASE_USERNAME}
+    password: ${DEV_DATABASE_PASSWORD}
     hikari:
       maximum-pool-size: 3
       minimum-idle: 1
@@ -16,7 +16,7 @@ proven-ai:
       url: https://dev-proven-ai-issuer.ctrlspace.dev/ssi/issuer
   domains:
     gendox:
-      base-url: http://localhost:8080
+      base-url: http://localhost:5002
     proven-ai-frontend:
       base-url: http://localhost:3001
   blockchain:

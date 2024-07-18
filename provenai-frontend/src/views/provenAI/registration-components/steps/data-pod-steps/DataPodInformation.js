@@ -1,10 +1,8 @@
 // ** React Imports
 import React from "react";
 import { useEffect, useState } from "react";
-import { useRef } from 'react';
-
+import { useRef } from "react";
 import { useRouter } from "next/router";
-
 import {
   Grid,
   Typography,
@@ -16,14 +14,11 @@ import {
   MenuItem,
   InputLabel,
   Select,
+  FormHelperText,
 } from "@mui/material";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-
-
-// ** Validation Schema and Default Values
-import { agentSchema } from "src/utils/validationSchemas";
-
+import { dataPodSchema } from "src/utils/validationSchemas";
 import policyService from "src/provenAI-sdk/policyService";
 import agentService from "src/provenAI-sdk/agentService";
 import authConfig from "src/configs/auth";
@@ -38,10 +33,17 @@ const DataPodInformation = ({
   activeDataPod,
   organizationId,
   setActiveStep,
+  setDataPodErrors,
 }) => {
   const router = useRouter();
   const isFirstRender = useRef(true);
+  const [usagePolicies, setUsagePolicies] = useState([]);
+  const [agents, setAgents] = useState([]);
+  const [selectNewDataPod, setSelectNewDataPod] = useState(false);
 
+  const storedToken = window.localStorage.getItem(
+    authConfig.storageTokenKeyName
+  );
 
   const {
     control,
@@ -51,22 +53,18 @@ const DataPodInformation = ({
     formState: { errors },
   } = useForm({
     defaultValues: dataPodData,
-    resolver: yupResolver(agentSchema),
+    resolver: yupResolver(dataPodSchema),
   });
-
-  const [usagePolicies, setUsagePolicies] = useState([]);
-  const [agents, setAgents] = useState([]);
-  const [selectNewDataPod, setSelectNewDataPod] = useState(false);
-
-  const storedToken = window.localStorage.getItem(
-    authConfig.storageTokenKeyName
-  );
 
   useEffect(() => {
     Object.keys(dataPodData).forEach((key) => {
       setValue(key, dataPodData[key]);
     });
   }, [dataPodData, setValue]);
+
+  useEffect(() => {
+    setDataPodErrors(errors);
+  }, [errors, setDataPodErrors]);
 
   useEffect(() => {
     if (isFirstRender.current) {
@@ -97,7 +95,7 @@ const DataPodInformation = ({
 
     const fetchAgents = async () => {
       try {
-        const agents = await agentService.getAgentWithoutVc(storedToken);
+        const agents = await agentService.getPublicAgents(storedToken);
         setAgents(agents.data.content);
       } catch (error) {
         console.error("Error fetching agents:", error);
@@ -116,25 +114,65 @@ const DataPodInformation = ({
     }
   }, [activeDataPod, userDataPods, setValue]);
 
-  const updateAgentDataWithNames = (data) => {
+  const updateAgentData = async (data) => {
     if (agents.length > 0) {
+      let allowPolicies, denyPolicies;
+      try {
+        allowPolicies = await policyService.getPolicyOptions(
+          "ALLOW_LIST",
+          storedToken
+        );        
+      } catch (error) {
+        console.error("Error fetching allow policy options:", error);
+      }
+
+      try {
+        denyPolicies = await policyService.getPolicyOptions(
+          "DENY_LIST",
+          storedToken
+        );        
+      } catch (error) {
+        console.error("Error fetching deny policy options:", error);
+      }
+
+      const allowAgentPolicy = allowPolicies?.data.find(
+        (policy) => policy.name === "ALLOW_AGENT_NAME"
+      );
+      const denyAgentPolicy = denyPolicies?.data.find(
+        (policy) => policy.name === "DENY_AGENT_NAME"
+      );
+
       const updatedAgentData = {
         ...data,
         allowList: data.allowList.map((allow) => {
           const agent = agents.find((agent) => agent.id === allow.agentId);
-          return agent ? { ...allow, name: agent.agentName } : allow;
+          return agent
+            ? {
+                ...allow,
+                name: agent.agentName,
+                policyOptionId: allowAgentPolicy?.id || "",
+                policyTypeId: allowAgentPolicy?.policyTypeId || "",
+              }
+            : allow;
         }),
         denyList: data.denyList.map((deny) => {
           const agent = agents.find((agent) => agent.id === deny.agentId);
-          return agent ? { ...deny, name: agent.agentName } : deny;
+          return agent
+            ? {
+                ...deny,
+                name: agent.agentName,
+                policyOptionId: denyAgentPolicy?.id || "",
+                policyTypeId: denyAgentPolicy?.policyTypeId || "",
+              }
+            : deny;
         }),
       };
       return updatedAgentData;
     }
   };
 
-  const handleFormSubmit = (data) => {
-    const updatedData = updateAgentDataWithNames(data);
+  const handleFormSubmit = async (data) => {
+    const updatedData = await updateAgentData(data);
     setDataPodData(updatedData);
     onSubmit();
   };
@@ -147,7 +185,6 @@ const DataPodInformation = ({
     }));
     set;
     updateShallowQueryParams({ organizationId, dataPodId: daPod.id });
-    console.log(`Clicked on Data Pod: `, daPod);
   };
 
   const updateShallowQueryParams = (params) => {
@@ -192,7 +229,6 @@ const DataPodInformation = ({
                     {...field}
                     label="Data Pod"
                   >
-                    {/* <MenuItem value="new-data-pod">New Data Pod</MenuItem> */}
                     {userDataPods.map((dp) => (
                       <MenuItem
                         key={dp.id}
@@ -205,21 +241,15 @@ const DataPodInformation = ({
                   </Select>
                 )}
               />
+              {errors.dataPodName && (
+                <FormHelperText error>
+                  {errors.dataPodName.message}
+                </FormHelperText>
+              )}
             </FormControl>
           )}
         </Grid>
-        {/* <Grid item xs={12} sm={3}>
-          {watch("dataPodName") === "new-data-pod" && (
-            <Button
-              variant="contained"
-              onClick={() =>
-                (window.location.href = "https://your-new-site.com")
-              }
-            >
-              Create Data Pod
-            </Button>
-          )}
-        </Grid> */}
+
         <Grid item xs={12}>
           {" "}
         </Grid>
@@ -310,7 +340,6 @@ const DataPodInformation = ({
                     },
                   }}
                   id="autocomplete-multiple-filled-deny"
-                  // value={value? value.map((deny) => deny.name) : []}
                   value={
                     value
                       ? value.map(
@@ -337,6 +366,10 @@ const DataPodInformation = ({
                       {...params}
                       sx={{ mb: 2, mt: 2 }}
                       placeholder="Select agents"
+                      error={!!errors.denyList}
+                      helperText={
+                        errors.denyList ? errors.denyList.message : ""
+                      }
                     />
                   )}
                   renderTags={(value, getTagProps) =>
@@ -418,6 +451,10 @@ const DataPodInformation = ({
                       {...params}
                       sx={{ mb: 2, mt: 2 }}
                       placeholder="Select agents"
+                      error={!!errors.allowList}
+                      helperText={
+                        errors.allowList ? errors.allowList.message : ""
+                      }
                     />
                   )}
                   renderTags={(value, getTagProps) =>

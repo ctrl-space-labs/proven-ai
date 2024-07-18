@@ -1,13 +1,17 @@
-const gendoxUrl = "http://localhost:5000/gendox/api/v1/"; // Local Environment
-//const url= 'https://gendox-api.ctrlspace.dev/gendox/api/v1/' // Production Environment (AWS)
-// const url= 'http://localhost:8080/gendox/api/v1/' // Local Environment
-const url = 'https://dev.gendox.ctrlspace.dev/gendox/api/v1/' // Development Environment (Hetzner)
+const gendoxUrl = "http://localhost:5002/gendox/api/v1/"; // Local Environment
+// const gendoxUrl = "http://localhost:8080/gendox/api/v1/"; // Local Environment
+//const gendoxUrl= 'https://gendox-api.ctrlspace.dev/gendox/api/v1/' // Production Environment (AWS)
+// const gendoxUrl= 'http://localhost:8080/gendox/api/v1/' // Local Environment
+// const gendoxUrl = 'https://dev.gendox.ctrlspace.dev/gendox/api/v1/' // Development Environment (Hetzner)
 const provenUrl = 'http://localhost:8082/proven-ai/api/v1/' // Local Environment
 
 const verifierUrl = 'https://proven-ai-dev.ctrlspace.dev/verifier/' // Local Environment
 
 
+
 export default {
+
+  gendoxUrl: gendoxUrl,
 
   getOrganizationsByCriteria: (organizationIdIn) => {
     const organizationIds = organizationIdIn.join(",");    
@@ -38,11 +42,19 @@ export default {
    return `${provenUrl}data-pods`;
   },
 
+  publicDataPods: (page = 0, size = 200) => {
+    return `${provenUrl}data-pods/public?page=${page}&size=${size}`;
+  },
+
   getDataPodById: (dataPodId) =>
     `${provenUrl}data-pods/${dataPodId}`,
 
   agents: () =>
     `${provenUrl}agents`,
+
+  publicAgents: (page = 0, size = 200) => {
+   return `${provenUrl}agents/public?page=${page}&size=${size}`;
+  },
 
   getAgentById: (agentId) =>
     `${provenUrl}agents/${agentId}`,
@@ -50,27 +62,20 @@ export default {
   getPolicyOptions: (policyTypeName) =>
     `${provenUrl}policy-options?policyTypeName=${policyTypeName}`,  
 
-  getAgentWithoutVc: (page = 0, size = 200) =>
-    `${provenUrl}agents/no-vc?page=${page}&size=${size}`,  
-
   getAclPoliciesByDataPod: (dataPodId) =>
     `${provenUrl}data-pods/${dataPodId}/acl-policies`,  
 
   getPoliciesByAgent: (agentId) =>
     `${provenUrl}agents/${agentId}/policies`,
 
-  aclPolicies:() =>
-    `${provenUrl}acl-policies`,
+  aclPolicies: (dataPodId) =>
+    `${provenUrl}data-pods/${dataPodId}/acl-policies`,
 
-  agentPurposeOfUsePolicies:() =>
-    `${provenUrl}agent-purpose-of-use-policies`,
-
-  userAgents: () => {
-    return `${gendoxUrl}project-agents`;
-  },
+  agentPurposeOfUsePolicies:(agentId) =>
+    `${provenUrl}agents/${agentId}/agent-purpose-of-use-policies`, 
 
 
-  getProfile: url + "profile",
+  getProfile: gendoxUrl + "profile",
 
   getPermissionOfUseAnalytics: () => `${provenUrl}permission-of-use-analytics`,
 

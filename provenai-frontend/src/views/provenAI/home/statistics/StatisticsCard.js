@@ -1,68 +1,153 @@
 import React, { useState, useEffect } from "react";
-import { formatDistanceToNow, parseISO } from "date-fns";
-import ApexChartWrapper from 'src/@core/styles/libs/react-apexcharts'
-import DataPodsStats from "./card-widgets/DataPodsStats";
-import WeeklyOverview from "./card-widgets/WeeklyOverview";
-import AgentWordStatistics from "./card-widgets/AgentWordStatistics";
-import AgentVisitStatistics from "./card-widgets/AgentVisitStatistics";
-import Sales from "./card-widgets/Sales";
-import MonthlyBudget from "./card-widgets/MonthlyBudget";
-
-
-
-// ** MUI Imports
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
+import { useAuth } from "src/hooks/useAuth";
+import ApexChartWrapper from "src/@core/styles/libs/react-apexcharts";
+import ProvidedByOwnerDataPodsStats from "./card-widgets/ProvidedByOwnerDataPodStats";
+import ConsumedByOwnerDataPodsStats from "./card-widgets/ConsumedByOwnerDataPodStats";
+import ProvidedByDateTimeBucket from "./card-widgets/ProvidedByDateTimeBucket";
+import ProvidedByProcessorAgent from "./card-widgets/ProvidedByProcessorAgent";
+import ConsumedByProcessorAgent from "./card-widgets/ConsumedByProcessorAgent";
+import ConsumedByDateTimeBucket from "./card-widgets/ConsumedByDateTimeBucker";
 import Grid from "@mui/material/Grid";
-import { styled } from "@mui/material/styles";
-import { Button } from "@mui/material";
-import Divider from "@mui/material/Divider";
-
-// ** Next Import
-import Link from "next/link";
-
-// ** Icon Imports
-import Icon from "src/@core/components/icon";
-import CustomAvatar from "src/@core/components/mui/avatar";
-
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import Typography from "@mui/material/Typography";
 import { useSelector, useDispatch } from "react-redux";
+import { fetchUserDataForAnalytics } from "src/store/apps/userDataForAnalytics/userDataForAnalytics";
 import { useRouter } from "next/router";
-import { formatDocumentTitle } from "src/utils/documentUtils";
 import authConfig from "src/configs/auth";
 
-const Documents = ({ documents }) => {
+const StatisticsCard = () => {
   const router = useRouter();
+  const { organizationId } = router.query;
+  const auth = useAuth();
+  const storedToken = window.localStorage.getItem(
+    authConfig.storageTokenKeyName
+  );
   const dispatch = useDispatch();
+
+  const permissionOfUseAnalytics = useSelector(
+    (state) => state.permissionOfUseAnalytics
+  );
+
+  useEffect(() => {
+    if (!permissionOfUseAnalytics) {
+      return;
+    }
+
+    const {
+      consumedDataTokensByOwnerDataPod,
+      providedDataTokensByProcessorAgent,
+    } = permissionOfUseAnalytics.graphData || {};
+    const agentIdIn = Object.keys(
+      providedDataTokensByProcessorAgent || {}
+    ).filter((id) => id !== "unknown");
+    const dataPodIdIn = Object.keys(
+      consumedDataTokensByOwnerDataPod || {}
+    ).filter((id) => id !== "unknown");
+    const agentIdInStr = agentIdIn.join(",");
+    const dataPodIdInStr = dataPodIdIn.join(",");
+
+    dispatch(
+      fetchUserDataForAnalytics({
+        organizationId,
+        token: storedToken,
+        agentIdIn: agentIdInStr,
+        dataPodIdIn: dataPodIdInStr,
+        permissionOfUseAnalytics: permissionOfUseAnalytics,
+      })
+    );
+  }, [
+    organizationId,
+    storedToken,
+    permissionOfUseAnalytics.graphData,
+    dispatch,
+  ]);
 
   return (
     <Grid container spacing={6}>
       <Grid item xs={12} style={{ textAlign: "center" }}>
         <ApexChartWrapper>
           <Grid container spacing={6}>
-            <Grid item xs={12} md={8}>
-              <DataPodsStats />
+            <Grid item xs={12}>
+              <Card sx={{ backgroundColor: "action.hover"}}>
+                <CardContent>
+                  <Typography
+                    variant="h4"
+                    gutterBottom
+                    sx={{ textAlign: "left", fontWeight: 600,  marginBottom: 6 }}
+                  >
+                    Provided Data
+                  </Typography>
+                  <Grid container spacing={6}>
+                    <Grid item xs={12} md={8} >
+                      <ProvidedByOwnerDataPodsStats />
+                    </Grid>
+                    <Grid item xs={12} sm={6} md={4}>
+                      <ProvidedByProcessorAgent />
+                    </Grid>
+                    <Grid item xs={12} sm={6} md={12}>
+                      <ProvidedByDateTimeBucket />
+                    </Grid>
+                  </Grid>
+                </CardContent>
+              </Card>
             </Grid>
-            <Grid item xs={12} sm={6} md={4}>
-              <WeeklyOverview />
+            <Grid item xs={12}>
+            <Card sx={{ backgroundColor: "action.hover"}}>
+            <CardContent>
+                  <Typography
+                    variant="h4"
+                    gutterBottom
+                    sx={{ textAlign: "left", fontWeight: 600, marginBottom: 6 }}
+                  >
+                    Consumed Data
+                  </Typography>
+                  <Grid container spacing={6}>
+                    <Grid item xs={12} md={8}>
+                      <ConsumedByOwnerDataPodsStats />
+                    </Grid>
+                    <Grid item xs={12} sm={6} md={4}>
+                      <ConsumedByProcessorAgent />
+                    </Grid>
+                    <Grid item xs={12} sm={6} md={12}>
+                      <ConsumedByDateTimeBucket />
+                    </Grid>
+                  </Grid>
+                </CardContent>
+              </Card>
             </Grid>
-            <Grid item xs={12} sm={6} md={4}>
-              <AgentWordStatistics />
-            </Grid>
-            <Grid item xs={12} sm={6} md={4}>
-              <AgentVisitStatistics />
-            </Grid>
-            <Grid item xs={12} sm={6} md={4}>
-              <Sales />
-            </Grid>
-            <Grid item xs={12} md={8}>
-              <MonthlyBudget />
-            </Grid>
-            
           </Grid>
         </ApexChartWrapper>
+        {/* <ApexChartWrapper>
+          
+          <Grid container spacing={6}>
+            <Grid item xs={12} md={8}>
+              <ProvidedByOwnerDataPodsStats />
+            </Grid>
+
+            <Grid item xs={12} sm={6} md={4}>
+              <ProvidedByProcessorAgent />
+            </Grid>
+
+            <Grid item xs={12} sm={6} md={12}>
+              <ProvidedByDateTimeBucket />
+            </Grid>
+            <Grid item xs={12} md={8}>
+              <ConsumedByOwnerDataPodsStats />
+            </Grid>
+
+            <Grid item xs={12} sm={6} md={4}>
+              <ConsumedByProcessorAgent />
+            </Grid>
+
+            <Grid item xs={12} sm={6} md={12}>
+              <ConsumedByDateTimeBucket />
+            </Grid>
+          </Grid>
+        </ApexChartWrapper> */}
       </Grid>
     </Grid>
   );
 };
 
-export default Documents;
+export default StatisticsCard;

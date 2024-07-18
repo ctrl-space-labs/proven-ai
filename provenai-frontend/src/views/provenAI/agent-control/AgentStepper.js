@@ -63,11 +63,9 @@ const AgentStepper = ({
   const [agentUpdated, setAgentUpdated] = useState(false);
   const [isSubmitComplete, setIsSubmitComplete] = useState(false);
 
-  // console.log("USER AGENTS", userAgents);
-  // console.log("User Data", userData);
-  // console.log("Agent Data", agentData);
-  // console.log("User Agents--->", userAgents);
-  // console.log("Active Agent--->", activeAgent);
+  const [userErrors, setUserErrors] = useState({});
+  const [agentErrors, setAgentErrors] = useState({});
+
 
   useEffect(() => {
     if (Object.keys(activeOrganization).length !== 0) {
@@ -161,7 +159,6 @@ const AgentStepper = ({
           );
           await agentService.createAgent(agentDTO, storedToken);
           setAgentUpdated(true);
-          console.log("Creating agent:", agentDTO);
           toast.success("Agent created successfully!");
         }
 
@@ -181,24 +178,22 @@ const AgentStepper = ({
 
           setAgentUpdated(true);
 
-          console.log("Creating policy:", policy);
           toast.success("Policy created successfully!");
         }
 
         // Delete obsolete policies
         if (policyIdsToDelete.length > 0) {
           await agentPurposeOfUsePoliciesService.deleteAgentPurposeOfUsePolicies(
+            agentId,
             policyIdsToDelete,
             storedToken
           );
           setAgentUpdated(true);
-          console.log("Deleting policy:", policyIdsToDelete);
           toast.success("Policy deleted successfully!");
         }
 
         if (agentUpdated && toast.success) {
           const agentOfferVc = await getAgentOfferVc();
-          console.log(agentOfferVc);
         }
 
         setIsSubmitComplete(true);
@@ -242,6 +237,7 @@ const AgentStepper = ({
             userOrganizations={userOrganizations}
             getVcOfferUrl={getVcOfferUrl}
             vcOfferSessionId={vcOfferSessionId}
+            setUserErrors={setUserErrors}
           />
         );
       case 1:
@@ -255,6 +251,7 @@ const AgentStepper = ({
             userAgents={userAgents}
             organizationId={organizationId}
             setActiveStep={setActiveStep}
+            setAgentErrors={setAgentErrors}
           />
         );
       case 2:
@@ -301,7 +298,7 @@ const AgentStepper = ({
             >
               Back
             </Button>
-          </Box>          
+          </Box>
         </Fragment>
       );
     } else {
@@ -316,41 +313,37 @@ const AgentStepper = ({
           <Stepper activeStep={activeStep}>
             {agentSteps.map((step, index) => {
               const labelProps = {};
-              // if (index === activeStep) {
-              //   labelProps.error = false;
-              //   if (userInfo.selectedOrganizationType === "natural-person") {
-              //     if (
-              //       userErrors.firstName ||
-              //       userErrors.familyName
-              //       // ||
-              //       // userErrors.dateOfBirth ||
-              //       // userErrors.gender ||
-              //       // userErrors.nationality ||
-              //       // userErrors.profileLink
-              //     ) {
-              //       labelProps.error = true;
-              //     }
-              //   } else if (userInfo.selectedOrganizationType === "legal-entity") {
-              //     if (
-              //       userErrors.legalPersonIdentifier ||
-              //       userErrors.legalName
-              //       // ||
-              //       // userErrors.legalAddress ||
-              //       // userErrors.country ||
-              //       // userErrors.taxReference ||
-              //       // userErrors.vatNumber ||
-              //       // userErrors.profileLink
-              //     ) {
-              //       labelProps.error = true;
-              //     }
-              //   } else if (agentErrors.agentPurpose && activeStep === 1) {
-              //     labelProps.error = true;
-              //   } else if (dataUseErrors.dataPurpose && activeStep === 2) {
-              //     labelProps.error = true;
-              //   } else {
-              //     labelProps.error = false;
-              //   }
-              // }
+
+              if (index === activeStep) {
+                labelProps.error = false;
+
+                // User information errors
+                if (activeStep === 0) {
+                  if (
+                    userErrors.firstName ||
+                    userErrors.familyName ||
+                    userErrors.dateOfBirth ||
+                    userErrors.gender ||
+                    userErrors.nationality ||
+                    userErrors.profileLink ||
+                    userErrors.legalPersonIdentifier ||
+                    userErrors.legalName ||
+                    userErrors.legalAddress ||
+                    userErrors.country ||
+                    userErrors.taxReference ||
+                    userErrors.vatNumber
+                  ) {
+                    labelProps.error = true;
+                  }
+                }
+
+                // Agent information errors
+                if (activeStep === 1 && agentErrors.agentPurpose || agentErrors.compensationType) {
+                  labelProps.error = true;
+                }
+                
+              }
+              
               return (
                 <Step key={index}>
                   <StepLabel

@@ -20,19 +20,38 @@ const getAgentsByOrganization = async (organizationId, storedToken) => {
 };
 
 /**
- * Get all agents by organizationId 
+ * Get all public agents
  * @param storedToken
- * @returns {Promise<axios.AxiosResponse<AgentDTO>>}
+ * @returns {Promise<axios.AxiosResponse<AgentDTO>>} 
  */
-const getAgentWithoutVc = async (storedToken) => {
-  return axios.get(apiRequests.getAgentWithoutVc(), {
+const getPublicAgents = async (storedToken) => {
+  return axios.get(apiRequests.publicAgents(), {
     headers: {
       "Content-Type": "application/json",
       Authorization: "Bearer " + storedToken,
     },
-    
+    params: {
+      fetchAll: true,
+    },
   });
-};
+}
+/**
+ * Get public agents by agent ids in
+ * @param agentIdIn
+ * @param storedToken
+ * @returns {Promise<axios.AxiosResponse<AgentDTO>>}
+ */
+const getAgentsByIdIn = async (agentIdIn, storedToken) => {
+  return axios.get(apiRequests.publicAgents(), {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + storedToken,
+    },
+    params: {
+      agentIdIn: agentIdIn,
+    },
+  });
+}
 
 /**
  * Get Agent by id
@@ -67,24 +86,6 @@ const getPoliciesByAgent = async (agentId, storedToken) => {
 };
 
 
-/**
- * Get User Agents by organization
- * @param organizationId
- * @param storedToken
- * @returns {Promise<axios.AxiosResponse<ProjectAgent>>}
- */
-const getUserAgentsByOrganizationId = async (organizationId, storedToken) => {
-  return axios.get(apiRequests.userAgents(), {
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: "Bearer " + storedToken,
-    },
-    params: {
-      organizationId: organizationId,
-    },
-  });
-
-}
 
 /**
  * Create a new agent
@@ -105,9 +106,9 @@ const createAgent = async (agentDTO, storedToken) => {
 
 export default {
   getAgentsByOrganization,
-  getAgentWithoutVc,
+  getPublicAgents,
+  getAgentsByIdIn,
   getAgentById,
-  getPoliciesByAgent,
-  getUserAgentsByOrganizationId,
+  getPoliciesByAgent,  
   createAgent
 };

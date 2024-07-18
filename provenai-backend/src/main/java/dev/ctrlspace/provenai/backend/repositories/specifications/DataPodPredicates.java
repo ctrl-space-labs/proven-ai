@@ -29,7 +29,9 @@ public class DataPodPredicates {
 //                allowAgentId(criteria.getAllowAgentId()),
 //                denyAgentId(criteria.getDenyAgentId()),
                 policy(criteria.getPolicy()),
-                policyIn(criteria.getPolicyIn()));
+                policyIn(criteria.getPolicyIn()),
+                dataPodIdIn(criteria.getDataPodIdIn())  // Include new criterion
+        );
         // If predicate is null, return a default Predicate that always evaluates to true
         return predicate != null ? predicate : Expressions.asBoolean(true).isTrue();
 
@@ -105,4 +107,17 @@ public class DataPodPredicates {
 //        }
 //        return qDataPod.denyAgentId.eq(UUID.fromString(denyAgentId));
 //    }
+
+    /**
+     * Returns a Predicate that checks if the DataPod id is in the list of ids
+     *
+     * @param dataPodIdIn
+     * @return
+     */
+    private static Predicate dataPodIdIn(List<UUID> dataPodIdIn) {
+        if (dataPodIdIn == null || dataPodIdIn.isEmpty()) {
+            return null;
+        }
+        return qDataPod.id.in(dataPodIdIn);
+    }
 }

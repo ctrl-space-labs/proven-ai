@@ -76,6 +76,8 @@ public class AclPoliciesService {
                 PolicyOption policyOption = policyOptionRepository.findByName(policy.getPolicyValue());
                 aclPolicy.setPolicyOption(policyOption);
                 aclPolicy.setValue(policyOption.getName());
+                aclPolicy.setValue(policy.getPolicyValue());
+
             }
 
             return aclPolicy;

@@ -23,7 +23,7 @@ const toDataPodDTO = (dataPodData, organizationId, dataPodId) => {
  * @param {Array} activeDataPod - The active data pod to convert.
  * @returns {Object} The converted agent policies including agent purposes, allow list, and deny list.
  */
-const toAgentPolicies = (activeDataPod) => {
+const toDataPodPolicies = (activeDataPod) => {
   const agentPurpose = new Map();
   const allowList = new Map();
   const denyList = new Map();
@@ -106,7 +106,7 @@ const toUsePolicies = (activeDataPod) => {
 };
 
 export default {  
-  toAgentPolicies,
+  toDataPodPolicies,
   toUsePolicies,  
   toDataPodDTO,
 };
