@@ -5,19 +5,16 @@ import dev.ctrlspace.provenai.backend.exceptions.ProvenAiException;
 import dev.ctrlspace.provenai.backend.model.AuditPermissionOfUseVc;
 import dev.ctrlspace.provenai.backend.model.dtos.AuditPermissionOfUseDTO;
 import dev.ctrlspace.provenai.backend.model.dtos.criteria.AuditPermissionOfUseVcCriteria;
-import dev.ctrlspace.provenai.backend.repositories.specifications.AuditPermissionOfUseVcPredicates;
 import dev.ctrlspace.provenai.ssi.issuer.ProvenAIIssuer;
 import dev.ctrlspace.provenai.ssi.model.vc.AdditionalSignVCParams;
 import dev.ctrlspace.provenai.ssi.model.vc.VerifiableCredential;
 import dev.ctrlspace.provenai.ssi.model.vc.attestation.PermissionOfUseCredentialSubject;
 import dev.ctrlspace.provenai.ssi.model.vc.attestation.Policy;
 import id.walt.credentials.vc.vcs.W3CVC;
-import id.walt.crypto.keys.LocalKey;
+import id.walt.crypto.keys.jwk.JWKKey;
 import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -99,11 +96,11 @@ public class AuditPermissionOfUseVcService {
 
 
     public Object createAgentSignedVcJwt(W3CVC w3CVC, String processorOrganizationDid) throws ProvenAiException {
-        LocalKey localKey = new LocalKey(issuerPrivateJwk);
+        JWKKey jwkKey = new JWKKey(issuerPrivateJwk);
         ProvenAIIssuer provenAIIssuer = new ProvenAIIssuer();
         AdditionalSignVCParams additionalSignVCParams = new AdditionalSignVCParams();
 
-        return provenAIIssuer.generateSignedVCJwt(w3CVC, localKey, issuerDid, processorOrganizationDid);
+        return provenAIIssuer.generateSignedVCJwt(w3CVC, jwkKey, issuerDid, processorOrganizationDid);
 
     }
 
