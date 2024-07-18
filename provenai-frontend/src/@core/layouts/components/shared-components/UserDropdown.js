@@ -14,6 +14,8 @@ import MenuItem from "@mui/material/MenuItem";
 import { styled } from "@mui/material/styles";
 import Typography from "@mui/material/Typography";
 import Link from "next/link";
+import apiRequests from "src/configs/apiRequest.js";
+
 
 // ** Icon Imports
 import Icon from "src/@core/components/icon";
@@ -62,6 +64,11 @@ const UserDropdown = (props) => {
     if (url) {
       router.push(url);
     }
+    setAnchorEl(null);
+  };
+
+  const handleOpenInNewTab = (url) => {
+    window.open(url, '_blank');
     setAnchorEl(null);
   };
 
@@ -156,58 +163,18 @@ const UserDropdown = (props) => {
         <MenuItem
           sx={{ p: 0 }}
           onClick={() =>
-            handleDropdownClose(
-              `/gendox/user-profile?organizationId=${organizationId}&userId=${auth.user.id}`
+            handleOpenInNewTab(
+              `${apiRequests.gendoxUrl}gendox/home?organizationId=${organizationId}`
             )
           }
         >
-          <Link
-            href={`/gendox/user-profile?organizationId=${organizationId}&userId=${auth.user.id}`}
-            passHref
-            style={{ textDecoration: "none" }}
-          >
-            <Box sx={styles} >
-              <Icon icon="mdi:account-outline" />
-              Profile
-            </Box>
-          </Link>
+          <Box sx={styles}>
+            <Icon icon="mdi:arrow-up-bold-hexagon-outline" />
+            Go to Gendox
+          </Box>
         </MenuItem>
         <Divider />
-        <MenuItem
-          sx={{ p: 0 }}
-          onClick={() => handleDropdownClose("/gendox/create-organization")}
-        >
-          <Link
-            href="/gendox/create-organization"
-            passHref
-            style={{ textDecoration: "none" }}
-          >
-            <Box sx={{ ...styles, textDecoration: "none" }} >
-              <Icon icon="mdi:plus" />
-              Add Organization
-            </Box>
-          </Link>
-        </MenuItem>
-        <MenuItem
-          sx={{ p: 0 }}
-          onClick={() =>
-            handleDropdownClose(
-              `/gendox/organization-settings?organizationId=${organizationId}`
-            )
-          }
-        >
-          <Link
-            href={`/gendox/organization-settings?organizationId=${organizationId}`}
-            passHref
-            style={{ textDecoration: "none" }}
-          >
-            <Box sx={{ ...styles, textDecoration: "none" }} >
-              <Icon icon="mdi:cog-outline" />
-              Organization Settings
-            </Box>
-          </Link>
-        </MenuItem>
-        <Divider />
+        
         <MenuItem
           onClick={handleLogout}
           sx={{

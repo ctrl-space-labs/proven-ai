@@ -225,6 +225,7 @@ const AgentInformation = ({
   };
 
   const handleFormSubmit = async (data) => {
+    console.log("data", data);
     const updatedData = await updateDataPod(data);
     setAgentData(updatedData);
     onSubmit();
@@ -239,7 +240,6 @@ const AgentInformation = ({
     }));
     set;
     updateShallowQueryParams({ organizationId, agentId: agent.id });
-    console.log(`Clicked on Agent: `, agent);
   };
 
   const updateShallowQueryParams = (params) => {

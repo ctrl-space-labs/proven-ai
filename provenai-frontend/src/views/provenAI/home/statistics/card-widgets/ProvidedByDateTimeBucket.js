@@ -1,105 +1,226 @@
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import Box from '@mui/material/Box'
-import Card from '@mui/material/Card'
-import Button from '@mui/material/Button'
-import Select from '@mui/material/Select'
-import MenuItem from '@mui/material/MenuItem'
-import { useTheme } from '@mui/material/styles'
-import CardHeader from '@mui/material/CardHeader'
-import Typography from '@mui/material/Typography'
-import CardContent from '@mui/material/CardContent'
-import OptionsMenu from 'src/@core/components/option-menu'
-import ReactApexcharts from 'src/@core/components/react-apexcharts'
-import { hexToRGBA } from 'src/@core/utils/hex-to-rgba'
-
-
+import { useSelector, useDispatch } from "react-redux";
+import Card from "@mui/material/Card";
+import { useTheme } from "@mui/material/styles";
+import CardHeader from "@mui/material/CardHeader";
+import CardContent from "@mui/material/CardContent";
+import ReactApexcharts from "src/@core/components/react-apexcharts";
+import { hexToRGBA } from "src/@core/utils/hex-to-rgba";
 
 const ProvidedByDateTimeBucket = () => {
-  // ** Hook
-  const theme = useTheme()
-  const [timeRange, setTimeRange] = useState('monthly');
-  const permissionOfUseAnalytics = useSelector(
-    (state) => state.permissionOfUseAnalytics.graphData
+  const theme = useTheme();
+
+  const [totalTokensProvided, setTotalTokensProvided] = useState(0);
+  const [totalTokensUpdated, setTotalTokensUpdated] = useState(0);
+
+  const providedByDataTimeBucket = useSelector(
+    (state) =>
+      state.userDataForAnalytics.analyticsData.providedByDateTimeBuckets
+  );
+  const filteredDates = useSelector(
+    (state) => state.permissionOfUseAnalytics.filters.apiFilters
   );
 
-  // console.log ('permissionOfUseAnalytics', permissionOfUseAnalytics);
-  const { providedDataTokensByDateTimeBucket } = permissionOfUseAnalytics || {};
-  // console.log('providedDataTokensByDateTimeBucket', providedDataTokensByDateTimeBucket);
-
-  const filterDataByTimeRange = () => {
-    const filteredData = [];
-    const categories = [];
-    const currentDate = new Date();
-    const oneDay = 24 * 60 * 60 * 1000;
-    
-    if (timeRange === 'weekly') {
-      for (let i = 0; i < 7; i++) {
-        const date = new Date(currentDate - i * oneDay);
-        const dateString = date.toISOString().split('T')[0] + 'T00:00:00Z';
-        categories.unshift(date.toDateString().slice(0, 3));
-        filteredData.unshift(providedDataTokensByDateTimeBucket?.[dateString]?.totalSumTokens || 0);
-      }
-    } else if (timeRange === 'monthly') {
-      for (let i = 0; i < 30; i++) {
-        const date = new Date(currentDate - i * oneDay);
-        const dateString = date.toISOString().split('T')[0] + 'T00:00:00Z';
-        categories.unshift(date.toDateString().slice(0, 3));        
-        filteredData.unshift(providedDataTokensByDateTimeBucket?.[dateString]?.totalSumTokens || 0);
-
-      }
-    } else if (timeRange === 'yearly') {
-      for (let i = 0; i < 12; i++) {
-        const date = new Date(currentDate.getFullYear(), currentDate.getMonth() - i, 1);
-        const dateString = date.toISOString().split('T')[0] + 'T00:00:00Z';
-        categories.unshift(date.toLocaleString('default', { month: 'short' }));
-        filteredData.unshift(providedDataTokensByDateTimeBucket?.[dateString]?.totalSumTokens || 0);
-      }
+  useEffect(() => {
+    if (!providedByDataTimeBucket) {
+      return;
     }
 
-    return { filteredData, categories };
+    const totalTokens = providedByDataTimeBucket.reduce(
+      (acc, item) => acc + (item.totalSumTokens || 0),
+      0
+    );
+
+    const totalTokensUpdated = providedByDataTimeBucket.reduce(
+      (acc, item) => acc + (item.updatedTotalTokens || 0),
+      0
+    );
+
+    setTotalTokensProvided(totalTokens);
+    setTotalTokensUpdated(totalTokensUpdated);
+  }, [providedByDataTimeBucket]);
+
+  const aggregateDataByInterval = (
+    startDate,
+    endDate,
+    interval,
+    formatCategory
+  ) => {
+    const aggregatedData = {};
+    const categories = [];
+
+    // Initialize the dates and loop through each interval
+    for (
+      let date = new Date(startDate);
+      date <= endDate;
+      date = new Date(date.getTime() + interval)
+    ) {
+      const category = formatCategory(date);
+      categories.push(category);
+
+      aggregatedData[category] = {
+        totalSumTokens: 0,
+        updatedTotalTokens: 0,
+      };
+    }
+
+    // Aggregate the data based on the provided buckets
+    providedByDataTimeBucket.forEach((bucket) => {
+      const date = new Date(bucket.date);
+      const category = formatCategory(date);
+
+      if (aggregatedData[category]) {
+        aggregatedData[category].totalSumTokens += bucket.totalSumTokens;
+        aggregatedData[category].updatedTotalTokens +=
+          bucket.updatedTotalTokens;
+      }
+    });
+
+    return {
+      filteredData: categories.map(
+        (category) => aggregatedData[category].totalSumTokens
+      ),
+      filteredUpdatedData: categories.map(
+        (category) => aggregatedData[category].updatedTotalTokens
+      ),
+      categories,
+    };
   };
 
-  const { filteredData, categories } = filterDataByTimeRange();
+  const filterDataByTimeRange = () => {
+    if (!filteredDates || !providedByDataTimeBucket) {
+      return { filteredData: [], filteredUpdatedData: [], categories: [] };
+    }
 
+    const { from, to } = filteredDates;
+    const startDate = new Date(from);
+    const endDate = new Date(to);
+    const timeDiff = endDate - startDate;
+    const oneDay = 24 * 60 * 60 * 1000;
+
+    if (timeDiff <= oneDay) {
+      return aggregateDataByInterval(
+        startDate,
+        endDate,
+        60 * 60 * 1000, // 1 hour in milliseconds
+        (date) => `${date.getHours()}:00`
+      );
+    } else if (timeDiff <= 30 * oneDay) {
+      return aggregateDataByInterval(
+        startDate,
+        endDate,
+        oneDay,
+        (date) => `${date.getDate()}/${date.getMonth() + 1}`
+      );
+    } else if (timeDiff <= 90 * oneDay) {
+      return aggregateDataByInterval(
+        startDate,
+        endDate,
+        oneDay,
+        (date) => `${date.getDate()}/${date.getMonth() + 1}`
+      );
+    } else if (timeDiff <= 180 * oneDay) {
+      return aggregateDataByInterval(
+        startDate,
+        endDate,
+        oneDay,
+        (date) => `${date.getDate()}/${date.getMonth() + 1}`
+      );
+    } else if (timeDiff <= 365 * oneDay) {
+      return aggregateDataByInterval(
+        startDate,
+        endDate,
+        30 * oneDay,
+        (date) => `${date.getMonth() + 1}/${date.getFullYear()}`
+      );
+    } else if (timeDiff <= 2 * 365 * oneDay) {
+      return aggregateDataByInterval(
+        startDate,
+        endDate,
+        30 * oneDay,
+        (date) => `${date.getMonth() + 1}/${date.getFullYear()}`
+      );
+    } else {
+      return aggregateDataByInterval(
+        startDate,
+        endDate,
+        30 * oneDay,
+        (date) => `${date.getMonth() + 1}/${date.getFullYear()}`
+      );
+    }
+  };
+
+  const { filteredData, filteredUpdatedData, categories } =
+    filterDataByTimeRange();
 
   const series = [
     {
-      name: 'Total Tokens',
-      type: 'column',
-      data: filteredData
+      name: "Total Tokens",
+      type: "column",
+      data: filteredData,
     },
     {
-      name: 'Total Tokens',
-      type: 'line',
-      data: filteredData
-    }
-  ]
-
+      name: "Selected Tokens",
+      type: "line",
+      data: filteredUpdatedData,
+    },
+  ];
 
   const options = {
     chart: {
       offsetY: -9,
       offsetX: -16,
       parentHeightOffset: 0,
-      toolbar: { show: false }
+
+      toolbar: {
+        show: true,
+        offsetX: 0,
+        offsetY: -40,
+        tools: {
+          download: true,
+          selection: true,
+          zoom: true,
+          zoomin: true,
+          zoomout: true,
+          pan: false,
+        },
+        export: {
+          csv: {
+            filename: undefined,
+            columnDelimiter: ",",
+            headerCategory: "category",
+            headerValue: "value",
+            dateFormatter(timestamp) {
+              return new Date(timestamp).toDateString();
+            },
+          },
+          svg: {
+            filename: undefined,
+          },
+          png: {
+            filename: undefined,
+          },
+        },
+        autoSelected: "zoom",
+      },
     },
+
     plotOptions: {
       bar: {
         borderRadius: 9,
-        columnWidth: '50%',
-        endingShape: 'rounded',
-        startingShape: 'rounded',
+        columnWidth: "50%",
+        endingShape: "rounded",
+        startingShape: "rounded",
         colors: {
           ranges: [
             {
               to: 50,
               from: 40,
-              color: hexToRGBA(theme.palette.primary.main, 1)
-            }
-          ]
-        }
-      }
+              color: hexToRGBA(theme.palette.primary.main, 1),
+            },
+          ],
+        },
+      },
     },
     markers: {
       size: 3.5,
@@ -107,33 +228,39 @@ const ProvidedByDateTimeBucket = () => {
       fillOpacity: 1,
       strokeOpacity: 1,
       colors: [theme.palette.background.paper],
-      strokeColors: hexToRGBA(theme.palette.primary.main, 1)
+      strokeColors: hexToRGBA(theme.palette.primary.main, 1),
     },
     stroke: {
       width: [0, 2],
-      colors: [theme.palette.customColors.trackBg, theme.palette.primary.main]
+      colors: [theme.palette.customColors.trackBg, theme.palette.primary.main],
     },
     legend: { show: false },
     dataLabels: { enabled: false },
-    colors: [hexToRGBA(theme.palette.customColors.trackBg, 1)],
+    colors: [hexToRGBA(theme.palette.grey[300], 1)],
     grid: {
       strokeDashArray: 7,
-      borderColor: theme.palette.divider
+      borderColor: theme.palette.primary.dark,
     },
     states: {
       hover: {
-        filter: { type: 'none' }
+        filter: { type: "none" },
       },
       active: {
-        filter: { type: 'none' }
-      }
+        filter: { type: "none" },
+      },
     },
     xaxis: {
       categories: categories,
-      tickPlacement: 'on',
+      tickPlacement: "on",
       labels: { show: true },
       axisTicks: { show: false },
-      axisBorder: { show: false }
+      axisBorder: { show: false },
+      labels: {
+        style: {
+          fontSize: "0.75rem",
+          colors: theme.palette.primary.dark,
+        },
+      },
     },
     yaxis: {
       min: 0,
@@ -141,54 +268,52 @@ const ProvidedByDateTimeBucket = () => {
       show: true,
       tickAmount: 3,
       labels: {
-        formatter: value => `${value > 999 ? `${(value / 1000).toFixed(0)}` : value}k`,
+        formatter: (value) =>
+          `${value > 999 ? `${(value / 1000).toFixed(0)}k` : value}`,
         style: {
-          fontSize: '0.75rem',
-          colors: theme.palette.text.disabled
-        }
-      }
-    }
-  }
+          fontSize: "0.75rem",
+          colors: theme.palette.text.disabled,
+        },
+      },
+    },
+  };
 
   return (
-    <Card>
+    <Card sx={{ backgroundColor: "transparent" }}>
       <CardHeader
-        title='Overview'
-        action={
-          <OptionsMenu
-            options={['Refresh', 'Update', 'Share']}
-            iconButtonProps={{ size: 'small', className: 'card-more-options' }}
-          />
+        title="Overview"
+        subheader={
+          <span>
+            Total{" "}
+            <span
+              style={{ fontWeight: "bold", color: theme.palette.primary.main }}
+            >
+              {totalTokensProvided}
+            </span>{" "}
+            Tokens From all DataPods and Agents in the selected period.
+            <br /> Total{" "}
+            <span
+              style={{ fontWeight: "bold", color: theme.palette.primary.main }}
+            >
+              {totalTokensUpdated}
+            </span>{" "}
+            Tokens From selected DataPods and Agents
+          </span>
         }
+        sx={{ textAlign: "left" }}
       />
-      <CardContent sx={{ '& .apexcharts-xcrosshairs.apexcharts-active': { opacity: 0 } }}>
-      <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Typography variant='h5'>
-            {timeRange.charAt(0).toUpperCase() + timeRange.slice(1)} Overview
-          </Typography>
-          <Select
-            value={timeRange}
-            onChange={(e) => setTimeRange(e.target.value)}
-            size="small"
-          >
-            <MenuItem value='weekly'>Weekly</MenuItem>
-            <MenuItem value='monthly'>Monthly</MenuItem>
-            <MenuItem value='yearly'>Yearly</MenuItem>
-          </Select>
-        </Box>
-        <ReactApexcharts type='line' height={208} series={series} options={options} />
-        <Box sx={{ mb: 4, display: 'flex', alignItems: 'center' }}>
-          <Typography sx={{ mr: 4 }} variant='h5'>
-            {Math.max(...filteredData)} Tokens
-          </Typography>
-          <Typography variant='body2'>Your performance over the selected period.</Typography>
-        </Box>
-        {/* <Button fullWidth variant='contained'>
-          Details
-        </Button> */}
+      <CardContent
+        sx={{ "& .apexcharts-xcrosshairs.apexcharts-active": { opacity: 0 } }}
+      >
+        <ReactApexcharts
+          type="line"
+          height={208}
+          series={series}
+          options={options}
+        />
       </CardContent>
     </Card>
-  )
-}
+  );
+};
 
-export default ProvidedByDateTimeBucket
+export default ProvidedByDateTimeBucket;

@@ -33,6 +33,9 @@ const AgentControl = () => {
   const [userAgents, setUserAgents] = useState([]);
   const [activeStep, setActiveStep] = useState(0);
 
+
+ 
+
   const storedToken = window.localStorage.getItem(
     authConfig.storageTokenKeyName
   );
@@ -63,16 +66,14 @@ const AgentControl = () => {
         }
       }
 
+      const activeOrgAgents = auth.user.organizations.find(
+        (org) => org.id === organizationId
+      )?.projectAgents;
 
-      try {
-        const userAgents = await agentService.getUserAgentsByOrganizationId(
-          organizationId,
-          storedToken
-        );
-        setUserAgents(userAgents.data.content);
-      } catch (error) {
-        console.error("Error fetching user agents:", error);
+      if (activeOrgAgents) {
+        setUserAgents(activeOrgAgents);
       }
+      
     };
 
     if (organizationId) {

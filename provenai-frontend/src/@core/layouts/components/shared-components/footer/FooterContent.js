@@ -36,7 +36,7 @@ const FooterContent = () => {
           
           <LinkStyled
             target='_blank'
-            href='https://github.com/ctrl-space-labs/gendox-core/wiki/01.-Introduction'
+            href='https://ctrl-space-labs.github.io/proven-ai'
           >
             Documentation
           </LinkStyled>

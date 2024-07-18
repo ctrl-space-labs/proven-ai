@@ -61,6 +61,7 @@ const CredentialsWithQrCodeComponent = ({ handleCredentialsClose,
          border: "2px solid ",
          borderColor: "primary.main",
          borderRadius: "2px",
+         backgroundColor: "#FFFFFF",
       }}>
       <Box
         sx={{
@@ -69,7 +70,6 @@ const CredentialsWithQrCodeComponent = ({ handleCredentialsClose,
           alignItems: "center",          
           px: { xs: theme.spacing(5), sm: theme.spacing(15) },
           pt: { xs: theme.spacing(5), sm: theme.spacing(8) },
-          // pb: { xs: theme.spacing(5), sm: theme.spacing(8) },
         }}
       >
         <DialogTitle
@@ -77,17 +77,20 @@ const CredentialsWithQrCodeComponent = ({ handleCredentialsClose,
           sx={{
             textAlign: "left",
             fontSize: "1.5rem",
-            padding: 0,           
+            padding: 0,
+            color: theme.palette.primary.dark,         
           }}
         >
             {title}
         </DialogTitle>
-        <IconButton
-          sx={{ color: "primary.main" }}
-          onClick={handleCredentialsClose}
-        >
-          <Icon icon="mdi:close" />
-        </IconButton>
+        {title !== "Receive your Agent ID Credential" && (
+          <IconButton
+            sx={{ color: "primary.main" }}
+            onClick={handleCredentialsClose}
+          >
+            <Icon icon="mdi:close" />
+          </IconButton>
+        )}
       </Box>
 
       <DialogContent
@@ -108,7 +111,7 @@ const CredentialsWithQrCodeComponent = ({ handleCredentialsClose,
                 <QRCodeComponent
                 value={url}
                 size={256}
-                fgColor={theme.palette.primary.dark}
+                fgColor={theme.palette.primary.light}
                 logo="/images/provenAILogo.svg"
                 />
             )}
@@ -128,13 +131,15 @@ const CredentialsWithQrCodeComponent = ({ handleCredentialsClose,
             {copyButtonText}
         </Button>
 
-        <Button
-          variant="contained"
-          sx={{ mr: 2 }}
-
-        >
-          I don't have wallet :'(
-        </Button>
+        {title !== "Receive your Agent ID Credential" && (
+          <Button
+            variant="contained"
+            sx={{ mr: 2 }}
+            onClick={handleCredentialsClose}
+          >
+            I don't have wallet :'(
+          </Button>
+        )}
       </DialogActions>
     </Box>
   );

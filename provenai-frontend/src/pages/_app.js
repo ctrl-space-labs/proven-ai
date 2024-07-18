@@ -103,7 +103,7 @@ const App = props => {
             name='description'
             content={`${themeConfig.templateName} – - – by CTRL+ Space`}
           />
-          <meta name='keywords' content='Gendox, MUI, Admin Template, React Admin Template' />
+          <meta name='keywords' content='ProvenAi, Proven AI, Gendox, MUI, Admin Template, React Admin Template' />
           <meta name='viewport' content='initial-scale=1, width=device-width' />
         </Head>
 

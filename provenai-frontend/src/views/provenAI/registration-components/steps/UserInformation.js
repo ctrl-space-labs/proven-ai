@@ -143,7 +143,6 @@ const UserInformation = ({
       organizationName: org.name,
     }));
     updateShallowQueryParams({ organizationId: org.id });
-    console.log(`Clicked on organization: `, org);
   };
 
   const updateShallowQueryParams = (params) => {

@@ -86,24 +86,6 @@ const getPoliciesByAgent = async (agentId, storedToken) => {
 };
 
 
-/**
- * Get User Agents by organization
- * @param organizationId
- * @param storedToken
- * @returns {Promise<axios.AxiosResponse<ProjectAgent>>}
- */
-const getUserAgentsByOrganizationId = async (organizationId, storedToken) => {
-  return axios.get(apiRequests.userAgents(), {
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: "Bearer " + storedToken,
-    },
-    params: {
-      organizationId: organizationId,
-    },
-  });
-
-}
 
 /**
  * Create a new agent
@@ -127,7 +109,6 @@ export default {
   getPublicAgents,
   getAgentsByIdIn,
   getAgentById,
-  getPoliciesByAgent,
-  getUserAgentsByOrganizationId,
+  getPoliciesByAgent,  
   createAgent
 };

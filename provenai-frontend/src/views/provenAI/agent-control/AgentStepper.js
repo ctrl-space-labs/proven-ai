@@ -159,7 +159,6 @@ const AgentStepper = ({
           );
           await agentService.createAgent(agentDTO, storedToken);
           setAgentUpdated(true);
-          console.log("Creating agent:", agentDTO);
           toast.success("Agent created successfully!");
         }
 
@@ -179,7 +178,6 @@ const AgentStepper = ({
 
           setAgentUpdated(true);
 
-          console.log("Creating policy:", policy);
           toast.success("Policy created successfully!");
         }
 
@@ -191,13 +189,11 @@ const AgentStepper = ({
             storedToken
           );
           setAgentUpdated(true);
-          console.log("Deleting policy:", policyIdsToDelete);
           toast.success("Policy deleted successfully!");
         }
 
         if (agentUpdated && toast.success) {
           const agentOfferVc = await getAgentOfferVc();
-          console.log(agentOfferVc);
         }
 
         setIsSubmitComplete(true);
