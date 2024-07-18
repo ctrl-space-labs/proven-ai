@@ -24,6 +24,6 @@ public enum WaltIdServiceInitUtils {
     }
 
     public void initializeWaltIdServices() {
-        WaltidServices.INSTANCE.minimalInit(continuationPlain);
+        WaltidServices.INSTANCE.minimalInitBlocking();
     }
 }

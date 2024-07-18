@@ -80,10 +80,25 @@ public class CredentialVerifier {
             };
 
             // Execute verifyCredential method asynchronously
-            Verifier.INSTANCE.verifyCredential(signedCredential, policies, presentationContext, continuationVc);
+            Verifier.INSTANCE.verifyCredentialAsync(signedCredential, policies, presentationContext);
         }, executorService);
 
         // Return CompletableFuture for further processing
         return future;
+    }
+
+    /**
+     * Method to verify a credential against a set of policies synchronously
+     * @param signedCredential The signed credential to be verified
+     * @param policies The policies to be verified against
+     * @param presentationContext The presentation context
+     * @return List of PolicyResult objects
+     */
+    public List<PolicyResult> verifyCredentialBlocking(
+            String signedCredential,
+            List<PolicyRequest> policies,
+            HashMap<String, Object> presentationContext) {
+        // Directly call the blocking method
+        return Verifier.INSTANCE.verifyCredentialBlocking(signedCredential, policies, presentationContext);
     }
 }

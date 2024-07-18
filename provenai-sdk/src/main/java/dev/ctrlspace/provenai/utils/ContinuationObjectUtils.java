@@ -1,7 +1,6 @@
 package dev.ctrlspace.provenai.utils;
 
 import id.walt.credentials.verification.models.PolicyResult;
-import id.walt.crypto.keys.LocalKey;
 import kotlin.Unit;
 import kotlin.coroutines.Continuation;
 import kotlin.coroutines.CoroutineContext;

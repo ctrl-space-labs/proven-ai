@@ -9,13 +9,11 @@ import id.walt.credentials.CredentialBuilderType;
 import id.walt.credentials.vc.vcs.W3CVC;
 import id.walt.crypto.keys.Key;
 import kotlin.Pair;
-import kotlin.coroutines.Continuation;
 import kotlinx.serialization.json.JsonElement;
 import kotlinx.serialization.json.JsonObject;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -139,13 +137,7 @@ public class VerifiableCredentialBuilder {
             Map<String, JsonElement> additionalJwtOptions
     ) {
 
-        // Convert additionalJwtOptions to the format expected by the signJws method
-        Map<String, JsonElement> jsonElementAdditionalJwtOptions = new HashMap<>(additionalJwtOptions);
-
-        Continuation<? super Object> continuationSuper = ContinuationObjectUtils.createSuperContinuation();
-
-        return vc.signJwsBlocking(issuerKey, issuerDid, subjectDid,
-                                    additionalJwtHeaders, jsonElementAdditionalJwtOptions, continuationSuper);
+        return vc.signJwsBlocking(issuerKey, issuerDid, subjectDid, subjectDid, additionalJwtHeaders, additionalJwtOptions);
     }
 }
 
