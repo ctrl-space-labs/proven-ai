@@ -40,11 +40,11 @@ public class ProvenAIVerifier {
 //        globalVcPolicies.add(new PolicyRequest(jwtSignaturePolicy, null));
 
 
-        CompletableFuture<PresentationVerificationResponse> verificationFuture = presentationVerifier.verifyPresentationAsync(vpJwt, vpPolicies,
+        PresentationVerificationResponse verificationResponse = presentationVerifier.verifyPresentationBlocking(vpJwt, vpPolicies,
                 globalVcPolicies, specificCredentialPolicies, presentationContext);
 
-        PresentationVerificationResponse response = verificationFuture.get();
+ ;
 
-        return response.overallSuccess();
+        return verificationResponse.overallSuccess();
     }
 }
