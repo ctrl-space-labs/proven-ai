@@ -25,7 +25,7 @@ $ git clone https://github.com/ctrl-space-labs/proven-ai.git
 
 ### Step 2: Set up environment variables
 
-In `./proven-ai/docker-compose/.env`, and set up the environment variables according to [Environment Variables](./3-Environment-Variables) documentation.
+In `./proven-ai/docker-compose/.env`, and set up the environment variables according to [Environment Variables](../Getting%20Started/Environment-Variables) documentation.
 ```shell
 ```
 
@@ -53,7 +53,7 @@ To run the applications independently for development purposes, you need to inst
 
 ### Running the ProvenAI Backend
 
-ProvenAI backend is a Spring boot application. Once the environment variables are set up (see [here](./3-Environment-Variables)), 
+ProvenAI backend is a Spring boot application. Once the environment variables are set up (see [here](../Getting%20Started/Environment-Variables)), 
 you can run the backend using the following command:
 ```shell
 $ cd ./provenai-sdk
@@ -65,7 +65,7 @@ $ mvn spring-boot:run
 
 ### Running the ProvenAI Frontend
 
-ProvenAI frontend is a React/Next.js application. No Next.js Server-Side-Rendering features are used. Once the environment variables are set up (see [here](./3-Environment-Variables)),
+ProvenAI frontend is a React/Next.js application. No Next.js Server-Side-Rendering features are used. Once the environment variables are set up (see [here](../Getting%20Started/Environment-Variables)),
 you can run the frontend using the following command:
 ```shell
 $ cd ./proven-ai/provenai-frontend
