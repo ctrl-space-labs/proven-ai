@@ -1,5 +1,7 @@
 package dev.ctrlspace.provenai.backend.utils;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSVerifier;
 import com.nimbusds.jose.crypto.RSASSAVerifier;
@@ -14,11 +16,9 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 import java.text.ParseException;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -65,6 +65,17 @@ public class JWTUtils {
                                             return orgProj1;
                                         }))
                 )
+                .projectAgentsMap(
+                        jwt.getClaimAsStringList(JwtClaimName.PROJECT_AGENTS).stream()
+                                .map(s -> s.split(":"))
+                                .collect(Collectors.toMap(
+                                        s -> s[1],
+                                        s -> new JwtDTO.ProjectAgent(new HashSet<>(Arrays.asList(s[0]))),
+                                        (projAgent1, projAgent2) -> {
+                                            projAgent1.agentIds().addAll(projAgent2.agentIds());
+                                            return projAgent1;
+                                        }))
+                )
                 .build();
     }
 
@@ -100,6 +111,9 @@ public class JWTUtils {
                 .claim(JwtClaimName.SCOPE, getAuthorities(jwtDTO))
                 .claim(JwtClaimName.PROJECTS_ORGANIZATION, jwtDTO.getOrgProjectsMap().entrySet().stream()
                         .flatMap(entry -> entry.getValue().projectIds().stream().map(s -> s + ":" + entry.getKey().toString()))
+                        .collect(Collectors.toList()))
+                .claim(JwtClaimName.PROJECT_AGENTS, jwtDTO.getProjectAgentsMap().entrySet().stream()
+                        .flatMap(entry -> entry.getValue().agentIds().stream().map(s -> s + ":" + entry.getKey().toString()))
                         .collect(Collectors.toList()));
 
         return builder.build();
@@ -135,6 +149,17 @@ public class JWTUtils {
     public JWT getJWT(String jwtString) throws JOSEException, ParseException {
         JWT jwt = SignedJWT.parse(jwtString);
         return jwt;
+    }
+
+    public JsonNode getPayloadFromJwt(String jwt) throws IOException {
+        String[] chunks = jwt.split("\\.");
+        Base64.Decoder decoder = Base64.getUrlDecoder();
+        // Decode payload
+        String payload = new String(decoder.decode(chunks[1]));
+
+        ObjectMapper mapper = new ObjectMapper();
+
+        return mapper.readTree(payload);
     }
 
 }

@@ -15,7 +15,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class IsccCodeResponse {
 
-    // Properties common to all unique identifiers
     private String context;
     private String type;
     private String schema;
