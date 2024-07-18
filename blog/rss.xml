@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+    <channel>
+        <title>ProvenAI Blog</title>
+        <link>https://dev.provenai.ctrlspace.dev/blog</link>
+        <description>ProvenAI Blog</description>
+        <lastBuildDate>Thu, 18 Jul 2024 00:00:00 GMT</lastBuildDate>
+        <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
+        <generator>https://github.com/jpmonette/feed</generator>
+        <language>en</language>
+        <item>
+            <title><![CDATA[ProvenAI 1st release]]></title>
+            <link>https://dev.provenai.ctrlspace.dev/blog/2024/07/18/proven-ai-first-release-blog-post</link>
+            <guid>https://dev.provenai.ctrlspace.dev/blog/2024/07/18/proven-ai-first-release-blog-post</guid>
+            <pubDate>Thu, 18 Jul 2024 00:00:00 GMT</pubDate>
+            <description><![CDATA[We are happy to announce the 1st Release of ProvenAI!]]></description>
+            <content:encoded><![CDATA[<p>We are happy to announce the 1st Release of ProvenAI!</p>
+<p>Get started, <a href="https://github.com/ctrl-space-labs/proven-ai" target="_blank" rel="noopener noreferrer">now</a>!</p>
+<p><img decoding="async" loading="lazy" alt="ProvenAI blog post social logo" src="https://dev.provenai.ctrlspace.dev/assets/images/proven-govern-trace-control-343ce1d6e0d6a4f427be269a237355fa.png" width="669" height="490" class="img_ev3q"></p>]]></content:encoded>
+            <category>release</category>
+        </item>
+    </channel>
+</rss>
