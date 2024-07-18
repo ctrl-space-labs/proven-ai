@@ -1,10 +1,8 @@
 package dev.ctrlspace.provenai.ssi.issuer;
 
-import dev.ctrlspace.provenai.utils.ContinuationObjectUtils;
 import id.walt.crypto.keys.JwkKeyMeta;
 import id.walt.crypto.keys.KeyType;
 import id.walt.crypto.keys.jwk.JWKKey;
-import kotlin.coroutines.Continuation;
 
 public class KeyCreation {
 
