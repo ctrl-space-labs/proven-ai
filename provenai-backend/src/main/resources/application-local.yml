@@ -19,7 +19,7 @@ proven-ai:
       url: https://dev-proven-ai-issuer.ctrlspace.dev/ssi/issuer
   domains:
     gendox:
-      base-url: http://localhost:8080
+      base-url: http://localhost:5002
     proven-ai-frontend:
-      base-url: http://localhost:3001
+      base-url: http://localhost:3000
 
