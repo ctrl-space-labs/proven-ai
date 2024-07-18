@@ -101,18 +101,19 @@ const config = {
           {
             title: 'Community',
             items: [
+
               {
-                label: 'Stack Overflow',
-                href: 'https://stackoverflow.com/questions/tagged/docusaurus',
+                label: 'Ctrl+Space Labs',
+                href: 'https://www.ctrlspace.dev/',
               },
               {
                 label: 'Discord',
-                href: 'https://discordapp.com/invite/docusaurus',
+                href: 'https://discord.com/invite/jWes2urauW',
               },
               {
-                label: 'Twitter',
-                href: 'https://twitter.com/docusaurus',
-              },
+                label: 'Instagram',
+                href: 'https://www.instagram.com/ctrlspace.dev/',
+              }
             ],
           },
           {
@@ -129,7 +130,7 @@ const config = {
             ],
           },
         ],
-        copyright: `Copyright © ${new Date().getFullYear()} My Project, Inc. Built with Docusaurus.`,
+        copyright: `Copyright © ${new Date().getFullYear()} Ctrl+Space Labs.`,
       },
       prism: {
         theme: prismThemes.github,
