@@ -3,6 +3,8 @@ package dev.ctrlspace.provenai.ssi.issuer;
 import id.walt.crypto.keys.JwkKeyMeta;
 import id.walt.crypto.keys.KeyType;
 import id.walt.crypto.keys.jwk.JWKKey;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import static dev.ctrlspace.provenai.ssi.issuer.KeyCreation.generateKey;
 
 public class KeyCreation {
 

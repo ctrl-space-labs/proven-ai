@@ -107,8 +107,8 @@ public class OrganizationsService {
     public Organization registerOrganization(Organization organization) throws ExecutionException, InterruptedException, ProvenAiException, IOException {
         EventPayloadDTO eventPayload = new EventPayloadDTO();
 
-        if (organization.getOrganizationVpJwt() == null) {
-
+//        if (organization.getOrganizationVpJwt() == null || organization.getOrganizationVpJwt().isEmpty()) {
+        if (organization.getOrganizationVpJwt() == null ) {
             eventPayload.setOrganizationId(organization.getId().toString());
             ResponseEntity<WebHookEventResponse> responseEntity =
                     gendoxWebHookAdapter.gendoxWebHookEvent("PROVEN_AI_REQUEST_ORGANIZATION_DID", eventPayload);

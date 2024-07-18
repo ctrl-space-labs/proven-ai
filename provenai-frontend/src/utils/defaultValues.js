@@ -39,7 +39,7 @@ export const defaultUserInformation = {
   familyName: "",
   selectedOrganizationType: "",
   organizationDid: "",
-  organizationVpJwt: "",
+  organizationVpJwt: null,
   organizationName: "",
   personalIdentifier: "",
   gender: "",
