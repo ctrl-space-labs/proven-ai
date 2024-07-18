@@ -32,7 +32,7 @@ import dev.ctrlspace.provenai.ssi.model.vc.attestation.Policy;
 import dev.ctrlspace.provenai.utils.SSIJWTUtils;
 import dev.ctrlspace.provenai.utils.WaltIdServiceInitUtils;
 import id.walt.credentials.vc.vcs.W3CVC;
-import id.walt.crypto.keys.LocalKey;
+import id.walt.crypto.keys.jwk.JWKKey;
 import jakarta.annotation.Nullable;
 import org.json.JSONException;
 import org.keycloak.representations.AccessTokenResponse;
@@ -206,7 +206,7 @@ public class AgentService {
     }
 
     public Object createAgentSignedVcJwt(W3CVC w3CVC, UUID agentId) throws ProvenAiException {
-        LocalKey localKey = new LocalKey(issuerPrivateJwk);
+        JWKKey jwkKey = new JWKKey(issuerPrivateJwk);
         ProvenAIIssuer provenAIIssuer = new ProvenAIIssuer();
         AdditionalSignVCParams additionalSignVCParams = new AdditionalSignVCParams();
         Organization organization = getOrganizationByAgentId(agentId);
@@ -219,7 +219,7 @@ public class AgentService {
         ResponseEntity<WebHookEventResponse> responseEntity =
                 gendoxWebHookAdapter.gendoxWebHookEvent("PROVEN_AI_AGENT_REGISTRATION", eventPayload);
 
-        return provenAIIssuer.generateSignedVCJwt(w3CVC, localKey, issuerDid, organization.getOrganizationDid());
+        return provenAIIssuer.generateSignedVCJwt(w3CVC, jwkKey, issuerDid, organization.getOrganizationDid());
 
 
     }
