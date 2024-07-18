@@ -24,31 +24,31 @@ public class DidIssuer {
 
         }
 
-        /**
-         * Method to create a DID using the did:key method
-         * @param keyType algorithm to produce cryptographic key
-         * @param localKey
-         * @return
-         */
 
-        // Method to create a DID using the did:key method
 
         /**
          * Create a DID from a key pair using the did:key method
          *
          * @param keyType The type of key to generate (enum Ed25519, secp256k1, secp256r1, RSA)
-         * @param localKey The key pair to use for the DID
+         * @param jwkKey The key pair to use for the DID
          * @return The DID result
          */
-        public DidResult createDidFromKey(KeyType keyType, Key localKey) {
+        public DidResult createDidFromKey(KeyType keyType, JWKKey jwkKey) {
                 DidKeyCreateOptions options = new DidKeyCreateOptions(keyType,false);
-                return (DidResult) DidService.INSTANCE.registerByKey("key", localKey,options, continuationSuper);
+                return (DidResult) DidService.INSTANCE.registerByKey("key", jwkKey,options, continuationSuper);
 
         }
 
+
+        /**
+         * Method to create a DID using the did:key method with a key produced internally.
+         * @param keyType algorithm to produce cryptographic key
+         * @return
+         */
+
         public DidResult createDidFromAutoKey(KeyType keyType) {
                 DidKeyCreateOptions options = new DidKeyCreateOptions(keyType,false);
-                return (DidResult) DidService.INSTANCE.registerBlocking(options);
+                return  DidService.INSTANCE.registerBlocking(options);
 
         }
 
@@ -79,7 +79,7 @@ public class DidIssuer {
 
                 LocalRegistrar localRegistrar = new LocalRegistrar();
 
-                return (DidResult) localRegistrar.createByKeyBlocking(jwkKey, keyDidOptions);
+                return localRegistrar.createByKeyBlocking(jwkKey, keyDidOptions);
         }
 
 
@@ -95,7 +95,7 @@ public class DidIssuer {
         public DidResult resolveWebDidToKey(KeyType keyType, String domain, String path, JWKKey jwkKey) {
                 DidWebCreateOptions webDidOptions = new DidWebCreateOptions(domain, path, keyType);
                 LocalRegistrar localRegistrar = new LocalRegistrar();
-                return (DidResult) localRegistrar.createByKeyBlocking(jwkKey, webDidOptions);
+                return localRegistrar.createByKeyBlocking(jwkKey, webDidOptions);
         }
 
 
