@@ -92,11 +92,17 @@ public class SearchService {
 
 
                     AuditPermissionOfUseVc auditPermissionOfUseVc = auditPermissionOfUseVcService.createAuditLog(
-                            ownerOrganization.getId(), ownerOrganization.getOrganizationDid(),
-                            agent.getId(), processorOrganization.getOrganizationDid(),
-                            searchId, dataPodId,
-                            documentSectionIscc, section.getDocumentDTO().getDocumentIsccCode(),
-                            section.getTokenCount().intValue(), section.getAiModelName()
+                            ownerOrganization.getId(),
+                            ownerOrganization.getOrganizationDid(),
+                            processorOrganization.getId(),
+                            processorOrganization.getOrganizationDid(),
+                            agent.getId(),
+                            searchId,
+                            dataPodId,
+                            documentSectionIscc,
+                            section.getDocumentDTO().getDocumentIsccCode(),
+                            section.getTokenCount().intValue(),
+                            section.getAiModelName()
                     );
 
                     W3CVC permissionOfUseVC = auditPermissionOfUseVcService.createPermissionOfUseW3CVC(

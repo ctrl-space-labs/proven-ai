@@ -153,6 +153,7 @@ public class AgentService {
             throw new ProvenAiException("AGENT_USERNAME_EXISTS", "Agent with the same username already exists", HttpStatus.BAD_REQUEST);
         }
 
+        agent.setAgentUsername(agent.getAgentUsername().toLowerCase());
         Instant now = Instant.now();
         agent.setCreatedAt(now);
         agent.setUpdatedAt(now);
@@ -210,16 +211,18 @@ public class AgentService {
         ProvenAIIssuer provenAIIssuer = new ProvenAIIssuer();
         AdditionalSignVCParams additionalSignVCParams = new AdditionalSignVCParams();
         Organization organization = getOrganizationByAgentId(agentId);
+        Object agentVcJwt = provenAIIssuer.generateSignedVCJwt(w3CVC, jwkKey, issuerDid, organization.getOrganizationDid());
 
         EventPayloadDTO eventPayload = new EventPayloadDTO();
         eventPayload.setOrganizationDid(organization.getOrganizationDid());
         eventPayload.setProjectAgentId(String.valueOf(agentId));
+        eventPayload.setAgentVcJwt(agentVcJwt.toString());
         eventPayload.setOrganizationId(organization.getId().toString());
 
         ResponseEntity<WebHookEventResponse> responseEntity =
                 gendoxWebHookAdapter.gendoxWebHookEvent("PROVEN_AI_AGENT_REGISTRATION", eventPayload);
 
-        return provenAIIssuer.generateSignedVCJwt(w3CVC, jwkKey, issuerDid, organization.getOrganizationDid());
+        return agentVcJwt;
 
 
     }

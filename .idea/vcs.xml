@@ -4,8 +4,5 @@
     <mapping directory="" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/provenai-blockchain/lib/forge-std" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/provenai-blockchain/lib/openzeppelin-contracts" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/provenai-blockchain/lib/openzeppelin-contracts/lib/erc4626-tests" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/provenai-blockchain/lib/openzeppelin-contracts/lib/forge-std" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/provenai-blockchain/lib/openzeppelin-contracts/lib/forge-std/lib/ds-test" vcs="Git" />
   </component>
 </project>
