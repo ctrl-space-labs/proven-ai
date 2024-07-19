@@ -3,8 +3,12 @@ package dev.ctrlspace.provenai.utils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.util.Base64;
 
 public class SSIJWTUtils {
@@ -27,6 +31,5 @@ public class SSIJWTUtils {
 
         return vcToken;
     }
-
 
 }

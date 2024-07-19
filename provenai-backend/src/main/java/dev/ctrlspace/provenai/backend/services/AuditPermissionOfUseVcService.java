@@ -49,7 +49,7 @@ public class AuditPermissionOfUseVcService {
 
     public AuditPermissionOfUseVc createAuditLog( UUID ownerOrganizationId, String ownerOrganizationDid,
                                                  UUID processorOrganizationId, String processorOrganizationDid,
-                                                 UUID searchId, UUID dataPodId,
+                                                 UUID agentId, UUID searchId, UUID dataPodId,
                                                  String sectionIscc, String documentIscc,
                                                  Integer tokens, String embeddingModel
                                                 ) {
@@ -65,6 +65,7 @@ public class AuditPermissionOfUseVcService {
         auditPermissionOfUseVc.setDocumentIscc(documentIscc);
         auditPermissionOfUseVc.setEmbeddingModel(embeddingModel);
         auditPermissionOfUseVc.setTokens(tokens);
+        auditPermissionOfUseVc.setProcessorAgentId(agentId);
 
         auditPermissionOfUseVc.setCreatedAt(Instant.now());
         auditPermissionOfUseVc.setUpdatedAt(Instant.now());

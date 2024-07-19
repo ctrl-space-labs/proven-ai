@@ -179,8 +179,6 @@ public class AgentsController implements AgentsControllerSpec {
         Boolean verificationResult = provenAIVerifier.verifyVPJwt(vpToken);
 //          Boolean verificationResult = Boolean.TRUE;
 
-
-        verificationResult = Boolean.TRUE;
         if (verificationResult.equals(Boolean.TRUE)) {
             String agentVcJwt = agentService.getAgentVcJwt(vpToken);
             Agent agent = agentService.getAllAgents(AgentCriteria

@@ -35,8 +35,8 @@ public class ProvenAIVerifier {
         vpPolicies.add(new PolicyRequest(holderBindingPolicy, null));
 //        globalVcPolicies.add(new PolicyRequest(jwtSignaturePolicy, null));
 
-        globalVcPolicies.add(new PolicyRequest(expirationDatePolicy, null));
-        globalVcPolicies.add(new PolicyRequest(notBeforeDatePolicy, null));
+//        globalVcPolicies.add(new PolicyRequest(expirationDatePolicy, null));
+//        globalVcPolicies.add(new PolicyRequest(notBeforeDatePolicy, null));
 //        globalVcPolicies.add(new PolicyRequest(jwtSignaturePolicy, null));
 
 
