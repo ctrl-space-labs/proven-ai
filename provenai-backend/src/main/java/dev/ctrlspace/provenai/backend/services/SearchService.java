@@ -13,13 +13,15 @@ import dev.ctrlspace.provenai.backend.model.dtos.DocumentInstanceSectionDTO;
 import dev.ctrlspace.provenai.backend.model.dtos.SearchResult;
 import dev.ctrlspace.provenai.ssi.model.vc.attestation.Policy;
 import id.walt.credentials.vc.vcs.W3CVC;
+import io.micrometer.tracing.Tracer;
+import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @Service
 public class SearchService {
@@ -39,6 +41,8 @@ public class SearchService {
 
     private AgentPurposeOfUsePoliciesConverter agentPurposeOfUsePoliciesConverter;
 
+    private Tracer tracer;
+
 
     @Autowired
     public SearchService(DataPodService dataPodService,
@@ -47,6 +51,7 @@ public class SearchService {
                          AuditPermissionOfUseVcService auditPermissionOfUseVcService,
                          AgentService agentService,
                          AgentPurposeOfUsePoliciesService agentPurposeOfUsePoliciesService,
+                         Tracer tracer,
                          AgentPurposeOfUsePoliciesConverter agentPurposeOfUsePoliciesConverter) {
         this.dataPodService = dataPodService;
         this.gendoxQueryAdapter = gendoxQueryAdapter;
@@ -55,6 +60,7 @@ public class SearchService {
         this.agentService = agentService;
         this.agentPurposeOfUsePoliciesService = agentPurposeOfUsePoliciesService;
         this.agentPurposeOfUsePoliciesConverter = agentPurposeOfUsePoliciesConverter;
+        this.tracer = tracer;
 
     }
 
@@ -74,65 +80,101 @@ public class SearchService {
 
         List<SearchResult> searchResults = new ArrayList<>();
 
-        UUID searchId = UUID.randomUUID();
+        String searchId = tracer.currentSpan().context().traceId();
+
+        ExecutorService executorService = Executors.newFixedThreadPool(3);
+
+        List<CompletableFuture<DataPodSearchResult>> futures = new ArrayList<>();
 
         for (Map.Entry<String, List<UUID>> entry : dataPodsByHostUrl.entrySet()) {
             String hostUrl = entry.getKey();
             List<UUID> dataPodIds = entry.getValue();
 
             for (UUID dataPodId : dataPodIds) {
-                List<DocumentInstanceSectionDTO> sectionDetails = gendoxQueryAdapter.superAdminSearch(question, dataPodId.toString(), hostUrl, "10");
-                DataPod dataPod = dataPodService.getDataPodById(dataPodId);
-                Organization ownerOrganization= organizationService.getOrganizationById(dataPod.getOrganizationId());
-
-                // Map section details to SearchResult objects
-                for (DocumentInstanceSectionDTO section : sectionDetails) {
-                    String documentId = section.getDocumentDTO().getId().toString();
-                    String documentSectionIscc = section.getDocumentSectionIsccCode();
-
-
-                    AuditPermissionOfUseVc auditPermissionOfUseVc = auditPermissionOfUseVcService.createAuditLog(
-                            ownerOrganization.getId(),
-                            ownerOrganization.getOrganizationDid(),
-                            processorOrganization.getId(),
-                            processorOrganization.getOrganizationDid(),
-                            agent.getId(),
-                            searchId,
-                            dataPodId,
-                            documentSectionIscc,
-                            section.getDocumentDTO().getDocumentIsccCode(),
-                            section.getTokenCount().intValue(),
-                            section.getAiModelName()
-                    );
-
-                    W3CVC permissionOfUseVC = auditPermissionOfUseVcService.createPermissionOfUseW3CVC(
-                            ownerOrganization.getOrganizationDid(),
-                            processorOrganization.getOrganizationDid(),
-                            documentSectionIscc,
-                            policies);
-
-                    // Generate signed JWT for the Permission of Use VC
-                    String signedVCJwt = (String) auditPermissionOfUseVcService.createAgentSignedVcJwt(permissionOfUseVC, processorOrganization.getOrganizationDid());
-
-                    SearchResult searchResult = SearchResult.builder()
-                            .documentSectionId(section.getId().toString())
-                            .documentId(documentId)
-                            .iscc(documentSectionIscc)
-                            .text(section.getSectionValue())
-                            .ownerName(processorOrganization.getName())
-                            .title(section.getDocumentSectionMetadata().getTitle())
-                            .tokens(String.valueOf(section.getTokenCount()))
-//                            TODO: change url format when documentSectionId is added to the url
-                            .documentURL(dataPod.getHostUrl().trim().replace("{documentId}", documentId))
-                            .signedPermissionOfUseVc(signedVCJwt)
-                            .build();
-
-                    searchResults.add(searchResult);
-                }
+                CompletableFuture<DataPodSearchResult> future = CompletableFuture.supplyAsync(() -> {
+                    List<DocumentInstanceSectionDTO> sections = gendoxQueryAdapter.superAdminSearch(question, dataPodId.toString(), hostUrl, "10");
+                    return new DataPodSearchResult(dataPodId, sections);
+                }, executorService);
+                futures.add(future);
             }
         }
 
+        // Wait for all futures to complete and fail if any future fails
+        CompletableFuture<Void> allOf = CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
+
+// Collect results after all futures are done, or handle exceptions
+        List<DataPodSearchResult> allSections = allOf.handle((result, ex) ->
+                        futures.stream()
+                                .map(CompletableFuture::join)
+                                .toList())
+                .join();
+
+        List<DocumentInstanceSectionWithPodId> sortedSections = allSections.stream()
+                .flatMap(dataPodSearchResult -> dataPodSearchResult.sections().stream()
+                        .map(section -> new DocumentInstanceSectionWithPodId(dataPodSearchResult.dataPodId(), section)))
+                .sorted(Comparator.comparing(d -> d.section().getDistanceFromQuestion()))
+                .toList();
+
+        List<DocumentInstanceSectionWithPodId> topSections = sortedSections.stream().limit(5).toList();
+        List<DocumentInstanceSectionWithPodId> remainingSections = sortedSections.stream().skip(5).toList();
+
+
+        for (DocumentInstanceSectionWithPodId sectionWithPodId : topSections) {
+            DocumentInstanceSectionDTO section = sectionWithPodId.section();
+            UUID dataPodId = sectionWithPodId.dataPodId();
+            DataPod dataPod = dataPodService.getDataPodById(dataPodId);
+            Organization ownerOrganization = organizationService.getOrganizationById(dataPod.getOrganizationId());
+
+            SearchResult searchResult = createSearchResult(section, dataPod, ownerOrganization, processorOrganization, searchId, policies);
+            searchResults.add(searchResult);
+        }
+
+
+        executorService.shutdown();
         return searchResults;
+    }
+
+    private SearchResult createSearchResult(DocumentInstanceSectionDTO section, DataPod dataPod, Organization ownerOrganization, Organization processorOrganization, String searchId, List<Policy> policies) throws JSONException, JsonProcessingException, ProvenAiException {
+        String documentId = section.getDocumentDTO().getId().toString();
+        String documentSectionIscc = section.getDocumentSectionIsccCode();
+
+        AuditPermissionOfUseVc auditPermissionOfUseVc = auditPermissionOfUseVcService.createAuditLog(
+                ownerOrganization.getId(), ownerOrganization.getOrganizationDid(),
+                processorOrganization.getId(),
+                            processorOrganization.getOrganizationDid(),
+                            agent.getId(),
+                UUID.fromString(searchId),
+                            dataPod.getId(),
+                documentSectionIscc, section.getDocumentDTO().getDocumentIsccCode(),
+                section.getTokenCount().intValue(), section.getAiModelName()
+        );
+
+        W3CVC permissionOfUseVC = auditPermissionOfUseVcService.createPermissionOfUseW3CVC(
+                ownerOrganization.getOrganizationDid(),
+                processorOrganization.getOrganizationDid(),
+                documentSectionIscc,
+                policies
+        );
+
+        String signedVCJwt = (String) auditPermissionOfUseVcService.createAgentSignedVcJwt(permissionOfUseVC, processorOrganization.getOrganizationDid());
+
+        return SearchResult.builder()
+                .documentSectionId(section.getId().toString())
+                .documentId(documentId)
+                .iscc(documentSectionIscc)
+                .text(section.getSectionValue())
+                .ownerName(processorOrganization.getName())
+                .title(section.getDocumentSectionMetadata().getTitle())
+                .tokens(String.valueOf(section.getTokenCount()))
+                .documentURL(dataPod.getHostUrl().trim().replace("{documentId}", documentId))
+                .signedPermissionOfUseVc(signedVCJwt)
+                .build();
+    }
+
+    private record DataPodSearchResult(UUID dataPodId, List<DocumentInstanceSectionDTO> sections) {
+    }
+
+    private record DocumentInstanceSectionWithPodId(UUID dataPodId, DocumentInstanceSectionDTO section) {
     }
 
 
