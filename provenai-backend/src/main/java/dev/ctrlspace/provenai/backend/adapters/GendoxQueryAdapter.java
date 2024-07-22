@@ -55,7 +55,7 @@ public class GendoxQueryAdapter {
      */
 
 
-    public List<DocumentInstanceSectionDTO> superAdminSearch(String question, String projectId, String domainFullPath, String size) {
+    public List<DocumentInstanceSectionDTO> superAdminSearch(String question, String projectId, String domainFullPath, Integer size) {
         String adminJwt = authenticationService.getClientTokenString();
 
         HttpHeaders headers = new HttpHeaders();

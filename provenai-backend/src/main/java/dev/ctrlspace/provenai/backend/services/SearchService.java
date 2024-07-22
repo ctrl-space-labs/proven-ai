@@ -80,7 +80,8 @@ public class SearchService {
 
         List<SearchResult> searchResults = new ArrayList<>();
 
-        String searchId = tracer.currentSpan().context().traceId();
+//        String searchId = tracer.currentSpan().context().traceId();
+        String searchId = UUID.randomUUID().toString();
 
         ExecutorService executorService = Executors.newFixedThreadPool(3);
 
@@ -92,7 +93,7 @@ public class SearchService {
 
             for (UUID dataPodId : dataPodIds) {
                 CompletableFuture<DataPodSearchResult> future = CompletableFuture.supplyAsync(() -> {
-                    List<DocumentInstanceSectionDTO> sections = gendoxQueryAdapter.superAdminSearch(question, dataPodId.toString(), hostUrl, "10");
+                    List<DocumentInstanceSectionDTO> sections = gendoxQueryAdapter.superAdminSearch(question, dataPodId.toString(), hostUrl, 5);
                     return new DataPodSearchResult(dataPodId, sections);
                 }, executorService);
                 futures.add(future);
@@ -125,7 +126,7 @@ public class SearchService {
             DataPod dataPod = dataPodService.getDataPodById(dataPodId);
             Organization ownerOrganization = organizationService.getOrganizationById(dataPod.getOrganizationId());
 
-            SearchResult searchResult = createSearchResult(section, dataPod, ownerOrganization, processorOrganization, searchId, policies);
+            SearchResult searchResult = createSearchResult(section, dataPod, ownerOrganization, processorOrganization, agent, searchId, policies);
             searchResults.add(searchResult);
         }
 
@@ -134,7 +135,13 @@ public class SearchService {
         return searchResults;
     }
 
-    private SearchResult createSearchResult(DocumentInstanceSectionDTO section, DataPod dataPod, Organization ownerOrganization, Organization processorOrganization, String searchId, List<Policy> policies) throws JSONException, JsonProcessingException, ProvenAiException {
+    private SearchResult createSearchResult(DocumentInstanceSectionDTO section,
+                                            DataPod dataPod,
+                                            Organization ownerOrganization,
+                                            Organization processorOrganization,
+                                            Agent agent,
+                                            String searchId,
+                                            List<Policy> policies) throws JSONException, JsonProcessingException, ProvenAiException {
         String documentId = section.getDocumentDTO().getId().toString();
         String documentSectionIscc = section.getDocumentSectionIsccCode();
 
