@@ -22,13 +22,6 @@ public class JwkToEthereum {
      * @throws Exception
      */
     public static void main(String[] args) throws Exception {
-        String jwkString = "{\"kty\":\"EC\",\"d\":\"osHWgrHSECz8AHkAsLSuhkKHYvMprMbcCQyR5zPDgHE\",\"crv\":\"secp256k1\",\"kid\":\"WP0FjJJmsTgNHWJ-D4REtZPje6hj7OYxxTTfV6HJkGw\",\"x\":\"DYKpIyEHnD_0jxi-xqe1uDhNyi2zsIX8Kwp_XlViPGc\",\"y\":\"I15AFcGlvOPV2nmE-OpSHWoHRR8DyOL0W3PenjPb94k\"}";
-
-        String privateKey = ProvenAIBlockchainUtil.getEthereumPrivateKeyFromJWK(jwkString);
-        String address = ProvenAIBlockchainUtil.getEthereumAddressFromJwk(jwkString);
-
-        System.out.println("Ethereum Private Key: " + privateKey);
-        System.out.println("Ethereum Address: " + address);
 
         // I am committing the Ganache private key to the repository for demonstration purposes only
         ProvenAIBlockchainUtil blockchainUtil = new ProvenAIBlockchainUtil("HTTP://127.0.0.1:7545",
