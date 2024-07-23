@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import dev.ctrlspace.provenai.configuration.SSIConfig;
 import dev.ctrlspace.provenai.ssi.issuer.VerifiableCredentialBuilder;
 import dev.ctrlspace.provenai.ssi.model.vc.VerifiableCredential;
 import dev.ctrlspace.provenai.ssi.model.vc.attestation.AIAgentCredentialSubject;
@@ -28,6 +29,9 @@ public class AgentIDConverter {
 
     private ObjectMapper objectMapper;
 
+    String issuerDid = SSIConfig.getIssuerDid();
+
+
     public AgentIDConverter() {
         objectMapper = new ObjectMapper();
         objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
@@ -47,7 +51,8 @@ public class AgentIDConverter {
 
         // Set credential ID, issuer DID, and subject DID
         credentialBuilder.setCredentialId("urn:uuid:"+ UUID.randomUUID().toString());
-        credentialBuilder.setIssuerDid("\"did:jwk:eyJrdHkiOiJPS1AiLCJjcnYiOiJFZDI1NTE5Iiwia2lkIjoiQ0ZRLU5yYTV5bnlCc2Z4d3k3YU5mOGR1QUVVQ01sTUlyUklyRGc2REl5NCIsIngiOiJoNW5idzZYOUptSTBCdnVRNU0wSlhmek84czJlRWJQZFYyOXdzSFRMOXBrIn0\"");
+
+        credentialBuilder.setIssuerDid(issuerDid);
         credentialBuilder.setSubjectDid(agentIdCredential.getCredentialSubject().getId());
 
         Json json = Json.Default;

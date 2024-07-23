@@ -11,16 +11,23 @@ import dev.ctrlspace.provenai.ssi.verifier.CredentialVerificationApi;
 import dev.ctrlspace.provenai.utils.JsonLiteralSerializer;
 import dev.ctrlspace.provenai.utils.SSIJWTUtils;
 import kotlinx.serialization.json.JsonLiteral;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class SSIConfig {
 
+    @Value("${proven-ai.ssi.verifier.url}")
+    private String waltIdVerifierApi;
+
+    @Value("${proven-ai.ssi.issuer.url}")
+    private String waltIdIssuerApi;
+
 
     @Bean
     public CredentialIssuanceApi credentialIssuanceApi(ObjectMapper kotlinObjectMapper) {
-        return new CredentialIssuanceApi(kotlinObjectMapper);
+        return new CredentialIssuanceApi(waltIdIssuerApi,kotlinObjectMapper);
     }
 
     @Bean
@@ -30,8 +37,9 @@ public class SSIConfig {
 
     @Bean
     public CredentialVerificationApi credentialVerificationApi() {
-        return new CredentialVerificationApi();
+        return new CredentialVerificationApi(waltIdVerifierApi);
     }
+
 
     @Bean
     public AgentIDConverter agentIDConverter(ObjectMapper kotlinObjectMapper) {

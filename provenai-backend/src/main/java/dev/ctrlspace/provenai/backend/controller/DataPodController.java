@@ -1,26 +1,26 @@
 package dev.ctrlspace.provenai.backend.controller;
 
-import dev.ctrlspace.provenai.backend.authentication.ProvenAIAuthenticationToken;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import dev.ctrlspace.provenai.backend.controller.specs.DataPodControllerSpec;
 import dev.ctrlspace.provenai.backend.converters.AclPoliciesConverter;
 import dev.ctrlspace.provenai.backend.converters.DataPodConverter;
 import dev.ctrlspace.provenai.backend.exceptions.ProvenAiException;
 import dev.ctrlspace.provenai.backend.model.AclPolicies;
 import dev.ctrlspace.provenai.backend.model.DataPod;
-import dev.ctrlspace.provenai.backend.model.authentication.OrganizationUserDTO;
 import dev.ctrlspace.provenai.backend.model.authentication.UserProfile;
 import dev.ctrlspace.provenai.backend.model.dtos.AclPoliciesDTO;
 import dev.ctrlspace.provenai.backend.model.dtos.DataPodDTO;
 import dev.ctrlspace.provenai.backend.model.dtos.DataPodPublicDTO;
-import dev.ctrlspace.provenai.backend.model.dtos.criteria.AccessCriteria;
+import dev.ctrlspace.provenai.backend.model.dtos.VCOfferDTO;
 import dev.ctrlspace.provenai.backend.model.dtos.criteria.DataPodCriteria;
 import dev.ctrlspace.provenai.backend.services.AclPoliciesService;
 import dev.ctrlspace.provenai.backend.services.DataPodService;
 import dev.ctrlspace.provenai.backend.utils.SecurityUtils;
+import id.walt.credentials.vc.vcs.W3CVC;
 import jakarta.validation.Valid;
+import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -28,7 +28,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -116,6 +115,20 @@ public class DataPodController implements DataPodControllerSpec {
 //                .credentialJwt("eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsIm5hbWUiOiJKb2huIERvZSIsImVtYWlsIjoiam9obkBkb2UuY29tIn0.7J1Gzv")
 //                .build();
 
+    @PreAuthorize("@securityUtils.hasAuthority('OP_EDIT_PROVEN_AI_DATAPOD', 'getRequestedDataPodIdFromPathVariable')")
+    @PostMapping("/data-pods/{dataPodId}/credential-offer")
+    public VCOfferDTO createAgentVerifiableId(@PathVariable String dataPodId) throws ProvenAiException, JsonProcessingException, JSONException {
+
+        VCOfferDTO DataPodIdCredential = new VCOfferDTO();
+        W3CVC verifiableCredential = dataPodService.createDataPodW3CVCByID(UUID.fromString(dataPodId));
+        Object signedVcJwt = dataPodService.createDataPodSignedVcJwt(verifiableCredential, UUID.fromString(dataPodId));
+        DataPodIdCredential.setId(dataPodId);
+        DataPodIdCredential.setCredentialOfferUrl(dataPodService.createDataPodVCOffer(verifiableCredential));
+        DataPodIdCredential.setCredentialJwt(signedVcJwt);
+//        dataPodService.updateAgentVerifiableId(UUID.fromString(dataPodId), signedVcJwt.toString());
+        return DataPodIdCredential;
+    }
+
     @PreAuthorize("@securityUtils.hasAuthority('OP_DELETE_PROVEN_AI_AGENT', 'getRequestedDataPodIdFromPathVariable')")
     @DeleteMapping("/data-pods/{dataPodId}")
     public void deleteDataPod(@PathVariable UUID dataPodId) throws ProvenAiException {
@@ -162,5 +175,7 @@ public class DataPodController implements DataPodControllerSpec {
     public void deleteAclPolicies(@RequestParam List<UUID> aclPolicyIds) throws ProvenAiException {
         aclPoliciesService.deleteAclPolicies(aclPolicyIds);
     }
+
+
 
 }

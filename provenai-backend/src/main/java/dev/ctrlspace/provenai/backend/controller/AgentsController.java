@@ -1,17 +1,14 @@
 package dev.ctrlspace.provenai.backend.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import dev.ctrlspace.provenai.backend.authentication.ProvenAIAuthenticationToken;
 import dev.ctrlspace.provenai.backend.controller.specs.AgentsControllerSpec;
 import dev.ctrlspace.provenai.backend.converters.AgentConverter;
 import dev.ctrlspace.provenai.backend.converters.AgentPurposeOfUsePoliciesConverter;
 import dev.ctrlspace.provenai.backend.exceptions.ProvenAiException;
 import dev.ctrlspace.provenai.backend.model.Agent;
 import dev.ctrlspace.provenai.backend.model.AgentPurposeOfUsePolicies;
-import dev.ctrlspace.provenai.backend.model.authentication.OrganizationUserDTO;
 import dev.ctrlspace.provenai.backend.model.authentication.UserProfile;
 import dev.ctrlspace.provenai.backend.model.dtos.*;
-import dev.ctrlspace.provenai.backend.model.dtos.criteria.AccessCriteria;
 import dev.ctrlspace.provenai.backend.model.dtos.criteria.AgentCriteria;
 import dev.ctrlspace.provenai.backend.services.AgentPurposeOfUsePoliciesService;
 import dev.ctrlspace.provenai.backend.services.AgentService;
@@ -23,7 +20,6 @@ import org.json.JSONException;
 import org.keycloak.representations.AccessTokenResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -32,7 +28,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
@@ -120,12 +115,12 @@ public class AgentsController implements AgentsControllerSpec {
 
     @PreAuthorize("@securityUtils.hasAuthority('OP_OFFER_PROVEN_AI_AGENT_VC', 'getRequestedAgentIdFromPathVariable')")
     @PostMapping("/agents/{agentId}/credential-offer")
-    public AgentIdCredential createAgentVerifiableId(@PathVariable String agentId) throws ProvenAiException, JsonProcessingException, JSONException {
+    public VCOfferDTO createAgentVerifiableId(@PathVariable String agentId) throws ProvenAiException, JsonProcessingException, JSONException {
 //        UserProfile agentProfile = (UserProfile) authentication.getPrincipal();
-        AgentIdCredential agentIdCredential = new AgentIdCredential();
+        VCOfferDTO agentIdCredential = new VCOfferDTO();
         W3CVC verifiableCredential = agentService.createAgentW3CVCByID(UUID.fromString(agentId));
         Object signedVcJwt = agentService.createAgentSignedVcJwt(verifiableCredential, UUID.fromString(agentId));
-        agentIdCredential.setAgentId(agentId);
+        agentIdCredential.setId(agentId);
         agentIdCredential.setCredentialOfferUrl(agentService.createAgentVCOffer(verifiableCredential));
         agentIdCredential.setCredentialJwt(signedVcJwt);
         agentService.updateAgentVerifiableId(UUID.fromString(agentId), signedVcJwt.toString());

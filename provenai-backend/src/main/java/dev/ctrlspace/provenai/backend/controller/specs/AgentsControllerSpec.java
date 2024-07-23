@@ -5,7 +5,7 @@ import dev.ctrlspace.provenai.backend.exceptions.ProvenAiErrorResponse;
 import dev.ctrlspace.provenai.backend.exceptions.ProvenAiException;
 import dev.ctrlspace.provenai.backend.model.Agent;
 import dev.ctrlspace.provenai.backend.model.dtos.AgentDTO;
-import dev.ctrlspace.provenai.backend.model.dtos.AgentIdCredential;
+import dev.ctrlspace.provenai.backend.model.dtos.VCOfferDTO;
 import dev.ctrlspace.provenai.backend.model.dtos.criteria.AgentCriteria;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -74,7 +74,7 @@ public interface AgentsControllerSpec {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successfully created a verifiable id. The response contains the actual VC JWT and the credential offer URL to be used to load the VC into user's wallet.",
                     content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = AgentIdCredential.class),
+                            schema = @Schema(implementation = VCOfferDTO.class),
                             examples = @ExampleObject(value = "{\"agentId\": \"123e4567-e89b-12d3-a456-426614174000\", \"credentialOfferUrl\": \"openid-credential-offer://issuer.portal.walt.id/?credential_offer_uri=https%3A%2F%2Fissuer.portal.walt.id%2Fopenid4vc%2FcredentialOffer%3Fid%3Dc85078d0-61e5-462b-abe5-a460584d7343\"," +
                                     " \"credentialJwt\": \"eyJhbGciOiJFZERTQSIsImtpZCI6ImRpZDpqd2s6ZXlKcmRIa2lPaUpQUzFBaUxDSmpjbllpT2lKRlpESTFOVEU1SWl3aWEybGtJam9pUTBaUkxVNXlZVFY1Ym5sQ2MyWjRkM2szWVU1bU9HUjFRVVZWUTAxc1RVbHlVa2x5UkdjMlJFbDVOQ0lzSW5naU9pSm9OVzVpZHpaWU9VcHRTVEJDZG5WUk5VMHdTbGhtZWs4NGN6SmxSV0pRWkZZeU9YZHpTRlJNT1hCckluMCJ9.eyJpc3MiOiJkaWQ6andrOmV5SnJkSGtpT2lKUFMxQWlMQ0pqY25ZaU9pSkZaREkxTlRFNUlpd2lhMmxrSWpvaVEwWlJMVTV5WVRWNWJubENjMlo0ZDNrM1lVNW1PR1IxUVVWVlEwMXNUVWx5VWtseVJHYzJSRWw1TkNJc0luZ2lPaUpvTlc1aWR6WllPVXB0U1RCQ2RuVlJOVTB3U2xobWVrODRjekpsUldKUVpGWXlPWGR6U0ZSTU9YQnJJbjAiLCJzdWIiOiJkaWQ6andrOmV5SnJkSGtpT2lKUFMxQWlMQ0pqY25ZaU9pSkZaREkxTlRFNUlpd2lhMmxrSWpvaVEwWlJMVTV5WVRWNWJubENjMlo0ZDNrM1lVNW1PR1IxUVVWVlEwMXNUVWx5VWtseVJHYzJSRWw1TkNJc0luZ2lPaUpvTlc1aWR6WllPVXB0U1RCQ2RuVlJOVTB3U2xobWVrODRjekpsUldKUVpGWXlPWGR6U0ZSTU9YQnJJbjAiLCJ2YyI6eyJAY29udGV4dCI6WyJodHRwczovL3d3dy53My5vcmcvMjAxOC9jcmVkZW50aWFscy92MSIsImh0dHBzOi8vd3d3LnczLm9yZy8yMDE4L2NyZWRlbnRpYWxzL3YxIl0sInR5cGUiOlsiVmVyaWZpYWJsZUNyZWRlbnRpYWwiLCJWZXJpZmlhYmxlQUlBZ2VudCJdLCJjcmVkZW50aWFsU3ViamVjdCI6eyJhZ2VudCI6eyJpZCI6ImRpZDpqd2s6ZXlKcmRIa2lPaUpQUzFBaUxDSmpjbllpT2lKRlpESTFOVEU1SWl3aWEybGtJam9pUTBaUkxVNXlZVFY1Ym5sQ2MyWjRkM2szWVU1bU9HUjFRVVZWUTAxc1RVbHlVa2x5UkdjMlJFbDVOQ0lzSW5naU9pSm9OVzVpZHpaWU9VcHRTVEJDZG5WUk5VMHdTbGhtZWs4NGN6SmxSV0pRWkZZeU9YZHpTRlJNT1hCckluMCIsIm9yZ2FuaXphdGlvbk5hbWUiOiJFeGFtcGxlIE9yZ2FuaXphdGlvbiIsImFnZW50TmFtZSI6bnVsbCwiY3JlYXRpb25EYXRlIjoiMjAyNC0wNS0wOVQxNDo0MzoyNi4zNzIxNzU1MDBaIiwidXNhZ2VQb2xpY2llcyI6W3sicG9saWN5VHlwZSI6IkNPTVBFTlNBVElPTl9QT0xJQ1kiLCJwb2xpY3lWYWx1ZSI6IkZJWEVEIn0seyJwb2xpY3lUeXBlIjoiVVNBR0VfUE9MSUNZIiwicG9saWN5VmFsdWUiOiJHRU5FUkFMX0FTU0lTVEFOVCJ9LHsicG9saWN5VHlwZSI6IkNPTVBFTlNBVElPTl9QT0xJQ1kiLCJwb2xpY3lWYWx1ZSI6IkZJWEVEIn0seyJwb2xpY3lUeXBlIjoiVVNBR0VfUE9MSUNZIiwicG9saWN5VmFsdWUiOiJHRU5FUkFMX0FTU0lTVEFOVCJ9XX0sImlkIjoiZGlkOmp3azpleUpyZEhraU9pSlBTMUFpTENKamNuWWlPaUpGWkRJMU5URTVJaXdpYTJsa0lqb2lRMFpSTFU1eVlUVjVibmxDYzJaNGQzazNZVTVtT0dSMVFVVlZRMDFzVFVseVVrbHlSR2MyUkVsNU5DSXNJbmdpT2lKb05XNWlkelpZT1VwdFNUQkNkblZSTlUwd1NsaG1lazg0Y3pKbFJXSlFaRll5T1hkelNGUk1PWEJySW4wIn0sImlkIjoidXJuOnV1aWQ6bnVsbCIsImlzc3VlciI6IlwiZGlkOmp3azpleUpyZEhraU9pSlBTMUFpTENKamNuWWlPaUpGWkRJMU5URTVJaXdpYTJsa0lqb2lRMFpSTFU1eVlUVjVibmxDYzJaNGQzazNZVTVtT0dSMVFVVlZRMDFzVFVseVVrbHlSR2MyUkVsNU5DSXNJbmdpT2lKb05XNWlkelpZT1VwdFNUQkNkblZSTlUwd1NsaG1lazg0Y3pKbFJXSlFaRll5T1hkelNGUk1PWEJySW4wXCIiLCJpc3N1YW5jZURhdGUiOiIyMDI0LTA1LTA5VDE0OjQzOjI2LjU4MzUyMTUwMFoiLCJleHBpcmF0aW9uRGF0ZSI6IjIwMjQtMDYtMDhUMTQ6NDM6MjYuNjM1WiJ9fQ.XWCmjQgLIJBWPeW2ih6sV__cVRAxxkp84_HH7AVrJOBav3gwCvdnzogd3yZ7xVKMavLrhwYHlKTON9TrdcdUCQ\"}"))),
             @ApiResponse(responseCode = "400", description = "Invalid request",
@@ -82,7 +82,7 @@ public interface AgentsControllerSpec {
                             schema = @Schema(implementation = ProvenAiErrorResponse.class))),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    public AgentIdCredential createAgentVerifiableId(@PathVariable String id) throws ProvenAiException, JsonProcessingException, JSONException;
+    public VCOfferDTO createAgentVerifiableId(@PathVariable String id) throws ProvenAiException, JsonProcessingException, JSONException;
 
 
     @Operation(summary = "Update an agent",

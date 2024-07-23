@@ -211,6 +211,9 @@ public class AgentService {
         ProvenAIIssuer provenAIIssuer = new ProvenAIIssuer();
         AdditionalSignVCParams additionalSignVCParams = new AdditionalSignVCParams();
         Organization organization = getOrganizationByAgentId(agentId);
+
+
+
         Object agentVcJwt = provenAIIssuer.generateSignedVCJwt(w3CVC, jwkKey, issuerDid, organization.getOrganizationDid());
 
         EventPayloadDTO eventPayload = new EventPayloadDTO();
