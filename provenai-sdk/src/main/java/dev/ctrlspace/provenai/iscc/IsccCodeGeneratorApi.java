@@ -15,14 +15,12 @@ import java.util.Base64;
 
 public class IsccCodeGeneratorApi {
 
-    private RestTemplate restTemplate;
+    public static final RestTemplate restTemplate = new RestTemplate();
 
     private String isccCodeGenerationApi;
 
-    public IsccCodeGeneratorApi(RestTemplate restTemplate,
-                                String isccCodeGenerationApi) {
+    public IsccCodeGeneratorApi(String isccCodeGenerationApi) {
         this.isccCodeGenerationApi = isccCodeGenerationApi;
-        this.restTemplate = restTemplate;
     }
 
     public HttpHeaders buildHeader(String base64EncodedFileName) {
