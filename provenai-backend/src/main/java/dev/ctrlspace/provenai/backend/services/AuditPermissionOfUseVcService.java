@@ -15,7 +15,6 @@ import dev.ctrlspace.provenai.ssi.model.vc.VerifiableCredential;
 import dev.ctrlspace.provenai.ssi.model.vc.attestation.PermissionOfUseCredentialSubject;
 import dev.ctrlspace.provenai.ssi.model.vc.attestation.Policy;
 import id.walt.credentials.vc.vcs.W3CVC;
-import id.walt.crypto.keys.LocalKey;
 import org.cardanofoundation.merkle.MerkleElement;
 import org.cardanofoundation.merkle.ProofItem;
 import id.walt.crypto.keys.jwk.JWKKey;

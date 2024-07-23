@@ -80,6 +80,15 @@ const getAiAgentIdCredentialOffer = (agentId, token) => {
     });
 };
 
+const getDataPodIdCredentialOffer = (dataPodId, token) => {
+    return axios.post(apiRequests.ssi.getDataPodIdCredentialOffer(dataPodId), {}, {
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+        },
+    });
+};
+
 export default {
     getVcOffered,
     getVerifiedVcSignaturePolicy,
@@ -87,5 +96,6 @@ export default {
     getVerifiedVcJwtPayload,
     getVerifiedVcCredentialSubject,
     handleVcOfferFlow,
-    getAiAgentIdCredentialOffer
+    getAiAgentIdCredentialOffer,
+    getDataPodIdCredentialOffer
 };

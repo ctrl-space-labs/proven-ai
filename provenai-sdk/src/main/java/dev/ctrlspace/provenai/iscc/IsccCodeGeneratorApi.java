@@ -14,7 +14,6 @@ import java.util.Base64;
 
 
 public class IsccCodeGeneratorApi {
-
     public static final RestTemplate restTemplate = new RestTemplate();
 
     private String isccCodeGenerationApi;

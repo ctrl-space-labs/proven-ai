@@ -3,20 +3,32 @@ package dev.ctrlspace.provenai.backend.services;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import dev.ctrlspace.provenai.backend.converters.DataPodConverter;
 import dev.ctrlspace.provenai.backend.exceptions.ProvenAiException;
-import dev.ctrlspace.provenai.backend.model.AclPolicies;
-import dev.ctrlspace.provenai.backend.model.Agent;
-import dev.ctrlspace.provenai.backend.model.DataPod;
+import dev.ctrlspace.provenai.backend.model.*;
 import dev.ctrlspace.provenai.backend.model.dtos.DataPodDTO;
 import dev.ctrlspace.provenai.backend.model.dtos.DataPodPublicDTO;
 import dev.ctrlspace.provenai.backend.model.dtos.criteria.DataPodCriteria;
 import dev.ctrlspace.provenai.backend.repositories.DataPodRepository;
+import dev.ctrlspace.provenai.backend.repositories.OrganizationRepository;
+import dev.ctrlspace.provenai.backend.repositories.PolicyTypeRepository;
 import dev.ctrlspace.provenai.backend.repositories.specifications.DataPodPredicates;
+import dev.ctrlspace.provenai.ssi.issuer.CredentialIssuanceApi;
+import dev.ctrlspace.provenai.ssi.issuer.ProvenAIIssuer;
+import dev.ctrlspace.provenai.ssi.model.dto.IssuerKey;
+import dev.ctrlspace.provenai.ssi.model.dto.WaltIdCredentialIssuanceRequest;
+import dev.ctrlspace.provenai.ssi.model.vc.AdditionalSignVCParams;
+import dev.ctrlspace.provenai.ssi.model.vc.VerifiableCredential;
+import dev.ctrlspace.provenai.ssi.model.vc.attestation.DataOwnershipCredentialSubject;
 import dev.ctrlspace.provenai.ssi.model.vc.attestation.Policy;
+import id.walt.credentials.vc.vcs.W3CVC;
+import id.walt.crypto.keys.jwk.JWKKey;
+import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -30,18 +42,36 @@ public class DataPodService {
 
     private AclPoliciesService aclPoliciesService;
 
-    private AgentService agentService;
     private DataPodConverter dataPodConverter;
+
+    private CredentialIssuanceApi credentialIssuanceApi;
+
+    private OrganizationRepository organizationRepository;
+
+    @Value("${proven-ai.ssi.issuer-did}")
+    private String issuerDid;
+
+    @Value("${proven-ai.ssi.issuer-private-jwk}")
+    private String issuerPrivateJwk;
+
+    private PolicyTypeRepository policyTypeRepository;
 
     @Autowired
     public DataPodService(DataPodRepository dataPodRepository,
                           AclPoliciesService aclPoliciesService,
                           AgentService agentService,
-                          DataPodConverter dataPodConverter) {
+                          DataPodConverter dataPodConverter,
+                          CredentialIssuanceApi credentialIssuanceApi,
+                          OrganizationRepository organizationRepository,
+                          PolicyTypeRepository policyTypeRepository) {
         this.dataPodRepository = dataPodRepository;
         this.aclPoliciesService = aclPoliciesService;
-        this.agentService = agentService;
         this.dataPodConverter = dataPodConverter;
+        this.credentialIssuanceApi = credentialIssuanceApi;
+        this.organizationRepository = organizationRepository;
+        this.policyTypeRepository = policyTypeRepository;
+
+
     }
 
 
@@ -133,5 +163,72 @@ public class DataPodService {
     }
 
 
+    public W3CVC createDataPodW3CVCByID(UUID dataPodId) throws JsonProcessingException, JSONException, ProvenAiException {
+        DataPod dataPod = getDataPodById(dataPodId);
+        Organization organization = getOrganizationByDataPodId(dataPodId);
+
+        List<AclPolicies> aclPolicies = aclPoliciesService.getAclPoliciesByDataPodId(dataPodId);
+
+//        // Build the list of usage policies
+        List<Policy> usagePolicies = aclPolicies.stream().map(agentPurposeOfUsePolicy -> new Policy((policyTypeRepository.findById(agentPurposeOfUsePolicy.getPolicyType().getId())).get().getName(), agentPurposeOfUsePolicy.getValue())).toList();
+
+
+
+        VerifiableCredential<DataOwnershipCredentialSubject> verifiableCredential = new VerifiableCredential<>();
+        verifiableCredential.setCredentialSubject(DataOwnershipCredentialSubject.builder()
+                .id(organization.getOrganizationDid())
+                .dataPodName(dataPod.getPodUniqueName())
+                .dataPodId(dataPod.getId().toString())
+                .usagePolicies(usagePolicies)
+                .isccCollectionMerkleRoot(null)
+                .ownershipStatus("active")
+                .creationDate(Instant.now())
+                .build());
+
+        ProvenAIIssuer provenAIIssuer = new ProvenAIIssuer();
+
+        return provenAIIssuer.generateUnsignedVC(verifiableCredential);
     }
+
+
+    public Object createDataPodSignedVcJwt(W3CVC w3CVC, UUID dataPodId) throws ProvenAiException {
+        JWKKey jwkKey = new JWKKey(issuerPrivateJwk);
+        ProvenAIIssuer provenAIIssuer = new ProvenAIIssuer();
+        AdditionalSignVCParams additionalSignVCParams = new AdditionalSignVCParams();
+        Organization organization = getOrganizationByDataPodId(dataPodId);
+
+        return provenAIIssuer.generateSignedVCJwt(w3CVC, jwkKey, issuerDid, organization.getOrganizationDid());
+
+
+    }
+
+    public String createDataPodVCOffer(W3CVC w3CVC) {
+
+        WaltIdCredentialIssuanceRequest request = WaltIdCredentialIssuanceRequest.builder().issuerDid(issuerDid).issuerKey(IssuerKey.builder().jwk(issuerPrivateJwk).type("jwk").build()).credentialData(w3CVC).build();
+        return credentialIssuanceApi.issueCredential(request);
+    }
+
+
+    public Organization getOrganizationByDataPodId(UUID dataPodId) throws ProvenAiException {
+        return getOrganizationOptionalByDataPodId(dataPodId)
+                .orElseThrow(() -> new IllegalArgumentException("Organization not found for Data pod ID: " + dataPodId));
+
+    }
+
+
+    public Optional<Organization> getOrganizationOptionalByDataPodId(UUID dataPodId) throws ProvenAiException {
+        DataPod dataPod = getDataPodById(dataPodId);
+        if (dataPod == null) {
+            throw new IllegalArgumentException("DataPod not found with ID: " + dataPodId);
+        }
+        return organizationRepository.findById(dataPod.getOrganizationId());
+    }
+
+//    public void updateDataPodVerifiableId(UUID dataPodId, String verifiableId) {
+//        dataPodRepository.updateAgentVerifiableId(dataPodId, verifiableId);
+//    }
+
+
+
+}
 

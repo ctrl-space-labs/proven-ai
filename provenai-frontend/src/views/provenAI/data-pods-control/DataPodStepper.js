@@ -41,6 +41,10 @@ import {
   defaultDataUse,
 } from "src/utils/defaultValues";
 
+import ssiService from "../../../provenAI-sdk/ssiService";
+import CredentialsWithQrCodeComponent from "../registration-components/CredentialsWithQrCodeComponent";
+
+
 const DataPodStepper = ({
   activeDataPod,
   activeOrganization,
@@ -62,6 +66,8 @@ const DataPodStepper = ({
   const [userErrors, setUserErrors] = useState({});
   const [dataPodErrors, setDataPodErrors] = useState({});
   const [usePoliciesErrors, setUsePoliciesErrors] = useState({});
+  const [dataPodUpdated, setDataPodUpdated] = useState(false);
+  const [isSubmitComplete, setIsSubmitComplete] = useState(false);
 
   // Form data states
   const [userData, setUserData] = useState(defaultUserInformation);
@@ -192,9 +198,16 @@ const DataPodStepper = ({
             aclPolicyIdsToDelete,
             storedToken
           );
+          setDataPodUpdated(true);
+
           toast.success("Policies deleted successfully!");
         }
 
+        if (dataPodUpdated && toast.success) {
+          const dataPodOfferVc = await getDataPodOfferVc();
+        }
+
+        setIsSubmitComplete(true);
         toast.success("ACL policies updated successfully!");
       } catch (error) {
         console.error("Error updating ACL policies:", error);
@@ -202,6 +215,23 @@ const DataPodStepper = ({
       }
     }
   };
+
+  const getDataPodOfferVc = async () => {
+    const dataPodOfferVcResponse = await ssiService.getDataPodIdCredentialOffer(
+      dataPodId,
+      storedToken
+    );
+    return dataPodOfferVcResponse.data;
+  };
+
+  const getDataPodOfferVcUrl = async () => {
+    const dataPodOfferVcResponse = await ssiService.getDataPodIdCredentialOffer(
+      dataPodId,
+      storedToken
+    );
+    return dataPodOfferVcResponse.data.credentialOfferUrl;
+  };
+
 
   const getStepContent = (step) => {
     switch (step) {
@@ -263,6 +293,8 @@ const DataPodStepper = ({
     }
   };
 
+
+
   const renderContent = () => {
     if (activeStep === dataPodSteps.length) {
       return (
@@ -272,9 +304,16 @@ const DataPodStepper = ({
               All steps are completed!
             </Typography>
             <Typography variant="subtitle1" color="textSecondary" gutterBottom>
-              Thank you for completing all the steps. You can now proceed
-              further.
+              You can now receive your Data Pod Ownership Credential by scanning the QR
+              code below.
             </Typography>
+          </Box>
+          <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
+            <CredentialsWithQrCodeComponent
+              title={"Receive your Data Ownership Credential"}
+              handleCredentialsClose={null}
+              getURL={getDataPodOfferVcUrl}
+            />
           </Box>
           <Box sx={{ mt: 4, display: "flex", justifyContent: "center" }}>
             <Button

@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import dev.ctrlspace.provenai.ssi.model.dto.WaltIdCredentialIssuanceRequest;
-import dev.ctrlspace.provenai.utils.SSIConstants;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
@@ -16,15 +15,33 @@ import org.springframework.web.client.RestTemplate;
  * The API returns the credential offer url that can be imported to a web wallet app to be validated.
  */
 public class CredentialIssuanceApi {
-    public static final RestTemplate restTemplate = new RestTemplate();
+
+    private String waltIdIssuerApi;
 
     private ObjectMapper objectMapper;
 
-    public CredentialIssuanceApi() {
-        objectMapper = new ObjectMapper();
-        objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-        objectMapper.registerModule(new JavaTimeModule());
+    public static final RestTemplate restTemplate = new RestTemplate();
+
+
+//    public CredentialIssuanceApi(String waltIdIssuerApi) {
+//        objectMapper = new ObjectMapper();
+//        objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+//        objectMapper.registerModule(new JavaTimeModule());
+//        this.waltIdIssuerApi = waltIdIssuerApi;
+//    }
+
+    public CredentialIssuanceApi(String waltIdIssuerApi, ObjectMapper objectMapper) {
+        this.waltIdIssuerApi = waltIdIssuerApi;
+        this.objectMapper = objectMapper;
     }
+
+    // Constructor for ObjectMapper only (with default RestTemplate)
+    public CredentialIssuanceApi(String waltIdIssuerApi) {
+        this(waltIdIssuerApi, new ObjectMapper());
+        this.objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        this.objectMapper.registerModule(new JavaTimeModule());
+    }
+
 
     public CredentialIssuanceApi(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
@@ -44,7 +61,7 @@ public class CredentialIssuanceApi {
         HttpEntity<JsonNode> requestEntity = new HttpEntity<>(requestBody, headers);
 
         ResponseEntity<String> responseEntity = restTemplate.exchange(
-                SSIConstants.WALT_ID_ISSUER_API,
+                waltIdIssuerApi,
                 HttpMethod.POST,
                 requestEntity,
                 String.class

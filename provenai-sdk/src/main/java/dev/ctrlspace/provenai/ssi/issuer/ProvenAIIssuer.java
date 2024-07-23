@@ -2,11 +2,13 @@ package dev.ctrlspace.provenai.ssi.issuer;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import dev.ctrlspace.provenai.ssi.converters.AgentIDConverter;
+import dev.ctrlspace.provenai.ssi.converters.DataOwnershipCredentialConverter;
 import dev.ctrlspace.provenai.ssi.converters.LegalEntityConverter;
 import dev.ctrlspace.provenai.ssi.converters.PermissionOfUseConverter;
 import dev.ctrlspace.provenai.ssi.model.vc.CredentialSubject;
 import dev.ctrlspace.provenai.ssi.model.vc.VerifiableCredential;
 import dev.ctrlspace.provenai.ssi.model.vc.attestation.AIAgentCredentialSubject;
+import dev.ctrlspace.provenai.ssi.model.vc.attestation.DataOwnershipCredentialSubject;
 import dev.ctrlspace.provenai.ssi.model.vc.attestation.PermissionOfUseCredentialSubject;
 import dev.ctrlspace.provenai.ssi.model.vc.id.LegalEntityCredentialSubject;
 import dev.ctrlspace.provenai.utils.ContinuationObjectUtils;
@@ -42,6 +44,11 @@ public class ProvenAIIssuer {
             PermissionOfUseConverter permissionOfUseConverter = new PermissionOfUseConverter();
             VerifiableCredential<PermissionOfUseCredentialSubject> permissionOfUseVC = (VerifiableCredential<PermissionOfUseCredentialSubject>) vc;
             w3cVC = permissionOfUseConverter.convertToW3CVC(permissionOfUseVC);
+        }
+            else if (vc.getCredentialSubject() instanceof DataOwnershipCredentialSubject) {
+            DataOwnershipCredentialConverter dataOwnershipCredentialConverter = new DataOwnershipCredentialConverter();
+            VerifiableCredential<DataOwnershipCredentialSubject> dataOwnershipVC = (VerifiableCredential<DataOwnershipCredentialSubject>) vc;
+            w3cVC = dataOwnershipCredentialConverter.convertToW3CVC(dataOwnershipVC);
         }
 
         return w3cVC;

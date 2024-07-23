@@ -9,8 +9,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder(toBuilder = true)
-public class AgentIdCredential {
-    private String agentId;
+public class VCOfferDTO {
+    private String id;
     private String credentialOfferUrl;
     private Object credentialJwt;
 }

@@ -51,7 +51,6 @@ public class OrganizationsController implements OrganizationsControllerSpec {
     @Autowired
     public OrganizationsController(OrganizationsService organizationsService,
                                    OrganizationConverter organizationConverter,
-                                   CredentialVerificationApi credentialVerificationApi,
                                    SecurityUtils securityUtils) {
         this.organizationsService = organizationsService;
         this.organizationConverter = organizationConverter;
