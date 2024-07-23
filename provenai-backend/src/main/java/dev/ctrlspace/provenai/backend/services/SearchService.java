@@ -22,6 +22,7 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
 @Service
 public class SearchService {
@@ -67,9 +68,27 @@ public class SearchService {
     public List<SearchResult> search(String question, UserProfile agentProfile) throws Exception {
         String agentUsername = agentProfile.getUserName();
         Agent agent = agentService.getAgentByUsername(agentUsername);
-        List<DataPod> accessibleDataPodsForAgent = dataPodService.getAccessibleDataPodsForAgent(agentUsername);
 
-        Map<String, List<UUID>> dataPodsByHostUrl = dataPodService.getDataPodsByHostUrl(accessibleDataPodsForAgent);
+        List<UUID> agentAllowListDataPodIds = agentService.getAllowListDataPodIdsForAgent(agent.getId());
+        List<UUID> agentDenyListDataPodIds = agentService.getDenyListDataPodIdsForAgent(agent.getId());
+
+        List<DataPod> accessibleDataPodsForAgent = dataPodService.getAccessibleDataPodsForAgent(agent.getId());
+
+        List<DataPod> finalDataPods;
+
+        if (!agentAllowListDataPodIds.isEmpty()) {
+
+            finalDataPods = accessibleDataPodsForAgent.stream()
+                    .filter(dp -> agentAllowListDataPodIds.contains(dp.getId()))
+                    .collect(Collectors.toList());
+        } else {
+
+            finalDataPods = accessibleDataPodsForAgent.stream()
+                    .filter(dp -> !agentDenyListDataPodIds.contains(dp.getId()))
+                    .collect(Collectors.toList());
+        }
+
+        Map<String, List<UUID>> dataPodsByHostUrl = dataPodService.getDataPodsByHostUrl(finalDataPods);
         Organization processorOrganization = organizationService.getOrganizationById(agent.getOrganizationId());
         List<AgentPurposeOfUsePolicies> agentPurposeOfUsePolicies = agentPurposeOfUsePoliciesService.getAgentPurposeOfUsePolicies(agent.getId());
         List<Policy> policies = new ArrayList<>();

@@ -119,10 +119,9 @@ public class DataPodService {
 
     }
 
-        public List<DataPod> getAccessibleDataPodsForAgent(String agentUsername) throws ProvenAiException, JsonProcessingException {
-            Agent agent = agentService.getAgentByUsername(agentUsername);
+        public List<DataPod> getAccessibleDataPodsForAgent(UUID agentId) throws ProvenAiException, JsonProcessingException {
 
-            return dataPodRepository.findAccessibleDataPodsForAgent(agent.getId());
+            return dataPodRepository.findAccessibleDataPodsForAgent(agentId);
 
         }
 

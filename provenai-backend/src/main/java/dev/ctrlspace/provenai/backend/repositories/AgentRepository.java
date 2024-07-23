@@ -31,6 +31,24 @@ public interface AgentRepository extends JpaRepository<Agent, UUID>, QuerydslPre
     public boolean existsByIdAndOrganizationIdIn(UUID id, List<String> organizationId);
 
 
+    @Query(value = "SELECT DISTINCT policy.value AS data_pod_id " +
+            "FROM proven_ai.agent_purpose_of_use_policies policy " +
+            "INNER JOIN proven_ai.policy_types pt ON policy.policy_type_id = pt.id " +
+            "INNER JOIN proven_ai.policy_options po ON policy.policy_option_id = po.id " +
+            "WHERE policy.agent_id = :agentId " +
+            "AND pt.name = 'ALLOW_LIST'",
+            nativeQuery = true)
+    List<UUID> findAllowListDataPodIdsForAgent(@Param("agentId") UUID agentId);
+
+
+    @Query(value = "SELECT DISTINCT policy.value AS data_pod_id " +
+            "FROM proven_ai.agent_purpose_of_use_policies policy " +
+            "INNER JOIN proven_ai.policy_types pt ON policy.policy_type_id = pt.id " +
+            "INNER JOIN proven_ai.policy_options po ON policy.policy_option_id = po.id " +
+            "WHERE policy.agent_id = :agentId " +
+            "AND pt.name = 'DENY_LIST'",
+            nativeQuery = true)
+    List<UUID> findDenyListDataPodIdsForAgent(@Param("agentId") UUID agentId);
 
 
 }
