@@ -38,13 +38,13 @@ public class MerkleTreeUtil {
 
         System.out.println("Proof:" + proof);
 
-        boolean isValid = mtu.verifyProof(rootHash, item, proof);
+        boolean isValid = mtu.verifyProof(rootHash, item, proof.get());
 
         System.out.println("IsValidProof:" + isValid);
     }
 
-    public boolean verifyProof(byte[] rootHash, String item, Optional<List<ProofItem>> proof) {
-        boolean isValid = MerkleTree.verifyProof(rootHash, item, proof.orElseThrow(), MerkleTreeUtil::fromStringFun);
+    public boolean verifyProof(byte[] rootHash, Serializable item, List<ProofItem> proof) {
+        boolean isValid = MerkleTree.verifyProof(rootHash, item, proof, MerkleTreeUtil::fromStringFun);
         return isValid;
     }
 

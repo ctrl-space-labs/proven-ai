@@ -44,14 +44,14 @@ const config = {
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           editUrl:
-            'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
+            'https://github.com/ctrl-space-labs/proven-ai/tree/feature-13-proven-ai-smart-contracts/provenai-documentation',
         },
         blog: {
           showReadingTime: true,
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           editUrl:
-            'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
+            'https://github.com/ctrl-space-labs/proven-ai/tree/feature-13-proven-ai-smart-contracts/provenai-documentation',
         },
         theme: {
           customCss: './src/css/custom.css',
@@ -101,18 +101,19 @@ const config = {
           {
             title: 'Community',
             items: [
+
               {
-                label: 'Stack Overflow',
-                href: 'https://stackoverflow.com/questions/tagged/docusaurus',
+                label: 'Ctrl+Space Labs',
+                href: 'https://www.ctrlspace.dev/',
               },
               {
                 label: 'Discord',
-                href: 'https://discordapp.com/invite/docusaurus',
+                href: 'https://discord.com/invite/jWes2urauW',
               },
               {
-                label: 'Twitter',
-                href: 'https://twitter.com/docusaurus',
-              },
+                label: 'Instagram',
+                href: 'https://www.instagram.com/ctrlspace.dev/',
+              }
             ],
           },
           {
@@ -124,12 +125,12 @@ const config = {
               },
               {
                 label: 'GitHub',
-                href: 'https://github.com/facebook/docusaurus',
+                href: 'https://github.com/ctrl-space-labs/proven-ai',
               },
             ],
           },
         ],
-        copyright: `Copyright © ${new Date().getFullYear()} My Project, Inc. Built with Docusaurus.`,
+        copyright: `Copyright © ${new Date().getFullYear()} Ctrl+Space Labs.`,
       },
       prism: {
         theme: prismThemes.github,
