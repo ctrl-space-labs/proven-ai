@@ -21,9 +21,6 @@ services:
       - caddy-config:/config
       - caddy-data:/data
     ports:
-      - "80:80"
-      - "443:443"
-      - "443:443/udp"
       - "8970:8970"
       - target: "$ISSUER_API_PORT"
         published: $ISSUER_API_PORT # issuer-api
