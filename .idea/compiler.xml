@@ -9,7 +9,6 @@
         <outputRelativeToContentRoot value="true" />
         <module name="provenai-backend" />
         <module name="provenai-sdk" />
-        <module name="provenai-database" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
