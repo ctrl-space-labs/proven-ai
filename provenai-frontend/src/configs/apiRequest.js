@@ -1,13 +1,7 @@
-const gendoxUrl = "http://localhost:5002/gendox/api/v1/"; // Local Environment
-// const gendoxUrl = "http://localhost:8080/gendox/api/v1/"; // Local Environment
-//const gendoxUrl= 'https://gendox-api.ctrlspace.dev/gendox/api/v1/' // Production Environment (AWS)
-// const gendoxUrl= 'http://localhost:8080/gendox/api/v1/' // Local Environment
-// const gendoxUrl = 'https://dev.gendox.ctrlspace.dev/gendox/api/v1/' // Development Environment (Hetzner)
-const provenUrl = 'http://localhost:8082/proven-ai/api/v1/' // Local Environment
 
-const verifierUrl = 'https://proven-ai-dev.ctrlspace.dev/verifier/' // Local Environment
-
-
+const gendoxUrl = process.env.REACT_APP_GENDOX_URL;
+const provenUrl = process.env.REACT_APP_PROVEN_URL;
+const verifierUrl = process.env.REACT_APP_VERIFIER_URL;
 
 export default {
 
@@ -17,6 +11,7 @@ export default {
     const organizationIds = organizationIdIn.join(",");    
     return `${provenUrl}organizations?organizationIdIn=${organizationIds}`;
   },
+  
 
   provenOrganization: () => {
     return `${provenUrl}organizations`;
