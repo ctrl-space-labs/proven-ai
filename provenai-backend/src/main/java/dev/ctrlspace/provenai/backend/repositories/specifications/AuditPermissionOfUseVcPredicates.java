@@ -7,6 +7,7 @@ import dev.ctrlspace.provenai.backend.model.dtos.criteria.AuditPermissionOfUseVc
 import jakarta.persistence.Query;
 
 import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -22,9 +23,12 @@ public class AuditPermissionOfUseVcPredicates {
                 documentIscc(criteria.getDocumentIscc()),
                 ownerOrganizationId(criteria.getOwnerOrganizationId()),
                 processorOrganizationId(criteria.getProcessorOrganizationId()),
+                processorOrganizationDid(criteria.getProcessorOrganizationDid()),
                 ownerDataPodId(criteria.getOwnerDataPodIdIn()),
                 processorAgentId(criteria.getProcessorAgentIdIn()),
-                embeddingModel(criteria.getEmbeddingModel())
+                embeddingModel(criteria.getEmbeddingModel()),
+                createdFrom(criteria.getFrom()),
+                createdTo(criteria.getTo())
         );
     }
 
@@ -134,6 +138,13 @@ public class AuditPermissionOfUseVcPredicates {
         return qAuditPermissionOfUseVc.processorOrganizationId.eq(UUID.fromString(processorOrganizationId));
     }
 
+    private static Predicate processorOrganizationDid(String processorOrganizationDid) {
+        if (processorOrganizationDid == null) {
+            return null;
+        }
+        return qAuditPermissionOfUseVc.processorOrganizationDid.eq(processorOrganizationDid);
+    }
+
     private static Predicate ownerDataPodId(List<String> datapodId) {
         if (datapodId == null) {
             return null;
@@ -147,5 +158,19 @@ public class AuditPermissionOfUseVcPredicates {
             return null;
         }
         return qAuditPermissionOfUseVc.embeddingModel.eq(embeddingModel);
+    }
+
+    private static Predicate createdFrom(Instant from) {
+        if (from == null) {
+            return null;
+        }
+        return qAuditPermissionOfUseVc.createdAt.goe(from);
+    }
+
+    private static Predicate createdTo(Instant to) {
+        if (to == null) {
+            return null;
+        }
+        return qAuditPermissionOfUseVc.createdAt.loe(to);
     }
 }

@@ -92,5 +92,10 @@ proven-ai:
     proven-ai-frontend:
       base-url: https://proven-ai.ctrlspace.dev
       context-path: ${server.servlet.context-path}
+  blockchain:
+    rpc-url: ${BLOCKCHAIN_RPC_URL:no-env-variable}
+    contract-address: ${BLOCKCHAIN_CONTRACT_ADDRESS:no-env-variable}
+    private-key: ${BLOCKCHAIN_PRIVATE_KEY:no-env-variable}
+    chain-id: ${BLOCKCHAIN_CHAIN_ID:0}
 
 
