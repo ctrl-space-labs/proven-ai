@@ -5,9 +5,10 @@
 }
 
 # ISCC Web Service
-{$ISCC_WEB_SITE_ADDRESS} {
-	reverse_proxy app:8000
+:{$ISCC_WEB_SITE_PORT} {
+    reverse_proxy http://iscc-app:8000 # iscc app always runs on port 8000
 }
+
 
 # Issuer API
 :{$ISSUER_API_PORT} {
