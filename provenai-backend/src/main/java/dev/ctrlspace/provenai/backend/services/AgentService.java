@@ -280,4 +280,12 @@ public class AgentService {
 
        return ssiJwtUtils.getVCJwtFromVPJwt(vpToken);
     }
+
+    public List<UUID> getAllowListDataPodIdsForAgent(UUID agentId) {
+        return agentRepository.findAllowListDataPodIdsForAgent(agentId);
+    }
+
+    public List<UUID> getDenyListDataPodIdsForAgent(UUID agentId) {
+        return agentRepository.findDenyListDataPodIdsForAgent(agentId);
+    }
 }

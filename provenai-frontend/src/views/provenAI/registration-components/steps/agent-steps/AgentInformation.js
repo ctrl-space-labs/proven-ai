@@ -137,8 +137,7 @@ const AgentInformation = ({
 
     const fetchDataPods = async () => {
       try {
-        const dataPods = await dataPodsService.getDataPodsByOrganization(
-          organizationId,
+        const dataPods = await dataPodsService.getAllDataPods(
           storedToken
         );
         setDataPods(dataPods.data.content);

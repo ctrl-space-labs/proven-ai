@@ -1,6 +1,5 @@
 package dev.ctrlspace.provenai.iscc;
 
-import dev.ctrlspace.provenai.utils.IsccConstants;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -14,10 +13,17 @@ import java.util.Base64;
 
 
 
-@Component
 public class IsccCodeGeneratorApi {
 
-    private static final RestTemplate restTemplate = new RestTemplate();
+    private RestTemplate restTemplate;
+
+    private String isccCodeGenerationApi;
+
+    public IsccCodeGeneratorApi(RestTemplate restTemplate,
+                                String isccCodeGenerationApi) {
+        this.isccCodeGenerationApi = isccCodeGenerationApi;
+        this.restTemplate = restTemplate;
+    }
 
     public HttpHeaders buildHeader(String base64EncodedFileName) {
         HttpHeaders headers = new HttpHeaders();
@@ -42,7 +48,7 @@ public class IsccCodeGeneratorApi {
         String base64EncodedDocumentName = encodeFileName(originalDocumentName);
 
         ResponseEntity<IsccCodeResponse> responseEntity = restTemplate.postForEntity(
-                IsccConstants.ISCC_CODE_GENERATION_API,
+                isccCodeGenerationApi,
                 new HttpEntity<>(fileBytes, buildHeader(base64EncodedDocumentName)),
                 IsccCodeResponse.class);
 

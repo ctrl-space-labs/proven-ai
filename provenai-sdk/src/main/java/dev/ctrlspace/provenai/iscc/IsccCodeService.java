@@ -17,12 +17,10 @@ import java.io.IOException;
  * @see <a href="https://www.iso.org/standard/77899.html">ISCC ISO Page</a>
  */
 
-@Service
 public class IsccCodeService implements IsccCodeGenerator {
 
     private IsccCodeGeneratorApi isccCodeGeneratorApi;
 
-    @Autowired
     public IsccCodeService(IsccCodeGeneratorApi isccCodeGeneratorApi) {
         this.isccCodeGeneratorApi = isccCodeGeneratorApi;
     }
