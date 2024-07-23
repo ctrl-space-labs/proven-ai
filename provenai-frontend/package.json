@@ -3,7 +3,9 @@
   "version": "2.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 3001",
+    "dev": "cross-env NODE_ENV=development next dev -p 3001",
+    "local": "cross-env NODE_ENV=local next dev -p 3001",
+    "prod": "cross-env NODE_ENV=production next dev -p 3001",
     "build": "next build",
     "start": "next start -p 3001",
     "export": "next export",
@@ -76,6 +78,7 @@
     "redux": "^5.0.1",
     "stylis": "4.1.3",
     "stylis-plugin-rtl": "2.1.1",
+    "yarn": "^1.22.22",
     "yup": "1.0.2"
   },
   "devDependencies": {

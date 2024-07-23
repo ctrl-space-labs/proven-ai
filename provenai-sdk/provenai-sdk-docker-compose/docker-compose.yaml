@@ -5,7 +5,7 @@ volumes:
   caddy-data:
 
 services:
-  app:
+  iscc-app:
     image: ghcr.io/iscc/iscc-web:main
     init: true
     env_file: .env
@@ -21,10 +21,11 @@ services:
       - caddy-config:/config
       - caddy-data:/data
     ports:
-      - "80:80"
-      - "443:443"
-      - "443:443/udp"
-      - "8970:8970"
+
+      - target: "$ISCC_WEB_SITE_PORT"
+        published: $ISCC_WEB_SITE_PORT # issuer-api
+        protocol: tcp
+        mode: host
       - target: "$ISSUER_API_PORT"
         published: $ISSUER_API_PORT # issuer-api
         protocol: tcp
@@ -34,7 +35,7 @@ services:
         protocol: tcp
         mode: host
     depends_on:
-      - app
+      - iscc-app
 
   issuer-api:
     platform: linux/x86_64
