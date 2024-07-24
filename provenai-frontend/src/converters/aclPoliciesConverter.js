@@ -6,7 +6,7 @@ const convertToAclPolicies = (data, dataPodId) => {
     dataPodId: dataPodId,
     policyTypeId: item.policyTypeId,
     policyOptionId: item.policyOptionId,
-    value: null, 
+    value: item.name 
   }));
 };
 
