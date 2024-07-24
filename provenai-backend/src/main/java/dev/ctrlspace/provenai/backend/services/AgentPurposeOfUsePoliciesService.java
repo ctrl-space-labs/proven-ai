@@ -53,32 +53,59 @@ public class AgentPurposeOfUsePoliciesService {
     }
 
 
+//    public List<AgentPurposeOfUsePolicies> savePoliciesForAgent(Agent savedAgent, List<Policy> policies) {
+//        List<AgentPurposeOfUsePolicies> savedPolicies = policies.stream()
+//                .map(policy -> {
+//                    // Retrieve PolicyOption based on policy type name
+//                    PolicyOption policyOption = policyOptionRepository.findByName(policy.getPolicyValue());
+//                    PolicyType policyType = policyTypeRepository.findById(policyOption.getPolicyTypeId())
+//                            .orElseThrow(() -> new RuntimeException("Policy Type not found"));
+//
+//                    AgentPurposeOfUsePolicies agentPurposeOfUsePolicy = new AgentPurposeOfUsePolicies();
+//                    agentPurposeOfUsePolicy.setAgentId(savedAgent.getId());
+//                    agentPurposeOfUsePolicy.setPolicyOption(policyOption);
+//                    agentPurposeOfUsePolicy.setValue(policy.getPolicyValue());
+//                    agentPurposeOfUsePolicy.setPolicyType(policyType);
+//                    agentPurposeOfUsePolicy.setCreatedAt(Instant.now());
+//                    agentPurposeOfUsePolicy.setUpdatedAt(Instant.now());
+//
+//                    return agentPurposeOfUsePolicy;
+//                })
+//                .collect(Collectors.toList());
+//
+//        // Save all the policies
+//        return agentPurposeOfUsePoliciesRepository.saveAll(savedPolicies);
+//    }
 
+    List<AgentPurposeOfUsePolicies> savePoliciesForAgent(Agent savedAgent, List<Policy> policies) {
+        List<AgentPurposeOfUsePolicies> savedPolicies = policies.stream().map(policy -> {
+            PolicyType policyType = policyTypeRepository.findByName(policy.getPolicyType());
+            Instant now = Instant.now();
 
-    public List<AgentPurposeOfUsePolicies> savePoliciesForAgent(Agent savedAgent, List<Policy> policies) {
-        List<AgentPurposeOfUsePolicies> savedPolicies = policies.stream()
-                .map(policy -> {
-                    // Retrieve PolicyOption based on policy type name
-                    PolicyOption policyOption = policyOptionRepository.findByName(policy.getPolicyValue());
-                    PolicyType policyType = policyTypeRepository.findById(policyOption.getPolicyTypeId())
-                            .orElseThrow(() -> new RuntimeException("Policy Type not found"));
+            AgentPurposeOfUsePolicies agentPurposeOfUsePolicies = new AgentPurposeOfUsePolicies();
+            agentPurposeOfUsePolicies.setAgentId(savedAgent.getId());
+            agentPurposeOfUsePolicies.setPolicyType(policyType);
+            agentPurposeOfUsePolicies.setCreatedAt(now);
+            agentPurposeOfUsePolicies.setUpdatedAt(now);
+//          policies for agents access to data pods
+            if (policyType.getName().equals("ALLOW_LIST") || policyType.getName().equals("DENY_LIST")) {
+//              the value will be the agent ID
+                PolicyOption policyOption = policyOptionRepository.findByName(policy.getPolicyValue());
+                agentPurposeOfUsePolicies.setPolicyOption(policyOption);
+                agentPurposeOfUsePolicies.setValue(policy.getPolicyValue());
 
-                    AgentPurposeOfUsePolicies agentPurposeOfUsePolicy = new AgentPurposeOfUsePolicies();
-                    agentPurposeOfUsePolicy.setAgentId(savedAgent.getId());
-                    agentPurposeOfUsePolicy.setPolicyOption(policyOption);
-                    agentPurposeOfUsePolicy.setValue(policy.getPolicyValue());
-                    agentPurposeOfUsePolicy.setPolicyType(policyType);
-                    agentPurposeOfUsePolicy.setCreatedAt(Instant.now());
-                    agentPurposeOfUsePolicy.setUpdatedAt(Instant.now());
+            } else {
+                PolicyOption policyOption = policyOptionRepository.findByName(policy.getPolicyValue());
+                agentPurposeOfUsePolicies.setPolicyOption(policyOption);
+                agentPurposeOfUsePolicies.setValue(policyOption.getName());
 
-                    return agentPurposeOfUsePolicy;
-                })
-                .collect(Collectors.toList());
+            }
 
-        // Save all the policies
+            return agentPurposeOfUsePolicies;
+        }).toList();
+
         return agentPurposeOfUsePoliciesRepository.saveAll(savedPolicies);
     }
-
 
     public void deleteAgentPurposeOfUsePoliciesByAgentId(UUID agentId) {
         List<AgentPurposeOfUsePolicies> policies = agentPurposeOfUsePoliciesRepository.findByAgentId(agentId);

@@ -55,59 +55,35 @@ public class AclPoliciesService {
         return aclPoliciesRepository.save(aclPolicy);
     }
 
-    public List<AclPolicies> savePoliciesForDataPod(DataPod savedDataPod, List<Policy> policies) {
-        List<AclPolicies> savedPolicies = policies.stream()
-                .map(policy -> {
-                    // Retrieve PolicyOption based on policy type name
-                    PolicyOption policyOption = policyOptionRepository.findByName(policy.getPolicyValue());
-                    PolicyType policyType = policyTypeRepository.findById(policyOption.getPolicyTypeId())
-                            .orElseThrow(() -> new RuntimeException("Policy Type not found"));
+    List<AclPolicies> savePoliciesForDataPod(DataPod savedDataPod, List<Policy> policies) {
+        List<AclPolicies> savedPolicies = policies.stream().map(policy -> {
+            PolicyType policyType = policyTypeRepository.findByName(policy.getPolicyType());
+            Instant now = Instant.now();
 
-                    AclPolicies aclPolicies = new AclPolicies();
-                    aclPolicies.setDataPod(savedDataPod);
-                    aclPolicies.setPolicyOption(policyOption);
-                    aclPolicies.setValue(policy.getPolicyValue());
-                    aclPolicies.setPolicyType(policyType);
-                    aclPolicies.setCreatedAt(Instant.now());
-                    aclPolicies.setUpdatedAt(Instant.now());
+            AclPolicies aclPolicy = new AclPolicies();
+            aclPolicy.setDataPod(savedDataPod);
+            aclPolicy.setPolicyType(policyType);
+            aclPolicy.setCreatedAt(now);
+            aclPolicy.setUpdatedAt(now);
+//          policies for agents access to data pods
+            if (policyType.getName().equals("ALLOW_LIST") || policyType.getName().equals("DENY_LIST")) {
+//              the value will be the agent ID
+                PolicyOption policyOption = policyOptionRepository.findByName(policy.getPolicyValue());
+                aclPolicy.setPolicyOption(policyOption);
+                aclPolicy.setValue(policy.getPolicyValue());
 
-                    return aclPolicies;
-                })
-                .collect(Collectors.toList());
+            } else {
+                PolicyOption policyOption = policyOptionRepository.findByName(policy.getPolicyValue());
+                aclPolicy.setPolicyOption(policyOption);
+                aclPolicy.setValue(policyOption.getName());
 
-        // Save all the policies
+            }
+
+            return aclPolicy;
+        }).toList();
+
         return aclPoliciesRepository.saveAll(savedPolicies);
     }
-
-//    List<AclPolicies> savePoliciesForDataPod() {
-//        List<AclPolicies> savedPolicies = policies.stream().map(policy -> {
-//            PolicyType policyType = policyTypeRepository.findByName(policy.getPolicyType());
-//            Instant now = Instant.now();
-//
-//            AclPolicies aclPolicy = new AclPolicies();
-//            aclPolicy.setDataPod(savedDataPod);
-//            aclPolicy.setPolicyType(policyType);
-//            aclPolicy.setCreatedAt(now);
-//            aclPolicy.setUpdatedAt(now);
-////          policies for agents access to data pods
-//            if (policyType.getName().equals("ALLOW_LIST") || policyType.getName().equals("DENY_LIST")) {
-////              the value will be the agent ID
-////                PolicyOption policyOption = policyOptionRepository.findByPolicyTypeId(policyType.getId());
-////                aclPolicy.setPolicyOption(policyOption);
-//                aclPolicy.setValue(policy.getPolicyValue());
-//
-//            } else {
-//                PolicyOption policyOption = policyOptionRepository.findByName(policy.getPolicyValue());
-//                aclPolicy.setPolicyOption(policyOption);
-//                aclPolicy.setValue(policyOption.getName());
-//
-//            }
-//
-//            return aclPolicy;
-//        }).toList();
-//
-//        return aclPoliciesRepository.saveAll(savedPolicies);
-//    }
 
 
     public void deletePoliciesByDataPodId(UUID dataPodId) {
