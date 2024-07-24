@@ -170,7 +170,7 @@ public class DataPodService {
         List<AclPolicies> aclPolicies = aclPoliciesService.getAclPoliciesByDataPodId(dataPodId);
 
 //        // Build the list of usage policies
-        List<Policy> usagePolicies = aclPolicies.stream().map(agentPurposeOfUsePolicy -> new Policy((policyTypeRepository.findById(agentPurposeOfUsePolicy.getPolicyType().getId())).get().getName(), agentPurposeOfUsePolicy.getValue())).toList();
+        List<Policy> usagePolicies = aclPolicies.stream().map(aclPolicy -> new Policy((policyTypeRepository.findById(aclPolicy.getPolicyType().getId())).get().getName(), aclPolicy.getValue())).toList();
 
 
 
@@ -180,7 +180,7 @@ public class DataPodService {
                 .dataPodName(dataPod.getPodUniqueName())
                 .dataPodId(dataPod.getId().toString())
                 .usagePolicies(usagePolicies)
-                .isccCollectionMerkleRoot(null)
+                .isccCollectionMerkleRoot("")
                 .ownershipStatus("active")
                 .creationDate(Instant.now())
                 .build());
