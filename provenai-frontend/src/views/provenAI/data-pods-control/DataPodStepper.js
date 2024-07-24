@@ -188,6 +188,9 @@ const DataPodStepper = ({
         // Create new ACL policies
         for (const aclPolicyDTO of aclPoliciesToCreate) {
           await aclPoliciesService.createAclPolicy(aclPolicyDTO, storedToken);
+
+          setDataPodUpdated(true);
+
           toast.success("Policy created successfully!");
         }
 
@@ -296,7 +299,7 @@ const DataPodStepper = ({
 
 
   const renderContent = () => {
-    if (activeStep === dataPodSteps.length) {
+    if (activeStep === dataPodSteps.length && isSubmitComplete) {
       return (
         <Fragment>
           <Box sx={{ textAlign: "center", mt: 4 }}>
