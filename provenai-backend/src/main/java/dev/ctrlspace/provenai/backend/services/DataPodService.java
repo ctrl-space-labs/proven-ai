@@ -180,7 +180,7 @@ public class DataPodService {
                 .dataPodName(dataPod.getPodUniqueName())
                 .dataPodId(dataPod.getId().toString())
                 .usagePolicies(usagePolicies)
-                .isccCollectionMerkleRoot(null)
+                .isccCollectionMerkleRoot("")
                 .ownershipStatus("active")
                 .creationDate(Instant.now())
                 .build());
