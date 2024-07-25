@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://ctrl-space-labs.github.io/proven-ai/blog</id>
     <title>ProvenAI Blog</title>
-    <updated>2024-07-18T00:00:00.000Z</updated>
+    <updated>2024-07-26T00:00:00.000Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://ctrl-space-labs.github.io/proven-ai/blog"/>
     <subtitle>ProvenAI Blog</subtitle>
@@ -11,9 +11,9 @@
         <title type="html"><![CDATA[ProvenAI 1st release]]></title>
         <id>https://ctrl-space-labs.github.io/proven-ai/blog/2024/07/18/proven-ai-first-release-blog-post</id>
         <link href="https://ctrl-space-labs.github.io/proven-ai/blog/2024/07/18/proven-ai-first-release-blog-post"/>
-        <updated>2024-07-18T00:00:00.000Z</updated>
-        <summary type="html"><![CDATA[We are happy to announce the 1st Release of ProvenAI!]]></summary>
-        <content type="html"><![CDATA[<p>We are happy to announce the 1st Release of ProvenAI!</p>
+        <updated>2024-07-26T00:00:00.000Z</updated>
+        <summary type="html"><![CDATA[We are excited to announce the first release of ProvenAI, version 0.1.alpha!]]></summary>
+        <content type="html"><![CDATA[<p>We are excited to announce the first release of ProvenAI, version 0.1.alpha!</p>
 <p>Get started, <a href="https://github.com/ctrl-space-labs/proven-ai" target="_blank" rel="noopener noreferrer">now</a>!</p>
 <p><img decoding="async" loading="lazy" alt="ProvenAI blog post social logo" src="https://ctrl-space-labs.github.io/proven-ai/assets/images/proven-govern-trace-control-343ce1d6e0d6a4f427be269a237355fa.png" width="669" height="490" class="img_ev3q"></p>]]></content>
         <author>
