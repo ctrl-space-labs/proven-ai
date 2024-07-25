@@ -43,16 +43,36 @@ public class MerkleTreeUtil {
         System.out.println("IsValidProof:" + isValid);
     }
 
+    /**
+     * Verify a proof for an item in the Merkle Tree
+     * @param rootHash the root hash of the Merkle Tree
+     * @param item the item to verify
+     * @param proof the proof
+     * @return true if the proof is valid
+     */
     public boolean verifyProof(byte[] rootHash, Serializable item, List<ProofItem> proof) {
         boolean isValid = MerkleTree.verifyProof(rootHash, item, proof, MerkleTreeUtil::fromStringFun);
         return isValid;
     }
 
+    /**
+     * Generates a proof for an item in the Merkle Tree
+     *
+     * @param mt the Merkle Tree Root item
+     * @param item the item to get the proof for
+     * @return the proof
+     */
     public Optional<List<ProofItem>> getProof(MerkleElement<Serializable> mt, String item) {
         Optional<List<ProofItem>> proof = MerkleTree.getProof(mt, item, MerkleTreeUtil::fromStringFun);
         return proof;
     }
 
+    /**
+     * Create a Merkle Tree from a list of items
+     *
+     * @param items the list of items
+     * @return the Merkle Tree Root object
+     */
     public  MerkleElement<Serializable> createMerkleTree(java.util.List<? extends Serializable> items) {
 
         return MerkleTree.fromList(List.ofAll(items), MerkleTreeUtil::fromStringFun);
