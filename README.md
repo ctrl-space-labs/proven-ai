@@ -38,6 +38,8 @@ All related code can the found in the [Github Repository](https://github.com/ctr
 
 For detailed documentation on the project, please visit the [ProvenAI Documentation](https://ctrl-space-labs.github.io/proven-ai/)
 
+The OpenAPI documentation can be found in [ProveAI's Swagger](https://dev.proven-ai.ctrlspace.dev/proven-ai/api/v1/swagger-ui/index.html#/) page
+
 ## Contact information
 If you have any questions, don't hesitate to contact us:
 
