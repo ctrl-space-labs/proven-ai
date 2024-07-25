@@ -1,5 +1,5 @@
 ---
-title: ProvenAI 1st release
+title: ProvenAI v.0.1.alpha is here!
 authors: [csekas]
 tags: [release]
 image: ./img/proven-govern-trace-control.png
