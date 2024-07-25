@@ -1,6 +1,3 @@
-#FROM maven:3.8.4-openjdk-17 AS builder
-#FROM maven:3.9.5-openjdk-21 AS builder
-
 FROM eclipse-temurin:21-jdk-alpine AS builder
 
 WORKDIR /app
@@ -40,8 +37,6 @@ VOLUME /tmp
 
 # Copy the built JAR file from the builder stage
 COPY --from=builder /app/target/*.jar /app.jar
-
-
 
 ENTRYPOINT ["java","-jar","/app.jar"]
 
