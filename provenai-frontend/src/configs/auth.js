@@ -14,14 +14,26 @@
 //   pkceMethod: 'S256'
 // };
 
+// const oidcConfig = {
+//   authority: "https://dev.gendox.ctrlspace.dev/idp/realms/gendox-idp-dev",
+//   client_id: "proven-pkce-public-client-local",
+//   redirect_uri: "http://localhost:3001/oidc-callback/",
+//   response_type: "code",
+//   scope: "openid profile email",
+//   post_logout_redirect_uri: "http://localhost:3001/login",
+//   silent_redirect_uri: "http://localhost:3001/silent-renew/",
+//   automaticSilentRenew: true,
+//   pkceMethod: 'S256'
+// };
+
 const oidcConfig = {
   authority: "https://dev.gendox.ctrlspace.dev/idp/realms/gendox-idp-dev",
-  client_id: "proven-pkce-public-client-local",
-  redirect_uri: "http://localhost:3001/oidc-callback/",
+  client_id: "proven-pkce-public-client-dev",
+  redirect_uri: "http://proven.ai.frontend.dev.s3-website.eu-central-1.amazonaws.com/oidc-callback/",
   response_type: "code",
   scope: "openid profile email",
-  post_logout_redirect_uri: "http://localhost:3001/login",
-  silent_redirect_uri: "http://localhost:3001/silent-renew/",
+  post_logout_redirect_uri: "http://proven.ai.frontend.dev.s3-website.eu-central-1.amazonaws.com/login",
+  silent_redirect_uri: "http://proven.ai.frontend.dev.s3-website.eu-central-1.amazonaws.com/silent-renew/",
   automaticSilentRenew: true,
   pkceMethod: 'S256'
 };
