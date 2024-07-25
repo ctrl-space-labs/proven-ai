@@ -10,13 +10,13 @@ import {themes as prismThemes} from 'prism-react-renderer';
 const config = {
   title: 'ProvenAI',
   tagline: 'Govern, Trace, and Control AI Knowledge',
-  favicon: 'img/Proven-Transp 1-fav-icon.png',
+  favicon: 'img/Proven-Transp-1-fav-icon.png',
 
   // Set the production url of your site here
-  url: 'https://dev.provenai.ctrlspace.dev',
+  url: 'https://ctrl-space-labs.github.io',
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
-  baseUrl: '/',
+  baseUrl: '/proven-ai/',
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
@@ -69,7 +69,7 @@ const config = {
         title: '',
         logo: {
           alt: 'ProvenAI Logo',
-          src: 'img/Proven-Transp 1-crop.png',
+          src: 'img/Proven-Transp-1-crop.png',
         },
         items: [
           {
