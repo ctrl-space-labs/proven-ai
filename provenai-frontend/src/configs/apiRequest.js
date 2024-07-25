@@ -1,10 +1,8 @@
 
-// const gendoxUrl = process.env.REACT_APP_GENDOX_URL;
-// const provenUrl = process.env.REACT_APP_PROVEN_URL;
-// const verifierUrl = process.env.REACT_APP_VERIFIER_URL;
-const gendoxUrl = 'http://localhost:5001/gendox/api/v1/'
-const provenUrl = 'http://localhost:8082/proven-ai/api/v1/'
-const verifierUrl = 'https://proven-ai-dev.ctrlspace.dev/verifier/'
+const gendoxUrl = process.env.NEXT_PUBLIC_GENDOX_URL;
+const provenUrl = process.env.NEXT_PUBLIC_PROVEN_URL;
+const verifierUrl = process.env.NEXT_PUBLIC_VERIFIER_URL;
+
 
 export default {
 

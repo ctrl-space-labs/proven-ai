@@ -1,11 +1,6 @@
 # ProvenAI - Frontend
 
-This is the Fronted component of ProvenAI
-
-Sure! Below is an example of how you can update your `README.md` file to include instructions on how to use the different environments in your Next.js application.
-
-
-# Materialize Next.js Admin Template
+This is the Frontend component of ProvenAI.
 
 ## Overview
 
@@ -24,8 +19,7 @@ Make sure you have the following installed on your machine:
 
 1. Clone the repository:
    ```bash
-   git clone proven ai repository
-   
+   git clone <proven-ai-repository-url>
    ```
 
 2. Install the dependencies:
@@ -44,37 +38,37 @@ Create the following `.env` files in the root of the project:
 #### `.env.local`
 ```env
 NEXT_PUBLIC_OIDC_AUTHORITY=********************************
-NEXT_PUBLIC_OIDC_CLIENT_ID==********************************
-NEXT_PUBLIC_OIDC_REDIRECT_URI==********************************
-NEXT_PUBLIC_OIDC_POST_LOGOUT_REDIRECT_URI==********************************
-NEXT_PUBLIC_OIDC_SILENT_REDIRECT_URI==********************************
-NEXT_PUBLIC_GENDOX_URL==********************************
-NEXT_PUBLIC_PROVEN_URL==********************************
-NEXT_PUBLIC_VERIFIER_URL==********************************
+NEXT_PUBLIC_OIDC_CLIENT_ID=********************************
+NEXT_PUBLIC_OIDC_REDIRECT_URI=********************************
+NEXT_PUBLIC_OIDC_POST_LOGOUT_REDIRECT_URI=********************************
+NEXT_PUBLIC_OIDC_SILENT_REDIRECT_URI=********************************
+NEXT_PUBLIC_GENDOX_URL=********************************
+NEXT_PUBLIC_PROVEN_URL=********************************
+NEXT_PUBLIC_VERIFIER_URL=********************************
 ```
 
 #### `.env.development`
 ```env
 NEXT_PUBLIC_OIDC_AUTHORITY=********************************
-NEXT_PUBLIC_OIDC_CLIENT_ID==********************************
-NEXT_PUBLIC_OIDC_REDIRECT_URI==********************************
-NEXT_PUBLIC_OIDC_POST_LOGOUT_REDIRECT_URI==********************************
-NEXT_PUBLIC_OIDC_SILENT_REDIRECT_URI==********************************
-NEXT_PUBLIC_GENDOX_URL==********************************
-NEXT_PUBLIC_PROVEN_URL==********************************
-NEXT_PUBLIC_VERIFIER_URL==********************************
+NEXT_PUBLIC_OIDC_CLIENT_ID=********************************
+NEXT_PUBLIC_OIDC_REDIRECT_URI=********************************
+NEXT_PUBLIC_OIDC_POST_LOGOUT_REDIRECT_URI=********************************
+NEXT_PUBLIC_OIDC_SILENT_REDIRECT_URI=********************************
+NEXT_PUBLIC_GENDOX_URL=********************************
+NEXT_PUBLIC_PROVEN_URL=********************************
+NEXT_PUBLIC_VERIFIER_URL=********************************
 ```
 
 #### `.env.production`
 ```env
 NEXT_PUBLIC_OIDC_AUTHORITY=********************************
-NEXT_PUBLIC_OIDC_CLIENT_ID==********************************
-NEXT_PUBLIC_OIDC_REDIRECT_URI==********************************
-NEXT_PUBLIC_OIDC_POST_LOGOUT_REDIRECT_URI==********************************
-NEXT_PUBLIC_OIDC_SILENT_REDIRECT_URI==********************************
-NEXT_PUBLIC_GENDOX_URL==********************************
-NEXT_PUBLIC_PROVEN_URL==********************************
-NEXT_PUBLIC_VERIFIER_URL==********************************
+NEXT_PUBLIC_OIDC_CLIENT_ID=********************************
+NEXT_PUBLIC_OIDC_REDIRECT_URI=********************************
+NEXT_PUBLIC_OIDC_POST_LOGOUT_REDIRECT_URI=********************************
+NEXT_PUBLIC_OIDC_SILENT_REDIRECT_URI=********************************
+NEXT_PUBLIC_GENDOX_URL=********************************
+NEXT_PUBLIC_PROVEN_URL=********************************
+NEXT_PUBLIC_VERIFIER_URL=********************************
 ```
 
 ### Running the Application
@@ -83,17 +77,17 @@ NEXT_PUBLIC_VERIFIER_URL==********************************
 
 To run the application in the local environment, use the following command:
 ```bash
-yarn start:local
+yarn dev
 ```
-This will start the development server on port 3001 with the local environment variables.
+This will start the development server on port 3000 with the local environment variables.
 
 #### Development Environment
 
 To run the application in the development environment, use the following command:
 ```bash
-yarn start:dev
+yarn dev:development
 ```
-This will start the development server on port 3001 with the development environment variables.
+This will start the development server on port 3000 with the development environment variables.
 
 #### Production Environment
 
@@ -101,14 +95,14 @@ To build and start the application in the production environment, use the follow
 
 Build the application:
 ```bash
-yarn start:prod
+yarn build
 ```
 
 Start the application:
 ```bash
 yarn start
 ```
-This will start the server on port 3001 with the production environment variables.
+This will start the server on port 3000 with the production environment variables.
 
 ### Additional Scripts
 
@@ -133,6 +127,4 @@ This will start the server on port 3001 with the production environment variable
 - `public/`: Contains public assets.
 - `.env*`: Environment variable files.
 - `package.json`: Contains the project metadata and scripts.
-
-
 
