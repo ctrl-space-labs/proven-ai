@@ -44,14 +44,14 @@ const config = {
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           editUrl:
-            'https://github.com/ctrl-space-labs/proven-ai/tree/feature-13-proven-ai-smart-contracts/provenai-documentation',
+            'https://github.com/ctrl-space-labs/proven-ai/tree/main/provenai-documentation',
         },
         blog: {
           showReadingTime: true,
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           editUrl:
-            'https://github.com/ctrl-space-labs/proven-ai/tree/feature-13-proven-ai-smart-contracts/provenai-documentation',
+            'https://github.com/ctrl-space-labs/proven-ai/tree/main/provenai-documentation',
         },
         theme: {
           customCss: './src/css/custom.css',

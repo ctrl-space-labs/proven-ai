@@ -21,6 +21,10 @@ public class IsccCodeService implements IsccCodeGenerator {
 
     private IsccCodeGeneratorApi isccCodeGeneratorApi;
 
+    /**
+     * Constructor
+     * @param isccCodeGeneratorApi the ISCC code generator API url
+     */
     public IsccCodeService(IsccCodeGeneratorApi isccCodeGeneratorApi) {
         this.isccCodeGeneratorApi = isccCodeGeneratorApi;
     }
