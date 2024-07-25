@@ -111,8 +111,8 @@ const LoginPage = () => {
       sx={{
         backgroundImage:
           settings.mode === "light"
-            ? `url('/images/gendox-background-light.webp')`
-            : `url('/images/gendox-background-dark.webp')`,
+            ? `url('/images/proven-ai-background-light.webp')`
+            : `url('/images/proven-ai-background-dark.webp')`,
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",
