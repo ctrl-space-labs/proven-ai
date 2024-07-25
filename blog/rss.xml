@@ -4,7 +4,7 @@
         <title>ProvenAI Blog</title>
         <link>https://ctrl-space-labs.github.io/proven-ai/blog</link>
         <description>ProvenAI Blog</description>
-        <lastBuildDate>Thu, 18 Jul 2024 00:00:00 GMT</lastBuildDate>
+        <lastBuildDate>Fri, 26 Jul 2024 00:00:00 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>https://github.com/jpmonette/feed</generator>
         <language>en</language>
@@ -12,9 +12,9 @@
             <title><![CDATA[ProvenAI 1st release]]></title>
             <link>https://ctrl-space-labs.github.io/proven-ai/blog/2024/07/18/proven-ai-first-release-blog-post</link>
             <guid>https://ctrl-space-labs.github.io/proven-ai/blog/2024/07/18/proven-ai-first-release-blog-post</guid>
-            <pubDate>Thu, 18 Jul 2024 00:00:00 GMT</pubDate>
-            <description><![CDATA[We are happy to announce the 1st Release of ProvenAI!]]></description>
-            <content:encoded><![CDATA[<p>We are happy to announce the 1st Release of ProvenAI!</p>
+            <pubDate>Fri, 26 Jul 2024 00:00:00 GMT</pubDate>
+            <description><![CDATA[We are excited to announce the first release of ProvenAI, version 0.1.alpha!]]></description>
+            <content:encoded><![CDATA[<p>We are excited to announce the first release of ProvenAI, version 0.1.alpha!</p>
 <p>Get started, <a href="https://github.com/ctrl-space-labs/proven-ai" target="_blank" rel="noopener noreferrer">now</a>!</p>
 <p><img decoding="async" loading="lazy" alt="ProvenAI blog post social logo" src="https://ctrl-space-labs.github.io/proven-ai/assets/images/proven-govern-trace-control-343ce1d6e0d6a4f427be269a237355fa.png" width="669" height="490" class="img_ev3q"></p>]]></content:encoded>
             <category>release</category>
