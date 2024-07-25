@@ -27,7 +27,7 @@ services:
     networks:
       - proven_ai_network
     ports:
-      - "${APIS_PORT}:5000"
+      - "${APIS_PORT}:8082"
     restart: on-failure
 
 
