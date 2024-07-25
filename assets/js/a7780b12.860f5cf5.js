@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkdocumentation=self.webpackChunkdocumentation||[]).push([[4193],{9970:e=>{e.exports=JSON.parse('[{"label":"release","permalink":"/proven-ai/blog/tags/release","count":1}]')}}]);
