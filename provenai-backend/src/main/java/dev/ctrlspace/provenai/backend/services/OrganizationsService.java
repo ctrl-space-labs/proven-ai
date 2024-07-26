@@ -202,7 +202,8 @@ public class OrganizationsService {
         CredentialVerificationDTO credentialVerificationDTO = new CredentialVerificationDTO();
         String successRedirect = getSuccessRedirectUrl(organizationId, redirectPath);
 
-        String VERIFIER_ERROR_URL = "http://localhost:3001/ssi/verify/fail/?id=$id";
+        String VERIFIER_ERROR_URL = baseUrl + "/ssi/verify/fail/?id=$id";
+
         credentialVerificationDTO.setCredentialVerificationUrl(credentialVerificationApi.verifyCredential(vpRequest, successRedirect, VERIFIER_ERROR_URL));
 
         return credentialVerificationDTO;
@@ -218,6 +219,8 @@ public class OrganizationsService {
 
         return baseUrl + "/provenAI/data-pods-control/?vcOfferSessionId=$id&organizationId=" + organizationId.toString();
     }
+
+
 
     public static String removeParamFromUrl(String url, String paramToRemove) {
         UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUriString(url);
