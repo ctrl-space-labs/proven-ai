@@ -33,13 +33,17 @@ Here's a quick overview of its core functionalities:
 ### Data Provenance and Tracking in AI Systems
 - **Verifiable Data Usage:** When AI agents access data, a "Data Access Credential" VC is created, marking the AI agent's DID as the subject. This credential grants permission to use the data, with each usage being blockchain-registered to ensure a traceable data lineage.
 
-## Github
-All related code and documentation can the found in the [Github Repository](https://github.com/ctrl-space-labs/proven-ai) of the project.
+## Code & Documentation
+All related code can the found in the [Github Repository](https://github.com/ctrl-space-labs/proven-ai) of the project. 
+
+For detailed documentation on the project, please visit the [ProvenAI Documentation](https://ctrl-space-labs.github.io/proven-ai/)
+
+The OpenAPI documentation can be found in [ProveAI's Swagger](https://dev.proven-ai.ctrlspace.dev/proven-ai/api/v1/swagger-ui/index.html#/) page
 
 ## Contact information
 If you have any questions, don't hesitate to contact us:
 
-Chris Sekas [csekas@ctrlspace.dev](mailto:csekas@ctrlspace.dev)
+
 Contact [contact@ctrlspace.dev](mailto:contact@ctrlspace.dev)
 
 ## Funded By

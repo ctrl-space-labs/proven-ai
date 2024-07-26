@@ -1,0 +1,554 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PID as W3C VC",
+  "description": "The schema defines a structure for W3C VC PID",
+  "type": "object",
+  "properties": {
+    "@context": {
+      "oneOf": [
+        {
+          "const": "https://www.w3.org/ns/credentials/v2"
+        },
+        {
+          "description": "Semantic context for the issued credential. First element MUST be https://www.w3.org/ns/credentials/v2",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "uri"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        }
+      ]
+    },
+    "id": {
+      "description": "Globally unique identifier for the issued credential. It can be a UUID or another globally unique identifier. document_number as per ARF",
+      "type": "string",
+      "format": "uri"
+    },
+    "type": {
+      "description": "Full type chain, used to identify the credential base types",
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "issuer": {
+      "description": "DID of the credential issuer. issuing_authority as per ARF",
+      "oneOf": [
+        {
+          "type": "string",
+          "format": "uri"
+        },
+        {
+          "type": "object",
+          "required": ["id"],
+          "properties": {
+            "id": {
+              "description": "DID of the credential issuer",
+              "type": "string",
+              "format": "uri"
+            },
+            "issuingCountry": {
+              "description": "issuing_country as per ARF. ISO 2-letter code",
+              "$ref": "#/$defs/nationality"
+            }
+          }
+        }
+      ]
+    },
+    "validFrom": {
+      "description": "Defines the earliest point when the credential becomes valid. issuance_date as per ARF",
+      "type": "string",
+      "format": "date-time"
+    },
+    "validUntil": {
+      "description": "Defines the latest point when the credential ceases to be valid. expiry_date as per ARF",
+      "type": "string",
+      "format": "date-time"
+    },
+    "credentialSubject": {
+      "$ref": "#/$defs/credentialSubjectPID"
+    },
+    "credentialStatus": {
+      "description": "Defines suspension and/or revocation details for the issued credential. Further redefined by the type extension",
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "Exact identity for the credential status",
+          "type": "string",
+          "format": "uri"
+        },
+        "type": {
+          "description": "Defines the revocation type extension",
+          "type": "string"
+        }
+      },
+      "required": ["id", "type"]
+    },
+    "credentialSchema": {
+      "description": "One or more schemas that validate the Verifiable Credential.",
+      "anyOf": [
+        {
+          "$ref": "#/$defs/credentialSchema"
+        },
+        {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/credentialSchema"
+          }
+        }
+      ]
+    },
+    "termsOfUse": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/termsOfUse"
+        },
+        {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/termsOfUse"
+          }
+        }
+      ]
+    },
+    "evidence": {
+      "description": "Contains information about the process which resulted in the issuance of the credential",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "If present, it MUST contain a URL that points to where more information about this instance of evidence can be found.",
+            "type": "string"
+          },
+          "type": {
+            "description": "Defines the evidence type extension",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": ["type"]
+      }
+    }
+  },
+  "required": [
+    "@context",
+    "id",
+    "type",
+    "issuer",
+    "validFrom",
+    "credentialSubject",
+    "credentialSchema"
+  ],
+  "$defs": {
+    "credentialSubjectPID": {
+      "type": "object",
+      "properties": {
+        "credentialSubject": {
+          "description": "Defines additional information about the subject that is described by the Verifiable ID",
+          "type": "object",
+          "properties": {
+            "id": {
+              "description": "Defines the DID of the subject that is described by the Verifiable Attestation. unique_id as per ARF",
+              "type": "string",
+              "format": "uri"
+            },
+            "familyName": {
+              "description": "Defines current family name(s) of the credential subject. family_name as per ARF",
+              "type": "string"
+            },
+            "firstName": {
+              "description": "Defines current first name(s) of the credential subject. given_name as per ARF",
+              "type": "string"
+            },
+            "familyNameAtBirth": {
+              "description": "Defines family name(s) of the credential subject at birth. family_name_birth as per ARF",
+              "type": "string"
+            },
+            "firstNameAtBirth": {
+              "description": "Defines first name(s) of the credential subject at birth. given_name_birth as per ARF",
+              "type": "string"
+            },
+            "dateOfBirth": {
+              "description": "Defines date of birth of the credential subject. birth_date as per ARF",
+              "type": "string",
+              "format": "date"
+            },
+            "yearOfBirth": {
+              "description": "Defines the year of birth of the credential subject. age_birth_year as per ARF",
+              "type": "string",
+              "format": "date"
+            },
+            "ageOverNN": {
+              "description": "age_over_NN as per ARF.",
+              "type": "boolean"
+            },
+            "ageInYears": {
+              "description": "age_in_years as per ARF.",
+              "type": "number"
+            },
+            "personalIdentifier": {
+              "description": "Defines the unique national identifier of the credential subject (constructed by the sending Member State in accordance with the technical specifications for the purposes of cross-border identification and which is as persistent as possible in time). Alternative non-cryptographic identifier.  unique_id or administrative_identifier as per ARF",
+              "type": "string"
+            },
+            "placeOfBirth": {
+              "description": "Defines the place where the credential subject is born. birth_place, _country, _state, _city as per ARF",
+              "$ref": "#/$defs/address"
+            },
+            "currentAddress": {
+              "description": "Defines the current address of the credential subject. resident_address as per ARF",
+              "$ref": "#/$defs/address"
+            },
+            "gender": {
+              "description": "Defines the gender of the credential subject. Note: enumeration should be extended to capture are recognised genders. gender as per ARF",
+              "type": "string",
+              "enum": ["male", "female", "other"]
+            },
+            "nationality": {
+              "description": "One or more nationalities. Recognised vocabulary must be used to express the nationalities. nationality as per ARF",
+              "oneOf": [
+                {
+                  "$ref": "#/$defs/nationality"
+                },
+                {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/$defs/nationality"
+                  },
+                  "minItems": 1
+                }
+              ]
+            }
+          },
+          "required": [
+            "id",
+            "familyName",
+            "firstName",
+            "dateOfBirth",
+            "personalIdentifier"
+          ]
+        }
+      }
+    },
+    "nationality": {
+      "type": "string",
+      "enum": [
+        "AD",
+        "AE",
+        "AF",
+        "AG",
+        "AI",
+        "AL",
+        "AM",
+        "AO",
+        "AQ",
+        "AR",
+        "AT",
+        "AU",
+        "AW",
+        "AX",
+        "AZ",
+        "BA",
+        "BB",
+        "BD",
+        "BE",
+        "BF",
+        "BG",
+        "BH",
+        "BI",
+        "BJ",
+        "BL",
+        "BM",
+        "BN",
+        "BO",
+        "BQ",
+        "BR",
+        "BS",
+        "BT",
+        "BV",
+        "BW",
+        "BY",
+        "BZ",
+        "CA",
+        "CC",
+        "CD",
+        "CF",
+        "CG",
+        "CH",
+        "CI",
+        "CK",
+        "CL",
+        "CM",
+        "CN",
+        "CO",
+        "CR",
+        "CU",
+        "CV",
+        "CW",
+        "CX",
+        "CY",
+        "CZ",
+        "DE",
+        "DJ",
+        "DK",
+        "DM",
+        "DO",
+        "DZ",
+        "EC",
+        "EE",
+        "EG",
+        "EH",
+        "ER",
+        "ES",
+        "ET",
+        "FI",
+        "FJ",
+        "FK",
+        "FM",
+        "FO",
+        "FR",
+        "GA",
+        "GB",
+        "GD",
+        "GE",
+        "GF",
+        "GG",
+        "GH",
+        "GI",
+        "GL",
+        "GM",
+        "GN",
+        "GP",
+        "GQ",
+        "GR",
+        "GS",
+        "GT",
+        "GU",
+        "GW",
+        "GY",
+        "HK",
+        "HM",
+        "HN",
+        "HR",
+        "HT",
+        "HU",
+        "ID",
+        "IE",
+        "IL",
+        "IM",
+        "IN",
+        "IO",
+        "IQ",
+        "IR",
+        "IS",
+        "IT",
+        "JE",
+        "JM",
+        "JO",
+        "JP",
+        "KE",
+        "KG",
+        "KH",
+        "KI",
+        "KM",
+        "KN",
+        "KP",
+        "KR",
+        "KW",
+        "KY",
+        "KZ",
+        "LA",
+        "LB",
+        "LC",
+        "LI",
+        "LK",
+        "LR",
+        "LS",
+        "LT",
+        "LU",
+        "LV",
+        "LY",
+        "MA",
+        "MC",
+        "MD",
+        "ME",
+        "MF",
+        "MG",
+        "MH",
+        "MK",
+        "ML",
+        "MM",
+        "MN",
+        "MO",
+        "MP",
+        "MQ",
+        "MR",
+        "MS",
+        "MT",
+        "MU",
+        "MV",
+        "MW",
+        "MX",
+        "MY",
+        "MZ",
+        "NA",
+        "NC",
+        "NE",
+        "NF",
+        "NG",
+        "NI",
+        "NL",
+        "NO",
+        "NP",
+        "NR",
+        "NU",
+        "NZ",
+        "OM",
+        "PA",
+        "PE",
+        "PF",
+        "PG",
+        "PH",
+        "PK",
+        "PL",
+        "PM",
+        "PN",
+        "PR",
+        "PS",
+        "PT",
+        "PW",
+        "PY",
+        "QA",
+        "RE",
+        "RO",
+        "RS",
+        "RU",
+        "RW",
+        "SA",
+        "SB",
+        "SC",
+        "SD",
+        "SE",
+        "SG",
+        "SH",
+        "SI",
+        "SJ",
+        "SK",
+        "SL",
+        "SM",
+        "SN",
+        "SO",
+        "SR",
+        "SS",
+        "ST",
+        "SV",
+        "SX",
+        "SY",
+        "SZ",
+        "TC",
+        "TD",
+        "TF",
+        "TG",
+        "TH",
+        "TJ",
+        "TK",
+        "TL",
+        "TM",
+        "TN",
+        "TO",
+        "TR",
+        "TT",
+        "TV",
+        "TW",
+        "TZ",
+        "UA",
+        "UG",
+        "UM",
+        "US",
+        "UY",
+        "UZ",
+        "VA",
+        "VC",
+        "VE",
+        "VG",
+        "VI",
+        "VN",
+        "VU",
+        "WF",
+        "WS",
+        "YE",
+        "YT",
+        "ZA",
+        "ZM",
+        "ZW"
+      ]
+    },
+    "address": {
+      "description": "Postal Address as per schema.org with additional Full Address property.",
+      "type": "object",
+      "properties": {
+        "addressCountry": {
+          "description": "Defines the country of residence of the credential subject. MUST be two-letter ISO 3166-1 alpha-2 country code.",
+          "type": "string"
+        },
+        "addressRegion": {
+          "description": "Defines the address region of residence of the credential subject. MUST be ISO 3166-2 code",
+          "type": "string"
+        },
+        "addressLocality": {
+          "description": "The locality in which the street address is, and which is in the region. For example, Mountain View.",
+          "type": "string"
+        },
+        "postalCode": {
+          "description": "Defines the postal code of residence of the credential subject",
+          "type": "string"
+        },
+        "streetAddress": {
+          "description": "The street address. For example, 1600 Amphitheatre",
+          "type": "string"
+        },
+        "fullAddress": {
+          "description": "The complete address written as a string. https://semiceu.github.io/Core-Person-Vocabulary/releases/2.1.0/",
+          "type": "string"
+        }
+      }
+    },
+    "credentialSchema": {
+      "description": "Contains information about the credential schema on which the issued credential is based",
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "References the credential schema stored on the Trusted Schemas Registry (TSR)",
+          "type": "string",
+          "format": "uri"
+        },
+        "type": {
+          "description": "Defines credential schema type",
+          "type": "string",
+          "enum": ["JsonSchema", "ShaclValidator2017"]
+        }
+      },
+      "required": ["id", "type"]
+    },
+    "termsOfUse": {
+      "description": "Contains the terms under which the issued credential was issued",
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "Contains a URL that points to where more information about this instance of terms of use can be found.",
+          "type": "string",
+          "format": "uri"
+        },
+        "type": {
+          "description": "Defines the type extension",
+          "type": "string"
+        }
+      },
+      "required": ["type"]
+    }
+  }
+}

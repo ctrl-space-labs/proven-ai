@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Permission of Use Verifiable Credential",
+  "description": "Schema for representing the permissions granted to AI agents to use specific data segments under predefined policies, including usage, attribution, and compensation.",
+  "type": "object",
+  "allOf": [
+    {
+      "$ref": "./node_modules/@cef-ebsi/vcdm2.0-attestation-schema/schema.json"
+    },
+    {
+      "properties": {
+        "type": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "enum": [
+            "VerifiableCredential",
+            "VerifiableAttestation",
+            "PermissionOfUseCredential"
+          ]
+        },
+        "credentialSubject": {
+          "description": "Details about the AI agent and the permissions granted.",
+          "type": "object",
+          "properties": {
+            "id": {
+              "description": "Unique identifier (DID) of the AI agent granted the use of data.",
+              "type": "string",
+              "format": "uri"
+            },
+            "ownerID": {
+              "description": "Unique identifier (DID) of the data owner.",
+              "type": "string",
+              "format": "uri"
+            },
+            "policies": {
+              "description": "List of all policies applicable to the data usage by the agent, including usage, attribution, and compensation policies.",
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "policyType": {
+                    "description": "Type of policy, e.g., 'usage', 'attribution', 'compensation'.",
+                    "type": "string"
+                  },
+                  "policyValue": {
+                    "description": "Description or specifics of the policy.",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "policyType",
+                  "policyValue"
+                ]
+              }
+            },
+            "dataSegments": {
+              "description": "List of ISCCs that the agent has the rights to use.",
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "required": [
+            "id",
+            "ownerID",
+            "policies",
+            "dataSegments"
+          ]
+        }
+      }
+    }
+  ]
+}

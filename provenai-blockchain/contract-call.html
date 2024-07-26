@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Contract Interaction</title>
+    <script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js" type="application/javascript"></script>
+</head>
+
+<body>
+    <button id="connectButton">Connect to MetaMask</button>
+    <button id="getNumberButton">Get Number</button>
+    <!--    set number btn-->
+    <button id="setNumberButton">Set Number</button>
+    <!--    increment number-->
+    <button id="incrementButton">Increment Number</button>
+
+    <script>
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        let signer;
+
+        document.getElementById('connectButton').addEventListener('click', async () => {
+            await provider.send("eth_requestAccounts", []);
+            signer = provider.getSigner();
+            console.log('Connected to MetaMask');
+        });
+        const counterContractAddress = "0x703fAD8Fccb141ceCb64c06f8CC284A93e720E97";
+        const counterContractABI = [
+            {
+                "type": "function",
+                "name": "getNumber",
+                "inputs": [],
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "uint256",
+                        "internalType": "uint256"
+                    }
+                ],
+                "stateMutability": "view"
+            },
+            {
+                "type": "function",
+                "name": "increment",
+                "inputs": [],
+                "outputs": [],
+                "stateMutability": "nonpayable"
+            },
+            {
+                "type": "function",
+                "name": "number",
+                "inputs": [],
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "uint256",
+                        "internalType": "uint256"
+                    }
+                ],
+                "stateMutability": "view"
+            },
+            {
+                "type": "function",
+                "name": "setNumber",
+                "inputs": [
+                    {
+                        "name": "newNumber",
+                        "type": "uint256",
+                        "internalType": "uint256"
+                    }
+                ],
+                "outputs": [],
+                "stateMutability": "nonpayable"
+            }
+        ];
+        const counterContract = new ethers.Contract(counterContractAddress, counterContractABI, signer);
+
+        // cast call 0x703fAD8Fccb141ceCb64c06f8CC284A93e720E97 "getNumber()" --rpc-url http://127.0.0.1:7545
+        document.getElementById('getNumberButton').addEventListener('click', async () => {
+
+            const counterContract = new ethers.Contract(counterContractAddress, counterContractABI, signer);
+
+            // Example: calling a method named yourMethod
+            // Example: calling a method named yourMethod
+            const number = await counterContract.getNumber();
+            console.log(number);
+        });
+
+        // cast send 0x703fAD8Fccb141ceCb64c06f8CC284A93e720E97 "setNumber(uint256)" 17 --rpc-url HTTP://127.0.0.1:7545 --private-key 0x99c026d99302999c57c4de1646e1ead4da58e0b753b7f8a3392269e71c2ddd0d
+        document.getElementById('setNumberButton').addEventListener('click', async () => {
+            const newNumber = 5;
+            // Assuming you have a provider and signer set up
+            const provider = new ethers.providers.Web3Provider(window.ethereum);
+            const signer = provider.getSigner();
+
+            // Connect your contract to the signer
+            const signedContract = counterContract.connect(signer);
+
+            // Now call the method with the signer
+            const tx = await signedContract.setNumber(newNumber);
+            await tx.wait();
+            console.log('Number set to', newNumber);
+        });
+
+        document.getElementById('incrementButton').addEventListener('click', async () => {
+            const provider = new ethers.providers.Web3Provider(window.ethereum);
+            const signer = provider.getSigner();
+            const signedContract = counterContract.connect(signer);
+            const tx = await signedContract.increment();
+            await tx.wait();
+            console.log('Number incremented');
+        });
+
+
+
+    </script>
+</body>
+
+</html>
