@@ -1,0 +1,13 @@
+
+proven-ai:
+  ssi:
+    verifier:
+      url: https://proven-ai-dev.ctrlspace.dev/verifier/openid4vc/verify
+    issuer:
+      url: https://proven-ai-dev.ctrlspace.dev/issuer/openid4vc/jwt/issue
+  domains:
+    gendox:
+      base-url: https://dev.gendox.ctrlspace.dev
+    proven-ai-frontend:
+      base-url: https://dev.proven-ai.ctrlspace.dev
+

@@ -1,0 +1,81 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Verifiable AI Agent Attestation",
+  "description": "Schema of Attestations for AI Agents detailing their creation and intended usage within an organization.",
+  "type": "object",
+  "allOf": [
+    {
+      "$ref": "./node_modules/@cef-ebsi/vcdm2.0-attestation-schema/schema.json"
+    },
+    {
+      "properties": {
+        "type": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "enum": [
+            "VerifiableCredential",
+            "VerifiableAttestation",
+            "VerifiableAgentID"
+          ]
+        },
+        "credentialSubject": {
+          "description": "Defines information about the AI agent that is described by the Verifiable Attestation",
+          "type": "object",
+          "properties": {
+            "id": {
+              "description": "Defines the unique identifier (DID) of the AI agent",
+              "type": "string",
+              "format": "uri"
+            },
+            "organizationName": {
+              "description": "Name of the organization responsible for the AI agent",
+              "type": "string"
+            },
+            "agentName": {
+              "description": "Name of the AI agent",
+              "type": "string"
+            },
+            "creationDate": {
+              "description": "Date the AI agent was created",
+              "type": "string",
+              "format": "date-time"
+            },
+            "purpose": {
+              "description": "The intended purpose of the AI agent (optional)",
+              "type": "string"
+            },
+            "usagePolicies": {
+              "description": "List of usage policies associated with the AI agent",
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "policyType": {
+                    "description": "Type of the policy",
+                    "type": "string"
+                  },
+                  "policyValue": {
+                    "description": "Value or description of the policy",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "policyType",
+                  "policyValue"
+                ]
+              }
+            }
+          },
+          "required": [
+            "id",
+            "organizationName",
+            "agentName",
+            "creationDate"
+          ]
+        }
+      }
+    }
+  ]
+}

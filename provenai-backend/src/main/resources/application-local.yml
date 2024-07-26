@@ -1,0 +1,29 @@
+
+spring:
+  datasource:
+    url: ${DEV_DATABASE_URL}
+    username: ${DEV_DATABASE_USERNAME}
+    password: ${DEV_DATABASE_PASSWORD}
+    hikari:
+      maximum-pool-size: 3
+      minimum-idle: 1
+
+proven-ai:
+  ssi:
+    verifier:
+      url: https://proven-ai-dev.ctrlspace.dev/verifier/openid4vc/verify
+    issuer:
+      url: https://proven-ai-dev.ctrlspace.dev/issuer/openid4vc/jwt/issue
+
+
+  domains:
+    gendox:
+      base-url: http://localhost:5001
+    proven-ai-frontend:
+      base-url: http://localhost:3001
+  blockchain:
+    rpc-url: HTTP://127.0.0.1:7545  # Local Ganache env
+    contract-address: '0xdA7B2e713d7b3674f2f90Ed14C1100188C91a6cd'
+#    Dont try to hack it, this is the default ganache private key
+    private-key: '0x99c026d99302999c57c4de1646e1ead4da58e0b753b7f8a3392269e71c2ddd0d'
+    chain-id: 1337

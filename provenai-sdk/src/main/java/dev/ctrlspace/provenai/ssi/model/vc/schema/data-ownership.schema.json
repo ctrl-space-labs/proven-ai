@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Certificate of Data Ownership",
+  "description": "Schema of a certificate verifying ownership of data by a data pod",
+  "type": "object",
+  "allOf": [
+    {
+      "$ref": "https://example.org/schema/euipo-certificate-of-trademark-registration.json"
+    },
+    {
+      "properties": {
+        "type": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "enum": [
+            "VerifiableCredential",
+            "VerifiableDataOwnershipCredential"
+          ]
+        },
+        "credentialSubject": {
+          "description": "Defines additional information about the data pod that is described by the Verifiable Credential",
+          "type": "object",
+          "properties": {
+            "id": {
+              "description": "Defines the unique identifier (DID) of the Data Pod",
+              "type": "string",
+              "format": "uri"
+            },
+            "dataPodName": {
+              "description": "Name of the data pod",
+              "type": "string"
+            },
+            "ownershipStatus": {
+              "description": "Current status of ownership (e.g., active, suspended)",
+              "type": "string"
+            },
+            "creationDate": {
+              "description": "Date when the data pod was created",
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          "required": [ "dataPodName", "ownershipStatus"]
+        }
+      }
+    }
+  ]
+}
