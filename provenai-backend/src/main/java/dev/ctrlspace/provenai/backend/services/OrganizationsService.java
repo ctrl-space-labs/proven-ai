@@ -203,6 +203,7 @@ public class OrganizationsService {
         String successRedirect = getSuccessRedirectUrl(organizationId, redirectPath);
 
         String VERIFIER_ERROR_URL = baseUrl + "/ssi/verify/fail/?id=$id";
+
         credentialVerificationDTO.setCredentialVerificationUrl(credentialVerificationApi.verifyCredential(vpRequest, successRedirect, VERIFIER_ERROR_URL));
 
         return credentialVerificationDTO;
