@@ -1,6 +1,7 @@
 package dev.ctrlspace.provenai.backend.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import dev.ctrlspace.provenai.backend.controller.specs.SearchControllerSpec;
 import dev.ctrlspace.provenai.backend.exceptions.ProvenAiException;
 import dev.ctrlspace.provenai.backend.model.authentication.UserProfile;
 import dev.ctrlspace.provenai.backend.model.dtos.SearchResult;
@@ -15,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-public class SearchController {
+public class SearchController implements SearchControllerSpec {
 
     private SearchService searchService;
 
