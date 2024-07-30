@@ -231,9 +231,9 @@ public class AgentService {
     }
 
     public String createAgentVCOffer(W3CVC w3CVC) {
-
+        String credentialConfigurationId = "VerifiableAgentID_jwt_vc_json";
         WaltIdCredentialIssuanceRequest request = WaltIdCredentialIssuanceRequest.builder().issuerDid(issuerDid).issuerKey(IssuerKey.builder().jwk(issuerPrivateJwk).type("jwk").build()).credentialData(w3CVC).build();
-        return credentialIssuanceApi.issueCredential(request);
+        return credentialIssuanceApi.issueCredential(request, credentialConfigurationId);
     }
 
 
