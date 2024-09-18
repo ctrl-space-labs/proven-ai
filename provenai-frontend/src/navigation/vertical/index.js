@@ -24,6 +24,9 @@ const navigation = () => {
             (org) => org.id === organizationId
           );
 
+          let dataPods = [];
+          let agents = [];
+
           if (activeOrganization) {
             const dataPodsResponse =
               await dataPodsService.getDataPodsByOrganization(
@@ -31,7 +34,8 @@ const navigation = () => {
                 storedToken
               );
 
-            const dataPods = dataPodsResponse.data.content.map((dataPod) => {
+
+            dataPods = dataPodsResponse.data.content.map((dataPod) => {
               return {
                 title: dataPod.podUniqueName,
                 icon: "mdi:server",
@@ -43,7 +47,7 @@ const navigation = () => {
               activeOrganization.id,
               storedToken
             );
-            const agents = agentResponse.data.content.map((agent) => {
+            agents = agentResponse.data.content.map((agent) => {
               return {
                 title: agent.agentName,                
                 icon: "mdi:creation",
@@ -51,6 +55,7 @@ const navigation = () => {
                 itemId: agent.id,                
               };
             });
+          }
 
             setNavigationItems([
               {
@@ -66,12 +71,13 @@ const navigation = () => {
               ...agents,   
                       
             ]);
-          }
+          
         } catch (error) {
           console.error("Error fetching data pods:", error);
         }
       }
-    };
+    }
+    
     fetchData();
   }, [auth, organizationId, router]);
 

@@ -161,10 +161,10 @@ const UserDropdown = (props) => {
         </Box>
         <Divider sx={{ mt: "0 !important" }} />
         <MenuItem
-          sx={{ p: 0 }}
+          sx={{ p: 0 }}          
           onClick={() =>
             handleOpenInNewTab(
-              `${apiRequests.gendoxUrl}gendox/home?organizationId=${organizationId}`
+              `${apiRequests.gendoxUrl.replace("gendox/api/v1/", "")}gendox/home?organizationId=${organizationId}`
             )
           }
         >
