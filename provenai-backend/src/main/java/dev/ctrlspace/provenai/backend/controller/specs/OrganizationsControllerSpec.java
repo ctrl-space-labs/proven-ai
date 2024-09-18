@@ -44,7 +44,7 @@ public interface OrganizationsControllerSpec {
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     Page<Organization> getAllOrganizations(
-            @Parameter(description = "Filtering criteria for Data Pods", required = false, schema = @Schema(implementation = OrganizationCriteria.class))
+            @Parameter(description = "Filtering criteria for Organizations", required = false, schema = @Schema(implementation = OrganizationCriteria.class))
             OrganizationCriteria criteria,
             @Parameter(description = "Pagination information", required = false, schema = @Schema(implementation = Pageable.class))
             Pageable pageable) throws ProvenAiException;

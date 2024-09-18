@@ -70,11 +70,12 @@ public class CredentialIssuanceApi {
         return responseEntity.getBody();
     }
 
-    public String issueCredential(WaltIdCredentialIssuanceRequest credentialIssuanceRequest) {
+    public String issueCredential(WaltIdCredentialIssuanceRequest credentialIssuanceRequest, String credentialConfigurationId) {
 
         // TODO this is a risky workaround to avoid the issue of the ObjectMapper not being able to serialize the object
-        // update when the walt.id issue has been resolved https://discord.com/channels/950664482877763656/1255160886545616926/1255160886545616926
-        credentialIssuanceRequest.setCredentialConfigurationId("VerifiableAgentID_jwt_vc_json");
+//        // update when the walt.id issue has been resolved https://discord.com/channels/950664482877763656/1255160886545616926/1255160886545616926
+//        credentialIssuanceRequest.setCredentialConfigurationId("VerifiableAgentID_jwt_vc_json");
+        credentialIssuanceRequest.setCredentialConfigurationId(credentialConfigurationId);
         JsonNode requestBody = objectMapper.valueToTree(credentialIssuanceRequest);
         return issueCredential(requestBody);
 
