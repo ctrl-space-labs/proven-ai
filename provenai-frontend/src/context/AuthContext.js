@@ -35,9 +35,17 @@ const AuthProvider = ({ children }) => {
     isLoading: true,
   });
 
-  // New - to test tomorrow
-  const handleLogin = () => {
-    userManager.signinRedirect();    
+  /**
+   * Handles login redirect
+   *
+   * @param returnUrl - the url to redirect to after login
+   */
+  const handleLogin = (returnUrl) => {
+    let args = {};
+    if (returnUrl) {
+      args = { redirect_uri: `${authConfig.oidcConfig.redirect_uri}?returnUrl=${encodeURIComponent(returnUrl)}` };
+    }
+    userManager.signinRedirect(args);
   };
 
   const handleLogout = () => {    
@@ -74,6 +82,10 @@ const AuthProvider = ({ children }) => {
       if (user && !user.expired) {
         setAuthState({ user, isLoading: false });
       }
+      // no user data found, loadUserProfileFromAuthState will handle cleanup
+      if (!user || user === null) {
+        setAuthState({ user: null, isLoading: false });
+      }
     });    
 
     // Adding an event listener for when new user data is loaded
@@ -89,6 +101,9 @@ const AuthProvider = ({ children }) => {
   };
 
   const loadUserProfileFromAuthState = async (authState) => {
+    if (authState.isLoading) {
+      return;
+    }
     setLoading(true);
     if (!authState.user || authState.user === null) {
       setLoading(false);
@@ -184,10 +199,17 @@ const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     if (user && router.pathname.includes("oidc-callback")) {
-      console.log(
-        "User data loaded successfully. Redirecting to the home page..."
-      );
-      window.location.href = "/provenAI/home";
+
+      let homeUrl = "/provenAI/home";
+
+      //oidc-callback might contain a returnUrl query param to redirect to after login,
+      // like ../oidc-callback?returnUrl=%2Fgendox%2Fhome....
+      const { returnUrl } = router.query;
+      if (returnUrl) {
+        homeUrl = decodeURIComponent(returnUrl);
+      }
+
+      window.location.href = homeUrl;
     }
   }, [user]);
 
