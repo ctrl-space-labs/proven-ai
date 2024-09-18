@@ -162,11 +162,12 @@ const UserDropdown = (props) => {
         <Divider sx={{ mt: "0 !important" }} />
         <MenuItem
           sx={{ p: 0 }}          
-          onClick={() =>
-            handleOpenInNewTab(
-              `${apiRequests.gendoxUrl.replace("gendox/api/v1/", "")}gendox/home?organizationId=${organizationId}`
-            )
-          }
+          onClick={() => {
+            const gendoxUrl = `${apiRequests.gendoxUrl.replace("gendox/api/v1/", "")}gendox/home/?organizationId=${organizationId}`;
+            console.log(gendoxUrl);
+            handleOpenInNewTab(gendoxUrl);
+          }}
+          
         >
           <Box sx={styles}>
             <Icon icon="mdi:arrow-up-bold-hexagon-outline" />
