@@ -1,5 +1,6 @@
 package dev.ctrlspace.provenai.backend.controller;
 
+import dev.ctrlspace.provenai.backend.controller.specs.AuditPermissionOfUseVcControllerSpec;
 import dev.ctrlspace.provenai.backend.exceptions.ProvenAiException;
 import dev.ctrlspace.provenai.backend.model.AuditPermissionOfUseVc;
 import dev.ctrlspace.provenai.backend.model.dtos.AuditPermissionOfUseDTO;
@@ -17,7 +18,7 @@ import java.util.UUID;
 
 @RestController
 @Validated
-public class AuditPermissionOfUseVcController {
+public class AuditPermissionOfUseVcController implements AuditPermissionOfUseVcControllerSpec {
 
 
     private AuditPermissionOfUseVcService auditPermissionOfUseVcService;
@@ -28,10 +29,10 @@ public class AuditPermissionOfUseVcController {
     }
 
 
-    @GetMapping("/audits-permission-of-use/{id}")
-    public AuditPermissionOfUseVc getDataPodById(@PathVariable UUID id) throws ProvenAiException {
-        return auditPermissionOfUseVcService.getAuditPermissionOfUseVcById(id);
-    }
+//    @GetMapping("/audits-permission-of-use/{id}")
+//    public AuditPermissionOfUseVc getDataPodById(@PathVariable UUID id) throws ProvenAiException {
+//        return auditPermissionOfUseVcService.getAuditPermissionOfUseVcById(id);
+//    }
 
     @GetMapping("/permission-of-use-analytics")
     public List<AuditPermissionOfUseDTO> getAuditPermissionOfUseAnalytics(@Valid AuditPermissionOfUseVcCriteria criteria, Pageable pageable) throws ProvenAiException {

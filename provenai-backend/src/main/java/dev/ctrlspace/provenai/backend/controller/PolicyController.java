@@ -1,5 +1,6 @@
 package dev.ctrlspace.provenai.backend.controller;
 
+import dev.ctrlspace.provenai.backend.controller.specs.PolicyControllerSpec;
 import dev.ctrlspace.provenai.backend.converters.AclPoliciesConverter;
 import dev.ctrlspace.provenai.backend.converters.AgentPurposeOfUsePoliciesConverter;
 import dev.ctrlspace.provenai.backend.exceptions.ProvenAiException;
@@ -18,7 +19,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-public class PolicyController {
+public class PolicyController implements PolicyControllerSpec {
 
     private PolicyService policyService;
 
