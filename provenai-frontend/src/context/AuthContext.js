@@ -81,9 +81,8 @@ const AuthProvider = ({ children }) => {
     userManager.getUser().then((user) => {
       if (user && !user.expired) {
         setAuthState({ user, isLoading: false });
-      }
-      // no user data found, loadUserProfileFromAuthState will handle cleanup
-      if (!user || user === null) {
+      } else  {   // no user data found or user expired, loadUserProfileFromAuthState will handle cleanup
+        console.log("initAuthOIDC - user is null or expired: ", user);
         setAuthState({ user: null, isLoading: false });
       }
     });    
