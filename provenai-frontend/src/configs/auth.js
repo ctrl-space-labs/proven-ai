@@ -14,6 +14,7 @@ const oidcConfig = {
   pkceMethod: 'S256'
 };
 
+console.log("oidcConfig: ", oidcConfig);
 
 
 export default {
