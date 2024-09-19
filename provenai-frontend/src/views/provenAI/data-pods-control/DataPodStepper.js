@@ -361,6 +361,7 @@ const DataPodStepper = ({
                     userErrors.taxReference ||
                     userErrors.vatNumber
                   ) {
+                    console.log("userErrors", userErrors);
                     labelProps.error = true;
                   }
                 }

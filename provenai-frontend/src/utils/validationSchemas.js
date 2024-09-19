@@ -37,26 +37,26 @@ export const userSchema = yup.object().shape({
     then: userSchema => userSchema.required("Family name is required"),
     
   }),
-  personalIdentifier: yup.string().when('selectedOrganizationType', {
-    is: "natural-person",
-    then: userSchema => userSchema.required("Personal identifier is required"),
+  // personalIdentifier: yup.string().when('selectedOrganizationType', {
+  //   is: "natural-person",
+  //   then: userSchema => userSchema.required("Personal identifier is required"),
     
-  }),
-  gender: yup.string().when('selectedOrganizationType', {
-    is: "natural-person",
-    then: userSchema => userSchema.required("Gender is required"),
+  // }),
+  // gender: yup.string().when('selectedOrganizationType', {
+  //   is: "natural-person",
+  //   then: userSchema => userSchema.required("Gender is required"),
     
-  }),
-  dateOfBirth: yup.string().when('selectedOrganizationType', {
-    is: "natural-person",
-    then: userSchema => userSchema.required("Date of birth is required"),
+  // }),
+  // dateOfBirth: yup.string().when('selectedOrganizationType', {
+  //   is: "natural-person",
+  //   then: userSchema => userSchema.required("Date of birth is required"),
     
-  }),
-  nationality: yup.string().when('selectedOrganizationType', {
-    is: "natural-person",
-    then: userSchema => userSchema.required("Nationality is required"),
+  // }),
+  // nationality: yup.string().when('selectedOrganizationType', {
+  //   is: "natural-person",
+  //   then: userSchema => userSchema.required("Nationality is required"),
     
-  }),
+  // }),
   legalPersonIdentifier: yup.string().when('selectedOrganizationType', {
     is: "legal-entity", 
     then: userSchema => userSchema.required("Legal person identifier is required"),
@@ -67,26 +67,26 @@ export const userSchema = yup.object().shape({
     then: userSchema => userSchema.required("Legal name is required"),
     
   }),
-  legalAddress: yup.string().when('selectedOrganizationType', {
-    is: "legal-entity",
-    then: userSchema => userSchema.required("Legal address is required"),
+  // legalAddress: yup.string().when('selectedOrganizationType', {
+  //   is: "legal-entity",
+  //   then: userSchema => userSchema.required("Legal address is required"),
     
-  }),
-  country: yup.string().when('selectedOrganizationType', {
-    is: "legal-entity",
-    then: userSchema => userSchema.required("Country is required"),    
-  }),
+  // }),
+  // country: yup.string().when('selectedOrganizationType', {
+  //   is: "legal-entity",
+  //   then: userSchema => userSchema.required("Country is required"),    
+  // }),
 
-  taxReference: yup.string().when('selectedOrganizationType', {
-    is: "legal-entity",
-    then: userSchema => userSchema.required("Tax reference is required"),
+  // taxReference: yup.string().when('selectedOrganizationType', {
+  //   is: "legal-entity",
+  //   then: userSchema => userSchema.required("Tax reference is required"),
     
-  }),
-  vatNumber: yup.string().when('selectedOrganizationType', {
-    is: "legal-entity",
-    then: userSchema => userSchema.required("VAT number is required"),
+  // }),
+  // vatNumber: yup.string().when('selectedOrganizationType', {
+  //   is: "legal-entity",
+  //   then: userSchema => userSchema.required("VAT number is required"),
     
-  }),
+  // }),
 });
 
 
