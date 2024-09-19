@@ -5,6 +5,8 @@ import { useAuth } from "src/hooks/useAuth";
 import dataPodsService from "src/provenAI-sdk/dataPodsService";
 import agentService from "src/provenAI-sdk/agentService";
 import authConfig from "src/configs/auth";
+import { sortByField } from "src/utils/orderUtils";
+
 
 const navigation = () => {
   const auth = useAuth();
@@ -57,18 +59,21 @@ const navigation = () => {
             });
           }
 
+          const sortedDataPods = sortByField(dataPods, "title");
+          const sortedAgents = sortByField(agents, "title");
+
             setNavigationItems([
               {
                 sectionTitle: "DATA PODS",
                 sectionButton: "dataPod"
               },
-              ...dataPods,
+              ...sortedDataPods,
 
               
               {
                 sectionTitle: "AI AGENTS",
               },
-              ...agents,   
+              ...sortedAgents,   
                       
             ]);
           

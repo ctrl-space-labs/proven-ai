@@ -4,6 +4,9 @@ import { useEffect, useState } from "react";
 import { useRef } from "react";
 import { useRouter } from "next/router";
 import {
+  Box,
+  IconButton,
+  Tooltip, 
   Grid,
   Typography,
   FormControl,
@@ -16,6 +19,7 @@ import {
   Select,
   FormHelperText,
 } from "@mui/material";
+import Icon from "src/@core/components/icon";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { dataPodSchema } from "src/utils/validationSchemas";
@@ -256,12 +260,24 @@ const DataPodInformation = ({
 
         <Grid item xs={12}>
           <FormControl fullWidth>
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+
             <Typography
               variant="filled"
               sx={{ fontWeight: 600, color: "text.primary" }}
             >
-              What is the purpose of use?
+              For what purpose is this used?
             </Typography>
+
+            <Tooltip title="Select the purpose for which this data pod will be used. This helps categorize the data pod based on its intended usage.">
+             
+                <IconButton                  
+                >
+                  <Icon icon="mdi:information-slab-circle-outline" fontSize="inherit" />
+                </IconButton>
+              
+            </Tooltip>
+            </Box>
 
             <Controller
               name="agentPurpose"

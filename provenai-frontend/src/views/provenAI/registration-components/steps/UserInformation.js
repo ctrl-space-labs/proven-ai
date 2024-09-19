@@ -395,7 +395,7 @@ const UserInformation = ({
                   render={({ field }) => (
                     <TextField
                       {...field}
-                      label="Legal Person Identifier"
+                      label="Legal Representative Name"
                       error={Boolean(errors.legalPersonIdentifier)}
                       helperText={
                         errors.legalPersonIdentifier
@@ -523,7 +523,7 @@ const UserInformation = ({
               render={({ field }) => (
                 <TextField
                   {...field}
-                  label="Profile Link"
+                  label="Profile Link "
                   placeholder="https://yourprofilelink.com"
                   error={Boolean(errors.profileLink)}
                   helperText={
