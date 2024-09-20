@@ -23,7 +23,7 @@ services:
       - KEYCLOAK_CLIENT_ID=${KEYCLOAK_CLIENT_ID}
       - KEYCLOAK_CLIENT_SECRET=${KEYCLOAK_CLIENT_SECRET}
       - ISSUER_DID=${ISSUER_DID}
-      - ISSUER_PRIVATE_KEY=${ISSUER_PRIVATE_KEY}
+      - ISSUER_PRIVATE_JWK=${ISSUER_PRIVATE_JWK}
     networks:
       - proven_ai_network
     ports:
