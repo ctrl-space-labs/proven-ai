@@ -59,6 +59,7 @@ const getAgentPurposeOfUsePoliciesDiff = (currentPolicies, newPolicies) => {
 };
 
 const convertAndComparePolicies = (agentData, activeAgentPolicies, agentId) => {
+  
   const newAgentPurposeOfUsePolicies = [
     ...convertToAgentPurposeOfUsePolicies(agentData.agentPurpose, agentId),
     ...convertToAllowListAclPolicies(agentData.allowList, agentId),
