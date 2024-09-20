@@ -33,9 +33,6 @@ const AgentControl = () => {
   const [userAgents, setUserAgents] = useState([]);
   const [activeStep, setActiveStep] = useState(0);
 
-
- 
-
   const storedToken = window.localStorage.getItem(
     authConfig.storageTokenKeyName
   );
@@ -73,13 +70,13 @@ const AgentControl = () => {
       if (activeOrgAgents) {
         setUserAgents(activeOrgAgents);
       }
-      
     };
 
     if (organizationId) {
       fetchOrganization();
     }
-  }, [organizationId, storedToken]);
+  }, [organizationId, storedToken]);  
+
 
   useEffect(() => {
     if (!agentId) {
@@ -109,6 +106,7 @@ const AgentControl = () => {
       } catch (error) {
         console.error("Error fetching Agent Policies:", error);
         if (error.response.status === 404) {
+          setActiveAgent({});
           setAgentPolicies({});
         }
       }

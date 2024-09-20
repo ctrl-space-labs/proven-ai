@@ -1,5 +1,5 @@
 // ** React Imports
-import { Fragment, useState, useEffect } from "react";
+import { Fragment, useState, useEffect, useRef } from "react";
 import { styled, useTheme } from "@mui/material/styles";
 import { useRouter } from "next/router";
 
@@ -56,6 +56,7 @@ const AgentStepper = ({
   const storedToken = window.localStorage.getItem(
     authConfig.storageTokenKeyName
   );
+  const previousAgentId = useRef(agentId);
 
   // Form data states
   const [userData, setUserData] = useState(defaultUserInformation);
@@ -65,6 +66,15 @@ const AgentStepper = ({
 
   const [userErrors, setUserErrors] = useState({});
   const [agentErrors, setAgentErrors] = useState({});
+
+
+  useEffect(() => {
+    // When the agentId changes, reset the state
+    if (previousAgentId.current !== agentId) {
+      setActiveStep(0); // Reset to the first step
+      previousAgentId.current = agentId; // Update the ref with the new agentId
+    }
+  }, [agentId]); // This effect depends on agentId changes
 
 
   useEffect(() => {
@@ -110,6 +120,8 @@ const AgentStepper = ({
       }));
     }
   }, [agentPolicies]);
+
+  
 
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
@@ -270,7 +282,9 @@ const AgentStepper = ({
   };
 
   const renderContent = () => {
-    if (activeStep === agentSteps.length && isSubmitComplete) {
+    // if (activeStep === agentSteps.length && isSubmitComplete) {
+      if (activeStep === agentSteps.length && isSubmitComplete && router.query.agentId === agentId) {
+
       return (
         <Fragment>
           <Box sx={{ textAlign: "center", mt: 4 }}>
