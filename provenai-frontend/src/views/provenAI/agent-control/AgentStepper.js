@@ -68,9 +68,9 @@ const AgentStepper = ({
   const [agentErrors, setAgentErrors] = useState({});
 
 
-  useEffect(() => {
+  useEffect(() => {    
     // When the agentId changes, reset the state
-    if (previousAgentId.current !== agentId) {
+    if (activeStep > 2 && previousAgentId.current !== agentId) {
       setActiveStep(0); // Reset to the first step
       previousAgentId.current = agentId; // Update the ref with the new agentId
     }

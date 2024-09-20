@@ -77,7 +77,7 @@ const DataPodStepper = ({
 
   useEffect(() => {
     // When the dataPodId changes, reset the state
-    if (previousDataPodId.current !== dataPodId) {
+    if (activeStep > 2 && previousDataPodId.current !== dataPodId) {
       setActiveStep(0); // Reset to the first step
       previousDataPodId.current = dataPodId; // Update the ref with the new dataPodId
     }
