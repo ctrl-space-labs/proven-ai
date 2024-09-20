@@ -6,6 +6,8 @@ import { useRouter } from "next/router";
 import {
   Grid,
   Box,
+  Tooltip,
+  IconButton,
   Typography,
   InputLabel,
   Select,
@@ -20,6 +22,8 @@ import {
 import CustomRadioIcons from "src/@core/components/custom-radio/icons";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
+import Icon from "src/@core/components/icon";
+
 
 // ** Validation Schema and Default Values
 import { agentSchema } from "src/utils/validationSchemas";
@@ -137,9 +141,7 @@ const AgentInformation = ({
 
     const fetchDataPods = async () => {
       try {
-        const dataPods = await dataPodsService.getAllDataPods(
-          storedToken
-        );
+        const dataPods = await dataPodsService.getAllDataPods(storedToken);
         setDataPods(dataPods.data.content);
       } catch (error) {
         console.error("Error fetching data pods:", error);
@@ -306,12 +308,23 @@ const AgentInformation = ({
 
         <Grid item xs={12}>
           <FormControl fullWidth>
+          <Box sx={{ display: "flex", alignItems: "center" }}>
+
             <Typography
               variant="filled"
               sx={{ fontWeight: 600, color: "text.primary" }}
             >
-              What is the purpose of use?
+              For what purpose is this used?{" "}
             </Typography>
+            <Tooltip title="Select the purpose for which this agent will be used. This helps categorize the agent based on its intended usage.">
+                <IconButton>
+                  <Icon
+                    icon="mdi:information-slab-circle-outline"
+                    fontSize="inherit"
+                  />
+                </IconButton>
+              </Tooltip>
+            </Box>
 
             <Controller
               name="agentPurpose"
@@ -361,12 +374,23 @@ const AgentInformation = ({
 
         <Grid item xs={12} sm={6}>
           <FormControl fullWidth>
+          <Box sx={{ display: "flex", alignItems: "center" }}>
+
             <Typography
               variant="filled"
               sx={{ fontWeight: 600, color: "text.primary" }}
             >
               Compensation
             </Typography>
+            <Tooltip title="Select the type of compensation for this agent. Choose between paid or free based on how this agent will be used.">
+                <IconButton>
+                  <Icon
+                    icon="mdi:information-slab-circle-outline"
+                    fontSize="inherit"
+                  />
+                </IconButton>
+              </Tooltip>
+            </Box>
 
             <Controller
               name="compensationType"
@@ -445,12 +469,23 @@ const AgentInformation = ({
 
         <Grid item xs={12} sm={6}>
           <FormControl fullWidth>
+          <Box sx={{ display: "flex", alignItems: "center" }}>
+
             <Typography
               variant="body2"
               sx={{ fontWeight: 600, color: "text.primary" }}
             >
               Deny list
             </Typography>
+            <Tooltip title="Select the data pods that this agent is not allowed to access. The deny list defines which resources are restricted.">
+                <IconButton>
+                  <Icon
+                    icon="mdi:information-slab-circle-outline"
+                    fontSize="inherit"
+                  />
+                </IconButton>
+              </Tooltip>
+            </Box>
 
             <Controller
               name="denyList"
@@ -530,12 +565,23 @@ const AgentInformation = ({
 
         <Grid item xs={12} sm={6}>
           <FormControl fullWidth>
+          <Box sx={{ display: "flex", alignItems: "center" }}>
+
             <Typography
               variant="body2"
               sx={{ fontWeight: 600, color: "text.primary" }}
             >
               Allow list
             </Typography>
+            <Tooltip title="Select the data pods that this agent is allowed to access. The allow list defines the permitted resources.">
+                <IconButton>
+                  <Icon
+                    icon="mdi:information-slab-circle-outline"
+                    fontSize="inherit"
+                  />
+                </IconButton>
+              </Tooltip>
+            </Box>
 
             <Controller
               name="allowList"
