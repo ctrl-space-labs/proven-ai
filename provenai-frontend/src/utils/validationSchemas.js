@@ -108,11 +108,18 @@ export const agentSchema = yup.object().shape({
   compensationType: yup.string().required("Compensation type is required"),
   
   
-  compensation: yup.string().when('compensationType', {
+  compensation: yup.object().when('compensationType', {
     is: "paid",
     then: agentSchema => agentSchema.required("Compensation is required"),
     otherwise: agentSchema => agentSchema.nullable().notRequired().transform((value, originalValue) => originalValue === '' ? null : value)
   }), 
+
+ 
+
+
+ 
+ 
+
   denyList: listNotInOtherList('denyList', 'allowList', 'dataPodId'),
   allowList: listNotInOtherList('allowList', 'denyList', 'dataPodId'),
   
