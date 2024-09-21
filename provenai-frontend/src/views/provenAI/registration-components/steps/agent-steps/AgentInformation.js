@@ -168,65 +168,66 @@ const AgentInformation = ({
   };
 
   const updateDataPod = async (data) => {
-    if (dataPods.length > 0) {
-      let allowPolicies, denyPolicies;
+    if (!(dataPods.length > 0)) {
+      return data;
+    }
 
-      try {
-        allowPolicies = await policyService.getPolicyOptions(
+    let allowPolicies, denyPolicies;
+
+    try {
+      allowPolicies = await policyService.getPolicyOptions(
           "ALLOW_LIST",
           storedToken
-        );
-      } catch (error) {
-        console.error("Error fetching allow policy options:", error);
-      }
+      );
+    } catch (error) {
+      console.error("Error fetching allow policy options:", error);
+    }
 
-      try {
-        denyPolicies = await policyService.getPolicyOptions(
+    try {
+      denyPolicies = await policyService.getPolicyOptions(
           "DENY_LIST",
           storedToken
-        );
-      } catch (error) {
-        console.error("Error fetching deny policy options:", error);
-      }
-
-      const allowAgentPolicy = allowPolicies?.data.find(
-        (policy) => policy.name === "ALLOW_DATA_POD_NAME"
       );
-      const denyAgentPolicy = denyPolicies?.data.find(
-        (policy) => policy.name === "DENY_DATA_POD_NAME"
-      );
-
-      const updatedDataPods = {
-        ...data,
-        allowList: data.allowList.map((allow) => {
-          const dataPod = dataPods.find((pod) => pod.id === allow.dataPodId);
-          return dataPod
-            ? {
-                ...allow,
-                name: dataPod.podUniqueName,
-                policyOptionId: allowAgentPolicy?.id || "",
-                policyTypeId: allowAgentPolicy?.policyTypeId || "",
-              }
-            : allow;
-        }),
-        denyList: data.denyList.map((deny) => {
-          const dataPod = dataPods.find((pod) => pod.id === deny.dataPodId);
-          return dataPod
-            ? {
-                ...deny,
-                name: dataPod.podUniqueName,
-                policyOptionId: denyAgentPolicy?.id || "",
-                policyTypeId: denyAgentPolicy?.policyTypeId || "",
-              }
-            : deny;
-        }),
-      };
-      return updatedDataPods;
+    } catch (error) {
+      console.error("Error fetching deny policy options:", error);
     }
+
+    const allowAgentPolicy = allowPolicies?.data.find(
+        (policy) => policy.name === "ALLOW_DATA_POD_NAME"
+    );
+    const denyAgentPolicy = denyPolicies?.data.find(
+        (policy) => policy.name === "DENY_DATA_POD_NAME"
+    );
+
+    const updatedDataPods = {
+      ...data,
+      allowList: data.allowList.map((allow) => {
+        const dataPod = dataPods.find((pod) => pod.id === allow.dataPodId);
+        return dataPod
+            ? {
+              ...allow,
+              name: dataPod.podUniqueName,
+              policyOptionId: allowAgentPolicy?.id || "",
+              policyTypeId: allowAgentPolicy?.policyTypeId || "",
+            }
+            : allow;
+      }),
+      denyList: data.denyList.map((deny) => {
+        const dataPod = dataPods.find((pod) => pod.id === deny.dataPodId);
+        return dataPod
+            ? {
+              ...deny,
+              name: dataPod.podUniqueName,
+              policyOptionId: denyAgentPolicy?.id || "",
+              policyTypeId: denyAgentPolicy?.policyTypeId || "",
+            }
+            : deny;
+      }),
+    };
+    return updatedDataPods;
   };
 
   const handleFormSubmit = async (data) => {
-    console.log("data", data);
     const updatedData = await updateDataPod(data);
     setAgentData(updatedData);
     onSubmit();
@@ -234,12 +235,13 @@ const AgentInformation = ({
 
   const handleMenuItemClick = (agent) => {
     setSelectNewAgent(true);
-    setAgentData((prevData) => ({
-      ...prevData,
-      agentName: agent.agentName,
-      agentUserId: agent.userId,
-    }));
-    set;
+    setAgentData((prevData) => {
+      return {
+        ...prevData,
+        agentName: agent.agentName,
+        agentUserId: agent.userId,
+      }
+    });
     updateShallowQueryParams({ organizationId, agentId: agent.id });
   };
 

@@ -29,7 +29,7 @@ const AgentControl = () => {
   const userOrganizations = auth?.user?.organizations;
   const [activeOrganization, setActiveOrganization] = useState({});
   const [activeAgent, setActiveAgent] = useState({});
-  const [agentPolicies, setAgentPolicies] = useState({});
+  const [agentPolicies, setAgentPolicies] = useState([]);
   const [userAgents, setUserAgents] = useState([]);
   const [activeStep, setActiveStep] = useState(0);
 
@@ -59,7 +59,7 @@ const AgentControl = () => {
         if (error.response.status === 404) {
           setActiveOrganization({});
           setActiveAgent({});
-          setAgentPolicies({});
+          setAgentPolicies([]);
         }
       }
 
@@ -81,7 +81,7 @@ const AgentControl = () => {
   useEffect(() => {
     if (!agentId) {
       setActiveAgent({});
-      setAgentPolicies({});
+      setAgentPolicies([]);
     }
 
     const fetchAgent = async () => {
@@ -107,7 +107,7 @@ const AgentControl = () => {
         console.error("Error fetching Agent Policies:", error);
         if (error.response.status === 404) {
           setActiveAgent({});
-          setAgentPolicies({});
+          setAgentPolicies([]);
         }
       }
     };

@@ -30,7 +30,7 @@ const DataPodsControl = () => {
   const [userDataPods, setUserDataPods] = useState([]);
   const [activeOrganization, setActiveOrganization] = useState({});
   const [activeDataPod, setActiveDataPod] = useState({});
-  const [dataPodPolicies, setDataPodPolicies] = useState({});
+  const [dataPodPolicies, setDataPodPolicies] = useState([]);
   const [activeStep, setActiveStep] = useState(0);
 
   const storedToken = window.localStorage.getItem(
@@ -58,7 +58,7 @@ const DataPodsControl = () => {
         if (error.response.status === 404) {
           setActiveOrganization({});
           setActiveDataPod({});
-          setDataPodPolicies({});
+          setDataPodPolicies([]);
         }
       }
 
@@ -80,7 +80,7 @@ const DataPodsControl = () => {
   useEffect(() => {
     if (!dataPodId) {
       setActiveDataPod({});
-      setDataPodPolicies({});
+      setDataPodPolicies([]);
     }
 
     const fetchDataPod = async () => {
@@ -108,7 +108,7 @@ const DataPodsControl = () => {
         console.error("Error fetching data pod:", error);
         if (error.response.status === 404) {          
           setActiveAgent({});
-          setAgentPolicies({});
+          setAgentPolicies([]);
         }
       }
     };
