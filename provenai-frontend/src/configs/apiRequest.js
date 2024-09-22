@@ -73,6 +73,8 @@ export default {
 
   getProfile: gendoxUrl + "profile",
 
+  getGendoxUser: (userId) => `${gendoxUrl}users/${userId}`,
+  
   getPermissionOfUseAnalytics: () => `${provenUrl}permission-of-use-analytics`,
 
 

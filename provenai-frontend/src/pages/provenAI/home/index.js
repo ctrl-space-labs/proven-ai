@@ -11,7 +11,7 @@ import { fetchAnalytics } from "src/store/apps/permissionOfUseAnalytics/permissi
 import Typography from "@mui/material/Typography";
 import CardContent from "@mui/material/CardContent";
 import useRedirectOr404ForHome from "src/utils/useRedirectOr404ForHome";
-
+import { useAuth } from "src/hooks/useAuth";
 const StyledCardContent = styled(CardContent)(({ theme }) => ({
   paddingTop: `${theme.spacing(10)} !important`,
   paddingBottom: `${theme.spacing(8)} !important`,
@@ -22,6 +22,7 @@ const StyledCardContent = styled(CardContent)(({ theme }) => ({
 }));
 
 const ProvenAIHome = () => {
+  const auth = useAuth();
   const router = useRouter();
   const dispatch = useDispatch();
   const { organizationId } = router.query;
@@ -29,6 +30,7 @@ const ProvenAIHome = () => {
     authConfig.storageTokenKeyName
   );
   useRedirectOr404ForHome(organizationId);
+
 
   useEffect(() => {
     dispatch(

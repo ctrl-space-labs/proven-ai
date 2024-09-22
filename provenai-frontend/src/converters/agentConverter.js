@@ -4,12 +4,12 @@
  * @param {Object} agentData - The agent data to convert.
  * @returns {Object} The converted agent DTO.
  */
-const toAgentDTO = (agentData, organizationId, agentId) => {
+const toAgentDTO = (agentData, organizationId, agentId, agentUsername) => {
   return {
     id: agentId,
     organizationId: organizationId,
     agentName: agentData.agentName,
-    agentUsername: agentData.agentName,
+    agentUsername: agentUsername,    
     usagePolicies:[]
   };
 };

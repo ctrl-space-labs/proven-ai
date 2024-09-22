@@ -158,8 +158,10 @@ const AgentInformation = ({
       const activeAgentName =
         userAgents.find((agent) => agent.id === activeAgent.id)?.agentName ||
         "";
+      const agentUserId = userAgents.find((agent) => agent.id === activeAgent.id)?.userId || "";
+    
       setValue("agentName", activeAgentName);
-      setValue("agentUserId", activeAgent.userId);
+      setValue("agentUserId", agentUserId);
     }
   }, [activeAgent, userAgents, setValue]);
 
