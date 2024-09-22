@@ -6,7 +6,7 @@ import { useRouter } from "next/router";
 import {
   Box,
   IconButton,
-  Tooltip, 
+  Tooltip,
   Grid,
   Typography,
   FormControl,
@@ -125,7 +125,7 @@ const DataPodInformation = ({
         allowPolicies = await policyService.getPolicyOptions(
           "ALLOW_LIST",
           storedToken
-        );        
+        );
       } catch (error) {
         console.error("Error fetching allow policy options:", error);
       }
@@ -134,7 +134,7 @@ const DataPodInformation = ({
         denyPolicies = await policyService.getPolicyOptions(
           "DENY_LIST",
           storedToken
-        );        
+        );
       } catch (error) {
         console.error("Error fetching deny policy options:", error);
       }
@@ -233,15 +233,17 @@ const DataPodInformation = ({
                     {...field}
                     label="Data Pod"
                   >
-                    {userDataPods.map((dp) => (
-                      <MenuItem
-                        key={dp.id}
-                        value={dp.name}
-                        onClick={() => handleMenuItemClick(dp)}
-                      >
-                        {dp.name}
-                      </MenuItem>
-                    ))}
+                    {[...userDataPods] // Create a shallow copy to avoid mutating the original array
+                      .sort((a, b) => a.name.localeCompare(b.name))
+                      .map((dp) => (
+                        <MenuItem
+                          key={dp.id}
+                          value={dp.name}
+                          onClick={() => handleMenuItemClick(dp)}
+                        >
+                          {dp.name}
+                        </MenuItem>
+                      ))}
                   </Select>
                 )}
               />
@@ -260,23 +262,22 @@ const DataPodInformation = ({
 
         <Grid item xs={12}>
           <FormControl fullWidth>
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <Box sx={{ display: "flex", alignItems: "center" }}>
+              <Typography
+                variant="filled"
+                sx={{ fontWeight: 600, color: "text.primary" }}
+              >
+                For what purpose is this used?
+              </Typography>
 
-            <Typography
-              variant="filled"
-              sx={{ fontWeight: 600, color: "text.primary" }}
-            >
-              For what purpose is this used?
-            </Typography>
-
-            <Tooltip title="Select the purpose for which this data pod will be used. This helps categorize the data pod based on its intended usage.">
-             
-                <IconButton                  
-                >
-                  <Icon icon="mdi:information-slab-circle-outline" fontSize="inherit" />
+              <Tooltip title="Select the purpose for which this data pod will be used. This helps categorize the data pod based on its intended usage.">
+                <IconButton>
+                  <Icon
+                    icon="mdi:information-slab-circle-outline"
+                    fontSize="inherit"
+                  />
                 </IconButton>
-              
-            </Tooltip>
+              </Tooltip>
             </Box>
 
             <Controller
@@ -376,7 +377,9 @@ const DataPodInformation = ({
                     });
                     onChange(updatedValues);
                   }}
-                  options={agents.map((agent) => agent.agentName)}
+                  options={[...agents]
+                    .sort((a, b) => a.agentName.localeCompare(b.agentName)) 
+                    .map((agent) => agent.agentName)}
                   renderInput={(params) => (
                     <TextField
                       {...params}
@@ -461,7 +464,9 @@ const DataPodInformation = ({
                     });
                     onChange(updatedValues);
                   }}
-                  options={agents.map((agent) => agent.agentName)}
+                  options={[...agents]
+                    .sort((a, b) => a.agentName.localeCompare(b.agentName))
+                    .map((agent) => agent.agentName)}
                   renderInput={(params) => (
                     <TextField
                       {...params}

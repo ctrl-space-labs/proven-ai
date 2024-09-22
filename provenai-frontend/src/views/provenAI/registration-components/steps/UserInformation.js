@@ -188,15 +188,17 @@ const UserInformation = ({
                     {...field}
                     label="User Organization"
                   >
-                    {userOrganizations.map((org) => (
-                      <MenuItem
-                        key={org.id}
-                        value={org.name}
-                        onClick={() => handleMenuItemClick(org)}
-                      >
-                        {org.name}
-                      </MenuItem>
-                    ))}
+                    {[...userOrganizations] // Create a shallow copy to avoid mutating the original array
+                      .sort((a, b) => a.name.localeCompare(b.name))
+                      .map((org) => (
+                        <MenuItem
+                          key={org.id}
+                          value={org.name}
+                          onClick={() => handleMenuItemClick(org)}
+                        >
+                          {org.name}
+                        </MenuItem>
+                      ))}
                   </Select>
                 )}
               />
@@ -448,7 +450,7 @@ const UserInformation = ({
                 <Controller
                   name="country"
                   control={control}
-                  render={({ field: {value, onChange} }) => (
+                  render={({ field: { value, onChange } }) => (
                     <Autocomplete
                       id="autocomplete-countries"
                       options={countries}

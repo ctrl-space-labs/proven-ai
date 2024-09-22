@@ -60,6 +60,29 @@ const AgentControl = () => {
           setActiveOrganization({});
           setActiveAgent({});
           setAgentPolicies([]);
+          //          const matchingOrganization = auth.user.organizations.find(
+          //            (org) => org.id === organizationId
+          //          );
+          //
+          //          if (matchingOrganization) {
+          //            setActiveOrganization(matchingOrganization);
+          //            setregisteredData(false);
+          //            if (agentId ) {
+          //              const matchingAgent = matchingOrganization.projectAgents.find(
+          //                (agent) => agent.id === agentId
+          //              );
+          //              setActiveAgent(matchingAgent);
+          //              setregisteredData(false);
+          //
+          //            } else {
+          //              setActiveAgent({});
+          //            }
+          //          } else {
+          //            setActiveOrganization({});
+          //            setActiveAgent({});
+          //          }
+          //
+          //          setAgentPolicies([]);
         }
       }
 
@@ -75,14 +98,18 @@ const AgentControl = () => {
     if (organizationId) {
       fetchOrganization();
     }
-  }, [organizationId, storedToken]);  
-
+  }, [organizationId, storedToken]);
 
   useEffect(() => {
     if (!agentId) {
       setActiveAgent({});
       setAgentPolicies([]);
     }
+    //    if (!agentId || !activeOrganization?.id) {
+    //      setActiveAgent({});
+    //      setAgentPolicies([]);
+    //      return;
+    //    }
 
     const fetchAgent = async () => {
       try {
@@ -93,6 +120,20 @@ const AgentControl = () => {
         if (error.response.status === 404) {
           setActiveAgent({});
         }
+        //        if (activeOrganization?.projectAgents?.length > 0) {
+        //          const matchingAgents = activeOrganization.projectAgents.find(
+        //            (agent) => agent.id === agentId
+        //          );
+        //          if (matchingAgents) {
+        //            setActiveAgent(matchingAgents);
+        //            setregisteredData(false);
+        //
+        //          } else {
+        //            setActiveAgent({});
+        //          }
+        //        } else {
+        //          setActiveAgent({});
+        //        }
       }
     };
 

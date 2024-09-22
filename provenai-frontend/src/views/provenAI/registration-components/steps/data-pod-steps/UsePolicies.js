@@ -17,7 +17,7 @@ import {
 } from "@mui/material";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { dataUseSchema } from "src/utils/validationSchemas";
+// import { dataUseSchema } from "src/utils/validationSchemas";
 import policyService from "src/provenAI-sdk/policyService";
 import authConfig from "src/configs/auth";
 import Icon from "src/@core/components/icon";
@@ -47,7 +47,7 @@ const UsePolicy = ({
     formState: { errors },
   } = useForm({
     defaultValues: usePoliciesData,
-    resolver: yupResolver(dataUseSchema),
+    // resolver: yupResolver(dataUseSchema),
   }); 
 
   const handleFormSubmit = (data) => {

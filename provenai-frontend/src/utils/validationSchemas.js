@@ -97,10 +97,10 @@ export const dataPodSchema = yup.object().shape({
   allowList: listNotInOtherList('allowList', 'denyList', 'agentId'),
 });
 
-export const dataUseSchema = yup.object().shape({
-  attributionPolicies: yup.array().min(1, "At least one attribution policy is required").required("Attribution policy is required"),
-  compensationPolicies: yup.array().min(1, "At least one compensation policy is required").required("Compensation policy is required"),
-});
+// export const dataUseSchema = yup.object().shape({
+//   attributionPolicies: yup.array().min(1, "At least one attribution policy is required").required("Attribution policy is required"),
+//   compensationPolicies: yup.array().min(1, "At least one compensation policy is required").required("Compensation policy is required"),
+// });
 
 export const agentSchema = yup.object().shape({
   agentName: yup.string().required("Agent name is required"),
