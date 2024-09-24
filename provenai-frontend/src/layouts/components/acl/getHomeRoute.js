@@ -26,7 +26,7 @@ const getHomeRoute = role => {
   else {
     // Check if selectedOrganizationId and selectedProjectId are not null before constructing the URL
     if (selectedOrganizationId !== null) {
-      return `/provenAI/home?organizationId=${selectedOrganizationId}`
+      return `/provenAI/home/?organizationId=${selectedOrganizationId}`
     } else {
       // Return a default URL if selectedOrganizationId or selectedProjectId is null
       return '/provenAI/home'

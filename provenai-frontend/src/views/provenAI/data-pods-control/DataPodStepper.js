@@ -138,7 +138,7 @@ const DataPodStepper = ({
   };
 
   const refreshPage = () => {
-    const url = `/provenAI/data-pods-control?organizationId=${activeOrganization.id}&dataPodId=${activeDataPod.id}`;
+    const url = `/provenAI/data-pods-control/?organizationId=${activeOrganization.id}&dataPodId=${activeDataPod.id}`;
     router.reload(url);
   };
   const getVcOfferUrl = async () => {

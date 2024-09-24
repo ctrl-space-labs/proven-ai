@@ -41,7 +41,7 @@ const navigation = () => {
               return {
                 title: dataPod.podUniqueName,
                 icon: "mdi:server",
-                path: `/provenAI/data-pods-control?organizationId=${activeOrganization.id}&dataPodId=${dataPod.id}`,
+                path: `/provenAI/data-pods-control/?organizationId=${activeOrganization.id}&dataPodId=${dataPod.id}`,
                 itemId: dataPod.id,                
               };
             });
@@ -53,7 +53,7 @@ const navigation = () => {
               return {
                 title: agent.agentName,                
                 icon: "mdi:creation",
-                path: `/provenAI/agent-control?organizationId=${activeOrganization.id}&agentId=${agent.id}`,
+                path: `/provenAI/agent-control/?organizationId=${activeOrganization.id}&agentId=${agent.id}`,
                 itemId: agent.id,                
               };
             });

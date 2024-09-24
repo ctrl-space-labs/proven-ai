@@ -18,7 +18,7 @@ const useRedirectOr404ForHome = (organizationId) => {
       router.push("/404");
     } else if (!organizationId) {
       router.push(
-        `/provenAI/home?organizationId=${effectiveOrgId}`
+        `/provenAI/home/?organizationId=${effectiveOrgId}`
       );
     }
   }, [organizationId, router]);

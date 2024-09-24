@@ -78,10 +78,10 @@ const OrganizationsDropdown = ({ settings }) => {
 
       const newPath =
         router.pathname === "/provenAI/data-pods-control"
-          ? `/provenAI/data-pods-control?organizationId=${organization.id}`
+          ? `/provenAI/data-pods-control/?organizationId=${organization.id}`
           : router.pathname === "/provenAI/agent-control"
-          ? `/provenAI/agent-control?organizationId=${organization.id}`
-          : `/provenAI/home?organizationId=${organization.id}`;
+          ? `/provenAI/agent-control/?organizationId=${organization.id}`
+          : `/provenAI/home/?organizationId=${organization.id}`;
       router.push(newPath);
     },
     [dispatch, handleDropdownClose, router]
@@ -169,7 +169,7 @@ const OrganizationsDropdown = ({ settings }) => {
       >        
         {sortByField([...auth.user.provenOrgs], "name", activeOrganizationId)
           .map((organization) => {
-          const href = `/provenAI/home?organizationId=${organization.id}`;
+          const href = `/provenAI/home/?organizationId=${organization.id}`;
           return (
             <Link
               href={href}

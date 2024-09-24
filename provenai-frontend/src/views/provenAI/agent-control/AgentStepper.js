@@ -126,7 +126,7 @@ const AgentStepper = ({
   };
 
   const refreshPage = () => {
-    const url = `/provenAI/agent-control?organizationId=${organizationId}&agentId=${agentId}`;
+    const url = `/provenAI/agent-control/?organizationId=${organizationId}&agentId=${agentId}`;
     router.reload(url);
   };
 

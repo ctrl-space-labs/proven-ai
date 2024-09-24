@@ -30,7 +30,7 @@ const NewDataPodButton = () => {
   return (
     <Box mt={3} mb={3}> {/* Add margin top and bottom */}
       <Tooltip title="New DataPod">
-        <Link href={`/provenAI/data-pods-control?organizationId=${organizationId}`} passHref>
+        <Link href={`/provenAI/data-pods-control/?organizationId=${organizationId}`} passHref>
           <StyledButton            
             variant="outlined"
             startIcon={<Icon icon="mdi:plus" />}
@@ -55,7 +55,7 @@ const NewAgentButton = () => {
   return (
     <Box mt={3} mb={3}> {/* Add margin top and bottom */}
       <Tooltip title="New Agent">
-        <Link href={`/provenAI/agent-control?organizationId=${organizationId}`} passHref>
+        <Link href={`/provenAI/agent-control/?organizationId=${organizationId}`} passHref>
           <StyledButton            
             variant="outlined"
             startIcon={<Icon icon="mdi:plus" />}
