@@ -44,7 +44,7 @@ public interface DataPodRepository extends JpaRepository<DataPod, UUID>, Queryds
             "             AND ap.value = CAST(:agentId AS text)) AS in_allow_list \n" +
             "ON dp.id = in_allow_list.data_pod_id \n" +
             "WHERE (match_usage_policies.data_pod_id IS NOT NULL \n" +
-            "   OR in_allow_list.data_pod_id IS NOT NULL) and dp.is_disabled = false",
+            "   OR in_allow_list.data_pod_id IS NOT NULL) and dp.is_disabled IS NOT TRUE",
             nativeQuery = true)
     List<DataPod> findAccessibleDataPodsForAgent(@Param("agentId") UUID agentId);
 }
