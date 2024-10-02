@@ -18,6 +18,7 @@ import id.walt.credentials.vc.vcs.W3CVC;
 import jakarta.validation.Valid;
 import org.json.JSONException;
 import org.keycloak.representations.AccessTokenResponse;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -42,6 +43,8 @@ public class AgentsController implements AgentsControllerSpec {
 
     private AgentPurposeOfUsePoliciesService agentPurposeOfUsePoliciesService;
     private AgentPurposeOfUsePoliciesConverter agentPurposeOfUsePoliciesConverter;
+
+    private  static final Logger logger = org.slf4j.LoggerFactory.getLogger(AgentsController.class);
 
     private SecurityUtils securityUtils;
 
@@ -176,12 +179,21 @@ public class AgentsController implements AgentsControllerSpec {
 
         if (verificationResult.equals(Boolean.TRUE)) {
             String agentVcJwt = agentService.getAgentVcJwt(vpToken);
+
+            logger.debug("Received Agent VC jwt " );
+
+
             Agent agent = agentService.getAllAgents(AgentCriteria
                             .builder()
                             .agentVcJwt(agentVcJwt)
                             .build(),
                     Pageable.unpaged()).getContent().get(0);
-            return agentService.getAgentAccessToken(agent.getAgentUsername(), scope);
+            String agentUsername = agent.getAgentUsername();
+
+            logger.debug("Agent username: " + agentUsername);
+
+            return agentService.getAgentAccessToken(agentUsername, scope);
+
         } else {
             throw new ProvenAiException("VP_VERIFICATION_FAILED", "VP Verification failed", HttpStatus.UNAUTHORIZED);
         }
