@@ -70,5 +70,5 @@ you can run the frontend using the following command:
 ```shell
 $ cd ./proven-ai/provenai-frontend
 $ npm install
-$ yarn start
+$ yarn dev
 ```
