@@ -67,7 +67,7 @@ cd ./provenai-sdk/provenai-sdk-docker-compose
 docker-compose build
 docker-compose up
 ```
-#### Step 2: Run the provenAI backend.
+#### Step 2: Run the provenAI Backend.
 After the docker-compose is set up you can run the provenAI backend:
 
 ```bash
