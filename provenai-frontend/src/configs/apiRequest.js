@@ -10,7 +10,7 @@ export default {
 
   getOrganizationsByCriteria: (organizationIdIn) => {
     const organizationIds = organizationIdIn.join(",");    
-    return `${provenUrl}organizations/?organizationIdIn=${organizationIds}`;
+    return `${provenUrl}organizations?organizationIdIn=${organizationIds}`;
   },
   
 
