@@ -15,7 +15,7 @@ The mandatory Environment Variables are:
 | `ISSUER_PRIVATE_JWK`      | `{"kty":"EC","d":"***","crv":"P-256","kid":"***","x":"***","y":"***"}` |
 | `KEYCLOAK_CLIENT_ID`      | `gendox-*****`                                             |
 | `KEYCLOAK_CLIENT_SECRET`  | `**********`                                               |
-| `spring.profiles.active`  | `local`                                                    |
+| `spring.profiles.active`  | `dev`                                                    |
 
 
 
@@ -43,7 +43,7 @@ The mandatory Environment Variables are:
 | `KEYCLOAK_CLIENT_ID`      | `gendox-*****`                                             |
 | `KEYCLOAK_CLIENT_SECRET`  | `**********`                                               |
 | `DISCORD_TOKEN`           | `**********`                                                    |
-| `spring.profiles.active`  | `local, openai-integration`                                                    |
+| `spring.profiles.active`  | `dev, openai-integration`                                                    |
 
-
+The `spring.profiles.active` defines the enviroment. There are three environments set: local, dev, prod.
 
