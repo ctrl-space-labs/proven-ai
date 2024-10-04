@@ -133,6 +133,7 @@ const config = {
         copyright: `Copyright © ${new Date().getFullYear()} Ctrl+Space Labs.`,
       },
       prism: {
+        additionalLanguages: ['java'],
         theme: prismThemes.github,
         darkTheme: prismThemes.dracula,
       },
