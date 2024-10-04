@@ -54,6 +54,24 @@ const getDataPodsByIdIn = async (dataPodIdIn, storedToken) => {
 };
 
 /**
+ * Get all public data pods
+ * @param storedToken
+ * @returns {Promise<axios.AxiosResponse<DataPods>>} 
+ */
+const getPublicDataPods = async (storedToken) => {
+  return axios.get(apiRequests.publicDataPods(), {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + storedToken,
+    },
+    params: {
+      fetchAll: true,
+    },
+  });
+}
+
+
+/**
  * Get data pod by id
  * @param dataPodId
  * @param storedToken
@@ -105,5 +123,6 @@ export default {
   getAclPoliciesByDataPod,
   getDataPodById,
   createDataPod,
-  getAllDataPods
+  getAllDataPods,
+  getPublicDataPods
 };

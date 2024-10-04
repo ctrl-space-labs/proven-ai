@@ -24,6 +24,8 @@ public class DataPodCriteria {
         private Policy policy;
         private List<Policy> policyIn;
         private List<UUID> dataPodIdIn = new ArrayList<>();;
+        private boolean fetchAll;
+
 
 
 }

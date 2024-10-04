@@ -139,9 +139,18 @@ const AgentInformation = ({
       }
     };
 
+    // const fetchDataPods = async () => {
+    //   try {
+    //     const dataPods = await dataPodsService.getAllDataPods(storedToken);
+    //     setDataPods(dataPods.data.content);
+    //   } catch (error) {
+    //     console.error("Error fetching data pods:", error);
+    //   }
+    // };
+
     const fetchDataPods = async () => {
       try {
-        const dataPods = await dataPodsService.getAllDataPods(storedToken);
+        const dataPods = await dataPodsService.getPublicDataPods(storedToken);
         setDataPods(dataPods.data.content);
       } catch (error) {
         console.error("Error fetching data pods:", error);
