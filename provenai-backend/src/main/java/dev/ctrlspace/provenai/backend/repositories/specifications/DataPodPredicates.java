@@ -21,6 +21,12 @@ public class DataPodPredicates {
     private static QAclPolicies qAclPolicies = QAclPolicies.aclPolicies;
 
     public static Predicate build(DataPodCriteria criteria) {
+
+        // If fetchAll is true, return a predicate that always evaluates to true
+        if (criteria.isFetchAll()) {
+            return qDataPod.isNotNull();
+        }
+
         Predicate predicate = ExpressionUtils.allOf(
 
 
