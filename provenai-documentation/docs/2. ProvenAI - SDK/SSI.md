@@ -41,7 +41,7 @@ public class Main {
     }
 }
 ```
-The `JWKKey.generate()` method from JWKkEY creates a new key pair based on a given KeyType and character length. In the `KeyCreation` class also the `JWKKeyMetadata()` is defined. The  `JWKKeyMetadata()` is an instance of `JwkKeyMeta` and receives as input the `keyId` and the key `characterLength`. The supported keyId values as provided in the waltid crypto are: `JwkKey`, `TSEKey` and `OCIKey`. In the context of provenAI `JwkKey` keys are issued. The `JWKKeyMetadata()`  is defined in the `KeyCreation` class as:
+The `generateKey()` method creates a new key pair based on a given KeyType and character length. In the `KeyCreation` class also the `JWKKeyMetadata()` is defined. The  `JWKKeyMetadata()` is an instance of `JwkKeyMeta` and receives as input the `keyId` and the key `characterLength`. The supported keyId values as provided in the waltid crypto are: `JwkKey`, `TSEKey` and `OCIKey`. In the context of provenAI `JwkKey` keys are issued. To generate the key the method generateBlocking  with inputs the keyType and the `JwkKeyMetadata` is used from waltID's `JWKkey` kotlin class. 
 
 ```java
 JwkKeyMeta metadata = new JwkKeyMeta("JWKKey",characterLength);
@@ -131,7 +131,7 @@ import id.walt.crypto.keys.jwk.JWKKey;
 public class Main {
     public static void main(String[] args) {
         DidIssuer didIssuer = new DidIssuer();
-        JWKKey jwkKey = JWKKey.generate(KeyType.RSA, JWKKeyMetadata());
+        JWKKey jwkKey = KeyCreation.generateKey(KeyType.RSA, characterLength);
         DidResult didResult = didIssuer.createDidFromKey(KeyType.RSA, jwkKey);
         
         System.out.println("Created DID: " + didResult.getDid());
@@ -139,11 +139,10 @@ public class Main {
 }
 ```
 
-The `JWKKey.generate()` method from JWKkEY creates a new key pair based on a given KeyType and `JWKKeyMetadata()`. The method `createdDidFromKey()` from DidIssuer creates a DID from the generated key (`jwkKey`) and the provided KeyType. The object returned is a `DidResult`.
+After generating a key we can issue the DID geenrated from the key. The method `createdDidFromKey()` from `DidIssuer`. It creates a DID from the generated key (`jwkKey`) and the provided `KeyType`. The object returned is a `DidResult`. The `DidKeyCreateOptions` object must be initialized, tahat defines the parameters for the DID created. The necessary inputs are the `keyType` and the boolean `useJwkJcsPub`. If the `useJwkJcsPub` flag is set to true, it applies the EBSI-specific jwk_jcs-pub encoding during the resolution process. To generate the DID, the method `registerByKey` is used from `DidService` The inputs needed is the generation method, dependent on the key provided, the key JWK, the `DidKeyCreateOptions` and a continuation object for kotlin coroutines. In the contect of provenAI the method is se to `"key"`.
 
-The supported key types are: `RSA`, `ECDSA_SECP256K1`, `ECDSA_SECP256R1`, `EDDSA_ED25519`.
 
-- **createDidFromAutoKey**: This method creates a Decentralized Identifier (DID) using the did:key method with a key that is generated internally. You specify the key type (e.g., RSA, Ed25519, secp256k1) and the method handles the key creation.
+- **createDidFromAutoKey**: This method creates a Decentralized Identifier (DID) using the did:key method with a key that is generated internally. You specify the key type and the method handles the key creation.
 
 
 ```java
@@ -158,6 +157,8 @@ public class Main {
     }
 }
 ```
+The method `createdDidFromKey()` from `DidIssuer`. It creates a DID from the generated key (`jwkKey`) and the provided `KeyType`. The object returned is a `DidResult`. The `DidKeyCreateOptions` object must be initialized, tahat defines the parameters for the DID created. The necessary inputs are the `keyType` and the boolean `useJwkJcsPub`. If the `useJwkJcsPub` flag is set to true, it applies the EBSI-specific jwk_jcs-pub encoding during the resolution process. To generate the DID, the method `registerByKey` is used from `DidService` The inputs needed is the generation method, dependent on the key provided, the key JWK, the `DidKeyCreateOptions` and a continuation object for kotlin coroutines. In the contect of provenAI the method is se to `"key"`.
+
 
 - **createDidFromWeb**
 ```java
