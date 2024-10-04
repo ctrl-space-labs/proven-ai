@@ -92,7 +92,7 @@ export const userSchema = yup.object().shape({
 
 export const dataPodSchema = yup.object().shape({
   dataPodName: yup.string().required("Data pod name is required"),
-  agentPurpose: yup.array().min(1, "At least one purpose is required").required("Purpose is required"),
+  // agentPurpose: yup.array().min(1, "At least one purpose is required").required("Purpose is required"),
   denyList: listNotInOtherList('denyList', 'allowList', 'agentId'),
   allowList: listNotInOtherList('allowList', 'denyList', 'agentId'),
 });
@@ -104,7 +104,7 @@ export const dataPodSchema = yup.object().shape({
 
 export const agentSchema = yup.object().shape({
   agentName: yup.string().required("Agent name is required"),
-  agentPurpose: yup.array().min(1, "At least one purpose is required").required("Purpose is required"),
+  // agentPurpose: yup.array().min(1, "At least one purpose is required").required("Purpose is required"),
   compensationType: yup.string().required("Compensation type is required"),
   
   
