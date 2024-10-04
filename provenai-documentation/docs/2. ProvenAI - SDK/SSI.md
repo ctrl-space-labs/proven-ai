@@ -160,3 +160,29 @@ public class Main {
 ```
 
 - **createDidFromWeb**
+```java
+public class Main {
+    public static void main(String[] args) {
+        DidIssuer didIssuer = new DidIssuer();
+        DidResult didResult = didIssuer.createDidFromWeb("example.com", "/did/doc", KeyType.RSA);
+        
+        System.out.println("Created DID: " + didResult.getDid());
+    }
+}
+
+```
+
+```java
+import id.walt.crypto.keys.KeyType;
+import id.walt.crypto.keys.jwk.JWKKey;
+
+public class Main {
+    public static void main(String[] args) {
+        DidIssuer didIssuer = new DidIssuer();
+        JWKKey jwkKey = JWKKey.generate(KeyType.RSA, JWKKeyMetadata());
+        DidResult didResult = didIssuer.resolveKeyDidToKey(KeyType.RSA, true, jwkKey);
+        
+        System.out.println("Resolved Key DID: " + didResult.getDid());
+    }
+}
+```
