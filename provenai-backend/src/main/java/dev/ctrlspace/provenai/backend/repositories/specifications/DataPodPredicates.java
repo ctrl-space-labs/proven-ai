@@ -26,8 +26,6 @@ public class DataPodPredicates {
 
                 organizationId(criteria.getOrganizationId()),
                 dataPodUniqueName(criteria.getPodUniqueName()),
-//                allowAgentId(criteria.getAllowAgentId()),
-//                denyAgentId(criteria.getDenyAgentId()),
                 policy(criteria.getPolicy()),
                 policyIn(criteria.getPolicyIn()),
                 dataPodIdIn(criteria.getDataPodIdIn())  // Include new criterion
