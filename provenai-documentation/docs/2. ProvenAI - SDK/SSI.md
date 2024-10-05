@@ -173,21 +173,6 @@ public class Main {
 ```
 The method `createDidFromWeb()` from `DidIssuer`. It creates a DID from the `domain` that serves the did document and the `path` it is located. The object returned is a `DidResult`. The `DidWebCreateOptions` object must be initialized, tahat defines the parameters for the DID created. The necessary inputs are the `domain`, the `path` and the `KeyType`. To generate the DID, the method `registerBlocking` is used from `DidService` The input needed is the `DidWebCreateOptions`.
 
-```java
-import id.walt.crypto.keys.KeyType;
-import id.walt.crypto.keys.jwk.JWKKey;
-
-public class Main {
-    public static void main(String[] args) {
-        DidIssuer didIssuer = new DidIssuer();
-        JWKKey jwkKey = JWKKey.generate(KeyType.RSA, JWKKeyMetadata());
-        DidResult didResult = didIssuer.resolveKeyDidToKey(KeyType.RSA, true, jwkKey);
-        
-        System.out.println("Resolved Key DID: " + didResult.getDid());
-    }
-}
-```
-
 - **resolveKeyDidToKey**: This method resolves a key-based DID to its key. This method accepts a key type and resolves the given JSON Web Key (JWK) to its associated DID.
 
 ```java
@@ -232,8 +217,97 @@ DidIssuer didIssuer = new DidIssuer();
         System.out.println("Resolved Web DID: " + didResult.getDid());
     }
 }
-
-
 ```
 
 After generating a key we can resolve the DID generated to that key. The method used is `resolveWebDidToKey()` from `DidIssuer`. It resolves a DID from the generated key (`jwkKey`), the provided `domain` and `path`. The object returned is a `DidResult`. The `DidWebCreateOptions` object must be initialized. To resolve the DID, the method `createByKeyBlocking` is used from `LocalRegistrar` The inputs needed is the generation method, dependent on the key provided, the key JWK, the `DidWebCreateOptions` and they key JWK.
+
+#### ProvenAIIssuer
+
+#### VerifiableCredentialBuilder
+
+```java
+import id.walt.credentials.vc.vcs.W3CVC;
+import id.walt.crypto.keys.JWKKey;
+import id.walt.crypto.keys.KeyType;
+import kotlin.Pair;
+import kotlinx.serialization.json.JsonElement;
+import kotlinx.serialization.json.JsonObject;
+import kotlinx.serialization.json.JsonPrimitive;
+
+import java.time.Duration;
+import java.util.HashMap;
+import java.util.Map;
+
+public class Main {
+    public static void main(String[] args) {
+        // Initialize DidIssuer to generate DID for issuer and subject
+        DidIssuer didIssuer = new DidIssuer();
+
+        // Generate a JWK key for the issuer
+        JWKKey issuerKey = KeyCreation.generateKey(KeyType.RSA, 2048);
+        DidResult issuerDidResult = didIssuer.createDidFromKey(KeyType.RSA, issuerKey);
+        String issuerDid = issuerDidResult.getDid();  // Get the DID of the issuer
+
+        // Generate a JWK key for the subject
+        JWKKey subjectKey = KeyCreation.generateKey(KeyType.RSA, 2048);
+        DidResult subjectDidResult = didIssuer.createDidFromKey(KeyType.RSA, subjectKey);
+        String subjectDid = subjectDidResult.getDid();  // Get the DID of the subject
+
+        // Output the generated DIDs
+        System.out.println("Issuer DID: " + issuerDid);
+        System.out.println("Subject DID: " + subjectDid);
+
+        // Initialize the verifiable credential builder
+        VerifiableCredentialBuilder vcBuilder = new VerifiableCredentialBuilder();
+
+        // Add context (default context: "https://www.w3.org/2018/credentials/v1")
+        vcBuilder.addContext("https://www.w3.org/2018/credentials/v1");
+
+        // Add types to the verifiable credential
+        vcBuilder.addType("VerifiableCredential");
+        vcBuilder.addType("EBSILegalEntityVerifiableID");
+
+        // Set the credential ID
+        vcBuilder.setCredentialId("urn:uuid:12345678-abcd-1234-abcd-1234567890ab");
+
+        // Set the issuer's DID
+        vcBuilder.setIssuerDid(issuerDid);
+
+        // Set the validity period
+        vcBuilder.validFromNow();  // Valid from now
+        vcBuilder.validFor(Duration.ofDays(365));  // Valid for 1 year
+
+        // Define the credential subject (example data)
+        JsonObject subjectData = new JsonObject(Map.of(
+            "id", new JsonPrimitive(subjectDid),  // Using the generated subject DID
+            "legalName", new JsonPrimitive("Example Corp")
+        ));
+        vcBuilder.credentialSubject(subjectData);
+
+        // Set the subject's DID
+        vcBuilder.setSubjectDid(subjectDid);
+
+        // Add extra data to the credential
+        vcBuilder.useData(new Pair<>("someKey", new JsonPrimitive("someValue")));
+
+        // Build the verifiable credential
+        W3CVC vc = vcBuilder.buildCredential();
+
+        // Sign the verifiable credential
+        Map<String, String> additionalJwtHeaders = new HashMap<>();  // Additional JWT headers
+        Map<String, JsonElement> additionalJwtOptions = new HashMap<>();  // Additional JWT options
+
+        Object signedVc = vcBuilder.signCredential(
+            vc, 
+            issuerKey,  // Use the issuer's key for signing
+            issuerDid,  // Issuer DID
+            subjectDid,  // Subject DID
+            additionalJwtHeaders, 
+            additionalJwtOptions
+        );
+
+        // Output the signed verifiable credential
+        System.out.println("Signed Verifiable Credential: " + signedVc.toString());
+    }
+}
+```
