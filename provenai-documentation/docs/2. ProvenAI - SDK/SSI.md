@@ -139,8 +139,7 @@ public class Main {
 }
 ```
 
-After generating a key we can issue the DID geenrated from the key. The method `createdDidFromKey()` from `DidIssuer`. It creates a DID from the generated key (`jwkKey`) and the provided `KeyType`. The object returned is a `DidResult`. The `DidKeyCreateOptions` object must be initialized, tahat defines the parameters for the DID created. The necessary inputs are the `keyType` and the boolean `useJwkJcsPub`. If the `useJwkJcsPub` flag is set to true, it applies the EBSI-specific jwk_jcs-pub encoding during the resolution process. To generate the DID, the method `registerByKey` is used from `DidService` The inputs needed is the generation method, dependent on the key provided, the key JWK, the `DidKeyCreateOptions` and a continuation object for kotlin coroutines. In the contect of provenAI the method is se to `"key"`.
-
+After generating a key we can issue the DID generated from the key. The method `createdDidFromKey()` from `DidIssuer`. It creates a DID from the generated key (`jwkKey`) and the provided `KeyType`. The object returned is a `DidResult`. The `DidKeyCreateOptions` object must be initialized, tahat defines the parameters for the DID created. The necessary inputs are the `keyType` and the boolean `useJwkJcsPub`. If the `useJwkJcsPub` flag is set to true, it applies the EBSI-specific jwk_jcs-pub encoding during the resolution process. To generate the DID, the method `registerByKey` is used from `DidService` The inputs needed is the generation method, dependent on the key provided, the key JWK, the `DidKeyCreateOptions` and a continuation object for kotlin coroutines. In the contect of provenAI the method is se to `"key"`.
 
 - **createDidFromAutoKey**: This method creates a Decentralized Identifier (DID) using the did:key method with a key that is generated internally. You specify the key type and the method handles the key creation.
 
@@ -172,6 +171,7 @@ public class Main {
 }
 
 ```
+The method `createDidFromWeb()` from `DidIssuer`. It creates a DID from the `domain` that serves the did document and the `path` it is located. The object returned is a `DidResult`. The `DidWebCreateOptions` object must be initialized, tahat defines the parameters for the DID created. The necessary inputs are the `domain`, the `path` and the `KeyType`. To generate the DID, the method `registerBlocking` is used from `DidService` The input needed is the `DidWebCreateOptions`.
 
 ```java
 import id.walt.crypto.keys.KeyType;
@@ -187,3 +187,53 @@ public class Main {
     }
 }
 ```
+
+- **resolveKeyDidToKey**: This method resolves a key-based DID to its key. This method accepts a key type and resolves the given JSON Web Key (JWK) to its associated DID.
+
+```java
+import id.walt.crypto.keys.KeyType;
+import id.walt.crypto.keys.jwk.JWKKey;
+
+public class Main {
+    public static void main(String[] args) {
+
+        DidIssuer didIssuer = new DidIssuer();
+        
+        // Generate a JWKKey
+        JWKKey jwkKey = KeyCreation.generateKey(KeyType.secp256k1, characterLength);
+
+        DidResult didResult = didIssuer.resolveKeyDidToKey(KeyType.secp256k1, false, jwkKey);
+
+        System.out.println("Resolved Key DID: " + didResult.getDid());
+    }
+}
+
+```
+
+After generating a key we can resolve the DID generated to that key. The method used is `resolveKeyDidToKey()` from `DidIssuer`. It resolves a DID from the generated key (`jwkKey`) and the provided `KeyType` and the flag `useJwkJcsPub`. The object returned is a `DidResult`. The `DidKeyCreateOptions` object must be initialized. The necessary inputs are the `keyType` and the boolean `useJwkJcsPub`. To resolve the DID, the method `createByKeyBlocking` is used from `LocalRegistrar` The inputs needed is the generation method, dependent on the key provided, the key JWK, the `DidKeyCreateOptions` and they key JWK.
+
+- **resolveWebDidToKey**: This method resolves a web-based DID to its key and resolves the given JSON Web Key (JWK) to its associated DID.
+
+```java
+import id.walt.crypto.keys.KeyType;
+import id.walt.crypto.keys.jwk.JWKKey;
+
+public class Main {
+    public static void main(String[] args) {
+
+DidIssuer didIssuer = new DidIssuer();
+        
+        JWKKey jwkKey = KeyCreation.generateKey(KeyType.secp256k1, characterLength);
+
+        // Resolve the DID to the key using web-based DID
+        DidResult didResult = didIssuer.resolveWebDidToKey(KeyType.secp256k1, "example.com", "/did-path", jwkKey);
+
+        // Output the resolved Web DID
+        System.out.println("Resolved Web DID: " + didResult.getDid());
+    }
+}
+
+
+```
+
+After generating a key we can resolve the DID generated to that key. The method used is `resolveWebDidToKey()` from `DidIssuer`. It resolves a DID from the generated key (`jwkKey`), the provided `domain` and `path`. The object returned is a `DidResult`. The `DidWebCreateOptions` object must be initialized. To resolve the DID, the method `createByKeyBlocking` is used from `LocalRegistrar` The inputs needed is the generation method, dependent on the key provided, the key JWK, the `DidWebCreateOptions` and they key JWK.
