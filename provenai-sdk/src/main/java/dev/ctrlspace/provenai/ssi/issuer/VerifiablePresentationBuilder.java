@@ -40,6 +40,9 @@ public class VerifiablePresentationBuilder {
         presentationBuilder.setDid(did);
     }
 
+    /**
+     * Sets the presentation id to a UUID.
+     */
 
     public void setPresentationId() {
         presentationBuilder.setPresentationId("urn:uuid:" + UUID.randomUUID().toString());
@@ -75,6 +78,11 @@ public class VerifiablePresentationBuilder {
         return presentationBuilder.buildPresentationJson();
     }
 
+    /**
+     * Builds the verifiable presentation JSON and signs it with the given key.
+     * @param subjectKey The key to sign the verifiable presentation with.
+     * @return The signed verifiable presentation JSON.
+     */
     public Object buildAndSign(Key subjectKey) {
         // Call the buildAndSign method on the presentationBuilder instance
         return presentationBuilder.buildAndSignBlocking(subjectKey);

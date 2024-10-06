@@ -225,6 +225,9 @@ After generating a key we can resolve the DID generated to that key. The method 
 
 #### VerifiableCredentialBuilder
 
+The `VerifiableCredentialBuilder` class provides a flexible way to create verifiable credentials in compliance with the W3C Verifiable Credentials (VC) standard. It allows users to define the context, types, issuer, validity, subject, and other properties of the credential, and provides a method to sign the credential with a key. To generate the verifiable credential this class wraps the methods developed in WaltID's kotlin class `CredentialBuilder`. Hence we need to initialize the credential builder setting the `credentialBuilderType` to `W3CV11CredentialBuilder`, in the `VerifiableCredentialBuilder` constructor. An example implementation is presented below.
+
+
 ```java
 import id.walt.credentials.vc.vcs.W3CVC;
 import id.walt.crypto.keys.JWKKey;
@@ -244,23 +247,22 @@ public class Main {
         DidIssuer didIssuer = new DidIssuer();
 
         // Generate a JWK key for the issuer
-        JWKKey issuerKey = KeyCreation.generateKey(KeyType.RSA, 2048);
-        DidResult issuerDidResult = didIssuer.createDidFromKey(KeyType.RSA, issuerKey);
+        JWKKey issuerKey = KeyCreation.generateKey(KeyType.secp256k1, 2048);
+        DidResult issuerDidResult = didIssuer.createDidFromKey(KeyType.secp256k1, issuerKey);
         String issuerDid = issuerDidResult.getDid();  // Get the DID of the issuer
 
         // Generate a JWK key for the subject
-        JWKKey subjectKey = KeyCreation.generateKey(KeyType.RSA, 2048);
-        DidResult subjectDidResult = didIssuer.createDidFromKey(KeyType.RSA, subjectKey);
+        JWKKey subjectKey = KeyCreation.generateKey(KeyType.secp256k1, 2048);
+        DidResult subjectDidResult = didIssuer.createDidFromKey(KeyType.secp256k1, subjectKey);
         String subjectDid = subjectDidResult.getDid();  // Get the DID of the subject
 
-        // Output the generated DIDs
         System.out.println("Issuer DID: " + issuerDid);
         System.out.println("Subject DID: " + subjectDid);
 
         // Initialize the verifiable credential builder
         VerifiableCredentialBuilder vcBuilder = new VerifiableCredentialBuilder();
 
-        // Add context (default context: "https://www.w3.org/2018/credentials/v1")
+        // Add context 
         vcBuilder.addContext("https://www.w3.org/2018/credentials/v1");
 
         // Add types to the verifiable credential
@@ -274,12 +276,12 @@ public class Main {
         vcBuilder.setIssuerDid(issuerDid);
 
         // Set the validity period
-        vcBuilder.validFromNow();  // Valid from now
-        vcBuilder.validFor(Duration.ofDays(365));  // Valid for 1 year
+        vcBuilder.validFromNow();  
+        vcBuilder.validFor(Duration.ofDays(365));  
 
-        // Define the credential subject (example data)
+        // Define the credential subject 
         JsonObject subjectData = new JsonObject(Map.of(
-            "id", new JsonPrimitive(subjectDid),  // Using the generated subject DID
+            "id", new JsonPrimitive(subjectDid),  
             "legalName", new JsonPrimitive("Example Corp")
         ));
         vcBuilder.credentialSubject(subjectData);
@@ -311,3 +313,137 @@ public class Main {
     }
 }
 ```
+#### VerifiablePresentationBuilder
+
+The `VerifiablePresentationBuilder` class provides a flexible way to create a verifiable credential(s) presentation in compliance with the W3C standard. It allows users to define the subject, the nonce generation method the credential and the selection of how many and which credentials to include in the presentation. It and provides a method to sign the credential with a key. To generate the verifiable presentation this class wraps the methods developed in WaltID's kotlin class `PresentationBuilder`. Hence we need to initialize the presentation builder, in the `VerifiablePresentationBuilder` constructor. An example implementation is presented below.
+
+```java
+import kotlinx.serialization.json.JsonElement;
+import kotlinx.serialization.json.JsonPrimitive;
+import id.walt.crypto.keys.JWKKey;
+
+public class Main {
+    public static void main(String[] args) {
+        
+        Object signedVc = vcBuilder.signCredential(
+            vc, 
+            issuerKey,  // Use the issuer's key for signing
+            issuerDid,  // Issuer DID
+            subjectDid,  // Subject DID
+            additionalJwtHeaders, 
+            additionalJwtOptions
+        );
+
+        // Generate a JWK key for the subject
+        JWKKey subjectKey = KeyCreation.generateKey(KeyType.secp256k1, 2048);
+
+        DidResult subjectDidResult = didIssuer.createDidFromKey(KeyType.secp256k1, subjectKey);
+
+        String subjectDid = subjectDidResult.getDid();  // Get the DID of the subject
+
+        // Set Subject DID
+        vpBuilder.setDid(subjectDid);
+
+        // Set unique presentation ID
+        vpBuilder.setPresentationId();
+
+        // Set a nonce for the presentation (example)
+        vpBuilder.setNonce("random_nonce");
+
+        // Add the signed Verifiable Credential (VC) to the Verifiable Presentation (VP)
+        vpBuilder.addCredential(new JsonPrimitive(signedVc.toString()));
+
+        // Build the Verifiable Presentation JSON
+        JsonElement presentationJson = vpBuilder.buildPresentationJson();
+        System.out.println("Verifiable Presentation JSON: " + presentationJson.toString());
+
+        // Sign the Verifiable Presentation (VP) with the subject's key
+        Object signedPresentation = vpBuilder.buildAndSign(subjectKey);
+        System.out.println("Signed Verifiable Presentation: " + signedPresentation.toString());
+    }
+}
+
+```
+
+### Verifiable Credential Model 
+This section provides documentation for the core classes representing Verifiable Credentials (VC) as defined by the W3C Verifiable Credentials Data Model. he `CredentialSubject` interface defines the structure for the credentialSubject part of any Verifiable Credential. It includes an abstract method `getId()` which must be implemented by any specific credential subject. The `VerifiableCredential` class is a generic class used to define the structure of a Verifiable Credential. It is parameterized with `T`, where `T` must be a class that extends the `CredentialSubject` interface. 
+
+#### Schemas
+
+This package defines schemas for Verifiable Credentials (VCs) issued in the provenAI context, natural person, legal entity, data ownership, and AI agent. These JSON schemas are used to standardize how information is represented in verifiable credentials within decentralized and verifiable systems, such as those leveraging Distributed Ledger Technology (DLT) or Decentralized Identifiers (DIDs). Each schema complies with the JSON Schema Draft 2020-12 standard.
+
+1. `natural-person.schema.json`
+
+    Purpose: Defines a Verifiable Credential (VC) for a natural person.
+    Required Fields:
+        id: Unique identifier of the credential subject.
+        familyName: The family name of the subject.
+        firstName: The first name of the subject.
+        dateOfBirth: Date of birth (formatted as date).
+
+2. `legal-entity.schema.json`
+
+    Purpose: Defines a Verifiable Credential for legal entities, such as businesses or organizations.
+    Required Fields:
+        id: Unique identifier of the credential subject.
+        legalName: Official legal name of the entity.
+        domaiName: Domain name of Credential Subject.
+
+3. `data-ownership.schema.json`
+
+    Purpose: Describes a certificate that verifies the ownership of data by a data pod.
+    Required Fields:
+        dataPodName: Name of the data pod.
+        dataPodId: Unique identifier for the data pod.
+        ownershipStatus: Status of ownership (e.g., active or suspended).
+        usagePolicies: An array of policies governing data usage.
+        isccCollectionMerkleRoot: Merkle root for ISCC for a document section collection.
+
+4. `verifiable-ai-agent.schema.json`
+
+    Purpose: Defines a schema for verifying AI agents, which may act autonomously or as part of a larger system.
+    Required Fields:
+        id: Unique identifier of the credential subject.
+        organizationName: Name of the organization responsible for the AI agent
+        agentName: Name of the AI agent.
+        creationDate: Date the AI agent was created.
+
+5. `permission-of-use.schema.json`
+
+    Purpose: Specifies the schema for permissions granted for the use of data or systems by an entity.
+    Required Fields:
+        id: Unique identifier of the credential subject.
+        ownerID: Unique identifier (DID) of the data owner.
+        policies: List of all policies applicable to the data usage by the agent.
+        dataSegments: List of ISCCs that the agent has the rights to use.
+
+#### Verifiable Credential Subjects
+
+##### Attestation
+This package contains classes representing the credential subject part of attestation Verifiable Credentials (VCs). Each class is compliant with the W3C and EBSI standards for Verifiable Credentials and is used to define the entities and their attributes for attestation purposes.
+
+- `AIAgentCredentialSubject`
+This class defines the credential subject for an AI Agent Credential. It includes properties such as the organizationName, agentName, agentId, and a creationDate that represents the timestamp when the agent was created. The class also holds a list of usagePolicies, representing policies that govern the use of the agent.
+
+- `DataOwnershipCredentialSubject`
+This class represents the credential subject for Data Ownership Credentials. It defines fields such as the dataPodName, dataPodId, and ownershipStatus to track data pod ownership. Additional fields include usagePolicies, which defines the policies applied to the data pod, and isccCollectionMerkleRoot, which links to the ISCC (International Standard Content Code) collection associated with the data.
+
+- `PermissionOfUseCredentialSubject`
+This class defines the credential subject for a Permission of Use Credential. It includes the id (representing the DID of the AI agent), ownerDID (representing the data owner's DID), and a list of policies that describe the permissions related to the credential. The dataSegments field holds a list of ISCCs representing specific data segments covered by the credential.
+
+- `W3CCredentialSubject`
+This class defines the credential subject for a W3C Verifiable Credential. It includes a useData field represented as a Pair of string and JsonElement, allowing flexible, additional data to be attached to the credential. The credentialSubject field stores the actual subject of the credential in JSON format, following the W3C VC standards.
+
+##### ID
+This package contains classes representing the credential subject part for ID Verifiable Credentials (VCs). Each class is compliant with the W3C and EBSI standards for Verifiable Credentials and is used to define the entities and their attributes for attestation purposes.
+
+- `NaturalPersonCredentialSubject`
+This class represents the credential subject for a natural person. It includes fields such as id (representing the DID of the person), familyName, firstName, and other personal identifiers like dateOfBirth, yearOfBirth, and personalIdentifier. The class also includes placeOfBirth and currentAddress fields, represented by the Address class. The nationality field is a list of the person’s nationalities.
+
+- `LegalEntityCredentialSubject`
+This class represents the credential subject for a legal entity. It includes fields like id (representing the DID of the legal entity), legalPersonIdentifier, legalName, and legalAddress. The class also contains fields such as VATRegistration, taxReference, and other legal identifiers like LEI (Legal Entity Identifier) and EORI (Economic Operators Registration and Identification). Additionally, the domainName field can either be a String or a List<String> representing the domain names of the entity.
+
+### Verifier 
+
+#### CredentialVerificationApi
+This class sends a request to an OID4VC compliant, credential verification API in order to verify a signed credential. In provenAI's context the WaltID verifier API is used []. The credential verifier api functionality is described in [section].
