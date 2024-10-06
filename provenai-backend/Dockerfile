@@ -43,6 +43,7 @@ COPY --from=builder /app/src /app/src
 
 
 # ENTRYPOINT ["java","-jar","/app.jar"]
-ENTRYPOINT ["/bin/sh", "-c", "mvn flyway:migrate -Dflyway.url=$DATABASE_URL -Dflyway.user=$DATABASE_USERNAME -Dflyway.password=$DATABASE_PASSWORD && java -jar /app.jar"]
+# ENTRYPOINT ["/bin/sh", "-c", "mvn flyway:migrate -Dflyway.url=$DATABASE_URL -Dflyway.user=$DATABASE_USERNAME -Dflyway.password=$DATABASE_PASSWORD && java -jar /app.jar"]
+ENTRYPOINT ["/bin/sh", "-c", "mvn flyway:repair -Dflyway.url=$DATABASE_URL -Dflyway.user=$DATABASE_USERNAME -Dflyway.password=$DATABASE_PASSWORD && mvn flyway:migrate -Dflyway.url=$DATABASE_URL -Dflyway.user=$DATABASE_USERNAME -Dflyway.password=$DATABASE_PASSWORD && java -jar /app.jar"]
 
 
