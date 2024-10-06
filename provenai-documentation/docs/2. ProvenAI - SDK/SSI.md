@@ -227,7 +227,6 @@ After generating a key we can resolve the DID generated to that key. The method 
 
 The `VerifiableCredentialBuilder` class provides a flexible way to create verifiable credentials in compliance with the W3C Verifiable Credentials (VC) standard. It allows users to define the context, types, issuer, validity, subject, and other properties of the credential, and provides a method to sign the credential with a key. To generate the verifiable credential this class wraps the methods developed in WaltID's kotlin class `CredentialBuilder`. Hence we need to initialize the credential builder setting the `credentialBuilderType` to `W3CV11CredentialBuilder`, in the `VerifiableCredentialBuilder` constructor. An example implementation is presented below.
 
-
 ```java
 import id.walt.credentials.vc.vcs.W3CVC;
 import id.walt.crypto.keys.JWKKey;
@@ -441,9 +440,162 @@ This package contains classes representing the credential subject part for ID Ve
 This class represents the credential subject for a natural person. It includes fields such as id (representing the DID of the person), familyName, firstName, and other personal identifiers like dateOfBirth, yearOfBirth, and personalIdentifier. The class also includes placeOfBirth and currentAddress fields, represented by the Address class. The nationality field is a list of the person’s nationalities.
 
 - `LegalEntityCredentialSubject`
-This class represents the credential subject for a legal entity. It includes fields like id (representing the DID of the legal entity), legalPersonIdentifier, legalName, and legalAddress. The class also contains fields such as VATRegistration, taxReference, and other legal identifiers like LEI (Legal Entity Identifier) and EORI (Economic Operators Registration and Identification). Additionally, the domainName field can either be a String or a List<String> representing the domain names of the entity.
+This class represents the credential subject for a legal entity. It includes fields like id (representing the DID of the legal entity), legalPersonIdentifier, legalName, and legalAddress. The class also contains fields such as VATRegistration, taxReference, and other legal identifiers like LEI (Legal Entity Identifier) and EORI (Economic Operators Registration and Identification). Additionally, the domainName field can either be a String or a List of Strings representing the domain names of the entity.
 
 ### Verifier 
 
 #### CredentialVerificationApi
 This class sends a request to an OID4VC compliant, credential verification API in order to verify a signed credential. In provenAI's context the WaltID verifier API is used []. The credential verifier api functionality is described in [section].
+
+#### CredentialVerifier
+The `CredentialVerifier` class is responsible for verifying Verifiable Credentials (VCs) against a defined set of policies. This class uses the `Verifier` from the waltID'S verfier. This class offers both asynchronous and synchronous methods for credential verification, utilizing Java's `CompletableFuture` for non-blocking operations. We have `verifyCredentialAsync`, which can verify a signed credential without blocking the calling thread, and `verifyCredentialBlocking`, which can verify a signed credential in a blocking manner, which may be simpler in scenarios where immediate results are needed.
+
+```java
+import id.walt.credentials.vc.vcs.W3CVC;
+import id.walt.crypto.keys.JWKKey;
+import id.walt.crypto.keys.KeyType;
+import kotlin.Pair;
+import kotlinx.serialization.json.JsonElement;
+import kotlinx.serialization.json.JsonObject;
+import kotlinx.serialization.json.JsonPrimitive;
+
+import java.time.Duration;
+import java.util.HashMap;
+import java.util.Map;
+
+public class Main {
+    public static void main(String[] args) {
+        // Initialize DidIssuer to generate DID for issuer and subject
+        DidIssuer didIssuer = new DidIssuer();
+
+        // Generate a JWK key for the issuer
+        JWKKey issuerKey = KeyCreation.generateKey(KeyType.secp256k1, 2048);
+        DidResult issuerDidResult = didIssuer.createDidFromKey(KeyType.secp256k1, issuerKey);
+        String issuerDid = issuerDidResult.getDid();  // Get the DID of the issuer
+
+        // Generate a JWK key for the subject
+        JWKKey subjectKey = KeyCreation.generateKey(KeyType.secp256k1, 2048);
+        DidResult subjectDidResult = didIssuer.createDidFromKey(KeyType.secp256k1, subjectKey);
+        String subjectDid = subjectDidResult.getDid();  // Get the DID of the subject
+
+        System.out.println("Issuer DID: " + issuerDid);
+        System.out.println("Subject DID: " + subjectDid);
+
+        // Initialize the verifiable credential builder
+        VerifiableCredentialBuilder vcBuilder = new VerifiableCredentialBuilder();
+
+        // Add context 
+        vcBuilder.addContext("https://www.w3.org/2018/credentials/v1");
+
+        // Add types to the verifiable credential
+        vcBuilder.addType("VerifiableCredential");
+        vcBuilder.addType("EBSILegalEntityVerifiableID");
+
+        // Set the credential ID
+        vcBuilder.setCredentialId("urn:uuid:12345678-abcd-1234-abcd-1234567890ab");
+
+        // Set the issuer's DID
+        vcBuilder.setIssuerDid(issuerDid);
+
+        // Set the validity period
+        vcBuilder.validFromNow();  
+        vcBuilder.validFor(Duration.ofDays(365));  
+
+        // Define the credential subject 
+        JsonObject subjectData = new JsonObject(Map.of(
+            "id", new JsonPrimitive(subjectDid),  
+            "legalName", new JsonPrimitive("Example Corp")
+        ));
+        vcBuilder.credentialSubject(subjectData);
+
+        // Set the subject's DID
+        vcBuilder.setSubjectDid(subjectDid);
+
+        // Add extra data to the credential
+        vcBuilder.useData(new Pair<>("someKey", new JsonPrimitive("someValue")));
+
+        // Build the verifiable credential
+        W3CVC vc = vcBuilder.buildCredential();
+
+        // Sign the verifiable credential
+        Map<String, String> additionalJwtHeaders = new HashMap<>();  // Additional JWT headers
+        Map<String, JsonElement> additionalJwtOptions = new HashMap<>();  // Additional JWT options
+
+        Object signedVc = vcBuilder.signCredential(
+            vc, 
+            issuerKey,  // Use the issuer's key for signing
+            issuerDid,  // Issuer DID
+            subjectDid,  // Subject DID
+            additionalJwtHeaders, 
+            additionalJwtOptions
+        );
+
+        // Output the signed verifiable credential
+        System.out.println("Signed Verifiable Credential: " + signedVc.toString());
+    }
+}
+```
+
+#### PresentationVerifier
+The `PresentationVerifier` class is responsible for verifying Verifiable Credentials (VCs) against a defined set of policies. This class uses the `Verifier` from the waltID'S verfier. This class offers both asynchronous and synchronous methods for credential verification, utilizing Java's `CompletableFuture` for non-blocking operations. We have `verifyPresentationAsync`, that performs verification in a non-blocking manner,, and `verifyPresentationBlocking`, which performs verification in a blocking manner.
+
+```java
+import id.walt.credentials.verification.models.PolicyRequest;
+import id.walt.credentials.verification.models.PresentationVerificationResponse;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+
+public class PresentationVerificationExample {
+
+    public static void main(String[] args) {
+        // Create an instance of PresentationVerifier
+        PresentationVerifier verifier = new PresentationVerifier();
+
+        // Example signed presentation
+        String signedPresentation = "example_signed_presentation";
+
+        // Example policies for verification
+        List<PolicyRequest> vpPolicies = new ArrayList<>();
+        // Add verifiable presentation policies to the list as needed
+        // vpPolicies.add(new PolicyRequest(...));
+
+        List<PolicyRequest> globalVcPolicies = new ArrayList<>();
+        // Add global policies to the list as needed
+        // globalVcPolicies.add(new PolicyRequest(...));
+
+        HashMap<String, List<PolicyRequest>> specificCredentialPolicies = new HashMap<>();
+        // Add specific credential policies as needed
+        // specificCredentialPolicies.put("credentialId", new ArrayList<PolicyRequest>());
+
+        // Presentation context
+        HashMap<String, Object> presentationContext = new HashMap<>();
+        presentationContext.put("key", "value");
+
+        // Asynchronous verification
+        CompletableFuture<PresentationVerificationResponse> asyncResult = verifier.verifyPresentationAsync(
+                signedPresentation, vpPolicies, globalVcPolicies, specificCredentialPolicies, presentationContext);
+        
+        asyncResult.thenAccept(response -> {
+            System.out.println("Async Presentation Verification Result:");
+            System.out.println(response);
+        }).exceptionally(ex -> {
+            System.err.println("Error during async presentation verification: " + ex.getMessage());
+            return null;
+        });
+
+        // Synchronous verification
+        try {
+            PresentationVerificationResponse syncResponse = verifier.verifyPresentationBlocking(
+                    signedPresentation, vpPolicies, globalVcPolicies, specificCredentialPolicies, presentationContext);
+            System.out.println("Sync Presentation Verification Result:");
+            System.out.println(syncResponse);
+        } catch (Exception e) {
+            System.err.println("Error during sync presentation verification: " + e.getMessage());
+        }
+    }
+}
+```
+
