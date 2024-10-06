@@ -25,7 +25,7 @@ services:
       - KEYCLOAK_CLIENT_SECRET=${KEYCLOAK_CLIENT_SECRET}
       - ISSUER_DID=${ISSUER_DID}
       - ISSUER_PRIVATE_JWK=${ISSUER_PRIVATE_JWK}
-    working_dir: ../provenai-database
+    working_dir: /provenai-database
     networks:
       - proven_ai_network
     ports:
