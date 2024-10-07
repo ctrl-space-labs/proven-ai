@@ -1,6 +1,6 @@
 #  ProvenAI Docker Compose
 
-The ProvenAI SDK can be installed following the provenAI installation instructions as described [here](../Getting%20Started/Installation). It also can be set up for local development when running the [provenAI backend](../Getting%20Started/Installation#running-the-provenai-backend). It containms the `proven-ai-sdk-docker-compose` to set the configuration settings for the docker containers of the microservices used within the provenAI app.
+The ProvenAI SDK can be installed following the provenAI installation instructions as described [here](../Getting%20Started/Installation). It also can be set up for local development when running the [provenAI backend](../Getting%20Started/Installation#running-the-provenai-backend). It contains the `proven-ai-sdk-docker-compose` to set the configuration settings for the docker containers of the microservices used within the provenAI app.
 
 ## Issuer API
 This package contains the configuration settings for the issuer API provided from waltid-identity [docker-compose issuer api](https://github.com/walt-id/waltid-identity/tree/main/docker-compose). The `config` package contains all necessary configuration settings. 
@@ -40,7 +40,7 @@ This file configures the web host and port for the verifier service.
 - `webPort`: The port number to expose the service. Set to 7003.
 
 ## Environment Variables
-ProvenAI SDK uses environment variables to configure the services. The environment variables are set in the `.env` file in the `provenai-sdk-docker-compose` directory. The services configured in the provenAI SDK is the iscc code generation and the waltid identity issuer and verifier. Therefore there are environent variables specific to each of these services and they are configured based on the services' documentation and docker-compose files.
+ProvenAI SDK uses environment variables to configure the services. The environment variables are set in the `.env` file in the `provenai-sdk-docker-compose` directory. The services configured in the provenAI SDK is the iscc code generation and the waltID identity issuer and verifier. Therefore there are environent variables specific to each of these services and they are configured based on the services' documentation and docker-compose files.
 
 - For the ISCC code generation [configuration](https://github.com/iscc/iscc-web)
 
