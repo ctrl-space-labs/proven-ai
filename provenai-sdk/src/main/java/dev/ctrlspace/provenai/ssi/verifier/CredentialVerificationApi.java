@@ -7,6 +7,12 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.UUID;
 
+
+/**
+ * This class is responsible for verifying a verifiable credential.
+ * It sends a request to, an OID4VC compliant, Credential Verification API to verify a signed credential.
+ * The API returns the credential subject and other parameters.
+ */
 public class CredentialVerificationApi {
 
     private String waltIdVerifierApi;

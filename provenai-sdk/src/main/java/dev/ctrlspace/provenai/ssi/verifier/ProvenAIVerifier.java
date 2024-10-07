@@ -13,6 +13,9 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
+/**
+ * Class to verify a presentation against a set of policies
+ */
 public class ProvenAIVerifier {
 
     public Boolean verifyVPJwt(String vpJwt) throws InterruptedException, ExecutionException {
