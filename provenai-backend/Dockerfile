@@ -24,19 +24,26 @@ COPY pom.xml .
 # Download dependencies
 RUN mvn dependency:go-offline
 
-# Copy the rest of the application source code
+# Copy the source code and build the application
 COPY src src
-
-# Build the application
 RUN mvn clean install -DskipTests
 
 # Final image
-#FROM eclipse-temurin:21-jdk
 FROM eclipse-temurin:21-jdk-alpine
-VOLUME /tmp
+# VOLUME /tmp
+
+WORKDIR /app
+
+# Install Maven in the final stage for Flyway migrations
+RUN apk update && apk add maven
 
 # Copy the built JAR file from the builder stage
 COPY --from=builder /app/target/*.jar /app.jar
+COPY --from=builder /app/src /app/src
 
-ENTRYPOINT ["java","-jar","/app.jar"]
+
+# ENTRYPOINT ["java","-jar","/app.jar"]
+# ENTRYPOINT ["/bin/sh", "-c", "mvn flyway:migrate -Dflyway.url=$DATABASE_URL -Dflyway.user=$DATABASE_USERNAME -Dflyway.password=$DATABASE_PASSWORD && java -jar /app.jar"]
+ENTRYPOINT ["/bin/sh", "-c", "mvn flyway:repair -Dflyway.url=$DATABASE_URL -Dflyway.user=$DATABASE_USERNAME -Dflyway.password=$DATABASE_PASSWORD && mvn flyway:migrate -Dflyway.url=$DATABASE_URL -Dflyway.user=$DATABASE_USERNAME -Dflyway.password=$DATABASE_PASSWORD && java -jar /app.jar"]
+
 

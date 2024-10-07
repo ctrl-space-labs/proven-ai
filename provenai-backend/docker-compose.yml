@@ -4,7 +4,7 @@ services:
   proven-ai-backend:
     # build image from directory
     build:
-      context: ./provenai-backend
+      context: .
       dockerfile: Dockerfile
       args:
         - PROVEN_AI_GIT_REPOSITORY=${PROVEN_AI_GIT_REPOSITORY}
@@ -12,6 +12,7 @@ services:
     container_name: proven-ai-backend
     volumes:
       - ~/.aws/:/root/.aws:ro
+      - ../provenai-database:/provenai-database
     environment: # Proven ai environment variables
       - DATABASE_URL=${DATABASE_URL}
       - DATABASE_USERNAME=${DATABASE_USERNAME}
@@ -24,6 +25,7 @@ services:
       - KEYCLOAK_CLIENT_SECRET=${KEYCLOAK_CLIENT_SECRET}
       - ISSUER_DID=${ISSUER_DID}
       - ISSUER_PRIVATE_JWK=${ISSUER_PRIVATE_JWK}
+    working_dir: /provenai-database
     networks:
       - proven_ai_network
     ports:
