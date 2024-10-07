@@ -1,13 +1,12 @@
-#  Docker Compose Documentation
+#  ProvenAI Docker Compose
 
-The provenAI SDK can be installed following the provenAI installation instructions as described in []. It also can be set up for local development when running the provenAI backed as described in []. It containms the `proven-ai-sdk-docker-compose` to set the configuration settings for the docker containers of the microservices used within the provenAI app.
-`http://localhost:8443`
+The ProvenAI SDK can be installed following the provenAI installation instructions as described [here](../Getting%20Started/Installation). It also can be set up for local development when running the [provenAI backend](../Getting%20Started/Installation#running-the-provenai-backend). It containms the `proven-ai-sdk-docker-compose` to set the configuration settings for the docker containers of the microservices used within the provenAI app.
 
 ## Issuer API
-This package contains the configuration settings for the issuer api provided from waltid []. The `config` package contains all necessary configuration settings. 
+This package contains the configuration settings for the issuer API provided from waltid-identity [docker-compose issuer api](https://github.com/walt-id/waltid-identity/tree/main/docker-compose). The `config` package contains all necessary configuration settings. 
 
 #### `credential-issuer-metadata.conf`
-This file defines the types of verifiable credentials that can be issued by the service, and it is provided from the waltid identity docker-compose []. Each credential type is listed along with its supported format. To support the credentials our provenAI app issues we expanded this file by introducing two types of credetials:
+This file defines the types of verifiable credentials that can be issued by the service, and it is provided from the waltid identity issuer api [docker-compose](https://github.com/walt-id/waltid-identity/tree/main/docker-compose/issuer-api). Each credential type is listed along with its supported format. To support the credentials our provenAI app issues we expanded this file by introducing two types of credetials:
 - Verifiable Agent ID: `VerifiableAgentID = [VerifiableCredential, VerifiableAgentID]`
 - Verifiable Data Ownership Credential: `VerifiableDataOwnershipCredential = [VerifiableCredential, VerifiableDataOwnershipCredential]`
 
@@ -21,7 +20,7 @@ This file configures the web host and port for the issuer service.
 - `webPort`: The port number to expose the service. Set to 7002.
 
 ## Verifier API
-This package contains the configuration settings for the verifier api provided from waltid []. The `config` package contains all necessary configuration settings. 
+This package contains the configuration settings for waltid' s the verifier api configuration provided from [docker-compose verifier api](https://github.com/walt-id/waltid-identity/tree/main/docker-compose/verifier-api). The `config` package contains all necessary configuration settings. 
 
 #### `verifier-service.conf`
 This file sets the base URL for the verifier service. The verifier service is responsible for verifying issued credentials.
@@ -43,7 +42,7 @@ This file configures the web host and port for the verifier service.
 ## Environment Variables
 ProvenAI SDK uses environment variables to configure the services. The environment variables are set in the `.env` file in the `provenai-sdk-docker-compose` directory. The services configured in the provenAI SDK is the iscc code generation and the waltid identity issuer and verifier. Therefore there are environent variables specific to each of these services and they are configured based on the services' documentation and docker-compose files.
 
-- For the ISCC code generation configuration:https://github.com/iscc/iscc-web
+- For the ISCC code generation [configuration](https://github.com/iscc/iscc-web)
 
 | **Variable**               | **Description**                                   | **Default Value**       |
 |----------------------------|---------------------------------------------------|-------------------------|
@@ -61,7 +60,7 @@ ProvenAI SDK uses environment variables to configure the services. The environme
 | `ISCC_SDK_GRANULAR`         | Activate generation of granular fingerprints .   | `false`                 |
 
 
-- For the waltid identity issuer and verifier configuration: https://github.com/walt-id/waltid-identity/blob/main/docker-compose
+- For the waltID identity issuer and verifier [configuration](https://github.com/walt-id/waltid-identity/blob/main/docker-compose)
 
 
 | **Variable**               | **Description**                                   | **Default Value**       |
@@ -158,7 +157,7 @@ This file is used to configure reverse proxies for the services.
   - **COPY docker-compose.yml /app/docker-compose.yml**: Copies The Docker Compose configuration file to the destination path in the Docker image where the `docker-compose.yml` file will be placed.
 
 
-## WaltId Identity Additional Files
+## WaltID Identity Additional Files
 These files are also inlcuded as they are defined in the waltid identity docker-compose. 
 ### `api-test.py`
 This file configures the tests conducted for the docker-compose.
