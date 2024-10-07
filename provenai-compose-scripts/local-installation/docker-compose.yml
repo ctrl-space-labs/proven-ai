@@ -33,26 +33,7 @@ services:
     depends_on:
       gendox-database:
         condition: service_healthy
-    environment:
-      DATABASE_URL: ${DATABASE_URL}
-      DATABASE_USERNAME: ${DATABASE_USERNAME}
-      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
-      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
-      KEYCLOAK_CLIENT_ID: ${KEYCLOAK_CLIENT_ID}
-      KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET}
-      DISCORD_TOKEN: ${DISCORD_TOKEN}
-      OPENAI_KEY: ${OPENAI_KEY}
-      COHERE_KEY: ${COHERE_KEY}
-      RSA_KEY_PATH: ${RSA_KEY_PATH}
-      GROQ_KEY: ${GROQ_KEY}
-      GENDOX_SPRING_EMAIL_HOST: ${GENDOX_SPRING_EMAIL_HOST}
-      GENDOX_SPRING_EMAIL_PORT: ${GENDOX_SPRING_EMAIL_PORT}
-      GENDOX_SPRING_EMAIL_USERNAME: ${GENDOX_SPRING_EMAIL_USERNAME}
-      GENDOX_SPRING_EMAIL_PASSWORD: ${GENDOX_SPRING_EMAIL_PASSWORD}
-      PROVEN_AI_ENABLED: ${PROVEN_AI_ENABLED}
-      PROVEN_AI_SDK_ISCC_ENABLED: ${PROVEN_AI_SDK_ISCC_ENABLED}
-      AWS_ACCESS_KEY: ${AWS_ACCESS_KEY}
-      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+    env_file: .env-local
     networks:
       - proven_ai_network
     ports:
@@ -85,15 +66,12 @@ services:
     depends_on:
       gendox-database:
         condition: service_healthy
+    env_file: .env-local
     environment:
-      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN}
-      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
       KC_DB: ${DATABASE_NAME}
       KC_DB_URL: ${DATABASE_URL}
       KC_DB_USERNAME: ${DATABASE_USERNAME}
       KC_DB_PASSWORD: ${DATABASE_PASSWORD}
-      KEYSTORE_PASSWORD: ${KEYSTORE_PASSWORD}
-      KEYCLOAK_HTTP_RELATIVE_PATH: ${KEYCLOAK_HTTP_RELATIVE_PATH}
     entrypoint: [ ]
     command:
       - /bin/bash
@@ -139,7 +117,7 @@ services:
         condition: service_healthy
     volumes:
       - ~/.aws/:/root/.aws:ro
-      - ./provenai-database:/provenai-database
+      - ../../provenai-database:/provenai-database
     environment:
       DATABASE_URL: ${DATABASE_URL}
       DATABASE_USERNAME: ${DATABASE_USERNAME}
@@ -162,7 +140,7 @@ services:
 # --------------------------- PROVEN AI Frontend---------------------------
   proven-ai-frontend:
     build:
-      context: ./provenai-frontend
+      context: ../../provenai-frontend
       dockerfile: Dockerfile
     container_name: proven-ai-frontend
     environment:
@@ -183,7 +161,7 @@ services:
   iscc-app:
     image: ghcr.io/iscc/iscc-web:main
     init: true
-    env_file: .env
+    env_file: .env-local
     networks:
       - proven_ai_network
     restart: unless-stopped
@@ -191,11 +169,11 @@ services:
   caddy:
     image: caddy:2.6.1-alpine
     restart: unless-stopped
-    env_file: .env
+    env_file: .env-local
     environment:
       - ISCC_SDK_GRANULAR=${ISCC_SDK_GRANULAR}
     volumes:
-      - ./provenai-sdk/provenai-sdk-docker-compose/Caddyfile:/etc/caddy/Caddyfile
+      - ../../provenai-sdk/provenai-sdk-docker-compose/Caddyfile:/etc/caddy/Caddyfile
       - caddy-config:/config
       - caddy-data:/data
     ports:
@@ -223,9 +201,9 @@ services:
     depends_on:
       - caddy
     env_file:
-      - .env
+      - .env-local
     volumes:
-      - ./provenai-sdk/provenai-sdk-docker-compose/issuer-api/config:/waltid-issuer-api/config
+      - ../../provenai-sdk/provenai-sdk-docker-compose/issuer-api/config:/waltid-issuer-api/config
     networks:
       - proven_ai_network
     restart: unless-stopped
@@ -237,9 +215,9 @@ services:
     depends_on:
       - caddy
     env_file:
-      - .env
+      - .env-local
     volumes:
-      - ./provenai-sdk/provenai-sdk-docker-compose/verifier-api/config:/waltid-verifier-api/config
+      - ../../provenai-sdk/provenai-sdk-docker-compose/verifier-api/config:/waltid-verifier-api/config
     networks:
       - proven_ai_network
     restart: unless-stopped

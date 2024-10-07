@@ -36,3 +36,6 @@ build/
 
 .env
 .env*
+
+# Allow committing .env-local
+!/provenai-compose-scripts/local-installation/.env-local
