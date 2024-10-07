@@ -26,8 +26,7 @@ git clone https://github.com/ctrl-space-labs/proven-ai.git
 ### Step 2: Set up environment variables
 
 In `./proven-ai/docker-compose/.env`, and set up the environment variables according to [Environment Variables](../Getting%20Started/Environment-Variables) documentation.
-```shell
-```
+
 
 ### Step 3: Run docker compose
 ```bash
@@ -37,10 +36,7 @@ docker-compose up
 
 ### Step 4: Get Keycloak client keys
 
-ProvenAI uses Keycloak for authentication. You need to get the client keys for the services to interact with Keycloak.
-1. Go to the Keycloak admin console at `http://localhost:8443`
-```shell
-```
+ProvenAI uses Keycloak for authentication. You need to get the client keys for the services to interact with Keycloak. For more info about how 
 
 ## Local Development
 
