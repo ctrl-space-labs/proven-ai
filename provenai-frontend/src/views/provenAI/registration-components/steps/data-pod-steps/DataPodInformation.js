@@ -270,7 +270,7 @@ const DataPodInformation = ({
                 For what purpose is this used?
               </Typography>
 
-              <Tooltip title="Select the purpose for which this data pod will be used. This will enable all Agents that match your policies to access your data. If you leave it empty, only the Agents on the allow list will have access to your data.">
+              <Tooltip title="Select the purpose for which this data pod will be used. This helps categorize the data pod based on its intended usage.">
                 <IconButton>
                   <Icon
                     icon="mdi:information-slab-circle-outline"
