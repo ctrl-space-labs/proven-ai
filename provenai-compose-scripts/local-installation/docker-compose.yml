@@ -33,7 +33,9 @@ services:
     depends_on:
       gendox-database:
         condition: service_healthy
-    env_file: .env-local
+    env_file:
+      - .env-local
+      - .env-secrets
     networks:
       - proven_ai_network
     ports:
@@ -66,7 +68,9 @@ services:
     depends_on:
       gendox-database:
         condition: service_healthy
-    env_file: .env-local
+    env_file:
+      - .env-local
+      - .env-secrets
     environment:
       KC_DB: ${DATABASE_NAME}
       KC_DB_URL: ${DATABASE_URL}
@@ -104,13 +108,21 @@ services:
     networks:
       - proven_ai_network
     ports:
-      - "${KEYCLOAK_PORT}:8443"
+      - "${KEYCLOAK_HTTPS_PORT}:8443"
+      - "${KEYCLOAK_HTTP_PORT}:8080"
     volumes:
       - keycloak-data:/opt/keycloak/conf
+
 
 # --------------------------- PROVEN AI Backend---------------------------
   proven-ai-backend:
     image: ctrlspacelabs/proven-ai-backend:latest
+#    build:
+#      context: ../../provenai-backend
+#      dockerfile: Dockerfile
+#      args:
+#        - PROVEN_AI_GIT_REPOSITORY=${PROVEN_AI_GIT_REPOSITORY}
+#        - PROVEN_AI_GIT_BRANCH=${PROVEN_AI_GIT_BRANCH}
     container_name: proven-ai-backend
     depends_on:
       gendox-database:
@@ -126,8 +138,8 @@ services:
       DEV_DATABASE_USERNAME: ${DATABASE_USERNAME}
       DEV_DATABASE_PASSWORD: ${DATABASE_PASSWORD}
       SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
-      KEYCLOAK_CLIENT_ID: ${KEYCLOAK_CLIENT_ID}
-      KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET}
+      KEYCLOAK_CLIENT_ID: ${KEYCLOAK_PROVEN_AI_CLIENT_ID}
+      KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_PROVEN_AI_CLIENT_SECRET}
       ISSUER_DID: ${ISSUER_DID}
       ISSUER_PRIVATE_JWK: ${ISSUER_PRIVATE_JWK}
     working_dir: /provenai-database
@@ -161,7 +173,9 @@ services:
   iscc-app:
     image: ghcr.io/iscc/iscc-web:main
     init: true
-    env_file: .env-local
+    env_file:
+      - .env-local
+      - .env-secrets
     networks:
       - proven_ai_network
     restart: unless-stopped
@@ -169,7 +183,9 @@ services:
   caddy:
     image: caddy:2.6.1-alpine
     restart: unless-stopped
-    env_file: .env-local
+    env_file:
+      - .env-local
+      - .env-secrets
     environment:
       - ISCC_SDK_GRANULAR=${ISCC_SDK_GRANULAR}
     volumes:
@@ -202,6 +218,7 @@ services:
       - caddy
     env_file:
       - .env-local
+      - .env-secrets
     volumes:
       - ../../provenai-sdk/provenai-sdk-docker-compose/issuer-api/config:/waltid-issuer-api/config
     networks:
@@ -216,6 +233,7 @@ services:
       - caddy
     env_file:
       - .env-local
+      - .env-secrets
     volumes:
       - ../../provenai-sdk/provenai-sdk-docker-compose/verifier-api/config:/waltid-verifier-api/config
     networks:
