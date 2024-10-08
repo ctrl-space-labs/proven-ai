@@ -40,4 +40,4 @@ The response contains the `VCOfferDTO` object with the following fields:
   The signed JWT (JavaScript Web Token) representing the Verifiable Credential for the DataPod.
 
 
-Also CRUD operations are available for the `Data Pod` entity. For full API refence see [].
+Also CRUD operations are available for the `Data Pod` entity. Full API reference [here](https://dev.proven-ai.ctrlspace.dev/proven-ai/api/v1/swagger-ui/index.html#/Data%20Pods).
