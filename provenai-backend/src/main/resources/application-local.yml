@@ -1,9 +1,9 @@
 
 spring:
   datasource:
-    url: ${DEV_DATABASE_URL}
-    username: ${DEV_DATABASE_USERNAME}
-    password: ${DEV_DATABASE_PASSWORD}
+    url: ${DATABASE_URL}
+    username: ${DATABASE_USERNAME}
+    password: ${DATABASE_PASSWORD}
     hikari:
       maximum-pool-size: 3
       minimum-idle: 1
@@ -11,14 +11,14 @@ spring:
 proven-ai:
   ssi:
     verifier:
-      url: https://proven-ai-dev.ctrlspace.dev/verifier/openid4vc/verify
+      url: http://localhost:7003/verifier/openid4vc/verify
     issuer:
-      url: https://proven-ai-dev.ctrlspace.dev/issuer/openid4vc/jwt/issue
+      url: http://localhost:7002/issuer/openid4vc/jwt/issue
 
 
   domains:
     gendox:
-      base-url: http://localhost:5001
+      base-url: http://localhost:8080
     proven-ai-frontend:
       base-url: http://localhost:3001
   blockchain:
