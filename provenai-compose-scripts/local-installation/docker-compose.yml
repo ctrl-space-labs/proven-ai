@@ -96,7 +96,7 @@ services:
           -validity 365 \
           -ext SAN:c=DNS:localhost,IP:127.0.0.1 \
           -keystore /opt/keycloak/conf/server.keystore && \
-        exec /opt/keycloak/bin/kc.sh start \
+        exec /opt/keycloak/bin/kc.sh start-dev \
           --http-relative-path="${KEYCLOAK_HTTP_RELATIVE_PATH}" \
           --features=token-exchange \
           --hostname-strict=false \
