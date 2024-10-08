@@ -1,5 +1,5 @@
 
-### Step 1:Clone the gendox-core repository
+### Step 1: Clone the gendox-core repository
 ```bash
 git clone https://github.com/ctrl-space-labs/gendox-core.git
 ```
@@ -34,6 +34,7 @@ Navigate to `clients` to configure clients settings.
 
 
 - Create `gendox-pkce-public-client-local` client. Fill in the client information with the following values:
+
 | **Category**         | **Field**                               | **Value**                             |
 |----------------------|-----------------------------------------|---------------------------------------|
 | **General settings**  | Client ID *                             | `gendox-pkce-public-client-local`      |
@@ -64,6 +65,7 @@ We note here that `3000` is the port for gendox frontend.
 
 
 - Create `gendox-private-client` client. Fill in the client information with the following values:
+
 | **Category**         | **Field**                               | **Value**                             |
 |----------------------|-----------------------------------------|---------------------------------------|
 | **General settings**  | Client ID *                             | `gendox-private-client`      |
@@ -84,6 +86,7 @@ We note here that `8080` is the port for gendox backend.
 
 
 - Create `gendox-private-client` client. Fill in the client information with the following values:
+
 | **Category**         | **Field**                               | **Value**                             |
 |----------------------|-----------------------------------------|---------------------------------------|
 | **General settings**  | Client ID *                             | `gendox-public-client`      |
@@ -109,6 +112,7 @@ Under the `Service account roles` we need to assign the following roles:
 - `query-users`
 
 - Create `proven-ai-pkce-client` client. Fill in the client information with the following values:
+
 | **Category**         | **Field**                               | **Value**                             |
 |----------------------|-----------------------------------------|---------------------------------------|
 | **General settings**  | Client ID *                             | `proven-ai-pkce-client`      |
@@ -130,6 +134,7 @@ We also need to modify the following under advanced settings:
 
 
 - Create `proven-ai-private-client` client. Fill in the client information with the following values:
+
 | **Category**         | **Field**                               | **Value**                             |
 |----------------------|-----------------------------------------|---------------------------------------|
 | **General settings**  | Client ID *                             | `proven-ai-private-client`      |
@@ -161,6 +166,7 @@ Under the `Service account roles` we need to assign the following roles:
 - `uma_protection`
 
 - Create `proven-pkce-public-client-local` client. Fill in the client information with the following values:
+
 | **Category**         | **Field**                               | **Value**                             |
 |----------------------|-----------------------------------------|---------------------------------------|
 | **General settings**  | Client ID *                             | `proven-pkce-public-client-local`      |
@@ -189,6 +195,7 @@ We also need to modify the following under advanced settings:
 
 ### Step 7: Create role users
 In the section **Realm roles** create the role `user`
+
 | **Field**                   | **Value**                             |
 |-----------------------------|---------------------------------------|
 | Name *                      | `user`                           |
@@ -257,7 +264,7 @@ Switch to Add providers. Add `hmac-generated`:
 |                    | Access Token Lifespan For Implicit Flow | `12 Hours`  |
 |                    | Client Login Timeout               | `your-login-timeout`           |
 
-### Step 9: authentication Settings
+### Step 9: Authentication Settings
  We need to create a `Copy of registration` flow on flows:
 
 | **Category**      | **Field**            | **Value**               |

@@ -1,4 +1,4 @@
-'## ProvenAI Verifier
+## ProvenAI Verifier
 The `ProvenAIVerifier` class is designed to verify signed Verifiable Credentials (VCs) for ProvenAI entities against a set of policies. It provides a method to verify a signed Verifiable presentation jwt, using the `PresentationVerifier` class.
 
 #### Verify Verifiable Presentation Method
