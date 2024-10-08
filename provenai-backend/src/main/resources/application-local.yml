@@ -11,9 +11,9 @@ spring:
 proven-ai:
   ssi:
     verifier:
-      url: https://proven-ai-dev.ctrlspace.dev/verifier/openid4vc/verify
+      url: http://localhost:7003/verifier/openid4vc/verify
     issuer:
-      url: https://proven-ai-dev.ctrlspace.dev/issuer/openid4vc/jwt/issue
+      url: http://localhost:7002/issuer/openid4vc/jwt/issue
 
 
   domains:
