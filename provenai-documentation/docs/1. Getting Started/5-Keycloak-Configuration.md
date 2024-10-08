@@ -11,16 +11,16 @@ cd ./gendox-keycloak
 ```
 - Linux/MacOS
 ```bash
-bin/kc.sh start-dev --http-port=8443
+bin/kc.sh start-dev --http-port=8880
 ```
 - Windows
 ```bash
-bin\kc.bat start-dev --http-port=8443
+bin\kc.bat start-dev --http-port=8880
 ```
 You can also configure any other port to run the keycloak server.
 
 ### Step 3: Create keycloak admin user
-- Go to the Keycloak admin console at `http://localhost:8443`
+- Go to the Keycloak admin console at `http://localhost:8880`
 - Create an administrative user. You need to set the username and password for the admin user.
 
 ### Step 4: Create `gendox-idp-dev` realm
@@ -53,6 +53,12 @@ Navigate to `clients` to configure clients settings.
 |                      | Direct access grants                    | `On`                                  |
 |                      | Implicit flow                           | `Off`                                 |
 |                      | OAuth 2.0 Device Authorization Grant    | `Off`                                 |
+
+We also need to modify the following under advanced settings:
+| **Category**            | **Field**                                          | **Value**                       |
+|-------------------------|----------------------------------------------------|---------------------------------|
+| **Advanced Settings**   | Proof Key for Code Exchange Code Challenge Method  | `your-code-challenge-method`     |
+
 
 We note here that `3000` is the port for gendox frontend.
 
@@ -90,11 +96,17 @@ We note here that `8080` is the port for gendox backend.
 |                      | Authorization                           | `Off`                                 |
 |                      | Authentication flow                     | `Standard flow`                       |
 |                      | Authentication flow                     | `Direct access grants`                |
+|                      | Authentication flow                     | `Service accounts roles`                |
 |                      | Direct access grants                    | `On`                                  |
 |                      | Implicit flow                           | `Off`                                 |
 |                      | OAuth 2.0 Device Authorization Grant    | `Off`                                 |
 
 We note here that `8080` is the port for gendox backend.
+Under the `Service account roles` we need to assign the following roles:
+- `manage-users`
+- `impersonation`
+- `view-users`
+- `query-users`
 
 - Create `proven-ai-pkce-client` client. Fill in the client information with the following values:
 | **Category**         | **Field**                               | **Value**                             |
@@ -111,6 +123,12 @@ We note here that `8080` is the port for gendox backend.
 |                      | Implicit flow                           | `Off`                                 |
 |                      | OAuth 2.0 Device Authorization Grant    | `Off`                                 |
 
+We also need to modify the following under advanced settings:
+| **Category**            | **Field**                                          | **Value**                       |
+|-------------------------|----------------------------------------------------|---------------------------------|
+| **Advanced Settings**   | Proof Key for Code Exchange Code Challenge Method  | `your-code-challenge-method`     |
+
+
 - Create `proven-ai-private-client` client. Fill in the client information with the following values:
 | **Category**         | **Field**                               | **Value**                             |
 |----------------------|-----------------------------------------|---------------------------------------|
@@ -123,11 +141,24 @@ We note here that `8080` is the port for gendox backend.
 |                      | Authorization                           | `Off`                                 |
 |                      | Authentication flow                     | `Standard flow`                       |
 |                      | Authentication flow                     | `Direct access grants`                |
+|                      | Authentication flow                     | `Service accounts roles`                |
 |                      | Direct access grants                    | `On`                                  |
 |                      | Implicit flow                           | `Off`                                 |
 |                      | OAuth 2.0 Device Authorization Grant    | `Off`                                 |
 
+Then create the following role under the `Roles` section:
+| **Field**         | **Value**              |
+|--------------------|------------------------|
+| Role name *        | `uma_protection`       |
+| Description         |      |
 
+
+Under the `Service account roles` we need to assign the following roles:
+- `manage-users`
+- `impersonation`
+- `view-users`
+- `query-users`
+- `uma_protection`
 
 - Create `proven-pkce-public-client-local` client. Fill in the client information with the following values:
 | **Category**         | **Field**                               | **Value**                             |
@@ -137,7 +168,7 @@ We note here that `8080` is the port for gendox backend.
 |                      | Description                             | `PKCE Public Client for gendox`       |
 |                      | Always display in UI                    | `On`                                  |
 | **Access settings**   | Root URL                                | `http://localhost:3001`              |
-|                      | Home URL                                | `http://localhost:3001/gendox/home`               |
+|                      | Home URL                               | `http://localhost:3001/gendox/home`         |
 |                      | Valid redirect URIs                     | `http://localhost:3001/*`             |
 |                      | Valid post logout redirect URIs         | `http://localhost:3001/login`      |
 |                      | Web origins                             | `http://localhost:3001`                    |
@@ -151,6 +182,10 @@ We note here that `8080` is the port for gendox backend.
 |                      | OAuth 2.0 Device Authorization Grant    | `Off`                                 |
 
 We note here that `3001` is the port for provenAI frontend.
+We also need to modify the following under advanced settings:
+| **Category**            | **Field**                                          | **Value**                       |
+|-------------------------|----------------------------------------------------|---------------------------------|
+| **Advanced Settings**   | Proof Key for Code Exchange Code Challenge Method  | `your-code-challenge-method`     |
 
 ### Step 7: Create role users
 In the section **Realm roles** create the role `user`

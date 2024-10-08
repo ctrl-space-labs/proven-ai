@@ -1,7 +1,12 @@
-## 3.3. Issue Agent Verifiable Credential
+## Issue Agent Verifiable Credential
 Issue verifiable credential for an agent using the W3C standard. The API provides the signe agent Verifiable credential in JWT format. This is created from the provenAI SDK using the walt.id SDK for credential issuance. Also it gnerates an OID4VC offer URL that can be accepted by any OID compliant wallet to receive credential, using the walt.id Credential Issuance API from the provenAI SDK.
 
- - **Route:** POST `agents/{id}/credential-offer`
+### **HTTP Method:**
+`POST`
+
+### **URL:**
+`/agents/{agentIdd}/credential-offer`
+
  - **Summary:** Get the signed jwt format of the agent VC and its offer url.
 
 ### Prerequites
@@ -20,7 +25,7 @@ Issuer did and key in JWK format. In this context, provenAI is the issuer. These
    - `credentialJwt`: Object signed credential jwt.
 
 
-## 3.3. Authorize Agent in ProvenAI
+## Authorize Agent in ProvenAI
 Authorizes an agent in the ProvenAI ecosystem, and returns an authorization token. The agent needs to provide a Verifiable Agent ID Presentation and once the presentation is verified, an authorization token is provided to the agent. To verify the valididty of the VP, the walt.id verifier SDK is used. The VP is chcked against the following policies:
 - HolderBindingPolicy: ies that issuer of the Verifiable Presentation (presenter) is also the subject of all Verifiable Credentials contained within.
 - JwtSignaturePolicy:Verifies the signature of the W3C JWT-VC
@@ -28,7 +33,12 @@ Authorizes an agent in the ProvenAI ecosystem, and returns an authorization toke
 - ExpirationDatePolicy:that the credentials expiration date (exp for JWTs) has not been exceeded.
 More information about the supported policies provided in[].
 
-- **Route:** POST `agents/token`
+### **HTTP Method:**
+`POST`
+
+### **URL:**
+`/agents/token`
+
 - **Summary:** Authorizes an agent and returns an authorization token.
 
 ### Prerequites

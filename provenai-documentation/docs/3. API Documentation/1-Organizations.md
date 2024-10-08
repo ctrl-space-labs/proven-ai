@@ -1,7 +1,12 @@
-## 3.1. Verify Organization VP
+## Verify Organization VP
 Verify an organization verifiable presentation against selected policies. This method creates a verification url after the policies are provided. The user then can copy the url or its can the rendered QR code from the wallet where the organization VP to be verified is stored. This API utilises the walt.id Credential Verification API to provided the verification link. 
 
- - **Route:** POST `/organizations/verify-vp`
+### **HTTP Method:**
+`POST`
+
+### **URL:**
+`/organizations/verify-vp`
+
  - **Summary:** Get a verification url in order to verify an organization VP stored on your wallet.
 
 ### Request Body
