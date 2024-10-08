@@ -28,25 +28,7 @@ Open the Administration Consoler after creating the admin user. There is a defau
 
 ### Step 4: Configure realm clients
 Navigate to `clients` to configure clients settings.
-- Create `gendox-pkce-public-client-dev` client. Fill in the client information with the following values:
-| **Category**         | **Field**                               | **Value**                             |
-|----------------------|-----------------------------------------|---------------------------------------|
-| **General settings**  | Client ID *                             | `gendox-pkce-public-client-dev`      |
-|                      | Name                                    | `Gendox PKCE`                    |
-|                      | Description                             | `PKCE Public Client for gendox`       |
-|                      | Always display in UI                    | `On`                                  |
-| **Access settings**   | Root URL                                | `http://localhost:8443`              |
-|                      | Home URL                                | `http://localhost:8443`               |
-|                      | Valid redirect URIs                     | `http://localhost:8443/*`             |
-|                      | Valid post logout redirect URIs         | `http://localhost:8443/login`      |
-|                      | Web origins                             | `http://localhost:8443`                    |
-| **Capability config** | Client authentication                   | `Off`                                 |
-|                      | Authorization                           | `Off`                                 |
-|                      | Authentication flow                     | `Standard flow`                       |
-|                      | Authentication flow                     | `Direct access grants`                |
-|                      | Direct access grants                    | `On`                                  |
-|                      | Implicit flow                           | `Off`                                 |
-|                      | OAuth 2.0 Device Authorization Grant    | `Off`                                 |
+
 
 - Create `gendox-pkce-public-client-local` client. Fill in the client information with the following values:
 | **Category**         | **Field**                               | **Value**                             |
@@ -90,22 +72,6 @@ We note here that `3000` is the port for gendox frontend.
 
 We note here that `8080` is the port for gendox backend.
 
-- Create `gendox-private-client` client. Fill in the client information with the following values:
-| **Category**         | **Field**                               | **Value**                             |
-|----------------------|-----------------------------------------|---------------------------------------|
-| **General settings**  | Client ID *                             | `gendox-public-client`      |
-|                      | Name                                    | `gendox-public-client`                    |
-|                      | Description                             | `Public client to use in the frontend!`       |
-|                      | Always display in UI                    | `On`                                  |
-| **Access settings**  | Valid redirect URIs                     | `http://gendox.core.frontend.dev.s3-website.eu-central-1.amazonaws.com/`             |
-|                      | Web origins                             | `http://gendox.core.frontend.dev.s3-website.eu-central-1.amazonaws.com`                    |
-| **Capability config** | Client authentication                   | `Off`                                 |
-|                      | Authorization                           | `Off`                                 |
-|                      | Authentication flow                     | `Standard flow`                       |
-|                      | Authentication flow                     | `Direct access grants`                |
-|                      | Direct access grants                    | `On`                                  |
-|                      | Implicit flow                           | `Off`                                 |
-|                      | OAuth 2.0 Device Authorization Grant    | `Off`                                 |
 
 
 - Create `gendox-private-client` client. Fill in the client information with the following values:
@@ -127,7 +93,7 @@ We note here that `8080` is the port for gendox backend.
 
 We note here that `8080` is the port for gendox backend.
 
-- Create `proven-ai-pkce-client client`. Fill in the client information with the following values:
+- Create `proven-ai-pkce-client` client. Fill in the client information with the following values:
 | **Category**         | **Field**                               | **Value**                             |
 |----------------------|-----------------------------------------|---------------------------------------|
 | **General settings**  | Client ID *                             | `proven-ai-pkce-client`      |
@@ -158,40 +124,7 @@ We note here that `8080` is the port for gendox backend.
 |                      | Implicit flow                           | `Off`                                 |
 |                      | OAuth 2.0 Device Authorization Grant    | `Off`                                 |
 
-- Create `proven-ai-private-client` client. Fill in the client information with the following values:
-| **Category**         | **Field**                               | **Value**                             |
-|----------------------|-----------------------------------------|---------------------------------------|
-| **General settings**  | Client ID *                             | `proven-ai-private-client`      |
-|                      | Name                                    | `ProvenAI Private Client`                    |
-|                      | Always display in UI                    | `On`                                  |
-| **Access settings**  | Valid redirect URIs                     | `/*`             |
-|                      | Web origins                             | `/*`                    |
-| **Capability config** | Client authentication                   | `On`                                 |
-|                      | Authorization                           | `Off`                                 |
-|                      | Authentication flow                     | `Standard flow`                       |
-|                      | Authentication flow                     | `Direct access grants`                |
-|                      | Direct access grants                    | `On`                                  |
-|                      | Implicit flow                           | `Off`                                 |
-|                      | OAuth 2.0 Device Authorization Grant    | `Off`                                 |
 
-- Create `proven-pkce-public-client-dev` client. Fill in the client information with the following values:
-| **Category**         | **Field**                               | **Value**                             |
-|----------------------|-----------------------------------------|---------------------------------------|
-| **General settings**  | Client ID *                             | `proven-pkce-public-client-dev`      |
-|                      | Name                                    | `proven-pkce-public-client-dev`                    |
-|                      | Always display in UI                    | `On`                                  |
-| **Access settings**   | Root URL                                | `http://localhost:8443`              |
-|                      | Home URL                                | `http://localhost:8443/provenai/home`               |
-|                      | Valid redirect URIs                     | `http://localhost:8443/*`             |
-|                      | Valid post logout redirect URIs         | `http://localhost:8443/login`      |
-|                      | Web origins                             | `http://localhost:8443`                    |
-| **Capability config** | Client authentication                   | `Off`                                 |
-|                      | Authorization                           | `Off`                                 |
-|                      | Authentication flow                     | `Standard flow`                       |
-|                      | Authentication flow                     | `Direct access grants`                |
-|                      | Direct access grants                    | `On`                                  |
-|                      | Implicit flow                           | `Off`                                 |
-|                      | OAuth 2.0 Device Authorization Grant    | `Off`                                 |
 
 - Create `proven-pkce-public-client-local` client. Fill in the client information with the following values:
 | **Category**         | **Field**                               | **Value**                             |
