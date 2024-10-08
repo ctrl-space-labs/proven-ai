@@ -51,4 +51,4 @@ More information about the supported policies provided in[].
 ### Response:
 - `AccessTokenResponse`: Access token response from keycloak.
 
-Also CRUD operations are available for the `Agent` entity. For full API refence see [].
+Also CRUD operations are available for the `Agent` entity. Full API reference [here](https://dev.proven-ai.ctrlspace.dev/proven-ai/api/v1/swagger-ui/index.html#/Agents).

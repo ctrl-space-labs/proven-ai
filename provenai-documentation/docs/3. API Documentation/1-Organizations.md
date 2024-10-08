@@ -14,4 +14,4 @@ Verify an organization verifiable presentation against selected policies. This m
 ### Response:
 - `CredentialVerificationDTO`: Java class containing the credentialVerificationUrl.
 
-Also CRUD operations are available for the `Organization` entity. For full API refence see [].
+Also CRUD operations are available for the `Organization` entity. Full API reference [here](https://dev.proven-ai.ctrlspace.dev/proven-ai/api/v1/swagger-ui/index.html#/Registered%20Organizations).
