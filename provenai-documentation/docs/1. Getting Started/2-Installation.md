@@ -36,7 +36,7 @@ docker-compose up
 
 ### Step 4: Get Keycloak client keys
 
-ProvenAI uses Keycloak for authentication. You need to get the client keys for the services to interact with Keycloak. For more info about how 
+ProvenAI uses Keycloak for authentication. You need to get the client keys for the services to interact with Keycloak. For more info about how to set up the Keycloak server and configure keycloak settings see [Keycloak Configuration](../Getting%20Started/Keycloak-Configuration)
 
 ## Local Development
 
