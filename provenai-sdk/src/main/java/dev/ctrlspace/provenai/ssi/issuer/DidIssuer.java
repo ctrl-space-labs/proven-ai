@@ -17,6 +17,10 @@ public class DidIssuer {
         //  Kotlin Continuation Objects
         private Continuation<? super Object> continuationSuper;
 
+        /**
+         * Constructor to initialize the Continuation Object
+         * and initialize the WaltIdServices
+         */
         public DidIssuer() {
 
                 this.continuationSuper = ContinuationObjectUtils.createSuperContinuation();
