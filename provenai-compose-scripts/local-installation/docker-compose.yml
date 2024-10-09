@@ -19,10 +19,10 @@ services:
       - "${DATABASE_PORT}:5432"
     healthcheck:
       test: psql -h localhost -p 5432 -U $DATABASE_USERNAME -d $DATABASE_NAME -t -c "SELECT * from gendox_core.flyway_schema_history" | grep . || exit 1
-      interval: 40s
+      interval: 10s
       timeout: 30s
       retries: 30
-      start_period: 60s
+      start_period: 20s
 
 # --------------------------- GENDOX Backend---------------------------
   gendox-core-api:
