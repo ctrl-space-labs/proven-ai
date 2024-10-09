@@ -1,5 +1,6 @@
 
 const gendoxUrl = process.env.NEXT_PUBLIC_GENDOX_URL;
+const gendoxFrontendUrl = process.env.NEXT_PUBLIC_GENDOX_FRONTEND_URL;
 const provenUrl = process.env.NEXT_PUBLIC_PROVEN_URL;
 const verifierUrl = process.env.NEXT_PUBLIC_VERIFIER_URL;
 
@@ -7,6 +8,7 @@ const verifierUrl = process.env.NEXT_PUBLIC_VERIFIER_URL;
 export default {
 
   gendoxUrl: gendoxUrl,
+  gendoxFrontendUrl: gendoxFrontendUrl + "gendox/home",
 
   getOrganizationsByCriteria: (organizationIdIn) => {
     const organizationIds = organizationIdIn.join(",");    
