@@ -1,4 +1,4 @@
-## 4.1. ProvenAI Issuer
+## ProvenAI Issuer
 The `ProvenAIIssuer` class is designed to generate and sign Verifiable Credentials (VCs) for ProvenAI entities. It provides methods to convert VCs to the W3CVC standard format and to sign these credentials using the issuer's key.
 Supported Entities:
 - AI Agent
@@ -18,7 +18,7 @@ Generates a signed W3CVC credential object in JWT format. It signs the VC using 
 
 **Signature:** `generateSignedVCJwt(W3CVC w3cVC, Key issuerKey, String issuerDid, String subjectDid)`
 **Parameters:**
-  - `w3cVC`: W3CVC type verifiable credential.
+  - `W3CVC`: W3CVC type verifiable credential.
   - `issuerKey`: Key walt.id type. The issuer is the entity that signs the verifiable credential.
   - `issuerDid`: String issuer DID.
   - `subjectDid`: String subject DID. The subject is the holder of the verifiable credential.

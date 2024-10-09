@@ -4,7 +4,7 @@
 
 This guide will walk you through deploying Proven AI smart contracts to the EVM (Ethereum compatible) mainnet or testnets.
 
-## Prerequisites
+### Prerequisites
 
 1. Install Foundry CLI
 ```
@@ -18,7 +18,7 @@ curl -L https://foundry.paradigm.xyz | bash
 4. Add your Ganache/Etherium account in to Metamsk
 
 
-## Deploy
+### Deploy
 
 1. Clone the Proven AI smart contracts repository
 ```
@@ -41,7 +41,7 @@ forge script script/ProvenAIAgentUsageScript.s.sol:ProvenAIAgentUsageScript --rp
 0000 --broadcast
 ```
 
-## Useful commands
+### Useful commands
 
 1. Get the smart contract address and verify the deployment
 ```

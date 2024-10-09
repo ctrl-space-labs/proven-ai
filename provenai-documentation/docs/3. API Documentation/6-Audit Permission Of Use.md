@@ -1,4 +1,4 @@
-# API Endpoint: **Audit Permission of Use - Blockchain Registration**
+# Audit Permission of Use - Blockchain Registration
 
 This endpoint audits the registration of an organization's permission-of-use data onto the blockchain.
 
@@ -19,4 +19,4 @@ This endpoint audits the registration of an organization's permission-of-use dat
 - **`date` (Instant, Required)**:  
   The date of the permission-of-use audit, represented as an `Instant`.
 
-### **Request Example:**
+You can see the API reference for audit permission of use [here](https://dev.proven-ai.ctrlspace.dev/proven-ai/api/v1/swagger-ui/index.html#/Permission%20of%20Use%20Analytics).
