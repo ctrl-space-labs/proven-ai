@@ -6,6 +6,12 @@ git clone https://github.com/ctrl-space-labs/gendox-core.git
 ```
 
 ### Step 2: Start keycloak server
+
+#### Keycloak server setup with docker
+
+
+#### Manual keycloak server setup
+
 Start Keycloak in development mode. From gendox-core
 ```bash
 cd ./gendox-keycloak
@@ -19,6 +25,9 @@ bin/kc.sh start-dev --http-port=8880
 bin\kc.bat start-dev --http-port=8880
 ```
 You can also configure any other port to run the keycloak server.
+
+
+
 
 ### Step 3: Create keycloak admin user
 - Go to the Keycloak admin console at `http://localhost:8880`
@@ -201,10 +210,7 @@ In the section **Realm roles** create the role `user`
 |-----------------------------|---------------------------------------|
 | Name *                      | `user`                           |
 | Description                  | `This is a role for users`                    |
-| Type                         | `your-type`                           |
-| Display on consent screen     | `Off`                                 |
-| Include in token scope        | `Off`                                 |
-| Display Order                | `your-display-order`                  |
+
 
 ### Step 8: Modify Realm Settings
 Under the section **Realm settings** configure the following settings:
@@ -221,10 +227,12 @@ Enable `Unmanaged Attributes`
 | **Email settings**          | Email as username        | `Off`           |
 |                            | Login with email         | `On`            |
 |                            | Duplicate emails         | `Off`           |
-|                            | Verify email             | `On`            |
+|                            | Verify email             | `Off`            |
 | **User info settings**      | Edit username            | `On`            |
 
+
 - **Email**
+If you want to enable email verification and other functionalities that require an email address you can configure the email settings below:
 
 | **Category**                     | **Field**                | **Value**            |
 |-----------------------------------|--------------------------|----------------------|
@@ -247,10 +255,9 @@ Switch to Add providers. Add `hmac-generated`:
 | **Edit provider** | Name *                   | `hmac-generated`         |
 |                   | Priority                 | `100`        |
 |                   | Priority for the provider| `your-priority-description`  |
-|                   | Algorithm                | `RS256`             |
+|                   | Algorithm                | `HS256`             |
 
 - **Sessions**
-Switch to Add providers. Add `hmac-generated`:
 
 | **Category**             | **Field**                      | **Value**                |
 |--------------------------|--------------------------------|--------------------------|
@@ -277,7 +284,7 @@ Next we need to configure the flows.
 - On the Copy of registration set `Terms&Condiitons` to `Required`.
 - Under Action select `Bind flow`. Choose as binding type as `Registration flow`.
 
-Switch to `Keycloak master` realm and repeat this process.\
+Switch to `Keycloak master` realm and repeat this process.
 
 
 Next switch to `Required actions`. You will need to change the following values:
@@ -304,5 +311,8 @@ Thenk on the [Keycloak Configuration](../Getting%20Started/Configuration#keycloa
     - `token-uri`: `http://localhost:8880/realms/gendox-idp-dev/protocol/openid-connect/token`
     - `realm`: `gendox-idp-dev`
 
+### Step 10: Create `proven-ai-private-client` and users
+For the interaction between the Gendox and ProvenAI services we must create a user in the database for `proven-ai-private-client` and, following the steps below:
+- 
 
    
