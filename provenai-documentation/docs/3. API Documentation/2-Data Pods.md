@@ -1,4 +1,4 @@
-## 3.1. Create DataPod Verifiable Credential
+## Create DataPod Verifiable Credential
 This endpoint is used to creates a Data pod Ownership Credential for data pod data. To create the verifiable credential of this specific type we must set the  credentialConfigurationId to "VerifiableDataOwnershipCredential_jwt_vc_json", when sending the request with [].
 
 ### Prerequites
@@ -9,24 +9,24 @@ Issuer did and key in JWK format. In this context, provenAI is the issuer. These
 | `ISSUER_PRIVATE_JWK`     | The JSON Web Key of the issuer in JWK format   | `{"kty":"EC","crv":"P-256","x":"...","y":"..."}` |
 
 
-# **HTTP Method:**
+### **HTTP Method:**
 `POST`
 
-## **URL:**
+### **URL:**
 `/data-pods/{dataPodId}/credential-offer`
 
-## **Authorization:**
+### **Authorization:**
 - **Required Authority**: `OP_EDIT_PROVEN_AI_DATAPOD`
 - **Condition**: This endpoint is protected by a `@PreAuthorize` check, ensuring that only users with the authority `OP_EDIT_PROVEN_AI_DATAPOD` can access it. Additionally, the `dataPodId` is extracted using `getRequestedDataPodIdFromPathVariable` for validation.
 
-## **Path Parameters:**
+### **Path Parameters:**
 - `dataPodId` (String):  
   The unique identifier of the DataPod for which the Verifiable Credential offer is being created. 
 
-## **Request Body:**
+### **Request Body:**
 - No request body is needed. The `dataPodId` is passed as a path variable.
 
-## **Response:**
+### **Response:**
 
 The response contains the `VCOfferDTO` object with the following fields:
 
@@ -40,4 +40,4 @@ The response contains the `VCOfferDTO` object with the following fields:
   The signed JWT (JavaScript Web Token) representing the Verifiable Credential for the DataPod.
 
 
-Also CRUD operations are available for the `Data Pod` entity. For full API refence see [].
+Also CRUD operations are available for the `Data Pod` entity. Full API reference [here](https://dev.proven-ai.ctrlspace.dev/proven-ai/api/v1/swagger-ui/index.html#/Data%20Pods).

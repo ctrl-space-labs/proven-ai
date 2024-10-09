@@ -2,7 +2,9 @@
 sidebar_position: 1
 ---
 
-# 4.1 Introduction
+# Issuer and Verifier Setup
+
+## Introduction
 ProvenAI is a platform that enables you to create, manage, and verify self-sovereign identities (SSI) for your users.
 To Issue and verify credentials, you need to set up Issuers and Verifiers. This guide will walk you through the process of setting up Issuers and Verifiers on ProvenAI.
 
@@ -10,7 +12,7 @@ The Walt.id platform is a self-sovereign identity (SSI) platform that enables yo
 This guide will walk you through the process of setting up Issuers and Verifiers on Walt.id.
 
 
-# 4.2 Setup WaltId Services 
+## Setup WaltId Services 
 
 ## Pre-requisites
 Install Docker on your machine.
@@ -33,7 +35,7 @@ cd docker-compose && docker-compose up
 - Wallet API: http://localhost:7001
 - Web Wallet (Frontend): http://localhost:7101
 
-## 4.3 Credential Issuance API
+### Credential Issuance API
 ### Route: POST `/openid4vc/jwt/issue`
 
 ### Description
@@ -48,7 +50,7 @@ The credential offer URL of the credential to be issued.
 #### Example value: 
 openid-credential-offer://localhost/?credential_offer=%7B%22credential_issuer%22%3A%22http%3A%2F%2Flocalhost%3A8000%22%2C%22credentials%22%3A%5B%22VerifiableId%22%5D%2C%22grants%22%3A%7B%22authorization_code%22%3A%7B%22issuer_state%22%3A%22501414a4-c461-43f0-84b2-c628730c7c02%22%7D%7D%7D
 
-## 4.4 Credential Verification API
+### Credential Verification API
 ### Route: POST `/openid4vc/verify`
 
 ### Description

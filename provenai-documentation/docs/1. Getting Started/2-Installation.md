@@ -25,22 +25,32 @@ git clone https://github.com/ctrl-space-labs/proven-ai.git
 
 ### Step 2: Set up environment variables
 
-In `./proven-ai/docker-compose/.env`, and set up the environment variables according to [Environment Variables](../Getting%20Started/Environment-Variables) documentation.
-```shell
-```
+In `./proven-ai/provenai-compose-scripts/local-installation/.env-secrets`, and set up the environment variables according to [Environment Variables](../Getting%20Started/Environment-Variables) documentation.
+
 
 ### Step 3: Run docker compose
 ```bash
-cd ./proven-ai/docker-compose
+cd ./proven-ai/provenai-compose-scripts/local-installation
+docker-compose --env-file .env-local --env-file .env-secrets up --build -d
 docker-compose up
 ```
 
+This command builds all the containers for the necessary services in the provenAI ecosystem:
+- provenAI backend
+- provenAI frontend
+- provenAI SDK
+- gendox backend
+- gendox frontend
+- database container
+- keycloak container
+
+Also to set up all the environment variables and properties needed the following .env files are needed:
+- `.env-local`
+- `.env-secret`
+
 ### Step 4: Get Keycloak client keys
 
-ProvenAI uses Keycloak for authentication. You need to get the client keys for the services to interact with Keycloak.
-1. Go to the Keycloak admin console at `http://localhost:8443`
-```shell
-```
+ProvenAI uses Keycloak for authentication. You need to get the client keys for the services to interact with Keycloak. For more info about how to set up the Keycloak server and configure keycloak settings see [Keycloak Configuration](../Getting%20Started/Keycloak-Configuration). After running the docker compose you will need to configure the keycloak settings in order to run the app.
 
 ## Local Development
 

@@ -1,3 +1,4 @@
+# SSI Issuer and Verifier
 This package contains the main classes for the SSI (Self-Sovereign Identity) module.
 In the context of ProvenAI, the SSI module is used to generate:
 - AI Agent's DID
@@ -6,26 +7,26 @@ In the context of ProvenAI, the SSI module is used to generate:
 - Issue the "Permission to Use" VC of a document, to be used by the AI Agent.
 - Verify VCs like the above (Agent's ID VC, Permission to Use VC)
 
-### Converters
-The `converters` package contains necessary converters for the SDK's functionalities. In the context of provenAI SDK the converters are responsible for transforming all the verifiable formats supported by provenAI in order to adhere to the W3CVC [https://www.w3.org/TR/vc-data-model/] standard. The converters developed are:
+## Converters
+The `converters` package contains necessary converters for the SDK's functionalities. In the context of provenAI SDK the converters are responsible for transforming all the verifiable formats supported by provenAI in order to adhere to the [W3CVC](https://www.w3.org/TR/vc-data-model/) standard. The converters developed are:
 - `AgentIDConverter`
 - `DataOwnershipCredentialConverter`
 - `LegalEntityConverter`
 - `NaturalPersonConverter`
 - `PermissionOfUseConverter`
 
-### Issuer 
+## Issuer 
 The issuer package contains all the classes and methods responsible to issue Verifiable Credentials supported by provenAI. 
 
 #### Credential Issuance API
 
-This class sends a request to an OID4VC compliant, credential issuance API in order to issue a signed credential. In provenAI's context the WaltID issuer API is used []. The credentian issuance api functionality is described in [section].
+This class sends a request to an OID4VC compliant, credential issuance API in order to issue a signed credential. In provenAI's context the [WaltID issuer API](https://docs.walt.id/issuer/api/getting-started) is used. The credentian issuance api functionality is described [here](../SSI-Issuer-&-Verifier/Setup-Issuer-and-Verifiers#credential-issuance-api)
 
-# Key Creation
+### Key Creation
 
 The `KeyCreation` class provides a method for generating cryptographic key pairs based on a given `KeyType` and character length using the Walt.id library.
 
-## generateKey
+#### generateKey
 
 
 ```java
@@ -46,10 +47,10 @@ The `generateKey()` method creates a new key pair based on a given KeyType and c
 ```java
 JwkKeyMeta metadata = new JwkKeyMeta("JWKKey",characterLength);
 ```
-The supported key types are: `Ed25519`, `secp256k1`, `secp256r1` and `RSA`. In provenAI context we mainly work with `secp256k1` because this format is supported by the blockchain environment we use [edw tha to grapsw kalitera sto telos].
+The supported key types are: `Ed25519`, `secp256k1`, `secp256r1` and `RSA`. In provenAI context we mainly work with `secp256k1` because this format is supported by the blockchain environment we use/
 
 
-## JWKKeyWrapper
+### JWKKeyWrapper
 The `JWKKeyWrapper` class is created to wrap the waltID crypto JWKKey class methods in java, because it is written in kotlin. This ensures interoperability of this kotlin class in Java.
 
 ```java
@@ -110,16 +111,14 @@ public class Main {
 }
 ```
 
-
-
-#### DID Issuer
+### DID Issuer
 
 The DidIssuer class provides methods for creating and resolving Decentralized Identifiers (DIDs) using various key types and methods. It leverages the Walt ID services for DID management and includes functionality for both key-based and web-based DIDs. For this class's methods we leverage the `WaltIdServiceInitUtils` methods from WaltID identity package and wrap the kotlin developed methods in Java to be able to use them in a springboot project. 
 With the `DidIssuer` constructor  the `WaltIdServiceInitUtils` is initialized, to access its methods. Also it initialized the necessary continuation object for Kotlin coroutines. [ref gia coroutines apo utils]
 
 `WaltIdServiceInitUtils.INSTANCE.initializeWaltIdServices();`
 
-##### Methods
+#### Methods
 - **createDidFromKey**: Creating a DID from a Key Pair
 
 This method creates a Decentralized Identifier (DID) from a provided key pair using the did:key method.
@@ -221,7 +220,7 @@ DidIssuer didIssuer = new DidIssuer();
 
 After generating a key we can resolve the DID generated to that key. The method used is `resolveWebDidToKey()` from `DidIssuer`. It resolves a DID from the generated key (`jwkKey`), the provided `domain` and `path`. The object returned is a `DidResult`. The `DidWebCreateOptions` object must be initialized. To resolve the DID, the method `createByKeyBlocking` is used from `LocalRegistrar` The inputs needed is the generation method, dependent on the key provided, the key JWK, the `DidWebCreateOptions` and they key JWK.
 
-#### ProvenAIIssuer
+### ProvenAIIssuer
 
 #### VerifiableCredentialBuilder
 
@@ -364,10 +363,10 @@ public class Main {
 
 ```
 
-### Verifiable Credential Model 
+## Verifiable Credential Model 
 This section provides documentation for the core classes representing Verifiable Credentials (VC) as defined by the W3C Verifiable Credentials Data Model. he `CredentialSubject` interface defines the structure for the credentialSubject part of any Verifiable Credential. It includes an abstract method `getId()` which must be implemented by any specific credential subject. The `VerifiableCredential` class is a generic class used to define the structure of a Verifiable Credential. It is parameterized with `T`, where `T` must be a class that extends the `CredentialSubject` interface. 
 
-#### Schemas
+### Schemas
 
 This package defines schemas for Verifiable Credentials (VCs) issued in the provenAI context, natural person, legal entity, data ownership, and AI agent. These JSON schemas are used to standardize how information is represented in verifiable credentials within decentralized and verifiable systems, such as those leveraging Distributed Ledger Technology (DLT) or Decentralized Identifiers (DIDs). Each schema complies with the JSON Schema Draft 2020-12 standard.
 
@@ -416,9 +415,9 @@ This package defines schemas for Verifiable Credentials (VCs) issued in the prov
         policies: List of all policies applicable to the data usage by the agent.
         dataSegments: List of ISCCs that the agent has the rights to use.
 
-#### Verifiable Credential Subjects
+### Verifiable Credential Subjects
 
-##### Attestation
+#### Attestation
 This package contains classes representing the credential subject part of attestation Verifiable Credentials (VCs). Each class is compliant with the W3C and EBSI standards for Verifiable Credentials and is used to define the entities and their attributes for attestation purposes.
 
 - `AIAgentCredentialSubject`
@@ -433,7 +432,7 @@ This class defines the credential subject for a Permission of Use Credential. It
 - `W3CCredentialSubject`
 This class defines the credential subject for a W3C Verifiable Credential. It includes a useData field represented as a Pair of string and JsonElement, allowing flexible, additional data to be attached to the credential. The credentialSubject field stores the actual subject of the credential in JSON format, following the W3C VC standards.
 
-##### ID
+#### ID
 This package contains classes representing the credential subject part for ID Verifiable Credentials (VCs). Each class is compliant with the W3C and EBSI standards for Verifiable Credentials and is used to define the entities and their attributes for attestation purposes.
 
 - `NaturalPersonCredentialSubject`
@@ -442,12 +441,14 @@ This class represents the credential subject for a natural person. It includes f
 - `LegalEntityCredentialSubject`
 This class represents the credential subject for a legal entity. It includes fields like id (representing the DID of the legal entity), legalPersonIdentifier, legalName, and legalAddress. The class also contains fields such as VATRegistration, taxReference, and other legal identifiers like LEI (Legal Entity Identifier) and EORI (Economic Operators Registration and Identification). Additionally, the domainName field can either be a String or a List of Strings representing the domain names of the entity.
 
-### Verifier 
+## Verifier 
 
-#### CredentialVerificationApi
-This class sends a request to an OID4VC compliant, credential verification API in order to verify a signed credential. In provenAI's context the WaltID verifier API is used []. The credential verifier api functionality is described in [section].
+### CredentialVerificationApi
+This class sends a request to an OID4VC compliant, credential verification API in order to verify a signed credential. In provenAI's context the [WaltID verifier API](https://docs.walt.id/verifier/api/getting-started) is used. The credential verifier API functionality is described in [here](../SSI-Issuer-&-Verifier/Setup-Issuer-and-Verifiers#credential-verification-api).
 
-#### CredentialVerifier
+his class sends a request to an OID4VC compliant, credential issuance API in order to issue a signed credential. In provenAI's context the [WaltID issuer API](https://docs.walt.id/issuer/api/getting-started) is used. The credentian issuance api functionality is described [here](../SSI-Issuer-&-Verifier/Setup-Issuer-and-Verifiers#credential-issuance-api)
+
+### CredentialVerifier
 The `CredentialVerifier` class is responsible for verifying Verifiable Credentials (VCs) against a defined set of policies. This class uses the `Verifier` from the waltID'S verfier. This class offers both asynchronous and synchronous methods for credential verification, utilizing Java's `CompletableFuture` for non-blocking operations. We have `verifyCredentialAsync`, which can verify a signed credential without blocking the calling thread, and `verifyCredentialBlocking`, which can verify a signed credential in a blocking manner, which may be simpler in scenarios where immediate results are needed.
 
 ```java

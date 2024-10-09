@@ -17,3 +17,4 @@ This endpoint allows an authenticated agent to search for results based on a giv
 - **`question` (String, Required)**:  
   The search query string provided by the user. It contains the question or phrase for which the search results are requested.
 
+You can see the search API reference [here](https://dev.proven-ai.ctrlspace.dev/proven-ai/api/v1/swagger-ui/index.html#/search-controller).
