@@ -29,9 +29,9 @@ Issuer did and key in JWK format. In this context, provenAI is the issuer. These
 Authorizes an agent in the ProvenAI ecosystem, and returns an authorization token. The agent needs to provide a Verifiable Agent ID Presentation and once the presentation is verified, an authorization token is provided to the agent. To verify the valididty of the VP, the walt.id verifier SDK is used. The VP is chcked against the following policies:
 - HolderBindingPolicy: ies that issuer of the Verifiable Presentation (presenter) is also the subject of all Verifiable Credentials contained within.
 - JwtSignaturePolicy:Verifies the signature of the W3C JWT-VC
-- NotBeforeDatePolicy:erifies that the credentials not-before date (for JWT: nbf, if unavailable: iat - 1 min) is correctly exceeded.
+- NotBeforeDatePolicy:erifies that the credentials not-before date is correctly exceeded.
 - ExpirationDatePolicy:that the credentials expiration date (exp for JWTs) has not been exceeded.
-More information about the supported policies provided in[].
+More information about the supported policies provided [here](https://docs.walt.id/verifier/api/credential-verification/policies).
 
 ### **HTTP Method:**
 `POST`

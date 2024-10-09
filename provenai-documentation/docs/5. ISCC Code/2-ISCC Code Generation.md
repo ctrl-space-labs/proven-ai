@@ -1,12 +1,12 @@
-# 5.2 ISCC Code Generation
+# ISCC Code Generation
 
-## 5.2.1 ISCC Generation API
+## ISCC Generation API
 
 The `IsccCodeGeneratorApi` class is responsible for interacting with the ISCC code generation API. It provides methods to build request headers, encode file names, and obtain ISCC codes for documents.
 
-## Endpoints
+### Endpoints
 
-### `POST /iscc/code`
+#### `POST /iscc/code`
 
 Generates an ISCC code for a document.
 
@@ -27,7 +27,7 @@ Generates an ISCC code for a document.
 
 The `IsccCodeResponse` class represents the response structure returned from the ISCC code generation API.
 
-## Fields
+#### Fields
 
 - `context` (String): The context of the ISCC code schema.
 - `type` (String): The type of the digital document, specified by `@type` in the ISCC JSON-LD context.
@@ -44,7 +44,7 @@ The `IsccCodeResponse` class represents the response structure returned from the
 - `metahash` (String): The hash value representing metadata of content.
 - `datahash` (String): The hash value representing the actual data content.
 
-## Example IsccCodeResponse
+#### Example IsccCodeResponse
 
 ```json
 {
@@ -73,16 +73,16 @@ curl -X POST "https://iscc.io/api/v1/iscc" \
 --data-binary "@/path/to/document.txt"
 ```
 
-## 5.2.2 IsccCodeServiceClass
+## IsccCodeServiceClass
 The `IsccCodeService` class provides functionality to interact with the ISCC code generation API for digital assets.
 
-## Dependencies
+### Dependencies
 
 - `IsccCodeGeneratorApi`: An API client used to communicate with the ISCC code generation API.
 
-## Methods
+### Methods
 
-### `getDocumentIsccCode`
+#### `getDocumentIsccCode`
 
 Generates an ISCC code for a document represented by a `MultipartFile`.
 

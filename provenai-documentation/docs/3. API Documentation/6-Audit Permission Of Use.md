@@ -1,17 +1,17 @@
-## Audit Permission of Use - Blockchain Registration
+# Audit Permission of Use - Blockchain Registration
 
 This endpoint audits the registration of an organization's permission-of-use data onto the blockchain.
 
-### **HTTP Method:**
+## **HTTP Method:**
 `POST`
 
-### **URL:**
+## **URL:**
 `/permission-of-use-analytics/audit/blockchain-registration`
 
-### **Authorization:**
+## **Authorization:**
 - Authentication is required, but no specific role or authority is mentioned in the provided code.
 
-### **Request Parameters:**
+## **Request Parameters:**
 
 - **`organizationDid` (String, Required)**:  
   The Decentralized Identifier (DID) of the organization whose permission-of-use is being audited for blockchain registration.
