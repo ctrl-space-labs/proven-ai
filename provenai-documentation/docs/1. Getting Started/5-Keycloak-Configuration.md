@@ -1,3 +1,4 @@
+# Keycloak Configuration
 
 ### Step 1: Clone the gendox-core repository
 ```bash
@@ -284,3 +285,24 @@ Next switch to `Required actions`. You will need to change the following values:
 |-----------------------------|---------------------------------------|
 | Terms and Conditions        | `On`                           |
 | Verify                      | `Off`                        |
+
+### Step 10: Keycloak environment variables and application properties
+AFter configuring keycloak you will need to update the environment variables:
+| Environment Variable      | Example value                                              |
+|--------------------------|------------------------------------------------------------|
+| `KEYCLOAK_CLIENT_ID`      | `gendox-private-client`                                    |
+| `KEYCLOAK_CLIENT_SECRET`  | `**********`                                               |
+
+The `KEYCLOAK_CLIENT_SECRET` is found on the `credentials` tab on the `gendox-private-client` client.
+
+- Set up keycloak configuration on application properties.
+First on the [Security Configuration](../Getting%20Started/Configuration#security-configuration-oauth2-and-jwt)
+    - `issuer-uri`: `http://localhost:8880/realms/gendox-idp-dev`
+    - `jwk-set-uri`: `http://localhost:8880/realms/gendox-idp-dev/protocol/openid-connect/certs`
+Thenk on the [Keycloak Configuration](../Getting%20Started/Configuration#keycloak-configuration)
+    - `base-url`: `http://localhost:8880`
+    - `token-uri`: `http://localhost:8880/realms/gendox-idp-dev/protocol/openid-connect/token`
+    - `realm`: `gendox-idp-dev`
+
+
+   

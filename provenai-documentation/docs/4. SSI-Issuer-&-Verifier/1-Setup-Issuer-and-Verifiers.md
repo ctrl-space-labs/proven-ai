@@ -2,6 +2,8 @@
 sidebar_position: 1
 ---
 
+# Issuer and Verifier Setup
+
 ## Introduction
 ProvenAI is a platform that enables you to create, manage, and verify self-sovereign identities (SSI) for your users.
 To Issue and verify credentials, you need to set up Issuers and Verifiers. This guide will walk you through the process of setting up Issuers and Verifiers on ProvenAI.

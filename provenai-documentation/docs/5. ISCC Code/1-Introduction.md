@@ -1,4 +1,4 @@
-# 5.1 Introduction
+# Introduction
 [ISCC](https://iscc.codes/) is a universal identifier of all types of digital content. The ISCC can be generated for content but also for parts of chunks of it. For example a section of a document. The relation between the parent and child elements can be preserved in the ISCC identifier. Thus we can identify the work any chucks are taken from. The ISCC is a content code, that is created from the content file itself. Processing the content with the algorithms defined by ISCC specification creates a unique composite code, consisting of four major elements The ISCC can be created offline on any local device or app, that supports the suggested standard.  The ISCC is short enough to be written on any blockchain while preserving its unique features.
 
 The minimal viable, first iteration ISCC will be a byte structure built from the following components:
@@ -8,23 +8,23 @@ The minimal viable, first iteration ISCC will be a byte structure built from the
 - Instance-Code: The top hash of a Merkle tree generated from chunks of raw data of an encoded media blob. It identifies a concrete manifestation and proves the integrity of the full content.
 
 
-# 5.1.1 Setup ISCC Code Web Service
+## Setup ISCC Code Web Service
 
-## Pre-requisites
+### Pre-requisites
 Install Docker on your machine.
 
-## Steps
+### Steps
 
-### 1. Cloning the ISCC-web Indentity Repository
+#### 1. Cloning the ISCC-web Indentity Repository
 
 ```
 git clone https://github.com/iscc/iscc-web.git && cd iscc-web
 ```
 
-### 2. Deployment
+#### 2. Deployment
 Create the following files:
 
-#### Caddyfile
+##### Caddyfile
 ```
 {
   email {$ISCC_WEB_SITE_EMAIL}
@@ -35,7 +35,7 @@ Create the following files:
 }
 ```
 
-#### .env
+##### .env
 
 ```
 ISCC_WEB_ENVIRONMENT=production
@@ -50,7 +50,7 @@ ISCC_WEB_IO_READ_SIZE=2097152
 FORWARDED_ALLOW_IPS=*
 ```
 
-#### docker-compose.yaml
+##### docker-compose.yaml
 
 ```
 version: "3.8"
@@ -82,12 +82,12 @@ services:
 Make sure you have a DNS entry pointing to your servers IP and set the correct ISCC_WEB_SITE_ADDRESS in your .env file. You should also change ISCC_WEB_SITE_EMAIL.
 
 
-### 2. Setup Services
+#### 3. Setup Services
 With the iscc-web package we can now run all APIs with docker:
 
 ```
 cd docker-compose && docker-compose up
 ```
-## Port Mapping
+##### Port Mapping
 - ISCC Web Services: http://localhost:8000/api/v1/
 

@@ -35,6 +35,18 @@ docker-compose --env-file .env-local --env-file .env-secrets up --build -d
 docker-compose up
 ```
 
+This command builds all the containers for the necessary services in the provenAI ecosystem:
+- provenAI backend
+- provenAI frontend
+- provenAI SDK
+- gendox backend
+- gendox frontend
+- database container
+- keycloak container
+
+Also to set up all the environment variables and properties needed the following .env files are needed:
+- `.env-local`
+- `.env-secret`
 
 ### Step 4: Get Keycloak client keys
 
