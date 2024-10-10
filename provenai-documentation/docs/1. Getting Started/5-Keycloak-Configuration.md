@@ -329,11 +329,27 @@ The `KEYCLOAK_CLIENT_SECRET` is found on the `credentials` tab on the `gendox-pr
 ### Step 10: Create `proven-ai-private-client` and users
 For the interaction between the Gendox and ProvenAI services we must create a user in the database for `proven-ai-private-client` and, following the steps below:
 
+- Implement client log in to Keycloak:
+
+```bash
+curl -X POST "http://localhost:8880/idp/realms/gendox-idp-dev/protocol/openid-connect/token" \
+     -H "Content-Type: application/x-www-form-urlencoded" \
+     -d "grant_type=client_credentials" \
+     -d "client_id=proven-ai-private-client" \
+     -d "client_secret=your-proven-secret"
+```
+- Get profile to store `proven-ai-private-client`:
+After receiving the client token you will get the user profile. This API will register the `proven-ai-private-client` as a user in the database. Now the client can interact with other services of the provenAI ecosystem.
 
 ```bash
 curl -X GET "http://localhost:8080/gendox/api/v1/profile" \
      -H "Authorization: proven-ai-private-client token"\
 ```
+
+- Change user type to `SUPER_ADMIN`:
+    - Go in the database in `user` table.
+    - Find the `proven-ai-private-client` user.
+    - Change the `type_id` to the id corresponding to type `SUPER_ADMIN`. You can find the id on the `types` table.
 
 
 #### Manual keycloak server setup
