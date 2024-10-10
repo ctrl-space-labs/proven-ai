@@ -12,7 +12,7 @@ git clone https://github.com/ctrl-space-labs/gendox-core.git
 ### Step 2: Start keycloak server
 
 #### Keycloak server setup with docker
-All provenAI services can be set up with docker installation by following the instructions provided [here](../Getting%20Started/Environment-Variables). When the docker-compose for all the services is built and running you can access the keycloak admin console at `http://localhost:8880` or `https://localhost:8443`. You will need to log in with the username and password you created on [step 4](./Keycloak-Configuration#step-4-create-keycloak-admin-user) or by following the script instructions on [step 3](../Keycloak-Configuration#step-3-setup-keycloak-clients-and-realm).
+All provenAI services can be set up with docker installation by following the instructions provided [here](../Getting%20Started/Environment-Variables). When the docker-compose for all the services is built and running you can access the keycloak admin console at `http://localhost:8880` or `https://localhost:8443`. You will need to log in with the username and password you created on [step 4](./Keycloak-Configuration#step-4-create-keycloak-admin-user) or by following the script instructions on [step 3](./Keycloak-Configuration#step-3-setup-keycloak-clients-and-realm).
 
 ### Step 3: Setup keycloak clients and realm
 A script has been developed to create the `gendox-idp-dev` realm and configure all the necessary clients for the provenAI ecosystem. The `gendox-local-init.sh` is responsible for:
