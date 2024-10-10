@@ -329,9 +329,11 @@ The `KEYCLOAK_CLIENT_SECRET` is found on the `credentials` tab on the `gendox-pr
 ### Step 10: Create `proven-ai-private-client` and users
 For the interaction between the Gendox and ProvenAI services we must create a user in the database for `proven-ai-private-client` and, following the steps below:
 
-curl -X GET "http://localhost:8080/gendox/api/v1/profile" \
-     -H "Authorization: Bearer YOUR_TOKEN"
 
+```bash
+curl -X GET "http://localhost:8080/gendox/api/v1/profile" \
+     -H "Authorization: proven-ai-private-client token"\
+```
 
 
 #### Manual keycloak server setup
