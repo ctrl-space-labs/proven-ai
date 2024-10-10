@@ -28,6 +28,10 @@ git clone https://github.com/ctrl-space-labs/proven-ai.git
 
 In `./proven-ai/provenai-compose-scripts/local-installation/.env-local`, and set up the environment variables according to [Environment Variables](../Getting%20Started/Environment-Variables) documentation.
 
+:::note
+The .env-local file contains some environment variables are comented out. These are mandatory variables that the user must create for the provenAI app to operate correctly. More information on the mandatory variables created by the developer [here](../Getting%20Started/Environment-Variables).
+:::
+
 
 ### Step 3: Run docker compose
 ```bash
