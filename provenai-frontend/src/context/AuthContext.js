@@ -153,10 +153,15 @@ const AuthProvider = ({ children }) => {
           JSON.stringify(userDataResponse.data)
         );
 
+        console.log("userDataResponse.data", userDataResponse.data);
+        console.log("organizations.data", organizations.data);
+
         const selectedOrganization =
           organizations.data.content.length > 0
-            ? organizationsResponse.data.content[0]
+            ? organizations.data.content[0]
             : userDataResponse.data.organizations[0];
+
+        console.log("selectedOrganization", selectedOrganization);
 
         // Store userData, actives project and organization
         dispatch(userDataActions.getUserData(userDataResponse.data));        
