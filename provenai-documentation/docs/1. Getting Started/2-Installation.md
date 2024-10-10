@@ -11,7 +11,8 @@ ProvenAI consists of a set of microservices that can be deployed on your own inf
 Before you start the installation process, make sure you have the following prerequisites:
 - Docker
 - Docker Compose
-
+- OS Linux, MacOS or Windows with WSL
+- 16GB Ram
 
 ## Installation
 
@@ -25,13 +26,17 @@ git clone https://github.com/ctrl-space-labs/proven-ai.git
 
 ### Step 2: Set up environment variables
 
-In `./proven-ai/provenai-compose-scripts/local-installation/.env-secrets`, and set up the environment variables according to [Environment Variables](../Getting%20Started/Environment-Variables) documentation.
+In `./proven-ai/provenai-compose-scripts/local-installation/.env-local`, and set up the environment variables according to [Environment Variables](../Getting%20Started/Environment-Variables) documentation.
+
+:::note
+The .env-local file contains some environment variables are comented out. These are mandatory variables that the user must create for the provenAI app to operate correctly. More information on the mandatory variables created by the developer [here](../Getting%20Started/Environment-Variables).
+:::
 
 
 ### Step 3: Run docker compose
 ```bash
 cd ./proven-ai/provenai-compose-scripts/local-installation
-docker-compose --env-file .env-local --env-file .env-secrets up --build -d
+docker-compose --env-file .env-local up --build -d
 docker-compose up
 ```
 
@@ -46,7 +51,6 @@ This command builds all the containers for the necessary services in the provenA
 
 Also to set up all the environment variables and properties needed the following .env files are needed:
 - `.env-local`
-- `.env-secret`
 
 ### Step 4: Get Keycloak client keys
 
