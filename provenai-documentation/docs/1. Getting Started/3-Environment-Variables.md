@@ -26,13 +26,15 @@ The mandatory Environment Variables are:
 | `DATABASE_URL`              | `jdbc:postgresql://localhost:5432/postgres`             | URL for connecting to the PostgreSQL database.                                                |
 | `DATABASE_USERNAME`         | `postgres`                                               | Username for the PostgreSQL database connection.                                               |
 | `DATABASE_PASSWORD`         | `*****`                                                  | Password for the PostgreSQL database connection.                                              |
-| `OPENAI_KEY`                | `did:key:*********`                                     | Decentralized Identifier (DID) of the issuer for Verifiable Credentials (VC).                 |
-| `DISCORD_TOKEN`        | `{"kty":"EC","d":"***","crv":"P-256"...}`              | JSON Web Key (JWK) of the issuer's private key for signing Verifiable Credentials.             |
+| `ISSUER_DID`                | `did:key:*********`                                     | Decentralized Identifier (DID) of the issuer for Verifiable Credentials (VC).                 |
+| `ISSUER_PRIVATE_JWK`        | `{"kty":"EC","d":"***","crv":"P-256"...}`              | JSON Web Key (JWK) of the issuer's private key for signing Verifiable Credentials.             |
 | `KEYCLOAK_CLIENT_ID`        | `gendox-*****`                                          | Client ID used to authenticate the application with the Keycloak server.                       |
 | `KEYCLOAK_CLIENT_SECRET`    | `**********`                                            | Client secret used for OAuth authentication with Keycloak.                                     |
 | `spring.profiles.active`    | `local`                                                 | The active Spring profile used for the application configuration.                               |
 
-
+:::note
+Default `ISSUER_DID` and `ISSUER_PRIVATE_JWK` values are provided in the `.env-local`. These are for testing only as they are not private values, to facilitate the provenAI setup.
+:::
 ## Gendox Environment Variables
 
 ProvenAI has been integrated with Gendox. While ProvenAI can run independently, it is quite handy to have Gendox running alongside it, to better evaluate the solution. 
