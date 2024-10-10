@@ -20,7 +20,7 @@ function HomepageHeader() {
           <Link
             className="button button--secondary button--lg"
             to="/docs/Getting Started/Installation">
-            ProvenAI Tutorial - 5min ⏱️
+            ProvenAI Getting Started 📚
           </Link>
         </div>
       </div>
