@@ -118,8 +118,8 @@ const DataPodInformation = ({
     }
   }, [activeDataPod, userDataPods, setValue]);
 
-  const updateAgentData = async (data) => {
-    if (agents.length > 0) {
+  const updateAgentData = async (data) => {    
+    if (agents.length > 0) {      
       let allowPolicies, denyPolicies;
       try {
         allowPolicies = await policyService.getPolicyOptions(
@@ -173,6 +173,7 @@ const DataPodInformation = ({
       };
       return updatedAgentData;
     }
+    return data;
   };
 
   const handleFormSubmit = async (data) => {

@@ -163,7 +163,7 @@ const UserDropdown = (props) => {
         <MenuItem
           sx={{ p: 0 }}          
           onClick={() => {
-            const gendoxUrl = `${apiRequests.gendoxUrl.replace("gendox/api/v1/", "")}gendox/home/?organizationId=${organizationId}`;
+            const gendoxUrl = `${apiRequests.gendoxFrontendUrl}/?organizationId=${organizationId}`;
             console.log(gendoxUrl);
             handleOpenInNewTab(gendoxUrl);
           }}

@@ -43,12 +43,16 @@ const AuthProvider = ({ children }) => {
   const handleLogin = (returnUrl) => {
     let args = {};
     if (returnUrl) {
-      args = { redirect_uri: `${authConfig.oidcConfig.redirect_uri}?returnUrl=${encodeURIComponent(returnUrl)}` };
+      args = {
+        redirect_uri: `${
+          authConfig.oidcConfig.redirect_uri
+        }?returnUrl=${encodeURIComponent(returnUrl)}`,
+      };
     }
     userManager.signinRedirect(args);
   };
 
-  const handleLogout = () => {    
+  const handleLogout = () => {
     // TODO call DELETE /profile/caches
     clearAuthState();
     userManager.signoutRedirect();
@@ -64,15 +68,15 @@ const AuthProvider = ({ children }) => {
     window.localStorage.removeItem(authConfig.oidcConfig);
   };
 
-  const loadUser = (user) => {    
+  const loadUser = (user) => {
     setAuthState({ user, isLoading: false });
   };
 
-  const unloadUser = () => {    
+  const unloadUser = () => {
     setAuthState({ user: null, isLoading: false });
   };
 
-  const removeUser = () => {    
+  const removeUser = () => {
     // Here you can clear your application's session and redirect the user to the login page
     userManager.removeUser();
   };
@@ -81,11 +85,12 @@ const AuthProvider = ({ children }) => {
     userManager.getUser().then((user) => {
       if (user && !user.expired) {
         setAuthState({ user, isLoading: false });
-      } else  {   // no user data found or user expired, loadUserProfileFromAuthState will handle cleanup
+      } else {
+        // no user data found or user expired, loadUserProfileFromAuthState will handle cleanup
         console.log("initAuthOIDC - user is null or expired: ", user);
         setAuthState({ user: null, isLoading: false });
       }
-    });    
+    });
 
     // Adding an event listener for when new user data is loaded
     userManager.events.addUserLoaded(loadUser);
@@ -106,7 +111,7 @@ const AuthProvider = ({ children }) => {
     setLoading(true);
     if (!authState.user || authState.user === null) {
       setLoading(false);
-      clearAuthState();      
+      clearAuthState();
       return;
     }
     let user = authState.user;
@@ -133,11 +138,12 @@ const AuthProvider = ({ children }) => {
       .then(async (userDataResponse) => {
         const organizationIds = userDataResponse.data.organizations.map(
           (org) => org.id
-        );          
-        const organizations = await organizationService.getOrganizationsByCriteria(
-          organizationIds,
-          user.access_token
         );
+        const organizations =
+          await organizationService.getOrganizationsByCriteria(
+            organizationIds,
+            user.access_token
+          );
         // Add 'role': 'admin' to the userDataResponse.data object
         userDataResponse.data.role = "admin";
         userDataResponse.data.provenOrgs = organizations.data.content;
@@ -146,19 +152,28 @@ const AuthProvider = ({ children }) => {
           authConfig.user,
           JSON.stringify(userDataResponse.data)
         );
-      
+
+        console.log("userDataResponse.data", userDataResponse.data);
+        console.log("organizations.data", organizations.data);
+
+        const selectedOrganization =
+          organizations.data.content.length > 0
+            ? organizations.data.content[0]
+            : userDataResponse.data.organizations[0];
+
+        console.log("selectedOrganization", selectedOrganization);
 
         // Store userData, actives project and organization
-        dispatch(userDataActions.getUserData(userDataResponse.data));
+        dispatch(userDataActions.getUserData(userDataResponse.data));        
         dispatch(
           fetchOrganization({
-            organizationId: organizations.data.content[0].id,
+            organizationId: selectedOrganization.id,
             storedToken: user.access_token,
           })
         );
         dispatch(
           fetchProject({
-            organizationId: organizations.data.content[0].id,
+            organizationId: selectedOrganization.id,
             projectId: userDataResponse.data.organizations[0].projects[0].id,
             storedToken: user.access_token,
           })
@@ -166,7 +181,7 @@ const AuthProvider = ({ children }) => {
 
         window.localStorage.setItem(
           authConfig.selectedOrganizationId,
-          organizations.data.content[0].id
+          selectedOrganization.id
         );
         window.localStorage.setItem(
           authConfig.selectedProjectId,
@@ -181,7 +196,7 @@ const AuthProvider = ({ children }) => {
         console.error(
           "Error occurred while fetching user data:",
           userDataError
-        );        
+        );
       });
 
     setLoading(false);
@@ -198,7 +213,6 @@ const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     if (user && router.pathname.includes("oidc-callback")) {
-
       let homeUrl = "/provenAI/home";
 
       //oidc-callback might contain a returnUrl query param to redirect to after login,
@@ -217,7 +231,6 @@ const AuthProvider = ({ children }) => {
     const storedToken = window.localStorage.getItem(
       authConfig.storageTokenKeyName
     );
-    
 
     if (user && user.organizations) {
       const updatedActiveOrganization = user.organizations.find(
@@ -252,7 +265,6 @@ const AuthProvider = ({ children }) => {
         }
       }
     }
-    
   }, [user, router]);
 
   const values = {
