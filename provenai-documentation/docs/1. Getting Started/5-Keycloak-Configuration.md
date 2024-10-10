@@ -12,7 +12,7 @@ git clone https://github.com/ctrl-space-labs/gendox-core.git
 ### Step 2: Start keycloak server
 
 #### Keycloak server setup with docker
-All provenAI services can be set up with docker installation by following the instructions provided [here](../Getting%20Started/Environment-Variables). When the docker-compose for all the services is built and running you can access the keycloak admin console at `http://localhost:8880` or `https://localhost:8443`. You will need to log in with the username and password you created on [step] or by following the script instructions on [step 4]().
+All provenAI services can be set up with docker installation by following the instructions provided [here](../Getting%20Started/Environment-Variables). When the docker-compose for all the services is built and running you can access the keycloak admin console at `http://localhost:8880` or `https://localhost:8443`. You will need to log in with the username and password you created on [step 4](./Keycloak-Configuration#step-4-create-keycloak-admin-user) or by following the script instructions on [step 3](../Keycloak-Configuration#step-3-setup-keycloak-clients-and-realm).
 
 ### Step 3: Setup keycloak clients and realm
 A script has been developed to create the `gendox-idp-dev` realm and configure all the necessary clients for the provenAI ecosystem. The `gendox-local-init.sh` is responsible for:
@@ -141,12 +141,16 @@ We note here that `8080` is the port for gendox backend.
 |                      | Implicit flow                           | `Off`                                 |
 |                      | OAuth 2.0 Device Authorization Grant    | `Off`                                 |
 
+
 We note here that `8080` is the port for gendox backend.
+
+![gendox private client](/img/gendoxclient.png)
+
 Under the `Service account roles` we need to assign the following roles:
-- `manage-users`
-- `impersonation`
-- `view-users`
-- `query-users`
+    - `manage-users`
+    - `impersonation`
+    - `view-users`
+    - `query-users`
 
 - Create `proven-ai-pkce-client` client. Fill in the client information with the following values:
 
@@ -196,11 +200,13 @@ Then create the following role under the `Roles` section:
 
 
 Under the `Service account roles` we need to assign the following roles:
-- `manage-users`
-- `impersonation`
-- `view-users`
-- `query-users`
-- `uma_protection`
+    - `manage-users`
+    - `impersonation`
+    - `view-users`
+    - `query-users`
+    - `uma_protection`
+
+![Service account roles](/img/service_account_roles.png)
 
 - Create `proven-pkce-public-client-local` client. Fill in the client information with the following values:
 
@@ -230,6 +236,10 @@ We also need to modify the following under advanced settings:
 | **Category**            | **Field**                                          | **Value**                       |
 |-------------------------|----------------------------------------------------|---------------------------------|
 | **Advanced Settings**   | Proof Key for Code Exchange Code Challenge Method  | `H256`     |
+
+
+
+![Keycloak clients](/img/client.png)
 
 ### Step 8: Create role users
 In the section **Realm roles** create the role `user`
@@ -300,6 +310,9 @@ Switch to Add providers. Add `hmac-generated`:
 |                    | Access Token Lifespan For Implicit Flow | `12 Hours`  |
 |                    | Client Login Timeout               | `your-login-timeout`           |
 
+![tokens](/img/tokens.png)
+
+
 ### Step 10: Authentication Settings
  We need to create a `Copy of registration` flow on flows:
 
@@ -319,7 +332,9 @@ Next switch to `Required actions`. You will need to change the following values:
 | **Field**                   | **Value**                             |
 |-----------------------------|---------------------------------------|
 | Terms and Conditions        | `On`                           |
-| Verify                      | `Off`                        |
+
+![Registration](/img/registration.png)
+
 
 ### Step 11: Keycloak environment variables and application properties
 AFter configuring keycloak you will need to update the environment variables:
