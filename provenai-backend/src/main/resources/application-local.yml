@@ -25,9 +25,9 @@ keycloak:
 proven-ai:
   ssi:
     verifier:
-      url: http://host.docker.internal:7003/verifier/openid4vc/verify
+      url: http://host.docker.internal:7003/openid4vc/verify
     issuer:
-      url: http://host.docker.internal:7002/issuer/openid4vc/jwt/issue
+      url: http://host.docker.internal:7002/openid4vc/jwt/issue
 
 
   domains:
