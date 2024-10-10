@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en" dir="ltr" class="docs-wrapper plugin-docs plugin-id-default docs-version-current docs-doc-page docs-doc-id-ProvenAI - SDK/ProvenAI SDK docker compose" data-has-hydrated="false">
+<head>
+<meta charset="UTF-8">
+<meta name="generator" content="Docusaurus v3.2.1">
+<title data-rh="true">ProvenAI Docker Compose | ProvenAI</title><meta data-rh="true" name="viewport" content="width=device-width,initial-scale=1"><meta data-rh="true" name="twitter:card" content="summary_large_image"><meta data-rh="true" property="og:image" content="https://ctrl-space-labs.github.io/proven-ai/img/docusaurus-social-card.jpg"><meta data-rh="true" name="twitter:image" content="https://ctrl-space-labs.github.io/proven-ai/img/docusaurus-social-card.jpg"><meta data-rh="true" property="og:url" content="https://ctrl-space-labs.github.io/proven-ai/docs/ProvenAI - SDK/ProvenAI SDK docker compose"><meta data-rh="true" property="og:locale" content="en"><meta data-rh="true" name="docusaurus_locale" content="en"><meta data-rh="true" name="docsearch:language" content="en"><meta data-rh="true" name="docusaurus_version" content="current"><meta data-rh="true" name="docusaurus_tag" content="docs-default-current"><meta data-rh="true" name="docsearch:version" content="current"><meta data-rh="true" name="docsearch:docusaurus_tag" content="docs-default-current"><meta data-rh="true" property="og:title" content="ProvenAI Docker Compose | ProvenAI"><meta data-rh="true" name="description" content="The ProvenAI SDK can be installed following the provenAI installation instructions as described here. It also can be set up for local development when running the provenAI backend. It contains the proven-ai-sdk-docker-compose to set the configuration settings for the docker containers of the microservices used within the provenAI app."><meta data-rh="true" property="og:description" content="The ProvenAI SDK can be installed following the provenAI installation instructions as described here. It also can be set up for local development when running the provenAI backend. It contains the proven-ai-sdk-docker-compose to set the configuration settings for the docker containers of the microservices used within the provenAI app."><link data-rh="true" rel="icon" href="/proven-ai/img/Proven-Transp-1-fav-icon.png"><link data-rh="true" rel="canonical" href="https://ctrl-space-labs.github.io/proven-ai/docs/ProvenAI - SDK/ProvenAI SDK docker compose"><link data-rh="true" rel="alternate" href="https://ctrl-space-labs.github.io/proven-ai/docs/ProvenAI - SDK/ProvenAI SDK docker compose" hreflang="en"><link data-rh="true" rel="alternate" href="https://ctrl-space-labs.github.io/proven-ai/docs/ProvenAI - SDK/ProvenAI SDK docker compose" hreflang="x-default"><link rel="alternate" type="application/rss+xml" href="/proven-ai/blog/rss.xml" title="ProvenAI RSS Feed">
+<link rel="alternate" type="application/atom+xml" href="/proven-ai/blog/atom.xml" title="ProvenAI Atom Feed"><link rel="stylesheet" href="/proven-ai/assets/css/styles.15e4fe59.css">
+<script src="/proven-ai/assets/js/runtime~main.1141aebb.js" defer="defer"></script>
+<script src="/proven-ai/assets/js/main.0b00e922.js" defer="defer"></script>
+</head>
+<body class="navigation-with-keyboard">
+<script>!function(){function t(t){document.documentElement.setAttribute("data-theme",t)}var e=function(){try{return new URLSearchParams(window.location.search).get("docusaurus-theme")}catch(t){}}()||function(){try{return localStorage.getItem("theme")}catch(t){}}();t(null!==e?e:"light")}(),function(){try{const c=new URLSearchParams(window.location.search).entries();for(var[t,e]of c)if(t.startsWith("docusaurus-data-")){var a=t.replace("docusaurus-data-","data-");document.documentElement.setAttribute(a,e)}}catch(t){}}()</script><div id="__docusaurus"><div role="region" aria-label="Skip to main content"><a class="skipToContent_fXgn" href="#__docusaurus_skipToContent_fallback">Skip to main content</a></div><nav aria-label="Main" class="navbar navbar--fixed-top"><div class="navbar__inner"><div class="navbar__items"><button aria-label="Toggle navigation bar" aria-expanded="false" class="navbar__toggle clean-btn" type="button"><svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><path stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="2" d="M4 7h22M4 15h22M4 23h22"></path></svg></button><a class="navbar__brand" href="/proven-ai/"><div class="navbar__logo"><img src="/proven-ai/img/Proven-Transp-1-crop.png" alt="ProvenAI Logo" class="themedComponent_mlkZ themedComponent--light_NVdE"><img src="/proven-ai/img/Proven-Transp-1-crop.png" alt="ProvenAI Logo" class="themedComponent_mlkZ themedComponent--dark_xIcU"></div><b class="navbar__title text--truncate"></b></a><a aria-current="page" class="navbar__item navbar__link navbar__link--active" href="/proven-ai/docs/Getting Started/Installation">Tutorial</a><a class="navbar__item navbar__link" href="/proven-ai/blog">Blog</a></div><div class="navbar__items navbar__items--right"><a href="https://github.com/ctrl-space-labs/proven-ai" target="_blank" rel="noopener noreferrer" class="navbar__item navbar__link">GitHub<svg width="13.5" height="13.5" aria-hidden="true" viewBox="0 0 24 24" class="iconExternalLink_nPIU"><path fill="currentColor" d="M21 13v10h-21v-19h12v2h-10v15h17v-8h2zm3-12h-10.988l4.035 4-6.977 7.07 2.828 2.828 6.977-7.07 4.125 4.172v-11z"></path></svg></a><div class="toggle_vylO colorModeToggle_DEke"><button class="clean-btn toggleButton_gllP toggleButtonDisabled_aARS" type="button" disabled="" title="Switch between dark and light mode (currently light mode)" aria-label="Switch between dark and light mode (currently light mode)" aria-live="polite"><svg viewBox="0 0 24 24" width="24" height="24" class="lightToggleIcon_pyhR"><path fill="currentColor" d="M12,9c1.65,0,3,1.35,3,3s-1.35,3-3,3s-3-1.35-3-3S10.35,9,12,9 M12,7c-2.76,0-5,2.24-5,5s2.24,5,5,5s5-2.24,5-5 S14.76,7,12,7L12,7z M2,13l2,0c0.55,0,1-0.45,1-1s-0.45-1-1-1l-2,0c-0.55,0-1,0.45-1,1S1.45,13,2,13z M20,13l2,0c0.55,0,1-0.45,1-1 s-0.45-1-1-1l-2,0c-0.55,0-1,0.45-1,1S19.45,13,20,13z M11,2v2c0,0.55,0.45,1,1,1s1-0.45,1-1V2c0-0.55-0.45-1-1-1S11,1.45,11,2z M11,20v2c0,0.55,0.45,1,1,1s1-0.45,1-1v-2c0-0.55-0.45-1-1-1C11.45,19,11,19.45,11,20z M5.99,4.58c-0.39-0.39-1.03-0.39-1.41,0 c-0.39,0.39-0.39,1.03,0,1.41l1.06,1.06c0.39,0.39,1.03,0.39,1.41,0s0.39-1.03,0-1.41L5.99,4.58z M18.36,16.95 c-0.39-0.39-1.03-0.39-1.41,0c-0.39,0.39-0.39,1.03,0,1.41l1.06,1.06c0.39,0.39,1.03,0.39,1.41,0c0.39-0.39,0.39-1.03,0-1.41 L18.36,16.95z M19.42,5.99c0.39-0.39,0.39-1.03,0-1.41c-0.39-0.39-1.03-0.39-1.41,0l-1.06,1.06c-0.39,0.39-0.39,1.03,0,1.41 s1.03,0.39,1.41,0L19.42,5.99z M7.05,18.36c0.39-0.39,0.39-1.03,0-1.41c-0.39-0.39-1.03-0.39-1.41,0l-1.06,1.06 c-0.39,0.39-0.39,1.03,0,1.41s1.03,0.39,1.41,0L7.05,18.36z"></path></svg><svg viewBox="0 0 24 24" width="24" height="24" class="darkToggleIcon_wfgR"><path fill="currentColor" d="M9.37,5.51C9.19,6.15,9.1,6.82,9.1,7.5c0,4.08,3.32,7.4,7.4,7.4c0.68,0,1.35-0.09,1.99-0.27C17.45,17.19,14.93,19,12,19 c-3.86,0-7-3.14-7-7C5,9.07,6.81,6.55,9.37,5.51z M12,3c-4.97,0-9,4.03-9,9s4.03,9,9,9s9-4.03,9-9c0-0.46-0.04-0.92-0.1-1.36 c-0.98,1.37-2.58,2.26-4.4,2.26c-2.98,0-5.4-2.42-5.4-5.4c0-1.81,0.89-3.42,2.26-4.4C12.92,3.04,12.46,3,12,3L12,3z"></path></svg></button></div><div class="navbarSearchContainer_Bca1"></div></div></div><div role="presentation" class="navbar-sidebar__backdrop"></div></nav><div id="__docusaurus_skipToContent_fallback" class="main-wrapper mainWrapper_z2l0"><div class="docsWrapper_hBAB"><button aria-label="Scroll back to top" class="clean-btn theme-back-to-top-button backToTopButton_sjWU" type="button"></button><div class="docRoot_UBD9"><aside class="theme-doc-sidebar-container docSidebarContainer_YfHR"><div class="sidebarViewport_aRkj"><div class="sidebar_njMd"><nav aria-label="Docs sidebar" class="menu thin-scrollbar menu_SIkG"><ul class="theme-doc-sidebar-menu menu__list"><li class="theme-doc-sidebar-item-category theme-doc-sidebar-item-category-level-1 menu__list-item menu__list-item--collapsed"><div class="menu__list-item-collapsible"><a class="menu__link menu__link--sublist menu__link--sublist-caret" role="button" aria-expanded="false" href="/proven-ai/docs/Getting Started/Installation">Getting Started</a></div></li><li class="theme-doc-sidebar-item-category theme-doc-sidebar-item-category-level-1 menu__list-item"><div class="menu__list-item-collapsible"><a class="menu__link menu__link--sublist menu__link--sublist-caret menu__link--active" role="button" aria-expanded="true" href="/proven-ai/docs/ProvenAI - SDK/Getting-Started-SDK">ProvenAI - SDK</a></div><ul style="display:block;overflow:visible;height:auto" class="menu__list"><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-2 menu__list-item"><a class="menu__link" tabindex="0" href="/proven-ai/docs/ProvenAI - SDK/Getting-Started-SDK">Introduction</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-2 menu__list-item"><a class="menu__link menu__link--active" aria-current="page" tabindex="0" href="/proven-ai/docs/ProvenAI - SDK/ProvenAI SDK docker compose">ProvenAI Docker Compose</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-2 menu__list-item"><a class="menu__link" tabindex="0" href="/proven-ai/docs/ProvenAI - SDK/Blockchain">Blockchain</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-2 menu__list-item"><a class="menu__link" tabindex="0" href="/proven-ai/docs/ProvenAI - SDK/ISCC">ISCC</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-2 menu__list-item"><a class="menu__link" tabindex="0" href="/proven-ai/docs/ProvenAI - SDK/SSI">SSI Issuer and Verifier</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-2 menu__list-item"><a class="menu__link" tabindex="0" href="/proven-ai/docs/ProvenAI - SDK/Utils">Utils</a></li></ul></li><li class="theme-doc-sidebar-item-category theme-doc-sidebar-item-category-level-1 menu__list-item menu__list-item--collapsed"><div class="menu__list-item-collapsible"><a class="menu__link menu__link--sublist menu__link--sublist-caret" role="button" aria-expanded="false" href="/proven-ai/docs/API Documentation/Organizations">API Documentation</a></div></li><li class="theme-doc-sidebar-item-category theme-doc-sidebar-item-category-level-1 menu__list-item menu__list-item--collapsed"><div class="menu__list-item-collapsible"><a class="menu__link menu__link--sublist menu__link--sublist-caret" role="button" aria-expanded="false" href="/proven-ai/docs/SSI-Issuer-&amp;-Verifier/Setup-Issuer-and-Verifiers">SSI-Issuer-&amp;-Verifier</a></div></li><li class="theme-doc-sidebar-item-category theme-doc-sidebar-item-category-level-1 menu__list-item menu__list-item--collapsed"><div class="menu__list-item-collapsible"><a class="menu__link menu__link--sublist menu__link--sublist-caret" role="button" aria-expanded="false" href="/proven-ai/docs/ISCC Code/Introduction">ISCC Code</a></div></li><li class="theme-doc-sidebar-item-category theme-doc-sidebar-item-category-level-1 menu__list-item menu__list-item--collapsed"><div class="menu__list-item-collapsible"><a class="menu__link menu__link--sublist menu__link--sublist-caret" role="button" aria-expanded="false" href="/proven-ai/docs/Blockchain/Intro">Blockchain</a></div></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a href="https://dev.proven-ai.ctrlspace.dev/proven-ai/api/v1/api-documentation" target="_blank" rel="noopener noreferrer" class="menu__link menuExternalLink_NmtK">Full API Reference<svg width="13.5" height="13.5" aria-hidden="true" viewBox="0 0 24 24" class="iconExternalLink_nPIU"><path fill="currentColor" d="M21 13v10h-21v-19h12v2h-10v15h17v-8h2zm3-12h-10.988l4.035 4-6.977 7.07 2.828 2.828 6.977-7.07 4.125 4.172v-11z"></path></svg></a></li></ul></nav></div></div></aside><main class="docMainContainer_TBSr"><div class="container padding-top--md padding-bottom--lg"><div class="row"><div class="col docItemCol_VOVn"><div class="docItemContainer_Djhp"><article><nav class="theme-doc-breadcrumbs breadcrumbsContainer_Z_bl" aria-label="Breadcrumbs"><ul class="breadcrumbs" itemscope="" itemtype="https://schema.org/BreadcrumbList"><li class="breadcrumbs__item"><a aria-label="Home page" class="breadcrumbs__link" href="/proven-ai/"><svg viewBox="0 0 24 24" class="breadcrumbHomeIcon_YNFT"><path d="M10 19v-5h4v5c0 .55.45 1 1 1h3c.55 0 1-.45 1-1v-7h1.7c.46 0 .68-.57.33-.87L12.67 3.6c-.38-.34-.96-.34-1.34 0l-8.36 7.53c-.34.3-.13.87.33.87H5v7c0 .55.45 1 1 1h3c.55 0 1-.45 1-1z" fill="currentColor"></path></svg></a></li><li class="breadcrumbs__item"><span class="breadcrumbs__link">ProvenAI - SDK</span><meta itemprop="position" content="1"></li><li itemscope="" itemprop="itemListElement" itemtype="https://schema.org/ListItem" class="breadcrumbs__item breadcrumbs__item--active"><span class="breadcrumbs__link" itemprop="name">ProvenAI Docker Compose</span><meta itemprop="position" content="2"></li></ul></nav><div class="tocCollapsible_ETCw theme-doc-toc-mobile tocMobile_ITEo"><button type="button" class="clean-btn tocCollapsibleButton_TO0P">On this page</button></div><div class="theme-doc-markdown markdown"><h1>ProvenAI Docker Compose</h1>
+<p>The ProvenAI SDK can be installed following the provenAI installation instructions as described <a href="/proven-ai/docs/Getting Started/Installation">here</a>. It also can be set up for local development when running the <a href="/proven-ai/docs/Getting Started/Installation#running-the-provenai-backend">provenAI backend</a>. It contains the <code>proven-ai-sdk-docker-compose</code> to set the configuration settings for the docker containers of the microservices used within the provenAI app.</p>
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="issuer-api">Issuer API<a href="#issuer-api" class="hash-link" aria-label="Direct link to Issuer API" title="Direct link to Issuer API">​</a></h2>
+<p>This package contains the configuration settings for the issuer API provided from waltid-identity <a href="https://github.com/walt-id/waltid-identity/tree/main/docker-compose" target="_blank" rel="noopener noreferrer">docker-compose issuer api</a>. The <code>config</code> package contains all necessary configuration settings.</p>
+<h4 class="anchor anchorWithStickyNavbar_LWe7" id="credential-issuer-metadataconf"><code>credential-issuer-metadata.conf</code><a href="#credential-issuer-metadataconf" class="hash-link" aria-label="Direct link to credential-issuer-metadataconf" title="Direct link to credential-issuer-metadataconf">​</a></h4>
+<p>This file defines the types of verifiable credentials that can be issued by the service, and it is provided from the waltid identity issuer api <a href="https://github.com/walt-id/waltid-identity/tree/main/docker-compose/issuer-api" target="_blank" rel="noopener noreferrer">docker-compose</a>. Each credential type is listed along with its supported format. To support the credentials our provenAI app issues we expanded this file by introducing two types of credetials:</p>
+<ul>
+<li>Verifiable Agent ID: <code>VerifiableAgentID = [VerifiableCredential, VerifiableAgentID]</code></li>
+<li>Verifiable Data Ownership Credential: <code>VerifiableDataOwnershipCredential = [VerifiableCredential, VerifiableDataOwnershipCredential]</code></li>
+</ul>
+<h4 class="anchor anchorWithStickyNavbar_LWe7" id="issuer-serviceconf"><code>issuer-service.conf</code><a href="#issuer-serviceconf" class="hash-link" aria-label="Direct link to issuer-serviceconf" title="Direct link to issuer-serviceconf">​</a></h4>
+<p>This file sets the base URL for the issuer service. The issuer service is responsible for issuing verifiable credentials.</p>
+<ul>
+<li><code>baseUrl</code>: The URL where the issuer API is hosted.</li>
+</ul>
+<h4 class="anchor anchorWithStickyNavbar_LWe7" id="webconf"><code>web.conf</code><a href="#webconf" class="hash-link" aria-label="Direct link to webconf" title="Direct link to webconf">​</a></h4>
+<p>This file configures the web host and port for the issuer service.</p>
+<ul>
+<li><code>webHost</code>: The host address to bind the service. Set to 0.0.0.0.</li>
+<li><code>webPort</code>: The port number to expose the service. Set to 7002.</li>
+</ul>
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="verifier-api">Verifier API<a href="#verifier-api" class="hash-link" aria-label="Direct link to Verifier API" title="Direct link to Verifier API">​</a></h2>
+<p>This package contains the configuration settings for waltid&#x27; s the verifier api configuration provided from <a href="https://github.com/walt-id/waltid-identity/tree/main/docker-compose/verifier-api" target="_blank" rel="noopener noreferrer">docker-compose verifier api</a>. The <code>config</code> package contains all necessary configuration settings.</p>
+<h4 class="anchor anchorWithStickyNavbar_LWe7" id="verifier-serviceconf"><code>verifier-service.conf</code><a href="#verifier-serviceconf" class="hash-link" aria-label="Direct link to verifier-serviceconf" title="Direct link to verifier-serviceconf">​</a></h4>
+<p>This file sets the base URL for the verifier service. The verifier service is responsible for verifying issued credentials.</p>
+<ul>
+<li><code>baseUrl</code>: The URL where the verifier API is hosted.</li>
+</ul>
+<h4 class="anchor anchorWithStickyNavbar_LWe7" id="verifier-service-devconf"><code>verifier-service-dev.conf</code><a href="#verifier-service-devconf" class="hash-link" aria-label="Direct link to verifier-service-devconf" title="Direct link to verifier-service-devconf">​</a></h4>
+<p>This file sets the base URL for the verifier service for the development environment. The verifier service is responsible for verifying issued credentials.</p>
+<ul>
+<li><code>baseUrl</code>: The URL where the verifier API is hosted in the development environment.</li>
+</ul>
+<h4 class="anchor anchorWithStickyNavbar_LWe7" id="verifier-service-devconf-1"><code>verifier-service-dev.conf</code><a href="#verifier-service-devconf-1" class="hash-link" aria-label="Direct link to verifier-service-devconf-1" title="Direct link to verifier-service-devconf-1">​</a></h4>
+<p>This file sets the base URL for the verifier service for the local environment. The verifier service is responsible for verifying issued credentials.</p>
+<ul>
+<li><code>baseUrl</code>: The URL where the verifier API is hosted in the local environment.</li>
+</ul>
+<h4 class="anchor anchorWithStickyNavbar_LWe7" id="webconf-1"><code>web.conf</code><a href="#webconf-1" class="hash-link" aria-label="Direct link to webconf-1" title="Direct link to webconf-1">​</a></h4>
+<p>This file configures the web host and port for the verifier service.</p>
+<ul>
+<li><code>webHost</code>: The host address to bind the service. Set to 0.0.0.0.</li>
+<li><code>webPort</code>: The port number to expose the service. Set to 7003.</li>
+</ul>
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="environment-variables">Environment Variables<a href="#environment-variables" class="hash-link" aria-label="Direct link to Environment Variables" title="Direct link to Environment Variables">​</a></h2>
+<p>ProvenAI SDK uses environment variables to configure the services. The environment variables are set in the <code>.env</code> file in the <code>provenai-sdk-docker-compose</code> directory. The services configured in the provenAI SDK is the iscc code generation and the waltID identity issuer and verifier. Therefore there are environent variables specific to each of these services and they are configured based on the services&#x27; documentation and docker-compose files.</p>
+<ul>
+<li>For the ISCC code generation <a href="https://github.com/iscc/iscc-web" target="_blank" rel="noopener noreferrer">configuration</a></li>
+</ul>
+<table><thead><tr><th><strong>Variable</strong></th><th><strong>Description</strong></th><th><strong>Default Value</strong></th></tr></thead><tbody><tr><td><code>ISCC_WEB_ENVIRONMENT</code></td><td>Environment mode (<code>production</code>, <code>development</code>).</td><td><code>development</code></td></tr><tr><td><code>ISCC_WEB_SITE_EMAIL</code></td><td>Site administrator email address.</td><td><code>&lt;email adress&gt;</code></td></tr><tr><td><code>ISCC_WEB_SITE_ADDRESS</code></td><td>Public site address.</td><td><code>http://localhost:8080</code></td></tr><tr><td><code>ISCC_WEB_SITE_PORT</code></td><td>Port for the ISCC web service.</td><td><code>8080</code></td></tr><tr><td><code>ISCC_WEB_PRIVATE_FILES</code></td><td>restrict file downloads to original uploader.</td><td><code>true</code></td></tr><tr><td><code>ISCC_WEB_MAX_UPLOAD_SIZE</code></td><td>Maximum upload file size (bytes).</td><td><code>1073741824</code></td></tr><tr><td><code>ISCC_WEB_STORAGE_EXPIRY</code></td><td>Storage expiration time (seconds).</td><td><code>3600</code></td></tr><tr><td><code>ISCC_WEB_CLEANUP_INTERVAL</code></td><td>Interval for cleanup operations (seconds).</td><td><code>600</code></td></tr><tr><td><code>ISCC_WEB_LOG_LEVEL</code></td><td>Log level.</td><td><code>DEBUG</code></td></tr><tr><td><code>ISCC_WEB_IO_READ_SIZE</code></td><td>File read chunk size (bytes).</td><td><code>2097152</code></td></tr><tr><td><code>FORWARDED_ALLOW_IPS</code></td><td>Allowed IPs for forwarding.</td><td><code>*</code></td></tr><tr><td><code>ISCC_SDK_GRANULAR</code></td><td>Activate generation of granular fingerprints .</td><td><code>false</code></td></tr></tbody></table>
+<ul>
+<li>For the waltID identity issuer and verifier <a href="https://github.com/walt-id/waltid-identity/blob/main/docker-compose" target="_blank" rel="noopener noreferrer">configuration</a></li>
+</ul>
+<table><thead><tr><th><strong>Variable</strong></th><th><strong>Description</strong></th><th><strong>Default Value</strong></th></tr></thead><tbody><tr><td><code>WALLET_BACKEND_PORT</code></td><td>Port for the wallet backend service.</td><td><code>7001</code></td></tr><tr><td><code>ISSUER_API_PORT</code></td><td>Port for the Issuer API service.</td><td><code>7002</code></td></tr><tr><td><code>VERIFIER_API_PORT</code></td><td>Port for the Verifier API service.</td><td><code>7003</code></td></tr><tr><td><code>WALLET_FRONTEND_PORT</code></td><td>Port for the wallet frontend service.</td><td><code>7101</code></td></tr><tr><td><code>WEB_PORTAL_PORT</code></td><td>Port for the web portal service.</td><td><code>7102</code></td></tr><tr><td><code>VC_REPO_PORT</code></td><td>Port for the VC repository service.</td><td><code>7103</code></td></tr><tr><td><code>VERSION_TAG</code></td><td>Version tag for Docker images.</td><td><code>1.0.2406231424-SNAPSHOT</code></td></tr></tbody></table>
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="caddyfile">Caddyfile<a href="#caddyfile" class="hash-link" aria-label="Direct link to Caddyfile" title="Direct link to Caddyfile">​</a></h2>
+<p>This file is used to configure reverse proxies for the services.</p>
+<ul>
+<li><strong>Web Service</strong>: Proxies requests for the ISCC web service (port 8970).</li>
+<li><strong>Issuer API</strong>: Proxies requests for the Issuer API (port 7002).</li>
+<li><strong>Verifier API</strong>: Proxies requests for the Verifier API (port 7003).</li>
+<li><strong>Global Configuration</strong>:<!-- -->
+<ul>
+<li><code>auto_https off</code>: Disables automatic HTTPS setup by Caddy.</li>
+<li><code>admin off</code>: Disables the Caddy admin API.</li>
+<li><code>email {$ISCC_WEB_SITE_EMAIL}</code>: Contact email for notifications, such as certificate expiration.</li>
+</ul>
+</li>
+</ul>
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="docker-compose-configuration">Docker Compose Configuration<a href="#docker-compose-configuration" class="hash-link" aria-label="Direct link to Docker Compose Configuration" title="Direct link to Docker Compose Configuration">​</a></h2>
+<h3 class="anchor anchorWithStickyNavbar_LWe7" id="volumes">Volumes<a href="#volumes" class="hash-link" aria-label="Direct link to Volumes" title="Direct link to Volumes">​</a></h3>
+<ul>
+<li><strong>caddy-config</strong>: Volume for Caddy configuration files.</li>
+<li><strong>caddy-data</strong>: Volume for Caddy data storage.</li>
+</ul>
+<h3 class="anchor anchorWithStickyNavbar_LWe7" id="services">Services<a href="#services" class="hash-link" aria-label="Direct link to Services" title="Direct link to Services">​</a></h3>
+<h4 class="anchor anchorWithStickyNavbar_LWe7" id="1-iscc-application-iscc-app">1. ISCC Application <code>iscc-app</code><a href="#1-iscc-application-iscc-app" class="hash-link" aria-label="Direct link to 1-iscc-application-iscc-app" title="Direct link to 1-iscc-application-iscc-app">​</a></h4>
+<ul>
+<li><strong>image</strong>: The Docker image for the ISCC Web application, sourced from GitHub Container Registry. Set to <code>ghcr.io/iscc/iscc-web:main</code>.</li>
+<li><strong>init</strong>: If set to <code>true</code>, enables the init system for the container.</li>
+<li><strong>env_file</strong>: Loads environment variables from the <code>.env</code> file.</li>
+</ul>
+<h4 class="anchor anchorWithStickyNavbar_LWe7" id="2-caddy-reverse-proxy-caddy">2. Caddy Reverse Proxy <code>caddy</code><a href="#2-caddy-reverse-proxy-caddy" class="hash-link" aria-label="Direct link to 2-caddy-reverse-proxy-caddy" title="Direct link to 2-caddy-reverse-proxy-caddy">​</a></h4>
+<ul>
+<li><strong>image</strong>: The Docker image for the Caddy reverse proxy, set to <code>caddy:2.6.1-alpine</code>.</li>
+<li><strong>restart</strong>: Defines the restart policy. Set to <code>unless-stopped</code>, which means it will restart unless explicitly stopped.</li>
+<li><strong>env_file</strong>: Loads environment variables from the <code>.env</code> file.</li>
+<li><strong>environment</strong>: Defines environment variables for the service.<!-- -->
+<ul>
+<li><strong>ISCC_SDK_GRANULAR</strong>: Set from the <code>${ISCC_SDK_GRANULAR}</code> environment variable.</li>
+</ul>
+</li>
+<li><strong>volumes</strong>:<!-- -->
+<ul>
+<li><code>./Caddyfile:/etc/caddy/Caddyfile</code>: Mounts the local Caddyfile to the container.</li>
+<li><code>caddy-config:/config</code>: Mounts the Caddy configuration volume.</li>
+<li><code>caddy-data:/data</code>: Mounts the Caddy data volume.</li>
+</ul>
+</li>
+<li><strong>ports</strong>:<!-- -->
+<ul>
+<li>Defines the published ports for ISCC Web, Issuer API, and Verifier API.<!-- -->
+<ul>
+<li><strong>ISCC Web</strong>:<!-- -->
+<ul>
+<li><code>target</code>: <code>$ISCC_WEB_SITE_PORT</code></li>
+<li><code>published</code>: <code>$ISCC_WEB_SITE_PORT</code></li>
+<li><code>protocol</code>: <code>tcp</code></li>
+<li><code>mode</code>: <code>host</code></li>
+</ul>
+</li>
+<li><strong>Issuer API</strong>:<!-- -->
+<ul>
+<li><code>target</code>: <code>$ISSUER_API_PORT</code></li>
+<li><code>published</code>: <code>$ISSUER_API_PORT</code></li>
+<li><code>protocol</code>: <code>tcp</code></li>
+<li><code>mode</code>: <code>host</code></li>
+</ul>
+</li>
+<li><strong>Verifier API</strong>:<!-- -->
+<ul>
+<li><code>target</code>: <code>$VERIFIER_API_PORT</code></li>
+<li><code>published</code>: <code>$VERIFIER_API_PORT</code></li>
+<li><code>protocol</code>: <code>tcp</code></li>
+<li><code>mode</code>: <code>host</code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><strong>depends_on</strong>: Specifies the dependency on the <code>iscc-app</code> service, ensuring it starts before this service.</li>
+</ul>
+<h4 class="anchor anchorWithStickyNavbar_LWe7" id="3-issuer-api-issuer-api">3. Issuer API (<code>issuer-api</code>)<a href="#3-issuer-api-issuer-api" class="hash-link" aria-label="Direct link to 3-issuer-api-issuer-api" title="Direct link to 3-issuer-api-issuer-api">​</a></h4>
+<ul>
+<li><strong>platform</strong>: Specifies the architecture of the container.</li>
+<li><strong>image</strong>: The Docker image for the WaltID Issuer API, sourced from Docker Hub. Set to <code>docker.io/waltid/issuer-api:${VERSION_TAG:-latest}</code>.</li>
+<li><strong>pull_policy</strong>: Defines the pull policy for the image. Set to <code>always</code>, ensuring the latest version is always pulled.</li>
+<li><strong>depends_on</strong>: Specifies the dependency on the <code>caddy</code> service.</li>
+<li><strong>env_file</strong>: Loads environment variables from the <code>.env</code> file.</li>
+<li><strong>volumes</strong>:<!-- -->
+<ul>
+<li><code>./issuer-api/config:/waltid-issuer-api/config</code>: Mounts the local Issuer API configuration directory to the container.</li>
+</ul>
+</li>
+</ul>
+<h4 class="anchor anchorWithStickyNavbar_LWe7" id="4-verifier-api-verifier-api">4. Verifier API (<code>verifier-api</code>)<a href="#4-verifier-api-verifier-api" class="hash-link" aria-label="Direct link to 4-verifier-api-verifier-api" title="Direct link to 4-verifier-api-verifier-api">​</a></h4>
+<ul>
+<li><strong>platform</strong>: Specifies the architecture of the container.</li>
+<li><strong>image</strong>: The Docker image for the WaltID Verifier API, sourced from Docker Hub. Set to <code>docker.io/waltid/verifier-api:${VERSION_TAG:-latest}</code>.</li>
+<li><strong>pull_policy</strong>: Defines the pull policy for the image. Set to <code>always</code>, ensuring the latest version is always pulled.</li>
+<li><strong>depends_on</strong>: Specifies the dependency on the <code>caddy</code> service.</li>
+<li><strong>env_file</strong>: Loads environment variables from the <code>.env</code> file.</li>
+<li><strong>volumes</strong>:<!-- -->
+<ul>
+<li><code>./verifier-api/config:/waltid-verifier-api/config</code>: Mounts the local Verifier API configuration directory to the container.</li>
+</ul>
+</li>
+</ul>
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="dockerfile">Dockerfile<a href="#dockerfile" class="hash-link" aria-label="Direct link to Dockerfile" title="Direct link to Dockerfile">​</a></h2>
+<h3 class="anchor anchorWithStickyNavbar_LWe7" id="base-image">Base Image<a href="#base-image" class="hash-link" aria-label="Direct link to Base Image" title="Direct link to Base Image">​</a></h3>
+<ul>
+<li><strong>FROM</strong>: Specifies the base image for the Docker image. Set to <code>docker:latest</code>.</li>
+</ul>
+<h3 class="anchor anchorWithStickyNavbar_LWe7" id="install-dependencies">Install Dependencies<a href="#install-dependencies" class="hash-link" aria-label="Direct link to Install Dependencies" title="Direct link to Install Dependencies">​</a></h3>
+<ul>
+<li><strong>RUN apk add --no-cache</strong>: Installs necessary packages without caching the intermediate data.</li>
+<li><strong>pip3 install --no-cache-dir docker-compose</strong>: Installs Docker Compose using Python&#x27;s package installer.</li>
+</ul>
+<h3 class="anchor anchorWithStickyNavbar_LWe7" id="copy-docker-compose-file">Copy Docker Compose File<a href="#copy-docker-compose-file" class="hash-link" aria-label="Direct link to Copy Docker Compose File" title="Direct link to Copy Docker Compose File">​</a></h3>
+<ul>
+<li><strong>COPY docker-compose.yml /app/docker-compose.yml</strong>: Copies The Docker Compose configuration file to the destination path in the Docker image where the <code>docker-compose.yml</code> file will be placed.</li>
+</ul>
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="waltid-identity-additional-files">WaltID Identity Additional Files<a href="#waltid-identity-additional-files" class="hash-link" aria-label="Direct link to WaltID Identity Additional Files" title="Direct link to WaltID Identity Additional Files">​</a></h2>
+<p>These files are also inlcuded as they are defined in the waltid identity docker-compose.</p>
+<h3 class="anchor anchorWithStickyNavbar_LWe7" id="api-testpy"><code>api-test.py</code><a href="#api-testpy" class="hash-link" aria-label="Direct link to api-testpy" title="Direct link to api-testpy">​</a></h3>
+<p>This file configures the tests conducted for the docker-compose.</p>
+<h3 class="anchor anchorWithStickyNavbar_LWe7" id="podmanyaml"><code>podman.yaml</code><a href="#podmanyaml" class="hash-link" aria-label="Direct link to podmanyaml" title="Direct link to podmanyaml">​</a></h3>
+<p>This files configures the settings for podman deployment.</p></div><footer class="theme-doc-footer docusaurus-mt-lg"><div class="row margin-top--sm theme-doc-footer-edit-meta-row"><div class="col"><a href="https://github.com/ctrl-space-labs/proven-ai/tree/main/provenai-documentation/docs/2. ProvenAI - SDK/2-ProvenAI SDK docker compose.md" target="_blank" rel="noopener noreferrer" class="theme-edit-this-page"><svg fill="currentColor" height="20" width="20" viewBox="0 0 40 40" class="iconEdit_Z9Sw" aria-hidden="true"><g><path d="m34.5 11.7l-3 3.1-6.3-6.3 3.1-3q0.5-0.5 1.2-0.5t1.1 0.5l3.9 3.9q0.5 0.4 0.5 1.1t-0.5 1.2z m-29.5 17.1l18.4-18.5 6.3 6.3-18.4 18.4h-6.3v-6.2z"></path></g></svg>Edit this page</a></div><div class="col lastUpdated_JAkA"></div></div></footer></article><nav class="pagination-nav docusaurus-mt-lg" aria-label="Docs pages"><a class="pagination-nav__link pagination-nav__link--prev" href="/proven-ai/docs/ProvenAI - SDK/Getting-Started-SDK"><div class="pagination-nav__sublabel">Previous</div><div class="pagination-nav__label">Introduction</div></a><a class="pagination-nav__link pagination-nav__link--next" href="/proven-ai/docs/ProvenAI - SDK/Blockchain"><div class="pagination-nav__sublabel">Next</div><div class="pagination-nav__label">Blockchain</div></a></nav></div></div><div class="col col--3"><div class="tableOfContents_bqdL thin-scrollbar theme-doc-toc-desktop"><ul class="table-of-contents table-of-contents__left-border"><li><a href="#issuer-api" class="table-of-contents__link toc-highlight">Issuer API</a></li><li><a href="#verifier-api" class="table-of-contents__link toc-highlight">Verifier API</a></li><li><a href="#environment-variables" class="table-of-contents__link toc-highlight">Environment Variables</a></li><li><a href="#caddyfile" class="table-of-contents__link toc-highlight">Caddyfile</a></li><li><a href="#docker-compose-configuration" class="table-of-contents__link toc-highlight">Docker Compose Configuration</a><ul><li><a href="#volumes" class="table-of-contents__link toc-highlight">Volumes</a></li><li><a href="#services" class="table-of-contents__link toc-highlight">Services</a></li></ul></li><li><a href="#dockerfile" class="table-of-contents__link toc-highlight">Dockerfile</a><ul><li><a href="#base-image" class="table-of-contents__link toc-highlight">Base Image</a></li><li><a href="#install-dependencies" class="table-of-contents__link toc-highlight">Install Dependencies</a></li><li><a href="#copy-docker-compose-file" class="table-of-contents__link toc-highlight">Copy Docker Compose File</a></li></ul></li><li><a href="#waltid-identity-additional-files" class="table-of-contents__link toc-highlight">WaltID Identity Additional Files</a><ul><li><a href="#api-testpy" class="table-of-contents__link toc-highlight"><code>api-test.py</code></a></li><li><a href="#podmanyaml" class="table-of-contents__link toc-highlight"><code>podman.yaml</code></a></li></ul></li></ul></div></div></div></div></main></div></div></div><footer class="footer footer--dark"><div class="container container-fluid"><div class="row footer__links"><div class="col footer__col"><div class="footer__title">Docs</div><ul class="footer__items clean-list"><li class="footer__item"><a class="footer__link-item" href="/proven-ai/docs/Getting Started/Installation">Tutorial</a></li></ul></div><div class="col footer__col"><div class="footer__title">Community</div><ul class="footer__items clean-list"><li class="footer__item"><a href="https://www.ctrlspace.dev/" target="_blank" rel="noopener noreferrer" class="footer__link-item">Ctrl+Space Labs<svg width="13.5" height="13.5" aria-hidden="true" viewBox="0 0 24 24" class="iconExternalLink_nPIU"><path fill="currentColor" d="M21 13v10h-21v-19h12v2h-10v15h17v-8h2zm3-12h-10.988l4.035 4-6.977 7.07 2.828 2.828 6.977-7.07 4.125 4.172v-11z"></path></svg></a></li><li class="footer__item"><a href="https://discord.com/invite/jWes2urauW" target="_blank" rel="noopener noreferrer" class="footer__link-item">Discord<svg width="13.5" height="13.5" aria-hidden="true" viewBox="0 0 24 24" class="iconExternalLink_nPIU"><path fill="currentColor" d="M21 13v10h-21v-19h12v2h-10v15h17v-8h2zm3-12h-10.988l4.035 4-6.977 7.07 2.828 2.828 6.977-7.07 4.125 4.172v-11z"></path></svg></a></li><li class="footer__item"><a href="https://www.instagram.com/ctrlspace.dev/" target="_blank" rel="noopener noreferrer" class="footer__link-item">Instagram<svg width="13.5" height="13.5" aria-hidden="true" viewBox="0 0 24 24" class="iconExternalLink_nPIU"><path fill="currentColor" d="M21 13v10h-21v-19h12v2h-10v15h17v-8h2zm3-12h-10.988l4.035 4-6.977 7.07 2.828 2.828 6.977-7.07 4.125 4.172v-11z"></path></svg></a></li></ul></div><div class="col footer__col"><div class="footer__title">More</div><ul class="footer__items clean-list"><li class="footer__item"><a class="footer__link-item" href="/proven-ai/blog">Blog</a></li><li class="footer__item"><a href="https://github.com/ctrl-space-labs/proven-ai" target="_blank" rel="noopener noreferrer" class="footer__link-item">GitHub<svg width="13.5" height="13.5" aria-hidden="true" viewBox="0 0 24 24" class="iconExternalLink_nPIU"><path fill="currentColor" d="M21 13v10h-21v-19h12v2h-10v15h17v-8h2zm3-12h-10.988l4.035 4-6.977 7.07 2.828 2.828 6.977-7.07 4.125 4.172v-11z"></path></svg></a></li></ul></div></div><div class="footer__bottom text--center"><div class="footer__copyright">Copyright © 2024 Ctrl+Space Labs.</div></div></div></footer></div>
+</body>
+</html>
