@@ -8,23 +8,7 @@ git clone https://github.com/ctrl-space-labs/gendox-core.git
 ### Step 2: Start keycloak server
 
 #### Keycloak server setup with docker
-
-
-#### Manual keycloak server setup
-
-Start Keycloak in development mode. From gendox-core
-```bash
-cd ./gendox-keycloak
-```
-- Linux/MacOS
-```bash
-bin/kc.sh start-dev --http-port=8880
-```
-- Windows
-```bash
-bin\kc.bat start-dev --http-port=8880
-```
-You can also configure any other port to run the keycloak server.
+All provenAI services can be set up with docker installation by following the instructions provided [here]().
 
 
 
@@ -313,6 +297,20 @@ Thenk on the [Keycloak Configuration](../Getting%20Started/Configuration#keycloa
 
 ### Step 10: Create `proven-ai-private-client` and users
 For the interaction between the Gendox and ProvenAI services we must create a user in the database for `proven-ai-private-client` and, following the steps below:
-- 
 
-   
+
+#### Manual keycloak server setup
+
+Start Keycloak in development mode. From gendox-core
+```bash
+cd ./gendox-keycloak
+```
+- Linux/MacOS
+```bash
+bin/kc.sh start-dev --http-port=8880
+```
+- Windows
+```bash
+bin\kc.bat start-dev --http-port=8880
+```
+You can also configure any other port to run the keycloak server.
