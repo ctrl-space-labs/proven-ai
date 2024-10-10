@@ -1,5 +1,9 @@
-# Keycloak Configuration
+# Keycloak
 
+## Introduction
+[Keycloak](https://www.keycloak.org/documentation) is an open source software product to allow single sign-on with identity and access management. Keycloak supports various protocols such as OpenID, OAuth version 2.0 and SAML and provides features such as user management, two-factor authentication, permissions and roles management, creating token services. The provenAI ecosystem uses keycloak for authentication and authorization, enabling secure access to its services. Configuring Keycloak, can be a complex task due to its wide range of customization options. However, we choose to use Keycloak because of its many benefits, including its support for industry-standard protocols, comprehensive user management, and the secure token-base authentication Additionally, being open-source, Keycloak offers flexibility and cost-effectiveness, making it a powerful tool for identity and access management.
+
+## Configuration
 ### Step 1: Clone the gendox-core repository
 ```bash
 git clone https://github.com/ctrl-space-labs/gendox-core.git
@@ -8,7 +12,7 @@ git clone https://github.com/ctrl-space-labs/gendox-core.git
 ### Step 2: Start keycloak server
 
 #### Keycloak server setup with docker
-All provenAI services can be set up with docker installation by following the instructions provided [here](../Getting%20Started/Installation#installation-1). When the docker-compose for all the services is built and running you can access the keycloak admin console at `http://localhost:8880` or `https://localhost:8443`. You will need to log in with the username and password you created  on [step] or by following the script instructions on step[].
+All provenAI services can be set up with docker installation by following the instructions provided [here](../Getting%20Started/Installation#installation-1). When the docker-compose for all the services is built and running you can access the keycloak admin console at `http://localhost:8880` or `https://localhost:8443`. You will need to log in with the username and password you created on [step] or by following the script instructions on [step 4]().
 
 ### Step 3: Setup keycloak clients and realm
 A script has been developed to create the `gendox-idp-dev` realm and configure all the necessary clients for the provenAI ecosystem. The `gendox-local-init.sh` is responsible for:
@@ -52,17 +56,17 @@ bash ./gendox-local-init.sh
 ```
 By executing this script you can skip steps 3-6 of the keycloak configuration which speeds up the setup process.
 
-### Step 3: Create keycloak admin user
+### Step 4: Create keycloak admin user
 - Go to the Keycloak admin console at `http://localhost:8880`
 - Create an administrative user. You need to set the username and password for the admin user.
 
-### Step 4: Create `gendox-idp-dev` realm
+### Step 5: Create `gendox-idp-dev` realm
 Open the Administration Consoler after creating the admin user. There is a default `master` realm created. Click on create realm and enter as name `gendox-idp-dev`.
 
-### Step 5: Fill in admin user information
+### Step 6: Fill in admin user information
 Switch to `master` real and under the `Users` you will se the admin user. Fill in the email of the user as well as the first and last name of the user.
 
-### Step 6: Configure realm clients
+### Step 7: Configure realm clients
 Navigate to `clients` to configure clients settings.
 
 
@@ -91,7 +95,7 @@ Navigate to `clients` to configure clients settings.
 We also need to modify the following under advanced settings:
 | **Category**            | **Field**                                          | **Value**                       |
 |-------------------------|----------------------------------------------------|---------------------------------|
-| **Advanced Settings**   | Proof Key for Code Exchange Code Challenge Method  | `H256`     |
+| **Advanced Settings**   | Proof Key for Code Exchange Code Challenge Method  | `S256`     |
 
 
 We note here that `3000` is the port for gendox frontend.
@@ -222,11 +226,12 @@ Under the `Service account roles` we need to assign the following roles:
 
 We note here that `3001` is the port for provenAI frontend.
 We also need to modify the following under advanced settings:
+
 | **Category**            | **Field**                                          | **Value**                       |
 |-------------------------|----------------------------------------------------|---------------------------------|
 | **Advanced Settings**   | Proof Key for Code Exchange Code Challenge Method  | `H256`     |
 
-### Step 7: Create role users
+### Step 8: Create role users
 In the section **Realm roles** create the role `user`
 
 | **Field**                   | **Value**                             |
@@ -235,7 +240,7 @@ In the section **Realm roles** create the role `user`
 | Description                  | `This is a role for users`                    |
 
 
-### Step 8: Modify Realm Settings
+### Step 9: Modify Realm Settings
 Under the section **Realm settings** configure the following settings:
 - **General**
 Enable `Unmanaged Attributes`
@@ -295,7 +300,7 @@ Switch to Add providers. Add `hmac-generated`:
 |                    | Access Token Lifespan For Implicit Flow | `12 Hours`  |
 |                    | Client Login Timeout               | `your-login-timeout`           |
 
-### Step 9: Authentication Settings
+### Step 10: Authentication Settings
  We need to create a `Copy of registration` flow on flows:
 
 | **Category**      | **Field**            | **Value**               |
@@ -304,7 +309,7 @@ Switch to Add providers. Add `hmac-generated`:
 
 Next we need to configure the flows.
 - Click on registration flow and duplicate it.
-- On the Copy of registration set `Terms&Condiitons` to `Required`.
+- On the Copy of registration set `Terms&Conditions` to `Required`.
 - Under Action select `Bind flow`. Choose as binding type as `Registration flow`.
 
 Switch to `Keycloak master` realm and repeat this process.
@@ -316,7 +321,7 @@ Next switch to `Required actions`. You will need to change the following values:
 | Terms and Conditions        | `On`                           |
 | Verify                      | `Off`                        |
 
-### Step 10: Keycloak environment variables and application properties
+### Step 11: Keycloak environment variables and application properties
 AFter configuring keycloak you will need to update the environment variables:
 | Environment Variable      | Example value                                              |
 |--------------------------|------------------------------------------------------------|
@@ -326,7 +331,7 @@ AFter configuring keycloak you will need to update the environment variables:
 The `KEYCLOAK_CLIENT_SECRET` is found on the `credentials` tab on the `gendox-private-client` client.
 
 
-### Step 10: Create `proven-ai-private-client` and users
+### Step 12: Create `proven-ai-private-client` and users
 For the interaction between the Gendox and ProvenAI services we must create a user in the database for `proven-ai-private-client` and, following the steps below:
 
 - Implement client log in to Keycloak:
@@ -348,7 +353,7 @@ curl -X GET "http://localhost:8080/gendox/api/v1/profile" \
 
 - Change user type to `SUPER_ADMIN`:
     - Go in the database in `user` table.
-    - Find the `proven-ai-private-client` user.
+    - Find the `proven-ai-private-client` user. The user has username `service-account-proven-ai-private-client`.
     - Change the `type_id` to the id corresponding to type `SUPER_ADMIN`. You can find the id on the `types` table.
 
 
