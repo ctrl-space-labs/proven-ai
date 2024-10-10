@@ -65,4 +65,4 @@ Also to set up all the environment variables and properties needed the following
 
 #### Step 4: Get Keycloak client keys
 
-ProvenAI uses Keycloak for authentication. You need to get the client keys for the services to interact with Keycloak. For more info about how to set up the Keycloak server and configure keycloak settings see [Keycloak Configuration](https://ctrl-space-labs.github.io/proven-ai/docs/Getting Started/Keycloak-Configuration). After running the docker compose you will need to configure the keycloak settings in order to run the app.
+ProvenAI uses Keycloak for authentication. You need to get the client keys for the services to interact with Keycloak. For more info about how to set up the Keycloak server and configure keycloak settings see [Keycloak Configuration](https://ctrl-space-labs.github.io/proven-ai/docs/Getting%20Started/Keycloak-Configuration). After running the docker compose you will need to configure the keycloak settings in order to run the app.
