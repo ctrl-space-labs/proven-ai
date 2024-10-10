@@ -41,7 +41,7 @@ git clone https://github.com/ctrl-space-labs/proven-ai.git
 
 #### Step 2: Set up environment variables
 
-In `./proven-ai/provenai-compose-scripts/local-installation/.env-local`, and set up the environment variables according to [Environment Variables](../Getting%20Started/Environment-Variables) documentation.
+In `./proven-ai/provenai-compose-scripts/local-installation/.env-local`, and set up the environment variables according to [Environment Variables](https://ctrl-space-labs.github.io/proven-ai/docs/Getting%20Started/Environment-Variables) documentation.
 
 
 #### Step 3: Run docker compose

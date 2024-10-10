@@ -23,14 +23,14 @@ The mandatory Environment Variables are:
 
 | Environment Variable        | Example Value                                             | Description                                                                                     |
 |-----------------------------|----------------------------------------------------------|-------------------------------------------------------------------------------------------------|
-| `DATABASE_URL`              | `jdbc:postgresql://localhost:5432/postgres`             | URL for connecting to the PostgreSQL database.                                                |
-| `DATABASE_USERNAME`         | `postgres`                                               | Username for the PostgreSQL database connection.                                               |
-| `DATABASE_PASSWORD`         | `*****`                                                  | Password for the PostgreSQL database connection.                                              |
+| `DATABASE_URL`              | `jdbc:postgresql://localhost:5432/postgres`             |                                               |
+| `DATABASE_USERNAME`         | `postgres`                                               |                                               |
+| `DATABASE_PASSWORD`         | `*****`                                                  |                                              |
 | `ISSUER_DID`                | `did:key:*********`                                     | Decentralized Identifier (DID) of the issuer for Verifiable Credentials (VC).                 |
 | `ISSUER_PRIVATE_JWK`        | `{"kty":"EC","d":"***","crv":"P-256"...}`              | JSON Web Key (JWK) of the issuer's private key for signing Verifiable Credentials.             |
 | `KEYCLOAK_CLIENT_ID`        | `gendox-*****`                                          | Client ID used to authenticate the application with the Keycloak server.                       |
 | `KEYCLOAK_CLIENT_SECRET`    | `**********`                                            | Client secret used for OAuth authentication with Keycloak.                                     |
-| `spring.profiles.active`    | `local`                                                 | The active Spring profile used for the application configuration.                               |
+| `spring.profiles.active`    | `local`                                                 |                           |
 
 :::note
 Default `ISSUER_DID` and `ISSUER_PRIVATE_JWK` values are provided in the `.env-local`. These are for testing only as they are not private values, to facilitate the provenAI setup.
@@ -61,8 +61,8 @@ The mandatory Environment Variables are:
 | `KEYCLOAK_CLIENT_SECRET`           | `**********`                                               | Client secret used for OAuth authentication with Keycloak.                  |
 | `DISCORD_TOKEN`                    | `**********`                                               | Token used to authenticate the application with Discord API.                |
 | `spring.profiles.active`           | `dev, openai-integration`                                  |       |
-| `AWS_ACCESS_KEY`                    | `AKIAIOSFODNN7EXAMPLE`                                               | Token used to authenticate the application with Discord API.                |
-| `AWS_SECRET_ACCESS_KEY`           | `/K7MDENG/bPxRfiCYEXAMPLEKEY`                                |       |
+| `AWS_ACCESS_KEY`                    | `AKIAIOSFODNN7EXAMPLE`                                     |Token used to authenticate the application with AWS services.    |
+| `AWS_SECRET_ACCESS_KEY`           | `/K7MDENG/bPxRfiCYEXAMPLEKEY`                                |Secret key used in conjunction with the access key to authenticate with AWS services.    |
 
 
 
