@@ -8,10 +8,49 @@ git clone https://github.com/ctrl-space-labs/gendox-core.git
 ### Step 2: Start keycloak server
 
 #### Keycloak server setup with docker
-All provenAI services can be set up with docker installation by following the instructions provided [here]().
+All provenAI services can be set up with docker installation by following the instructions provided [here](../Getting%20Started/Installation#installation-1). When the docker-compose for all the services is built and running you can access the keycloak admin console at `http://localhost:8880` or `https://localhost:8443`. You will need to log in with the username and password you created  on [step] or by following the script instructions on step[].
 
+### Step 3: Setup keycloak clients and realm
+A script has been developed to create the `gendox-idp-dev` realm and configure all the necessary clients for the provenAI ecosystem. The `gendox-local-init.sh` is responsible for:
+- Logging into Keycloak with admin credentials.
+- Creating the `gendox-idp-dev` realm.
+- Creating PKCE and private clients.
+- Assigning roles to private clients' service accounts.
+It also executes the `kcadm.sh` that is responsible for:
+- Setting the correct java executable.
+- Executing the Keycloak Admin CLI.
 
+#### Prerequisites:
+- Linux/MacOS or Windows with WSL
+- `java`
+- `jq` (for JSON parsing)
+- If you are running it with windows and WSL `dos2unix` might be needed.
 
+- **Access `conf` folder of `gendox-keycloak`**
+```bash
+cd  ../gendox-core/gendox-keycloak/conf
+```
+- **If you execute the command on WSL with Windows**
+Skip this step if you are using Linux/MacOs. We use this package to convert text files with DOS (Windows) line endings (e.g. \r\n) into Unix/Linux line endings.
+
+```bash
+dos2unix ../bin/kcadm.sh
+dos2unix ./gendox-local-init.sh
+```
+- **Make the shell files executable**
+
+```bash
+chmod +x ../bin/kcadm.sh
+chmod +x ./gendox-local-init.sh
+```
+
+- **Execute the shell files**
+
+```bash
+bash ../bin/kcadm.sh
+bash ./gendox-local-init.sh
+```
+By executing this script you can skip steps 3-6 of the keycloak configuration which speeds up the setup process.
 
 ### Step 3: Create keycloak admin user
 - Go to the Keycloak admin console at `http://localhost:8880`
@@ -52,7 +91,7 @@ Navigate to `clients` to configure clients settings.
 We also need to modify the following under advanced settings:
 | **Category**            | **Field**                                          | **Value**                       |
 |-------------------------|----------------------------------------------------|---------------------------------|
-| **Advanced Settings**   | Proof Key for Code Exchange Code Challenge Method  | `your-code-challenge-method`     |
+| **Advanced Settings**   | Proof Key for Code Exchange Code Challenge Method  | `H256`     |
 
 
 We note here that `3000` is the port for gendox frontend.
@@ -124,7 +163,7 @@ Under the `Service account roles` we need to assign the following roles:
 We also need to modify the following under advanced settings:
 | **Category**            | **Field**                                          | **Value**                       |
 |-------------------------|----------------------------------------------------|---------------------------------|
-| **Advanced Settings**   | Proof Key for Code Exchange Code Challenge Method  | `your-code-challenge-method`     |
+| **Advanced Settings**   | Proof Key for Code Exchange Code Challenge Method  | `H256`     |
 
 
 - Create `proven-ai-private-client` client. Fill in the client information with the following values:
@@ -185,7 +224,7 @@ We note here that `3001` is the port for provenAI frontend.
 We also need to modify the following under advanced settings:
 | **Category**            | **Field**                                          | **Value**                       |
 |-------------------------|----------------------------------------------------|---------------------------------|
-| **Advanced Settings**   | Proof Key for Code Exchange Code Challenge Method  | `your-code-challenge-method`     |
+| **Advanced Settings**   | Proof Key for Code Exchange Code Challenge Method  | `H256`     |
 
 ### Step 7: Create role users
 In the section **Realm roles** create the role `user`
@@ -286,17 +325,13 @@ AFter configuring keycloak you will need to update the environment variables:
 
 The `KEYCLOAK_CLIENT_SECRET` is found on the `credentials` tab on the `gendox-private-client` client.
 
-- Set up keycloak configuration on application properties.
-First on the [Security Configuration](../Getting%20Started/Configuration#security-configuration-oauth2-and-jwt)
-    - `issuer-uri`: `http://localhost:8880/realms/gendox-idp-dev`
-    - `jwk-set-uri`: `http://localhost:8880/realms/gendox-idp-dev/protocol/openid-connect/certs`
-Thenk on the [Keycloak Configuration](../Getting%20Started/Configuration#keycloak-configuration)
-    - `base-url`: `http://localhost:8880`
-    - `token-uri`: `http://localhost:8880/realms/gendox-idp-dev/protocol/openid-connect/token`
-    - `realm`: `gendox-idp-dev`
 
 ### Step 10: Create `proven-ai-private-client` and users
 For the interaction between the Gendox and ProvenAI services we must create a user in the database for `proven-ai-private-client` and, following the steps below:
+
+curl -X GET "http://localhost:8080/gendox/api/v1/profile" \
+     -H "Authorization: Bearer YOUR_TOKEN"
+
 
 
 #### Manual keycloak server setup
