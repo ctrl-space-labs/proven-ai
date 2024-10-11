@@ -4,7 +4,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import dev.ctrlspace.provenai.backend.exceptions.ProvenAiErrorResponse;
 import dev.ctrlspace.provenai.backend.exceptions.ProvenAiException;
 import dev.ctrlspace.provenai.backend.model.Agent;
+import dev.ctrlspace.provenai.backend.model.AgentPurposeOfUsePolicies;
 import dev.ctrlspace.provenai.backend.model.dtos.AgentDTO;
+import dev.ctrlspace.provenai.backend.model.dtos.AgentPublicDTO;
+import dev.ctrlspace.provenai.backend.model.dtos.AgentPurposeOfUsePoliciesDTO;
 import dev.ctrlspace.provenai.backend.model.dtos.VCOfferDTO;
 import dev.ctrlspace.provenai.backend.model.dtos.criteria.AgentCriteria;
 import io.swagger.v3.oas.annotations.Operation;
@@ -15,6 +18,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.json.JSONException;
 import org.keycloak.representations.AccessTokenResponse;
 import org.springframework.data.domain.Page;
@@ -25,6 +29,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
@@ -48,6 +53,70 @@ public interface AgentsControllerSpec {
             @Parameter(description = "Pagination information", required = false, schema = @Schema(implementation = Pageable.class))
             Pageable pageable,
             Authentication authentication) throws ProvenAiException;
+
+
+    @Operation(summary = "Get all public agents")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully retrieved public agents"),
+            @ApiResponse(responseCode = "401", description = "You are not authorized to view the resource"),
+            @ApiResponse(responseCode = "403", description = "Accessing the resource you were trying to reach is forbidden"),
+            @ApiResponse(responseCode = "404", description = "The resource you were trying to reach is not found"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    public Page<AgentPublicDTO> getPublicAgentByCriteria(@Valid AgentCriteria criteria, Pageable pageable, Authentication authentication) throws ProvenAiException;
+
+
+    @Operation(summary = "Get all agent purpose of use policies by ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully retrieved agent purpose of use policies"),
+            @ApiResponse(responseCode = "401", description = "You are not authorized to view the resource"),
+            @ApiResponse(responseCode = "403", description = "Accessing the resource you were trying to reach is forbidden"),
+            @ApiResponse(responseCode = "404", description = "The resource you were trying to reach is not found"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    public Page<AgentPurposeOfUsePolicies> getAgentPurposeOfUsePolicies(@PathVariable UUID agentId, Pageable pageable) throws ProvenAiException;
+
+
+    @Operation(summary = "Create an Agent Purpose of Use Policy",
+            description = "Creates a new purpose of use policy for a specific agent. The agent ID in the path and in the request body must match.",
+            responses = {
+                    @ApiResponse(responseCode = "201", description = "Successfully created the Agent Purpose of Use Policy",
+                            content = @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = AgentPurposeOfUsePolicies.class),
+                                    examples = @ExampleObject(name = "CreatedAgentPurposeOfUsePolicyExample",
+                                            value = "{\n" +
+                                                    "  \"agentId\": \"e3d3e7c4-bc3b-4a2d-b87b-1b34b929c4b5\",\n" +
+                                                    "  \"policyTypeId\": \"e9d3b4c4-cb9d-4b8e-a4b7-6e8c5a1d03b8\",\n" +
+                                                    "  \"policyOptionId\": \"e9d3s4c4-c339d-4b3e-a4b7-6e83551d03b8\",\n" +
+                                                    "  \"value\": \"GENERAL_ASSISTANT\"\n" +
+                                                    "}"))),
+                    @ApiResponse(responseCode = "200", description = "Successfully created agent purpose of use policies"),
+                    @ApiResponse(responseCode = "401", description = "You are not authorized to view the resource"),
+                    @ApiResponse(responseCode = "403", description = "Accessing the resource you were trying to reach is forbidden"),
+                    @ApiResponse(responseCode = "404", description = "The resource you were trying to reach is not found"),
+                    @ApiResponse(responseCode = "500", description = "Internal server error")
+            })
+    public AgentPurposeOfUsePolicies createAgentPurposeOfUsePolicy(
+            @Parameter(description = "ID of the agent", required = true, schema = @Schema(type = "string", format = "uuid"))
+            @PathVariable UUID agentId,
+            @Parameter(description = "Details of the purpose of use policy to create", required = true, schema = @Schema(implementation = AgentPurposeOfUsePoliciesDTO.class))
+            @RequestBody AgentPurposeOfUsePoliciesDTO agentPurposeOfUsePoliciesDTO) throws ProvenAiException;
+
+
+    @Operation(summary = "Delete Agent Purpose of Use Policies",
+            description = "Deletes multiple purpose of use policies for a specific agent based on the provided policy IDs.",
+            responses = {
+                    @ApiResponse(responseCode = "204", description = "Successfully deleted the Agent Purpose of Use Policies"),
+                    @ApiResponse(responseCode = "400", description = "Bad Request: Invalid policy IDs"),
+                    @ApiResponse(responseCode = "401", description = "Unauthorized"),
+                    @ApiResponse(responseCode = "403", description = "Forbidden"),
+                    @ApiResponse(responseCode = "404", description = "Not Found: Policy IDs or agent not found"),
+                    @ApiResponse(responseCode = "500", description = "Internal Server Error")
+            })
+
+    public void deleteAgentPurposeOfUsePolicies(
+            @Parameter(description = "List of purpose of use policy IDs to delete", required = true, schema = @Schema(type = "array"))
+            @RequestParam List<UUID> agentPurposeOfUsePolicyIds) throws ProvenAiException;
 
 
     @Operation(summary = "Get agent by ID")

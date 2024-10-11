@@ -33,6 +33,43 @@ Here's a quick overview of its core functionalities:
 ### Data Provenance and Tracking in AI Systems
 - **Verifiable Data Usage:** When AI agents access data, a "Data Access Credential" VC is created, marking the AI agent's DID as the subject. This credential grants permission to use the data, with each usage being blockchain-registered to ensure a traceable data lineage.
 
+### Installation
+
+#### Step 1: Clone the repository
+```bash
+git clone https://github.com/ctrl-space-labs/proven-ai.git
+```
+
+#### Step 2: Set up environment variables
+
+In `./proven-ai/provenai-compose-scripts/local-installation/.env-local`, and set up the environment variables according to [Environment Variables](https://ctrl-space-labs.github.io/proven-ai/docs/Getting%20Started/Environment-Variables) documentation.
+
+
+#### Step 3: Run docker compose
+```bash
+cd ./proven-ai/provenai-compose-scripts/local-installation
+docker-compose --env-file .env-local up --build -d
+docker-compose up
+```
+
+This command builds all the containers for the necessary services in the provenAI ecosystem:
+- ProvenAI Backend
+- ProvenAI Grontend
+- ProvenAI SDK
+- Gendox Backend
+- Gendox Frontend
+- Postgres Database Container
+- Keycloak Container
+
+Also to set up all the environment variables and properties needed the following .env files are needed:
+- `.env-local`
+
+#### Step 4: Get Keycloak client keys
+
+ProvenAI uses Keycloak for authentication. You need to get the client keys for the services to interact with Keycloak. For more info about how to set up the Keycloak server and configure keycloak settings see [Keycloak Configuration](https://ctrl-space-labs.github.io/proven-ai/docs/Getting%20Started/Keycloak-Configuration). After running the docker compose you will need to configure the keycloak settings in order to run the app.
+
+
+
 ## Code & Documentation
 All related code can the found in the [Github Repository](https://github.com/ctrl-space-labs/proven-ai) of the project. 
 

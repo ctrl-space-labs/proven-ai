@@ -178,12 +178,6 @@
             <artifactId>merkle-tree-java</artifactId>
             <version>0.0.7</version>
         </dependency>
-        <dependency>
-            <groupId>org.flywaydb</groupId>
-            <artifactId>flyway-core</artifactId>
-            <version>9.22.3</version>
-            <scope>compile</scope>
-        </dependency>
 
     </dependencies>
 
