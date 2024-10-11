@@ -32,6 +32,10 @@
               "description": "Name of the data pod",
               "type": "string"
             },
+            "dataPodId": {
+              "description": "Unique identifier for the data pod",
+              "type": "string"
+            },
             "ownershipStatus": {
               "description": "Current status of ownership (e.g., active, suspended)",
               "type": "string"
@@ -40,9 +44,35 @@
               "description": "Date when the data pod was created",
               "type": "string",
               "format": "date-time"
+            },
+            "usagePolicies": {
+              "description": "List of usage policies associated with the data pod",
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "policyType": {
+                    "description": "Type of the policy (e.g., ALLOW_LIST, DENY_LIST)",
+                    "type": "string"
+                  },
+                  "policyValue": {
+                    "description": "Value associated with the policy",
+                    "type": "string"
+                  }
+                },
+                "required": [ "policyType", "policyValue" ]
+              }
+            },
+            "isccCollectionMerkleRoot": {
+              "description": "Merkle root for ISCC for a document section collection",
+              "type": "string"
             }
           },
-          "required": [ "dataPodName", "ownershipStatus"]
+          "required": [ "dataPodName",
+            "dataPodId",
+            "ownershipStatus",
+            "isccCollectionMerkleRoot",
+            "usagePolicies" ]
         }
       }
     }

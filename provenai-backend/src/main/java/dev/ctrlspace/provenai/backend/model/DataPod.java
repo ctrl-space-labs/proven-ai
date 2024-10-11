@@ -41,6 +41,10 @@ public class DataPod {
     @Column(name = "updated_by")
     private UUID updatedBy;
 
+    @Basic
+    @Column(name = "is_disabled")
+    private Boolean isDisabled;
+
     public UUID getId() {
         return id;
     }
@@ -105,16 +109,25 @@ public class DataPod {
         this.updatedBy = updatedBy;
     }
 
+    public Boolean getIsDisabled() {
+        return isDisabled;
+    }
+
+    public void setIsDisabled(Boolean isDisabled) {
+        this.isDisabled = isDisabled;
+    }
+
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         DataPod dataPod = (DataPod) o;
-        return Objects.equals(id, dataPod.id) && Objects.equals(organizationId, dataPod.organizationId) && Objects.equals(podUniqueName, dataPod.podUniqueName) && Objects.equals(hostUrl, dataPod.hostUrl) && Objects.equals(aclPolicies, dataPod.aclPolicies) && Objects.equals(createdAt, dataPod.createdAt) && Objects.equals(updatedAt, dataPod.updatedAt) && Objects.equals(createdBy, dataPod.createdBy) && Objects.equals(updatedBy, dataPod.updatedBy);
+        return Objects.equals(id, dataPod.id) && Objects.equals(organizationId, dataPod.organizationId) && Objects.equals(podUniqueName, dataPod.podUniqueName) && Objects.equals(hostUrl, dataPod.hostUrl) && Objects.equals(aclPolicies, dataPod.aclPolicies) && Objects.equals(createdAt, dataPod.createdAt) && Objects.equals(updatedAt, dataPod.updatedAt) && Objects.equals(createdBy, dataPod.createdBy) && Objects.equals(updatedBy, dataPod.updatedBy) && Objects.equals(isDisabled, dataPod.isDisabled);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, organizationId, podUniqueName, hostUrl, aclPolicies, createdAt, updatedAt, createdBy, updatedBy);
+        return Objects.hash(id, organizationId, podUniqueName, hostUrl, aclPolicies, createdAt, updatedAt, createdBy, updatedBy, isDisabled);
     }
 }

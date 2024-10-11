@@ -18,6 +18,8 @@ import Icon from "src/@core/components/icon";
 import { useAuth } from "src/hooks/useAuth";
 import { fetchProject } from "src/store/apps/activeProject/activeProject";
 import { fetchOrganization } from "src/store/apps/activeOrganization/activeOrganization";
+import { sortByField } from "src/utils/orderUtils";
+
 
 // Custom Components Imports
 import CustomAvatar from "src/@core/components/mui/avatar";
@@ -76,22 +78,16 @@ const OrganizationsDropdown = ({ settings }) => {
 
       const newPath =
         router.pathname === "/provenAI/data-pods-control"
-          ? `/provenAI/data-pods-control?organizationId=${organization.id}`
+          ? `/provenAI/data-pods-control/?organizationId=${organization.id}`
           : router.pathname === "/provenAI/agent-control"
-          ? `/provenAI/agent-control?organizationId=${organization.id}`
-          : `/provenAI/home?organizationId=${organization.id}`;
+          ? `/provenAI/agent-control/?organizationId=${organization.id}`
+          : `/provenAI/home/?organizationId=${organization.id}`;
       router.push(newPath);
     },
     [dispatch, handleDropdownClose, router]
-  );
+  );  
 
-  const sortedOrganizations = [...auth.user.provenOrgs].sort((a, b) => {
-    return a.id === activeOrganizationId
-      ? -1
-      : b.id === activeOrganizationId
-      ? 1
-      : 0;
-  });
+  const sortedOrganizations = sortByField([...auth.user.provenOrgs], "name", activeOrganizationId);
 
   const visibleOrganizations = sortedOrganizations.slice(0, visibleCount);
   const overflowCount = sortedOrganizations.length - visibleCount;
@@ -170,9 +166,10 @@ const OrganizationsDropdown = ({ settings }) => {
           vertical: "top",
           horizontal: settings.direction === "ltr" ? "right" : "left",
         }}
-      >
-        {auth.user.provenOrgs.map((organization) => {
-          const href = `/provenAI/home?organizationId=${organization.id}`;
+      >        
+        {sortByField([...auth.user.provenOrgs], "name", activeOrganizationId)
+          .map((organization) => {
+          const href = `/provenAI/home/?organizationId=${organization.id}`;
           return (
             <Link
               href={href}

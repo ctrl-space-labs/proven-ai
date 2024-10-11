@@ -11,7 +11,8 @@ ProvenAI consists of a set of microservices that can be deployed on your own inf
 Before you start the installation process, make sure you have the following prerequisites:
 - Docker
 - Docker Compose
-
+- OS Linux, MacOS or Windows with WSL
+- 16GB Ram
 
 ## Installation
 
@@ -19,28 +20,41 @@ The installation process is simple and can be done in a few steps. It requires j
 with some extra steps to generate access keys for the services to interact with each other.
 
 ### Step 1: Clone the repository
-```shell
-$ git clone https://github.com/ctrl-space-labs/proven-ai.git
+```bash
+git clone https://github.com/ctrl-space-labs/proven-ai.git
 ```
 
 ### Step 2: Set up environment variables
 
-In `./proven-ai/docker-compose/.env`, and set up the environment variables according to [Environment Variables](../Getting%20Started/Environment-Variables) documentation.
-```shell
-```
+In `./proven-ai/provenai-compose-scripts/local-installation/.env-local`, and set up the environment variables according to [Environment Variables](../Getting%20Started/Environment-Variables) documentation.
 
-### Step 3: Run docker compose
-```shell
-$ cd ./proven-ai/docker-compose
-$ docker-compose up
+:::note
+The .env-local file contains some environment variables are comented out. These are mandatory variables that the user must create for the provenAI app to operate correctly. More information on the mandatory variables created by the developer [here](../Getting%20Started/Environment-Variables#mandatory-environment-variables).
+:::
+
+### Step 3: Build and run docker compose
+```bash
+cd ./proven-ai/provenai-compose-scripts/local-installation
+docker-compose --env-file .env-local up --build -d --pull always
+docker-compose up
 ```
+The `always` flag enables the docker-compose to pull the latest image.
+
+This command builds all the containers for the necessary services in the provenAI ecosystem:
+- provenAI backend
+- provenAI frontend
+- provenAI SDK
+- gendox backend
+- gendox frontend
+- database container
+- keycloak container
+
+Also to set up all the environment variables and properties needed the following .env files are needed:
+- `.env-local`
 
 ### Step 4: Get Keycloak client keys
 
-ProvenAI uses Keycloak for authentication. You need to get the client keys for the services to interact with Keycloak.
-1. Go to the Keycloak admin console at `http://localhost:8443`
-```shell
-```
+ProvenAI uses Keycloak for authentication. You need to get the client keys for the services to interact with Keycloak. For more info about how to set up the Keycloak server and configure keycloak settings see [Keycloak Configuration](../Getting%20Started/Keycloak-Configuration). After running the docker compose you will need to configure the keycloak settings in order to run the app.
 
 ## Local Development
 
@@ -50,25 +64,38 @@ To run the applications independently for development purposes, you need to inst
 - Node.js
 - NPM or Yarn
 
+Also you need to clone the provenAI repository:
+
+```bash
+git clone https://github.com/ctrl-space-labs/proven-ai.git
+```
 
 ### Running the ProvenAI Backend
 
-ProvenAI backend is a Spring boot application. Once the environment variables are set up (see [here](../Getting%20Started/Environment-Variables)), 
-you can run the backend using the following command:
-```shell
-$ cd ./provenai-sdk
-$ mvn clean install
-$ cd ./provenai-backend
-$ mvn clean install
-$ mvn spring-boot:run
+ProvenAI backend is a Spring boot application. Once the environment variables are set up (see [here](../Getting%20Started/Environment-Variables)).
+
+#### Step 1: Build and run provenAI SDK docker compose.
+To run the backend you also need to run the provenAI SDK docker-compose. To set up the provenAI docker:
+```bash
+cd ./provenai-sdk/provenai-sdk-docker-compose
+docker-compose build
+docker-compose up
+```
+#### Step 2: Run the provenAI Backend.
+After the docker-compose is set up you can run the provenAI backend:
+
+```bash
+cd ./provenai-backend
+mvn clean install
+mvn spring-boot:run
 ```
 
 ### Running the ProvenAI Frontend
 
 ProvenAI frontend is a React/Next.js application. No Next.js Server-Side-Rendering features are used. Once the environment variables are set up (see [here](../Getting%20Started/Environment-Variables)),
 you can run the frontend using the following command:
-```shell
-$ cd ./proven-ai/provenai-frontend
-$ npm install
-$ yarn start
+```bash
+cd ./proven-ai/provenai-frontend
+npm install
+yarn dev
 ```

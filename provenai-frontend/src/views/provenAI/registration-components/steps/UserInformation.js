@@ -188,15 +188,17 @@ const UserInformation = ({
                     {...field}
                     label="User Organization"
                   >
-                    {userOrganizations.map((org) => (
-                      <MenuItem
-                        key={org.id}
-                        value={org.name}
-                        onClick={() => handleMenuItemClick(org)}
-                      >
-                        {org.name}
-                      </MenuItem>
-                    ))}
+                    {[...userOrganizations] // Create a shallow copy to avoid mutating the original array
+                      .sort((a, b) => a.name.localeCompare(b.name))
+                      .map((org) => (
+                        <MenuItem
+                          key={org.id}
+                          value={org.name}
+                          onClick={() => handleMenuItemClick(org)}
+                        >
+                          {org.name}
+                        </MenuItem>
+                      ))}
                   </Select>
                 )}
               />
@@ -395,7 +397,7 @@ const UserInformation = ({
                   render={({ field }) => (
                     <TextField
                       {...field}
-                      label="Legal Person Identifier"
+                      label="Legal Representative Name"
                       error={Boolean(errors.legalPersonIdentifier)}
                       helperText={
                         errors.legalPersonIdentifier
@@ -448,7 +450,7 @@ const UserInformation = ({
                 <Controller
                   name="country"
                   control={control}
-                  render={({ field: {value, onChange} }) => (
+                  render={({ field: { value, onChange } }) => (
                     <Autocomplete
                       id="autocomplete-countries"
                       options={countries}
@@ -523,7 +525,7 @@ const UserInformation = ({
               render={({ field }) => (
                 <TextField
                   {...field}
-                  label="Profile Link"
+                  label="Profile Link "
                   placeholder="https://yourprofilelink.com"
                   error={Boolean(errors.profileLink)}
                   helperText={

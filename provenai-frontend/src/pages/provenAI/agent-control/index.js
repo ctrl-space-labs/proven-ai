@@ -29,12 +29,9 @@ const AgentControl = () => {
   const userOrganizations = auth?.user?.organizations;
   const [activeOrganization, setActiveOrganization] = useState({});
   const [activeAgent, setActiveAgent] = useState({});
-  const [agentPolicies, setAgentPolicies] = useState({});
+  const [agentPolicies, setAgentPolicies] = useState([]);
   const [userAgents, setUserAgents] = useState([]);
   const [activeStep, setActiveStep] = useState(0);
-
-
- 
 
   const storedToken = window.localStorage.getItem(
     authConfig.storageTokenKeyName
@@ -62,7 +59,30 @@ const AgentControl = () => {
         if (error.response.status === 404) {
           setActiveOrganization({});
           setActiveAgent({});
-          setAgentPolicies({});
+          setAgentPolicies([]);
+          //          const matchingOrganization = auth.user.organizations.find(
+          //            (org) => org.id === organizationId
+          //          );
+          //
+          //          if (matchingOrganization) {
+          //            setActiveOrganization(matchingOrganization);
+          //            setregisteredData(false);
+          //            if (agentId ) {
+          //              const matchingAgent = matchingOrganization.projectAgents.find(
+          //                (agent) => agent.id === agentId
+          //              );
+          //              setActiveAgent(matchingAgent);
+          //              setregisteredData(false);
+          //
+          //            } else {
+          //              setActiveAgent({});
+          //            }
+          //          } else {
+          //            setActiveOrganization({});
+          //            setActiveAgent({});
+          //          }
+          //
+          //          setAgentPolicies([]);
         }
       }
 
@@ -73,7 +93,6 @@ const AgentControl = () => {
       if (activeOrgAgents) {
         setUserAgents(activeOrgAgents);
       }
-      
     };
 
     if (organizationId) {
@@ -84,8 +103,13 @@ const AgentControl = () => {
   useEffect(() => {
     if (!agentId) {
       setActiveAgent({});
-      setAgentPolicies({});
+      setAgentPolicies([]);
     }
+    //    if (!agentId || !activeOrganization?.id) {
+    //      setActiveAgent({});
+    //      setAgentPolicies([]);
+    //      return;
+    //    }
 
     const fetchAgent = async () => {
       try {
@@ -96,6 +120,20 @@ const AgentControl = () => {
         if (error.response.status === 404) {
           setActiveAgent({});
         }
+        //        if (activeOrganization?.projectAgents?.length > 0) {
+        //          const matchingAgents = activeOrganization.projectAgents.find(
+        //            (agent) => agent.id === agentId
+        //          );
+        //          if (matchingAgents) {
+        //            setActiveAgent(matchingAgents);
+        //            setregisteredData(false);
+        //
+        //          } else {
+        //            setActiveAgent({});
+        //          }
+        //        } else {
+        //          setActiveAgent({});
+        //        }
       }
     };
 
@@ -109,7 +147,8 @@ const AgentControl = () => {
       } catch (error) {
         console.error("Error fetching Agent Policies:", error);
         if (error.response.status === 404) {
-          setAgentPolicies({});
+          setActiveAgent({});
+          setAgentPolicies([]);
         }
       }
     };

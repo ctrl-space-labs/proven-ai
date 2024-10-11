@@ -6,6 +6,8 @@ import { useRouter } from "next/router";
 import {
   Grid,
   Box,
+  Tooltip,
+  IconButton,
   Typography,
   InputLabel,
   Select,
@@ -20,6 +22,8 @@ import {
 import CustomRadioIcons from "src/@core/components/custom-radio/icons";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
+import Icon from "src/@core/components/icon";
+
 
 // ** Validation Schema and Default Values
 import { agentSchema } from "src/utils/validationSchemas";
@@ -137,9 +141,7 @@ const AgentInformation = ({
 
     const fetchDataPods = async () => {
       try {
-        const dataPods = await dataPodsService.getAllDataPods(
-          storedToken
-        );
+        const dataPods = await dataPodsService.getAllDataPods(storedToken);
         setDataPods(dataPods.data.content);
       } catch (error) {
         console.error("Error fetching data pods:", error);
@@ -156,8 +158,11 @@ const AgentInformation = ({
       const activeAgentName =
         userAgents.find((agent) => agent.id === activeAgent.id)?.agentName ||
         "";
+      const agentUserId =
+        userAgents.find((agent) => agent.id === activeAgent.id)?.userId || "";
+
       setValue("agentName", activeAgentName);
-      setValue("agentUserId", activeAgent.userId);
+      setValue("agentUserId", agentUserId);
     }
   }, [activeAgent, userAgents, setValue]);
 
@@ -166,65 +171,66 @@ const AgentInformation = ({
   };
 
   const updateDataPod = async (data) => {
-    if (dataPods.length > 0) {
-      let allowPolicies, denyPolicies;
-
-      try {
-        allowPolicies = await policyService.getPolicyOptions(
-          "ALLOW_LIST",
-          storedToken
-        );
-      } catch (error) {
-        console.error("Error fetching allow policy options:", error);
-      }
-
-      try {
-        denyPolicies = await policyService.getPolicyOptions(
-          "DENY_LIST",
-          storedToken
-        );
-      } catch (error) {
-        console.error("Error fetching deny policy options:", error);
-      }
-
-      const allowAgentPolicy = allowPolicies?.data.find(
-        (policy) => policy.name === "ALLOW_DATA_POD_NAME"
-      );
-      const denyAgentPolicy = denyPolicies?.data.find(
-        (policy) => policy.name === "DENY_DATA_POD_NAME"
-      );
-
-      const updatedDataPods = {
-        ...data,
-        allowList: data.allowList.map((allow) => {
-          const dataPod = dataPods.find((pod) => pod.id === allow.dataPodId);
-          return dataPod
-            ? {
-                ...allow,
-                name: dataPod.podUniqueName,
-                policyOptionId: allowAgentPolicy?.id || "",
-                policyTypeId: allowAgentPolicy?.policyTypeId || "",
-              }
-            : allow;
-        }),
-        denyList: data.denyList.map((deny) => {
-          const dataPod = dataPods.find((pod) => pod.id === deny.dataPodId);
-          return dataPod
-            ? {
-                ...deny,
-                name: dataPod.podUniqueName,
-                policyOptionId: denyAgentPolicy?.id || "",
-                policyTypeId: denyAgentPolicy?.policyTypeId || "",
-              }
-            : deny;
-        }),
-      };
-      return updatedDataPods;
+    if (!(dataPods.length > 0)) {
+      return data;
     }
+
+    let allowPolicies, denyPolicies;
+
+    try {
+      allowPolicies = await policyService.getPolicyOptions(
+        "ALLOW_LIST",
+        storedToken
+      );
+    } catch (error) {
+      console.error("Error fetching allow policy options:", error);
+    }
+
+    try {
+      denyPolicies = await policyService.getPolicyOptions(
+        "DENY_LIST",
+        storedToken
+      );
+    } catch (error) {
+      console.error("Error fetching deny policy options:", error);
+    }
+
+    const allowAgentPolicy = allowPolicies?.data.find(
+      (policy) => policy.name === "ALLOW_DATA_POD_NAME"
+    );
+    const denyAgentPolicy = denyPolicies?.data.find(
+      (policy) => policy.name === "DENY_DATA_POD_NAME"
+    );
+
+    const updatedDataPods = {
+      ...data,
+      allowList: data.allowList.map((allow) => {
+        const dataPod = dataPods.find((pod) => pod.id === allow.dataPodId);
+        return dataPod
+          ? {
+              ...allow,
+              name: dataPod.podUniqueName,
+              policyOptionId: allowAgentPolicy?.id || "",
+              policyTypeId: allowAgentPolicy?.policyTypeId || "",
+            }
+          : allow;
+      }),
+      denyList: data.denyList.map((deny) => {
+        const dataPod = dataPods.find((pod) => pod.id === deny.dataPodId);
+        return dataPod
+          ? {
+              ...deny,
+              name: dataPod.podUniqueName,
+              policyOptionId: denyAgentPolicy?.id || "",
+              policyTypeId: denyAgentPolicy?.policyTypeId || "",
+            }
+          : deny;
+      }),
+    };
+    return updatedDataPods;
   };
 
   const handleFormSubmit = async (data) => {
-    console.log("data", data);
     const updatedData = await updateDataPod(data);
     setAgentData(updatedData);
     onSubmit();
@@ -232,12 +238,13 @@ const AgentInformation = ({
 
   const handleMenuItemClick = (agent) => {
     setSelectNewAgent(true);
-    setAgentData((prevData) => ({
-      ...prevData,
-      agentName: agent.agentName,
-      agentUserId: agent.userId,
-    }));
-    set;
+    setAgentData((prevData) => {
+      return {
+        ...prevData,
+        agentName: agent.agentName,
+        agentUserId: agent.userId,
+      };
+    });
     updateShallowQueryParams({ organizationId, agentId: agent.id });
   };
 
@@ -279,15 +286,17 @@ const AgentInformation = ({
                 control={control}
                 render={({ field }) => (
                   <Select labelId="user-agent-label" {...field} label="Agent">
-                    {userAgents.map((agent) => (
-                      <MenuItem
-                        key={agent.id}
-                        value={agent.agentName}
-                        onClick={() => handleMenuItemClick(agent)}
-                      >
-                        {agent.agentName}
-                      </MenuItem>
-                    ))}
+                    {[...userAgents] // Create a shallow copy to avoid mutating the original array
+                      .sort((a, b) => a.agentName.localeCompare(b.agentName))
+                      .map((agent) => (
+                        <MenuItem
+                          key={agent.id}
+                          value={agent.agentName}
+                          onClick={() => handleMenuItemClick(agent)}
+                        >
+                          {agent.agentName}
+                        </MenuItem>
+                      ))}
                   </Select>
                 )}
               />
@@ -306,12 +315,22 @@ const AgentInformation = ({
 
         <Grid item xs={12}>
           <FormControl fullWidth>
-            <Typography
-              variant="filled"
-              sx={{ fontWeight: 600, color: "text.primary" }}
-            >
-              What is the purpose of use?
-            </Typography>
+            <Box sx={{ display: "flex", alignItems: "center" }}>
+              <Typography
+                variant="filled"
+                sx={{ fontWeight: 600, color: "text.primary" }}
+              >
+                For what purpose is this used?{" "}
+              </Typography>
+              <Tooltip title="Select the purpose for which this agent will be used. This helps categorize the agent based on its intended usage.">
+                <IconButton>
+                  <Icon
+                    icon="mdi:information-slab-circle-outline"
+                    fontSize="inherit"
+                  />
+                </IconButton>
+              </Tooltip>
+            </Box>
 
             <Controller
               name="agentPurpose"
@@ -361,12 +380,22 @@ const AgentInformation = ({
 
         <Grid item xs={12} sm={6}>
           <FormControl fullWidth>
-            <Typography
-              variant="filled"
-              sx={{ fontWeight: 600, color: "text.primary" }}
-            >
-              Compensation
-            </Typography>
+            <Box sx={{ display: "flex", alignItems: "center" }}>
+              <Typography
+                variant="filled"
+                sx={{ fontWeight: 600, color: "text.primary" }}
+              >
+                Compensation
+              </Typography>
+              <Tooltip title="Select the type of compensation for this agent. Choose between paid or free based on how this agent will be used.">
+                <IconButton>
+                  <Icon
+                    icon="mdi:information-slab-circle-outline"
+                    fontSize="inherit"
+                  />
+                </IconButton>
+              </Tooltip>
+            </Box>
 
             <Controller
               name="compensationType"
@@ -445,12 +474,22 @@ const AgentInformation = ({
 
         <Grid item xs={12} sm={6}>
           <FormControl fullWidth>
-            <Typography
-              variant="body2"
-              sx={{ fontWeight: 600, color: "text.primary" }}
-            >
-              Deny list
-            </Typography>
+            <Box sx={{ display: "flex", alignItems: "center" }}>
+              <Typography
+                variant="body2"
+                sx={{ fontWeight: 600, color: "text.primary" }}
+              >
+                Deny list
+              </Typography>
+              <Tooltip title="Select the data pods that this agent is not allowed to access. The deny list defines which resources are restricted.">
+                <IconButton>
+                  <Icon
+                    icon="mdi:information-slab-circle-outline"
+                    fontSize="inherit"
+                  />
+                </IconButton>
+              </Tooltip>
+            </Box>
 
             <Controller
               name="denyList"
@@ -494,7 +533,11 @@ const AgentInformation = ({
                     });
                     onChange(updatedValues);
                   }}
-                  options={dataPods.map((pod) => pod.podUniqueName)}
+                  options={[...dataPods]
+                    .sort((a, b) =>
+                      a.podUniqueName.localeCompare(b.podUniqueName)
+                    )
+                    .map((pod) => pod.podUniqueName)}
                   renderInput={(params) => (
                     <TextField
                       {...params}
@@ -530,12 +573,22 @@ const AgentInformation = ({
 
         <Grid item xs={12} sm={6}>
           <FormControl fullWidth>
-            <Typography
-              variant="body2"
-              sx={{ fontWeight: 600, color: "text.primary" }}
-            >
-              Allow list
-            </Typography>
+            <Box sx={{ display: "flex", alignItems: "center" }}>
+              <Typography
+                variant="body2"
+                sx={{ fontWeight: 600, color: "text.primary" }}
+              >
+                Allow list
+              </Typography>
+              <Tooltip title="Select the data pods that this agent is allowed to access. The allow list defines the permitted resources.">
+                <IconButton>
+                  <Icon
+                    icon="mdi:information-slab-circle-outline"
+                    fontSize="inherit"
+                  />
+                </IconButton>
+              </Tooltip>
+            </Box>
 
             <Controller
               name="allowList"
@@ -579,7 +632,11 @@ const AgentInformation = ({
                     });
                     onChange(updatedValues);
                   }}
-                  options={dataPods.map((pod) => pod.podUniqueName)}
+                  options={[...dataPods]
+                    .sort((a, b) =>
+                      a.podUniqueName.localeCompare(b.podUniqueName)
+                    )
+                    .map((pod) => pod.podUniqueName)}
                   renderInput={(params) => (
                     <TextField
                       {...params}

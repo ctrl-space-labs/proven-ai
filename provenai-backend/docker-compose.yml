@@ -1,0 +1,43 @@
+
+
+services:
+  proven-ai-backend:
+    # build image from directory
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - PROVEN_AI_GIT_REPOSITORY=${PROVEN_AI_GIT_REPOSITORY}
+        - PROVEN_AI_GIT_BRANCH=${PROVEN_AI_GIT_BRANCH}
+    container_name: proven-ai-backend
+    volumes:
+      - ~/.aws/:/root/.aws:ro
+      - ../provenai-database:/provenai-database
+    environment: # Proven ai environment variables
+      - DATABASE_URL=${DATABASE_URL}
+      - DATABASE_USERNAME=${DATABASE_USERNAME}
+      - DATABASE_PASSWORD=${DATABASE_PASSWORD}
+      - DEV_DATABASE_URL=${DEV_DATABASE_URL}
+      - DEV_DATABASE_USERNAME=${DEV_DATABASE_USERNAME}
+      - DEV_DATABASE_PASSWORD=${DEV_DATABASE_PASSWORD}
+      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE}
+      - KEYCLOAK_CLIENT_ID=${KEYCLOAK_CLIENT_ID}
+      - KEYCLOAK_CLIENT_SECRET=${KEYCLOAK_CLIENT_SECRET}
+      - ISSUER_DID=${ISSUER_DID}
+      - ISSUER_PRIVATE_JWK=${ISSUER_PRIVATE_JWK}
+    working_dir: /provenai-database
+    networks:
+      - proven_ai_network
+    ports:
+      - "${APIS_PORT}:8082"
+    restart: on-failure
+
+
+networks:
+  proven_ai_network:
+
+
+
+
+
+

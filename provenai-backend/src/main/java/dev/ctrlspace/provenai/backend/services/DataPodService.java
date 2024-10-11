@@ -129,6 +129,11 @@ public class DataPodService {
         dataPod.setCreatedAt(now);
         dataPod.setUpdatedAt(now);
 
+        // TODO - hotfix for now, fix this to get the correct host url from the Frontend
+        if (dataPod.getHostUrl() == null || dataPod.getHostUrl().isEmpty()) {
+            dataPod.setHostUrl("https://dev.gendox.ctrlspace.dev/gendox/document-instance/?documentId={documentId}");
+        }
+
         DataPod savedDataPod = dataPodRepository.save(dataPod);
 
         List<AclPolicies> savedPolicies = aclPoliciesService.savePoliciesForDataPod(savedDataPod, policies);
@@ -143,6 +148,11 @@ public class DataPodService {
         existingDataPod.setPodUniqueName(dataPod.getPodUniqueName());
         existingDataPod.setHostUrl(dataPod.getHostUrl());
         existingDataPod.setUpdatedAt(Instant.now());
+
+        // TODO - hotfix for now, fix this to get the correct host url from the Frontend
+        if (dataPod.getHostUrl() == null || dataPod.getHostUrl().isEmpty()) {
+            dataPod.setHostUrl("https://dev.gendox.ctrlspace.dev/gendox/document-instance/?documentId={documentId}");
+        }
 
         return dataPodRepository.save(existingDataPod);
 
@@ -203,9 +213,9 @@ public class DataPodService {
     }
 
     public String createDataPodVCOffer(W3CVC w3CVC) {
-
+        String credentialConfigurationId = "VerifiableDataOwnershipCredential_jwt_vc_json";
         WaltIdCredentialIssuanceRequest request = WaltIdCredentialIssuanceRequest.builder().issuerDid(issuerDid).issuerKey(IssuerKey.builder().jwk(issuerPrivateJwk).type("jwk").build()).credentialData(w3CVC).build();
-        return credentialIssuanceApi.issueCredential(request);
+        return credentialIssuanceApi.issueCredential(request, credentialConfigurationId);
     }
 
 

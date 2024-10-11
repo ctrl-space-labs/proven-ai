@@ -44,8 +44,10 @@ const toUserInformation = (organization) => {
  */
 const toOrganizationDTO = (organizationId, userData) => {
   const formatDate = (date) => {
-    const d = new Date(date);
-    if (!isNaN(d)) {
+    // const defaultDate = new Date('1900-01-01'); // Default date
+    // const d = date ? new Date(date) : defaultDate;
+    const d = date ? new Date(date) : null;
+    if (d && !isNaN(d.getTime())) {
       return d.toISOString();
     } else {
       return null;

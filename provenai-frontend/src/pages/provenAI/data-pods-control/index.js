@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { useAuth } from "src/hooks/useAuth";
 import authConfig from "src/configs/auth";
@@ -30,7 +30,7 @@ const DataPodsControl = () => {
   const [userDataPods, setUserDataPods] = useState([]);
   const [activeOrganization, setActiveOrganization] = useState({});
   const [activeDataPod, setActiveDataPod] = useState({});
-  const [dataPodPolicies, setDataPodPolicies] = useState({});
+  const [dataPodPolicies, setDataPodPolicies] = useState([]);
   const [activeStep, setActiveStep] = useState(0);
 
   const storedToken = window.localStorage.getItem(
@@ -58,10 +58,35 @@ const DataPodsControl = () => {
         if (error.response.status === 404) {
           setActiveOrganization({});
           setActiveDataPod({});
-          setDataPodPolicies({});
+          setDataPodPolicies([]);
         }
       }
 
+      //          const matchingOrganization = auth.user.organizations.find(
+      //            (org) => org.id === organizationId
+      //          );
+      //
+      //          if (matchingOrganization) {
+      //            setActiveOrganization(matchingOrganization);
+      //            setregisteredData(false);
+      //            if (dataPodId ) {
+      //              const matchingDataPod = matchingOrganization.projects.find(
+      //                (project) => project.id === dataPodId
+      //              );
+      //              setActiveDataPod(matchingDataPod);
+      //              setregisteredData(false);
+      //
+      //            } else {
+      //              setActiveDataPod({});
+      //            }
+      //          } else {
+      //            setActiveOrganization({});
+      //            setActiveDataPod({});
+      //          }
+      //
+      //          setDataPodPolicies([]);
+      //        }
+      //      }
 
       const activeOrgProjects = auth.user.organizations.find(
         (org) => org.id === organizationId
@@ -80,8 +105,14 @@ const DataPodsControl = () => {
   useEffect(() => {
     if (!dataPodId) {
       setActiveDataPod({});
-      setDataPodPolicies({});
+      setDataPodPolicies([]);
     }
+
+    //    if (!dataPodId || !activeOrganization?.id) {
+    //      setActiveDataPod({});
+    //      setDataPodPolicies([]);
+    //      return;
+    //    }
 
     const fetchDataPod = async () => {
       try {
@@ -92,9 +123,25 @@ const DataPodsControl = () => {
         setActiveDataPod(dataPod.data);
       } catch (error) {
         console.error("Error fetching data pod:", error);
-       if (error.response.status === 404) {          
-        setActiveDataPod({});       
-      }}
+        if (error.response.status === 404) {
+          setActiveDataPod({});
+        }
+      }
+      //        if (activeOrganization?.projects?.length > 0) {
+      //          const matchingDataPod = activeOrganization.projects.find(
+      //            (project) => project.id === dataPodId
+      //          );
+      //          if (matchingDataPod) {
+      //            setActiveDataPod(matchingDataPod);
+      //            setregisteredData(false);
+      //
+      //          } else {
+      //            setActiveDataPod({});
+      //          }
+      //        } else {
+      //          setActiveDataPod({});
+      //        }
+      //      }
     };
 
     const fetchDataPodPolicies = async () => {
@@ -106,9 +153,9 @@ const DataPodsControl = () => {
         setDataPodPolicies(dataPodPolicies.data.content);
       } catch (error) {
         console.error("Error fetching data pod:", error);
-        if (error.response.status === 404) {          
+        if (error.response.status === 404) {
           setActiveAgent({});
-          setAgentPolicies({});
+          setAgentPolicies([]);
         }
       }
     };

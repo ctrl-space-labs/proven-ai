@@ -1,5 +1,5 @@
 // ** React Imports
-import { Fragment, useState, useEffect } from "react";
+import { Fragment, useState, useEffect, useRef, use } from "react";
 import { styled, useTheme } from "@mui/material/styles";
 import { useRouter } from "next/router";
 
@@ -62,6 +62,7 @@ const DataPodStepper = ({
   const storedToken = window.localStorage.getItem(
     authConfig.storageTokenKeyName
   );
+  const previousDataPodId = useRef(dataPodId);
 
   const [userErrors, setUserErrors] = useState({});
   const [dataPodErrors, setDataPodErrors] = useState({});
@@ -74,6 +75,13 @@ const DataPodStepper = ({
   const [dataPodData, setDataPodData] = useState(defaultDataPodInformation);
   const [usePoliciesData, setUsePoliciesData] = useState(defaultDataUse);
 
+  useEffect(() => {
+    // When the dataPodId changes, reset the state
+    if (activeStep > 2 && previousDataPodId.current !== dataPodId) {
+      setActiveStep(0); // Reset to the first step
+      previousDataPodId.current = dataPodId; // Update the ref with the new dataPodId
+    }
+  }, [dataPodId]); // This effect depends on agentId changes
 
   useEffect(() => {
     if (Object.keys(activeOrganization).length !== 0) {
@@ -130,7 +138,7 @@ const DataPodStepper = ({
   };
 
   const refreshPage = () => {
-    const url = `/provenAI/data-pods-control?organizationId=${activeOrganization.id}&dataPodId=${activeDataPod.id}`;
+    const url = `/provenAI/data-pods-control/?organizationId=${activeOrganization.id}&dataPodId=${activeDataPod.id}`;
     router.reload(url);
   };
   const getVcOfferUrl = async () => {
@@ -361,6 +369,7 @@ const DataPodStepper = ({
                     userErrors.taxReference ||
                     userErrors.vatNumber
                   ) {
+                    console.log("userErrors", userErrors);
                     labelProps.error = true;
                   }
                 }

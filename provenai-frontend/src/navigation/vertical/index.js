@@ -5,6 +5,8 @@ import { useAuth } from "src/hooks/useAuth";
 import dataPodsService from "src/provenAI-sdk/dataPodsService";
 import agentService from "src/provenAI-sdk/agentService";
 import authConfig from "src/configs/auth";
+import { sortByField } from "src/utils/orderUtils";
+
 
 const navigation = () => {
   const auth = useAuth();
@@ -24,6 +26,9 @@ const navigation = () => {
             (org) => org.id === organizationId
           );
 
+          let dataPods = [];
+          let agents = [];
+
           if (activeOrganization) {
             const dataPodsResponse =
               await dataPodsService.getDataPodsByOrganization(
@@ -31,11 +36,12 @@ const navigation = () => {
                 storedToken
               );
 
-            const dataPods = dataPodsResponse.data.content.map((dataPod) => {
+
+            dataPods = dataPodsResponse.data.content.map((dataPod) => {
               return {
                 title: dataPod.podUniqueName,
                 icon: "mdi:server",
-                path: `/provenAI/data-pods-control?organizationId=${activeOrganization.id}&dataPodId=${dataPod.id}`,
+                path: `/provenAI/data-pods-control/?organizationId=${activeOrganization.id}&dataPodId=${dataPod.id}`,
                 itemId: dataPod.id,                
               };
             });
@@ -43,35 +49,40 @@ const navigation = () => {
               activeOrganization.id,
               storedToken
             );
-            const agents = agentResponse.data.content.map((agent) => {
+            agents = agentResponse.data.content.map((agent) => {
               return {
                 title: agent.agentName,                
                 icon: "mdi:creation",
-                path: `/provenAI/agent-control?organizationId=${activeOrganization.id}&agentId=${agent.id}`,
+                path: `/provenAI/agent-control/?organizationId=${activeOrganization.id}&agentId=${agent.id}`,
                 itemId: agent.id,                
               };
             });
+          }
+
+          const sortedDataPods = sortByField(dataPods, "title");
+          const sortedAgents = sortByField(agents, "title");
 
             setNavigationItems([
               {
                 sectionTitle: "DATA PODS",
                 sectionButton: "dataPod"
               },
-              ...dataPods,
+              ...sortedDataPods,
 
               
               {
                 sectionTitle: "AI AGENTS",
               },
-              ...agents,   
+              ...sortedAgents,   
                       
             ]);
-          }
+          
         } catch (error) {
           console.error("Error fetching data pods:", error);
         }
       }
-    };
+    }
+    
     fetchData();
   }, [auth, organizationId, router]);
 

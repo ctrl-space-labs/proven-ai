@@ -3,20 +3,24 @@ import React from "react";
 import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/router";
 import {
+  Box,
   Grid,
   Typography,
   FormControl,
   TextField,
   Button,
   FormHelperText,
+  Tooltip,
+  IconButton,
   Chip,
   Autocomplete,
 } from "@mui/material";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { dataUseSchema } from "src/utils/validationSchemas";
+// import { dataUseSchema } from "src/utils/validationSchemas";
 import policyService from "src/provenAI-sdk/policyService";
 import authConfig from "src/configs/auth";
+import Icon from "src/@core/components/icon";
 
 const UsePolicy = ({
   onSubmit,
@@ -43,7 +47,7 @@ const UsePolicy = ({
     formState: { errors },
   } = useForm({
     defaultValues: usePoliciesData,
-    resolver: yupResolver(dataUseSchema),
+    // resolver: yupResolver(dataUseSchema),
   }); 
 
   const handleFormSubmit = (data) => {
@@ -117,12 +121,23 @@ const UsePolicy = ({
 
         <Grid item xs={12} sm={6}>
           <FormControl fullWidth>
+          <Box sx={{ display: "flex", alignItems: "center" }}>
+
             <Typography
               variant="filled"
               sx={{ fontWeight: 600, color: "text.primary" }}
             >
               Attribution Policy
             </Typography>
+            <Tooltip title="Select the appropriate attribution policy for this data pod. This defines how attribution is handled for data usage.">
+                <IconButton>
+                  <Icon
+                    icon="mdi:information-slab-circle-outline"
+                    fontSize="inherit"
+                  />
+                </IconButton>
+              </Tooltip>
+            </Box>
 
             <Controller
               name="attributionPolicies"
@@ -179,12 +194,24 @@ const UsePolicy = ({
 
         <Grid item xs={12} sm={6}>
           <FormControl fullWidth>
+          <Box sx={{ display: "flex", alignItems: "center" }}>
+
             <Typography
               variant="filled"
               sx={{ fontWeight: 600, color: "text.primary" }}
             >
               Compensation Policy
             </Typography>
+
+            <Tooltip title="Select the compensation policy for this data pod. This defines how compensation is managed for data access and use.">
+                <IconButton>
+                  <Icon
+                    icon="mdi:information-slab-circle-outline"
+                    fontSize="inherit"
+                  />
+                </IconButton>
+              </Tooltip>
+            </Box>
 
             <Controller
               name="compensationPolicies"

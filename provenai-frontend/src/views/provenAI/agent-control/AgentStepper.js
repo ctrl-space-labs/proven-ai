@@ -1,5 +1,5 @@
 // ** React Imports
-import { Fragment, useState, useEffect } from "react";
+import { Fragment, useState, useEffect, useRef } from "react";
 import { styled, useTheme } from "@mui/material/styles";
 import { useRouter } from "next/router";
 
@@ -26,6 +26,7 @@ import ReviewAndComplete from "../registration-components/steps/agent-steps/Revi
 import authConfig from "src/configs/auth";
 import organizationService from "src/provenAI-sdk/organizationService";
 import agentService from "src/provenAI-sdk/agentService";
+import gendoxService from "src/provenAI-sdk/gendoxService";
 import agentPurposeOfUsePoliciesService from "src/provenAI-sdk/agentPurposeOfUsePoliciesService";
 import organizationConverter from "src/converters/organizationConverter";
 import agentConverter from "src/converters/agentConverter";
@@ -56,6 +57,7 @@ const AgentStepper = ({
   const storedToken = window.localStorage.getItem(
     authConfig.storageTokenKeyName
   );
+  const previousAgentId = useRef(agentId);
 
   // Form data states
   const [userData, setUserData] = useState(defaultUserInformation);
@@ -66,6 +68,14 @@ const AgentStepper = ({
   const [userErrors, setUserErrors] = useState({});
   const [agentErrors, setAgentErrors] = useState({});
 
+
+  useEffect(() => {
+    // When the agentId changes, reset the state
+    if (activeStep > 2 && previousAgentId.current !== agentId) {
+      setActiveStep(0); // Reset to the first step
+      previousAgentId.current = agentId; // Update the ref with the new agentId
+    }
+  }, [agentId]); // This effect depends on agentId changes
 
   useEffect(() => {
     if (Object.keys(activeOrganization).length !== 0) {
@@ -116,7 +126,7 @@ const AgentStepper = ({
   };
 
   const refreshPage = () => {
-    const url = `/provenAI/agent-control?organizationId=${organizationId}&agentId=${agentId}`;
+    const url = `/provenAI/agent-control/?organizationId=${organizationId}&agentId=${agentId}`;
     router.reload(url);
   };
 
@@ -151,15 +161,28 @@ const AgentStepper = ({
           toast.success("Organization registration successfully!");
         }
 
-        if (Object.keys(activeAgent).length === 0) {
-          const agentDTO = agentConverter.toAgentDTO(
-            agentData,
-            organizationId,
-            agentId
-          );
-          await agentService.createAgent(agentDTO, storedToken);
-          setAgentUpdated(true);
-          toast.success("Agent created successfully!");
+        try {
+          if (!Object.keys(activeAgent).length) {
+            const agentUser = await gendoxService.getGendoxUser(
+              agentData.agentUserId,
+              storedToken
+            );
+
+            const agentDTO = agentConverter.toAgentDTO(
+              agentData,
+              organizationId,
+              agentId,
+              agentUser.data.userName
+            );
+
+            await agentService.createAgent(agentDTO, storedToken);
+
+            setAgentUpdated(true);
+            toast.success("Agent created successfully!");
+          }
+        } catch (error) {
+          console.error("Error creating agent:", error);
+          toast.error("Failed to create agent. Please try again.");
         }
 
         const { policiesToCreate, policyIdsToDelete } =
@@ -270,7 +293,12 @@ const AgentStepper = ({
   };
 
   const renderContent = () => {
-    if (activeStep === agentSteps.length && isSubmitComplete) {
+    // if (activeStep === agentSteps.length && isSubmitComplete) {
+    if (
+      activeStep === agentSteps.length &&
+      isSubmitComplete &&
+      router.query.agentId === agentId
+    ) {
       return (
         <Fragment>
           <Box sx={{ textAlign: "center", mt: 4 }}>
@@ -338,12 +366,14 @@ const AgentStepper = ({
                 }
 
                 // Agent information errors
-                if (activeStep === 1 && agentErrors.agentPurpose || agentErrors.compensationType) {
+                if (
+                  (activeStep === 1 && agentErrors.agentPurpose) ||
+                  agentErrors.compensationType
+                ) {
                   labelProps.error = true;
                 }
-                
               }
-              
+
               return (
                 <Step key={index}>
                   <StepLabel

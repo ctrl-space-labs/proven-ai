@@ -4,6 +4,9 @@ import { useEffect, useState } from "react";
 import { useRef } from "react";
 import { useRouter } from "next/router";
 import {
+  Box,
+  IconButton,
+  Tooltip,
   Grid,
   Typography,
   FormControl,
@@ -16,6 +19,7 @@ import {
   Select,
   FormHelperText,
 } from "@mui/material";
+import Icon from "src/@core/components/icon";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { dataPodSchema } from "src/utils/validationSchemas";
@@ -114,14 +118,14 @@ const DataPodInformation = ({
     }
   }, [activeDataPod, userDataPods, setValue]);
 
-  const updateAgentData = async (data) => {
-    if (agents.length > 0) {
+  const updateAgentData = async (data) => {    
+    if (agents.length > 0) {      
       let allowPolicies, denyPolicies;
       try {
         allowPolicies = await policyService.getPolicyOptions(
           "ALLOW_LIST",
           storedToken
-        );        
+        );
       } catch (error) {
         console.error("Error fetching allow policy options:", error);
       }
@@ -130,7 +134,7 @@ const DataPodInformation = ({
         denyPolicies = await policyService.getPolicyOptions(
           "DENY_LIST",
           storedToken
-        );        
+        );
       } catch (error) {
         console.error("Error fetching deny policy options:", error);
       }
@@ -169,6 +173,7 @@ const DataPodInformation = ({
       };
       return updatedAgentData;
     }
+    return data;
   };
 
   const handleFormSubmit = async (data) => {
@@ -229,15 +234,17 @@ const DataPodInformation = ({
                     {...field}
                     label="Data Pod"
                   >
-                    {userDataPods.map((dp) => (
-                      <MenuItem
-                        key={dp.id}
-                        value={dp.name}
-                        onClick={() => handleMenuItemClick(dp)}
-                      >
-                        {dp.name}
-                      </MenuItem>
-                    ))}
+                    {[...userDataPods] // Create a shallow copy to avoid mutating the original array
+                      .sort((a, b) => a.name.localeCompare(b.name))
+                      .map((dp) => (
+                        <MenuItem
+                          key={dp.id}
+                          value={dp.name}
+                          onClick={() => handleMenuItemClick(dp)}
+                        >
+                          {dp.name}
+                        </MenuItem>
+                      ))}
                   </Select>
                 )}
               />
@@ -256,12 +263,23 @@ const DataPodInformation = ({
 
         <Grid item xs={12}>
           <FormControl fullWidth>
-            <Typography
-              variant="filled"
-              sx={{ fontWeight: 600, color: "text.primary" }}
-            >
-              What is the purpose of use?
-            </Typography>
+            <Box sx={{ display: "flex", alignItems: "center" }}>
+              <Typography
+                variant="filled"
+                sx={{ fontWeight: 600, color: "text.primary" }}
+              >
+                For what purpose is this used?
+              </Typography>
+
+              <Tooltip title="Select the purpose for which this data pod will be used. This helps categorize the data pod based on its intended usage.">
+                <IconButton>
+                  <Icon
+                    icon="mdi:information-slab-circle-outline"
+                    fontSize="inherit"
+                  />
+                </IconButton>
+              </Tooltip>
+            </Box>
 
             <Controller
               name="agentPurpose"
@@ -360,7 +378,9 @@ const DataPodInformation = ({
                     });
                     onChange(updatedValues);
                   }}
-                  options={agents.map((agent) => agent.agentName)}
+                  options={[...agents]
+                    .sort((a, b) => a.agentName.localeCompare(b.agentName)) 
+                    .map((agent) => agent.agentName)}
                   renderInput={(params) => (
                     <TextField
                       {...params}
@@ -445,7 +465,9 @@ const DataPodInformation = ({
                     });
                     onChange(updatedValues);
                   }}
-                  options={agents.map((agent) => agent.agentName)}
+                  options={[...agents]
+                    .sort((a, b) => a.agentName.localeCompare(b.agentName))
+                    .map((agent) => agent.agentName)}
                   renderInput={(params) => (
                     <TextField
                       {...params}
