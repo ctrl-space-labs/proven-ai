@@ -57,7 +57,7 @@ bash ./gendox-local-init.sh
 By executing this script you can skip steps 3-6 of the keycloak configuration which speeds up the setup process.
 
 ### Step 4: Create keycloak admin user
-- Go to the Keycloak admin console at `http://localhost:8880`
+- Go to the Keycloak admin console at `http://localhost:8880/idp`
 - Create an administrative user. You need to set the username and password for the admin user.
 
 ### Step 5: Create `gendox-idp-dev` realm
@@ -369,8 +369,34 @@ curl -X GET "http://localhost:8080/gendox/api/v1/profile" \
 - Change user type to `SUPER_ADMIN`:
     - Go in the database in `user` table.
     - Find the `proven-ai-private-client` user. The user has username `service-account-proven-ai-private-client`.
-    - Change the `type_id` to the id corresponding to type `SUPER_ADMIN`. You can find the id on the `types` table.
+    - Change the `type_id` to the id corresponding to type `SUPER_ADMIN`. You can find the id on the `types` table. This `type_id` should be 1.
 
+Repeat this process for `gendox-private-client`:
+- Implement client log in to Keycloak:
+
+```bash
+curl -X POST "http://localhost:8880/idp/realms/gendox-idp-dev/protocol/openid-connect/token" \
+     -H "Content-Type: application/x-www-form-urlencoded" \
+     -d "grant_type=client_credentials" \
+     -d "client_id=gendox-private-client" \
+     -d "client_secret=your-gendox-secret"
+```
+
+- Get profile to store `gendox-private-client`:
+
+```bash
+curl -X GET "http://localhost:8080/gendox/api/v1/profile" \
+     -H "Authorization: gendox-client token"\
+```
+
+- Get profile to store `gendox-private-client`:
+
+```bash
+curl -X GET "http://localhost:8080/gendox/api/v1/profile" \
+     -H "Authorization: gendox-client token"\
+```
+
+- Change user type to `SUPER_ADMIN`.
 
 #### Manual keycloak server setup
 
