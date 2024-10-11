@@ -145,8 +145,9 @@ After receiving the client token you will get the user profile. This API will re
 
 ```bash
 curl -X GET "http://localhost:8080/gendox/api/v1/profile" \
-     -H "Authorization: proven-ai-private-client token"\
+     -H "Authorization: Bearer $PROVEN_AI_PRIVATE_CLIENT_TOKEN"
 ```
+     - `PROVEN_AI_PRIVATE_CLIENT_TOKEN`: The bearer token received from `proven-ai-private-client` keycloak client log in.
 
 - Change user type to `SUPER_ADMIN`:
     - Go in the database in `user` table of `gendox_core` schema.
@@ -169,15 +170,10 @@ curl -X POST "http://localhost:8880/idp/realms/gendox-idp-dev/protocol/openid-co
 
 ```bash
 curl -X GET "http://localhost:8080/gendox/api/v1/profile" \
-     -H "Authorization: gendox-client token"\
+     -H "Authorization: Bearer $GENDOX_PRIVATE_CLIENT_TOKEN"
 ```
+     - `GENDOX_PRIVATE_CLIENT_TOKEN`: The bearer token received from `gendox-private-client` keycloak client log in.
 
-- Get profile to store `gendox-private-client`:
-
-```bash
-curl -X GET "http://localhost:8080/gendox/api/v1/profile" \
-     -H "Authorization: gendox-client token"\
-```
 
 - Change user type to `SUPER_ADMIN`.
 
