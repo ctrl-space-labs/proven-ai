@@ -22,7 +22,7 @@ This script is executed by building the docker-compose during the provenAI servi
 
 ### Step 2: Log in to keycloak admin console
 - Go to the Keycloak admin console at `http://localhost:8880/idp` (or `https://localhost:8443/idp`).
-- Log in with the admin credentials provided in the `env.local` that contains the docker-compose environment variables. The admin credentials are set with the variables `KEYCLOAK_ADMIN` and `KEYCLOAK_ADMIN_PASSWORD`.
+- Log in with the admin credentials provided in the `env.local` that contains the docker-compose environment variables. The admin credentials are set with the variables `KEYCLOAK_ADMIN` and `KEYCLOAK_ADMIN_PASSWORD` in [keycloack configuration](../Getting%20Started/Environment-Variables#keycloak-configuration).
 
 ### Step 3: Create role users
 In the section **Realm roles** create the role `user`
