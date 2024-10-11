@@ -64,14 +64,12 @@ services:
 # --------------------------- KEYCLOAK ---------------------------
   gendox-keycloak:
     image: ctrlspacelabs/gendox-keycloak:latest
-#    image: gendox-keycloak:latest
     container_name: gendox-keycloak
     depends_on:
       gendox-database:
         condition: service_healthy
     env_file:
       - .env-local
-      - .env-secrets
     environment:
       KC_DB: ${DATABASE_NAME}
       KC_DB_URL: ${DATABASE_URL}
@@ -147,12 +145,6 @@ services:
 # --------------------------- PROVEN AI Backend---------------------------
   proven-ai-backend:
     image: ctrlspacelabs/proven-ai-backend:latest
-#    build:
-#      context: ../../provenai-backend
-#      dockerfile: Dockerfile
-#      args:
-#        - PROVEN_AI_GIT_REPOSITORY=${PROVEN_AI_GIT_REPOSITORY}
-#        - PROVEN_AI_GIT_BRANCH=${PROVEN_AI_GIT_BRANCH}
     container_name: proven-ai-backend
     depends_on:
       gendox-database:
@@ -206,7 +198,6 @@ services:
     init: true
     env_file:
       - .env-local
-      - .env-secrets
     networks:
       - proven_ai_network
     restart: unless-stopped
@@ -217,7 +208,6 @@ services:
     restart: unless-stopped
     env_file:
       - .env-local
-      - .env-secrets
     environment:
       - ISCC_SDK_GRANULAR=${ISCC_SDK_GRANULAR}
     volumes:
@@ -250,7 +240,6 @@ services:
       - caddy
     env_file:
       - .env-local
-      - .env-secrets
     volumes:
       - ../../provenai-sdk/provenai-sdk-docker-compose/issuer-api/config:/waltid-issuer-api/config
     networks:
@@ -265,7 +254,6 @@ services:
       - caddy
     env_file:
       - .env-local
-      - .env-secrets
     volumes:
       - ../../provenai-sdk/provenai-sdk-docker-compose/verifier-api/config:/waltid-verifier-api/config
     networks:
