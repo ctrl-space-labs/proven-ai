@@ -173,9 +173,7 @@ services:
 
 # --------------------------- PROVEN AI Frontend---------------------------
   proven-ai-frontend:
-    build:
-      context: ../../provenai-frontend
-      dockerfile: Dockerfile
+    image: ctrlspacelabs/proven-ai-frontend:latest
     container_name: proven-ai-frontend
     environment:
       NEXT_PUBLIC_OIDC_AUTHORITY: ${NEXT_PUBLIC_PROVEN_AI_OIDC_AUTHORITY}
