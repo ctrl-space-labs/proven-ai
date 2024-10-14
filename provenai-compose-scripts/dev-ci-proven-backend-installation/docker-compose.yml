@@ -4,7 +4,7 @@ services:
   proven-ai-backend:
     # build image from directory
     build:
-      context: .
+      context: ../../provenai-backend
       dockerfile: Dockerfile
       args:
         - PROVEN_AI_GIT_REPOSITORY=${PROVEN_AI_GIT_REPOSITORY}
