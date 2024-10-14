@@ -209,7 +209,7 @@ services:
     environment:
       - ISCC_SDK_GRANULAR=${ISCC_SDK_GRANULAR}
     volumes:
-      - ../../provenai-sdk/provenai-sdk-docker-compose/Caddyfile:/etc/caddy/Caddyfile
+      - ../provenai-sdk-docker-compose/Caddyfile:/etc/caddy/Caddyfile
       - caddy-config:/config
       - caddy-data:/data
     ports:
@@ -239,7 +239,7 @@ services:
     env_file:
       - .env-local
     volumes:
-      - ../../provenai-sdk/provenai-sdk-docker-compose/issuer-api/config:/waltid-issuer-api/config
+      - ../provenai-sdk-docker-compose/issuer-api/config:/waltid-issuer-api/config
     networks:
       - proven_ai_network
     restart: unless-stopped
@@ -253,7 +253,7 @@ services:
     env_file:
       - .env-local
     volumes:
-      - ../../provenai-sdk/provenai-sdk-docker-compose/verifier-api/config:/waltid-verifier-api/config
+      - ../provenai-sdk-docker-compose/verifier-api/config:/waltid-verifier-api/config
     networks:
       - proven_ai_network
     restart: unless-stopped
