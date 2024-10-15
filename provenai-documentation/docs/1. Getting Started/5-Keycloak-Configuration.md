@@ -149,11 +149,11 @@ curl -X GET "http://localhost:8080/gendox/api/v1/profile" \
 ```
      - `PROVEN_AI_PRIVATE_CLIENT_TOKEN`: The bearer token received from `proven-ai-private-client` keycloak client log in.
 
-- Change user type to `SUPER_ADMIN`:
+- Change user type to `GENDOX_SUPER_ADMIN`:
     - Go in the database in `user` table of `gendox_core` schema.
     - Find the `proven-ai-private-client` user. The user has username `service-account-proven-ai-private-client`.
-    - On `types` table of `gendox_core` find the `type_id` of type `SUPER_ADMIN`. The `type_id` should be 1.
-    - Change the `type_id` to the id corresponding to type `SUPER_ADMIN`. You can find the id on the `types` table. .
+    - On `types` table of `gendox_core` find the `type_id` of type `GENDOX_SUPER_ADMIN`. The `type_id` should be 40.
+    - Change the `type_id` to the id corresponding to type `GENDOX_SUPER_ADMIN`. You can find the id on the `types` table. .
 
 Repeat this process for `gendox-private-client`:
 - Implement client log in to Keycloak:
