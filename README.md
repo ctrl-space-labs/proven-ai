@@ -57,23 +57,6 @@ docker-compose --env-file .env-local pull
 docker-compose --env-file .env-local up -d
 ```
 
-This command builds all the containers for the necessary services in the provenAI ecosystem:
-- ProvenAI Backend
-- ProvenAI Grontend
-- ProvenAI SDK
-- Gendox Backend
-- Gendox Frontend
-- Postgres Database Container
-- Keycloak Container
-
-Also to set up all the environment variables and properties needed the following .env files are needed:
-- `.env-local`
-
-#### Step 4: Get Keycloak client keys
-
-ProvenAI uses Keycloak for authentication. You need to get the client keys for the services to interact with Keycloak. For more info about how to set up the Keycloak server and configure keycloak settings see [Keycloak Configuration](https://ctrl-space-labs.github.io/proven-ai/docs/Getting%20Started/Keycloak-Configuration). After running the docker compose you will need to configure the keycloak settings in order to run the app.
-
-
 
 ## Code & Documentation
 All related code can the found in the [Github Repository](https://github.com/ctrl-space-labs/proven-ai) of the project. 
