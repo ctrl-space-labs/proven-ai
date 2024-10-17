@@ -35,8 +35,8 @@ The .env-local file contains some environment variables are comented out. These 
 ### Step 3: Build and run docker compose
 ```bash
 cd ./proven-ai/provenai-compose-scripts/local-installation
-docker-compose --env-file .env-local up --build -d --pull always
-docker-compose up
+docker-compose --env-file .env-local pull
+docker-compose --env-file .env-local up -d
 ```
 The `always` flag enables the docker-compose to pull the latest image.
 
