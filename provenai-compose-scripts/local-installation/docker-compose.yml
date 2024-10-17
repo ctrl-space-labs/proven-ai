@@ -35,7 +35,6 @@ services:
         condition: service_healthy
     env_file:
       - .env-local
-      - .env-secrets
     networks:
       - proven_ai_network
     ports:
@@ -123,8 +122,8 @@ services:
         # Wait until Keycloak is ready to accept connections
         echo 'Waiting for Keycloak to be ready...'
         until is_keycloak_ready; do
-          echo 'Keycloak not ready yet. Retrying in 15 seconds...'
-          sleep 15
+          echo 'Keycloak not ready yet. Retrying in 5 seconds...'
+          sleep 5
         done
 
         echo 'Keycloak is ready. Running initialization script.'
@@ -209,7 +208,7 @@ services:
     environment:
       - ISCC_SDK_GRANULAR=${ISCC_SDK_GRANULAR}
     volumes:
-      - ../../provenai-sdk/provenai-sdk-docker-compose/Caddyfile:/etc/caddy/Caddyfile
+      - ../provenai-sdk-docker-compose/Caddyfile:/etc/caddy/Caddyfile
       - caddy-config:/config
       - caddy-data:/data
     ports:
@@ -239,7 +238,7 @@ services:
     env_file:
       - .env-local
     volumes:
-      - ../../provenai-sdk/provenai-sdk-docker-compose/issuer-api/config:/waltid-issuer-api/config
+      - ../provenai-sdk-docker-compose/issuer-api/config:/waltid-issuer-api/config
     networks:
       - proven_ai_network
     restart: unless-stopped
@@ -253,7 +252,7 @@ services:
     env_file:
       - .env-local
     volumes:
-      - ../../provenai-sdk/provenai-sdk-docker-compose/verifier-api/config:/waltid-verifier-api/config
+      - ../provenai-sdk-docker-compose/verifier-api/config:/waltid-verifier-api/config
     networks:
       - proven_ai_network
     restart: unless-stopped
