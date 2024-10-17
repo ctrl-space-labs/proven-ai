@@ -44,12 +44,14 @@ git clone https://github.com/ctrl-space-labs/proven-ai.git
 
 In `./proven-ai/provenai-compose-scripts/local-installation/.env-local`, and set up the environment variables according to [Environment Variables](https://ctrl-space-labs.github.io/proven-ai/docs/Getting%20Started/Environment-Variables) documentation.
 
+> Only **AWS key** for S3 integration is mandatory.
+
 
 #### Step 3: Run docker compose
 ```bash
 cd ./proven-ai/provenai-compose-scripts/local-installation
-docker-compose --env-file .env-local up --build -d
-docker-compose up
+docker-compose --env-file .env-local pull
+docker-compose --env-file .env-local up -d
 ```
 
 This command builds all the containers for the necessary services in the provenAI ecosystem:
