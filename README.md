@@ -44,7 +44,10 @@ git clone https://github.com/ctrl-space-labs/proven-ai.git
 
 In `./proven-ai/provenai-compose-scripts/local-installation/.env-local`, and set up the environment variables according to [Environment Variables](https://ctrl-space-labs.github.io/proven-ai/docs/Getting%20Started/Environment-Variables) documentation.
 
-> Only **AWS key** for S3 integration is mandatory.
+
+>The `.env-local` file contains some environment variables are comented out. These are mandatory variables that the user must create for the provenAI app to operate correctly. More information on the mandatory variables created by the developer [here](../Getting%20Started/Environment-Variables#mandatory-environment-variables).
+> 
+> **AWS Keys** for S3 integration are **mandatory**.
 
 
 #### Step 3: Run docker compose
