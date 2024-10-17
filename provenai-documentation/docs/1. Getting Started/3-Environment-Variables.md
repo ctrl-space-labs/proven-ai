@@ -5,9 +5,8 @@
 
 ProvenAI uses environment variables to configure the services. The environment variables are set in the `.env-local` file in the `docker-compose` directory. There are some mandatory ennvironment variables the user must create fin order for the provenAI app to operate.
 The user has to generate:
-- At least one LLM key. Default is openAI key.
-- A dicord token.
-- AWS secret key and secret access key.
+- **AWS secret key** and secret access key -> mandatory to upload documents
+- At least one LLM key. Default is OpenAI key. -> mandatory for chat functionality
   These are presented below:
 
 | Environment Variable         | Example Value                                              | Description                                                                                     | Documentation Link                                                                                                      |
