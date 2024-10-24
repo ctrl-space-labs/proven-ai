@@ -5,14 +5,12 @@
 
 ProvenAI uses environment variables to configure the services. The environment variables are set in the `.env-local` file in the `docker-compose` directory. There are some mandatory ennvironment variables the user must create fin order for the provenAI app to operate.
 The user has to generate:
-- **AWS secret key** and secret access key -> mandatory to upload documents
-- At least one LLM key. Default is OpenAI key. -> mandatory for chat functionality
-  These are presented below:
+- At least one LLM key. Default is openAI key.
+
+These are presented below:
 
 | Environment Variable         | Example Value                                              | Description                                                                                     | Documentation Link                                                                                                      |
 |------------------------------|-----------------------------------------------------------|-------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------|
-| `AWS_ACCESS_KEY`             | `AKIAIOSFODNN7EXAMPLE`                                   | The access key ID used to authenticate requests to AWS services.                               | [How to create an AWS access key](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html)    |
-| `AWS_SECRET_ACCESS_KEY`      | `wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY`              | The secret access key associated with the access key ID, used to sign requests to AWS services.| [How to create an AWS access key](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html)    |
 | `OPENAI_KEY`                 | `sk-*****`                                               | API key used to authenticate with the OpenAI API for AI model integration.                     | [How to get an OpenAI API key](https://platform.openai.com/docs/quickstart)                                           |
 | `COHERE_KEY`                 | `*****`                                                  | API key used to authenticate with the Cohere AI model.                                          | [How to get a Cohere API key](https://docs.cohere.com/v2/docs/rate-limits)                                                   |
 | `GROQ_KEY`                   | `*****`                                                  | API key used to authenticate with the Groq AI model.                                            | [How to get a Groq API key](https://console.groq.com/docs/quickstart)                                                                   |
@@ -74,7 +72,10 @@ You will need to configure one LLM key for the chat functionality. By setting th
 `PROVEN_AI_SDK_ISCC_ENABLED` to true, when a document instance is created an ISCC code is assgined to it. Otherwise a random UUID is assigned.
 
 ## AWS Configuration
-Configuration settings for AWS services, specifically for accessing S3 storage.
+Configuration settings for AWS services, specifically for accessing S3 storage. These variables are not mandatory, you need to configure them only if you want s3 integration. If these variables are not set, any files uploaded will be stored in your local filesystem on your home folder.
+
+The path of the documents stored will be:
+`{user.home}/gendox/documents`.  
 
 | Variable                                   | Value        | Description                                   |
 |--------------------------------------------|--------------|-----------------------------------------------|
