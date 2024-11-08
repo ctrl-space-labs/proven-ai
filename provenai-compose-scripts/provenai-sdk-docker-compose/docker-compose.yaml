@@ -1,8 +1,8 @@
 version: "3.8"
 
-volumes:
-  caddy-config:
-  caddy-data:
+#volumes:
+#  caddy-config:
+#  caddy-data:
 
 services:
   iscc-app:
@@ -40,8 +40,8 @@ services:
     platform: linux/x86_64
     image: docker.io/waltid/issuer-api:${VERSION_TAG:-latest}
     pull_policy: always
-    depends_on:
-      - caddy
+#    depends_on:
+#      - caddy
     env_file:
       - .env
     volumes:
@@ -51,8 +51,8 @@ services:
     platform: linux/x86_64
     image: docker.io/waltid/verifier-api:${VERSION_TAG:-latest}
     pull_policy: always
-    depends_on:
-      - caddy
+#    depends_on:
+#      - caddy
     env_file:
       - .env
     volumes:
