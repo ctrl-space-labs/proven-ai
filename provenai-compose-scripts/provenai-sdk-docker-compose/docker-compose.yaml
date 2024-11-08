@@ -10,32 +10,31 @@ services:
     init: true
     env_file: .env
 
-  caddy:
-    image: caddy:2.6.1-alpine
-    restart: unless-stopped
-    env_file: .env
-    environment:
-      - ISCC_SDK_GRANULAR=${ISCC_SDK_GRANULAR}
-    volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile
-      - caddy-config:/config
-      - caddy-data:/data
-    ports:
-
-      - target: "$ISCC_WEB_SITE_PORT"
-        published: $ISCC_WEB_SITE_PORT # issuer-api
-        protocol: tcp
-        mode: host
-      - target: "$ISSUER_API_PORT"
-        published: $ISSUER_API_PORT # issuer-api
-        protocol: tcp
-        mode: host
-      - target: "$VERIFIER_API_PORT"
-        published: $VERIFIER_API_PORT # verifier-api
-        protocol: tcp
-        mode: host
-    depends_on:
-      - iscc-app
+#  caddy:
+#    image: caddy:2.6.1-alpine
+#    restart: unless-stopped
+#    env_file: .env
+#    environment:
+#      - ISCC_SDK_GRANULAR=${ISCC_SDK_GRANULAR}
+#    volumes:
+#      - ./Caddyfile:/etc/caddy/Caddyfile
+#      - caddy-config:/config
+#      - caddy-data:/data
+#    ports:
+#      - target: "$ISCC_WEB_SITE_PORT"
+#        published: $ISCC_WEB_SITE_PORT # issuer-api
+#        protocol: tcp
+#        mode: host
+#      - target: "$ISSUER_API_PORT"
+#        published: $ISSUER_API_PORT # issuer-api
+#        protocol: tcp
+#        mode: host
+#      - target: "$VERIFIER_API_PORT"
+#        published: $VERIFIER_API_PORT # verifier-api
+#        protocol: tcp
+#        mode: host
+#    depends_on:
+#      - iscc-app
 
   issuer-api:
     platform: linux/x86_64
