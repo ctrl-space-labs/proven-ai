@@ -74,13 +74,28 @@ Also to set up all the environment variables and properties needed the following
 ProvenAI uses Keycloak for authentication. You need to get the client keys for the services to interact with Keycloak. For more info about how to set up the Keycloak server and configure keycloak settings see [Keycloak Configuration](https://ctrl-space-labs.github.io/proven-ai/docs/Getting%20Started/Keycloak-Configuration). After running the docker compose you will need to configure the keycloak settings in order to run the app.
 
 
-
 ## Code & Documentation
 All related code can the found in the [Github Repository](https://github.com/ctrl-space-labs/proven-ai) of the project. 
 
 For detailed documentation on the project, please visit the [ProvenAI Documentation](https://ctrl-space-labs.github.io/proven-ai/)
 
 The OpenAPI documentation can be found in [ProveAI's Swagger](https://dev.proven-ai.ctrlspace.dev/proven-ai/api/v1/swagger-ui/index.html#/) page
+
+
+## Repository Structure
+This reposiroty follows the [mono-repo](https://www.sonarsource.com/learn/monorepo/) approach, different modules are under the subdirectories of the repository. More details for each module can be found here:
+
+| Module                                   | README file                          | Description                                    |
+|------------------------------------------|--------------------------------------|------------------------------------------------|
+| `provenai-backend`                       | [provenAI backend README](provenai-backend/README.md) | Backend ProvenAI services.        |
+| `provenai-blockchain`                    | [provenAI blockchain README](provenai-blockchain/README.md) | Blockchain integration for ProvenAI.           |
+| `provenai-compose-scripts`               | [provenAI compose-scripts README](provenai-compose-scripts/README.md) | Scripts for managing ProvenAI services via docker-compose.        |
+| `provenai-database`                      | [provenAI database README](provenai-database/README.md) | ProvenAI database setup and configuration.           |
+| `provenai-documentation`                 | [provenAI documentation README](provenai-documentation/README.md) | Documentation for ProvenAI.              |
+| `provenai-frontend`                      | [provenAI frontend README](provenai-frontend/README.md) | Frontend for interacting with ProvenAI platform.        |
+| `provenai-sdk`                           | [provenAI SDK README](provenai-sdk/README.md) | SDK for integrating auxiliary data provenance services with ProvenAI ecosystem. |
+
+
 
 ## Contact information
 If you have any questions, don't hesitate to contact us:
