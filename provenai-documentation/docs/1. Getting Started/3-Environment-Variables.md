@@ -17,32 +17,35 @@ These are presented below:
 
 ## API Ports
 
-| Variable                                   | Value                         |
-|--------------------------------------------|-------------------------------|
-| `DATABASE_PORT`                            | `5433`                        |    
-| `GENDOX_BACKEND_PORT`                      | `8080`                        |       
-| `GENDOX_FRONTEND_PORT`                     | `3000`                        | 
-| `KEYCLOAK_HTTPS_PORT`                      | `8443`                        |       
-| `KEYCLOAK_HTTP_PORT`                       | `8880`                        | 
-| `PROVEN_AI_BACKEND_PORT`                   | `8082`                        | 
-| `PROVEN_AI_FRONTEND_PORT`                  | `3001`                        |
+
+| Variable                                   | Value                         | Description                                                                                        |
+|--------------------------------------------|-------------------------------|----------------------------------------------------------------------------------------------------|
+| `DATABASE_PORT`                            | `5433`                        | Port number for the PostgreSQL database service.                                                  | 
+| `GENDOX_BACKEND_PORT`                      | `8080`                        | Port number for the Gendox backend service.                                                       | 
+| `GENDOX_FRONTEND_PORT`                     | `3000`                        | Port number for the Gendox frontend application.                                                  | 
+| `KEYCLOAK_HTTPS_PORT`                      | `8443`                        | HTTPS port for Keycloak authentication.                                   | 
+| `KEYCLOAK_HTTP_PORT`                       | `8880`                        | HTTP port for Keycloak authentication.                                    | 
+| `PROVEN_AI_BACKEND_PORT`                   | `8082`                        | Port number for the Proven AI backend service.                                                    | 
+| `PROVEN_AI_FRONTEND_PORT`                  | `3001`                        | Port number for the Proven AI frontend application.                                               |
 
 ## Spring Profiles
 With this variable we set the active spring profile.
 
-| Variable                                   | Value                           | 
-|--------------------------------------------|---------------------------------|
-| `SPRING_PROFILES_ACTIVE`                   | `local,openai-integration`     | 
+| Variable                                   | Value                           | Description                                                                                        |
+|--------------------------------------------|---------------------------------|----------------------------------------------------------------------------------------------------|
+| `SPRING_PROFILES_ACTIVE`                   | `local,openai-integration`     | Specifies the active Spring Boot profiles for the application.                                     |
 
 ## Database Configuration
 Environment variables for connecting to the database.
 
-| Variable                                   | Value                                   | 
-|--------------------------------------------|-----------------------------------------|
-| `DATABASE_NAME`                            | `postgres`                             | 
-| `DATABASE_USERNAME`                        | `gendox_user`                          | 
-| `DATABASE_PASSWORD`                        | `root`                                 |
-| `DATABASE_URL`                            | `jdbc:postgresql://gendox-database:5432/postgres` | 
+| Variable                                   | Value                                   | Description                                                                                        |
+|--------------------------------------------|-----------------------------------------|----------------------------------------------------------------------------------------------------|
+| `DATABASE_NAME`                            | `postgres`                             | Name of the database being used.                                                                  |
+| `DATABASE_USERNAME`                        | `gendox_user`                          | Username used to authenticate with the database.                                                  |
+| `DATABASE_PASSWORD`                        | `root`                                 | Password used to authenticate with the database.                                                  |
+| `DATABASE_URL`                             | `jdbc:postgresql://gendox-database:5432/postgres` | JDBC connection ururl for the PostgreSQL database.                                             |
+
+
 
 ## Gendox Core API Environment Variables
 
