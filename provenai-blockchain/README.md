@@ -2,7 +2,7 @@
 
 In the ProvenAI project, blockchain technology plays a crucial role in ensuring the security, transparency, and reliability of data management. ProvenAI is designed to handle data governance and provenance, which means keeping track of where data comes from and how it is used. Blockchain helps by providing a secure and tamper-proof way to store this information.
 
-Find out more about [ProvenAI Docs](https://ctrl-space-labs.github.io/proven-ai/docs/intro/)!
+Find out more about [ProvenAI Docs](https://ctrl-space-labs.github.io/proven-ai/docs/Getting%20Started/Intro)!
 
 
 ## Foundry
