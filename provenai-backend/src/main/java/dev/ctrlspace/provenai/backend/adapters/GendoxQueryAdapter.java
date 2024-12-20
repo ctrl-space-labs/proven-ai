@@ -36,7 +36,7 @@ public class GendoxQueryAdapter {
                               AuthenticationService authenticationService,
                                 @Value("${proven-ai.domains.gendox.base-url}") String domain,
                                 @Value("${proven-ai.domains.gendox.context-path}") String contextPath,
-                                @Value("${proven-ai.domains.gendox.apis.semantic-search}") String semanticSearchPath,
+                                @Value("${proven-ai.domains.gendox.apis.search}") String semanticSearchPath,
                                 @Value("${proven-ai.domains.gendox.apis.completion}") String completionPath ){
         this.restTemplate = restTemplate;
         this.authenticationService = authenticationService;

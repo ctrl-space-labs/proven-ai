@@ -71,7 +71,7 @@ Customize the application settings in the `src/main/resources/application.yml` f
 - **proven-ai.domains.gendox.base-url**: The base URL for Gendox API. It is defined in each `application.properties.yml` file depending on the environment.
 - **proven-ai.domains.gendox.context-path**: The context path for Gendox API, set to `/gendox/api/v1`.
 - **proven-ai.domains.gendox.apis.user-profile**: The endpoint for user profiles.
-- **proven-ai.domains.gendox.apis.semantic-search**: The endpoint for semantic search.
+- **proven-ai.domains.gendox.apis.search**: The endpoint for semantic search.
 - **proven-ai.domains.gendox.apis.completion**: The endpoint for semantic completion.
 - **proven-ai.domains.gendox.apis.web-hook**: The endpoint for webhooks related to ProvenAI events.
 
