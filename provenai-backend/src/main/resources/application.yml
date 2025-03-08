@@ -86,8 +86,8 @@ proven-ai:
       context-path: /gendox/api/v1
       apis:
         user-profile: /profile
-        semantic-search: /messages/semantic-search
-        completion: /messages/semantic-completion
+        search: /messages/search
+        completion: /messages/completions
         web-hook: /proven-ai/web-hook
     proven-ai-frontend:
       base-url: https://proven-ai.ctrlspace.dev
