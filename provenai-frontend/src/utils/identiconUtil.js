@@ -1,11 +1,12 @@
-import CryptoJS from 'crypto-js';
+import MD5 from 'crypto-js/md5';
+import Hex from 'crypto-js/enc-hex';
+
 
 // Desc: Generated identicon for the provided text
 import Identicon from "identicon.js";
 
 const calculateIdenticonHash = (text) => {
-
-    return CryptoJS.MD5(text).toString(CryptoJS.enc.Hex);
+    return MD5(text).toString(Hex);
 }
 
 
