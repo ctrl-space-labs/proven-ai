@@ -55,7 +55,7 @@ services:
       NEXT_PUBLIC_GENDOX_URL: ${NEXT_PUBLIC_GENDOX_BACKEND_URL}
       NEXT_PUBLIC_PROVEN_AI_URL: ${NEXT_PUBLIC_PROVEN_AI_FRONTEND_URL}
     ports:
-      - "${GENDOX_FRONTEND_PORT}:3000"
+      - "${GENDOX_FRONTEND_PORT}:80"
     networks:
       - proven_ai_network
 
@@ -185,7 +185,7 @@ services:
       NEXT_PUBLIC_PROVEN_AI_URL: ${NEXT_PUBLIC_PROVEN_AI_BACKEND_URL}
       NEXT_PUBLIC_VERIFIER_URL: ${NEXT_PUBLIC_VERIFIER_URL}
     ports:
-      - "3001:3001"
+      - "3001:80"
     networks:
       - proven_ai_network
 
